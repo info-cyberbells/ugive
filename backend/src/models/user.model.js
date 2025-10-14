@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema(
         message: "Invalid phone number format",
       },
     },
-    studentId: {
+    studentUniId: {
       type: String,
       required: function () {
         return this.role === "student";
