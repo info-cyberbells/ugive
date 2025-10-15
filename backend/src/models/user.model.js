@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema(
     university: {
       type: String,
       required: function () {
-        return this.role === "student";
+        return this.role === "student" || this.role === "admin";
       },
       trim: true,
     },

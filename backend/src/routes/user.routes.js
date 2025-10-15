@@ -1,13 +1,13 @@
 import express from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
 import { authorizeRoles } from "../middleware/role.middleware.js";
+import { getProfile, updateProfile } from "../controllers/profile.controller.js";
 
 const router = express.Router();
 
-// Accessible by all logged-in users
-router.get("/profile", authenticate, (req, res) => {
-  res.json({ message: "Profile fetched successfully", user: req.user });
-});
+// Common profile route for all authenticated users
+router.get("/profile", authenticate, getProfile);
+router.put("/profile", authenticate, updateProfile);
 
 // Only Admin & Super Admin
 router.get("/admin-dashboard", authenticate, authorizeRoles("admin", "super_admin"), (req, res) => {
