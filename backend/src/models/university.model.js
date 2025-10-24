@@ -4,13 +4,13 @@ const universitySchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, "University name is required"],
       unique: true,
       trim: true,
     },
     address_line_1: {
       type: String,
-      required: true,
+      required: [true, "Address line 1 is required"],
       trim: true,
     },
     address_line_2: {
@@ -20,27 +20,28 @@ const universitySchema = new mongoose.Schema(
     },
     city: {
       type: String,
-      required: true,
+      required: [true, "City is required"],
       trim: true,
     },
     state: {
       type: String,
-      required: true,
-      enum: ["QLD", "NSW", "ACT", "TAS", "VIC", "SA", "WA", "NT"],
+      required: [true, "State is required"],
+      // enum: ["QLD", "NSW", "ACT", "TAS", "VIC", "SA", "WA", "NT"],
+      trim: true,
     },
     postcode: {
       type: String,
-      required: true,
+      required: [true, "Postcode is required"],
       trim: true,
     },
     shipping_address_name: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
     },
     semester_length: {
       type: Number,
-      required: true,
+      required: false,
       min: 1,
     },
   },
