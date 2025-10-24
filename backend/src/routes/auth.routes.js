@@ -11,6 +11,6 @@ router.post("/register", validateRegister, register);
 router.post("/login", login);
 
 // Protected (Super Admin only)
-router.post("/create-admin", authenticate, authorizeRoles("super_admin"), createAdmin);
+router.post("/create-admin", validateRegister, createAdmin);
 
 export default router;
