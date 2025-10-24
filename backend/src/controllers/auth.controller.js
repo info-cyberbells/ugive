@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import User from "../models/user.model.js";
+import University from "../models/university.model.js";
 
 // Register
 export const register = async (req, res) => {
@@ -23,6 +25,13 @@ export const register = async (req, res) => {
     if (role === "admin" || role === "super_admin") {
       return res.status(403).json({ message: "You cannot assign this role manually" });
     }
+
+    if (!mongoose.Types.ObjectId.isValid(university)) {
+      return res.status(400).json({ message: "Invalid university id" });
+    }
+
+    const uniDoc = await University.findById(university);
+    if (!uniDoc) return res.status(400).json({ message: "University not found" });
 
     // Create user with all fields
     const user = await User.create({
@@ -67,6 +76,14 @@ export const login = async (req, res) => {
 export const createAdmin = async (req, res) => {
   try {
     const { name, email, password, phoneNumber, university } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(university)) {
+      return res.status(400).json({ message: "Invalid university id" });
+    }
+    // console.log('university',university)
+    const uniDoc = await University.findById(university);
+    if (!uniDoc) return res.status(400).json({ message: "University not found" });
+
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ message: "User already exists" });
 

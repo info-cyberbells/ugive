@@ -6,9 +6,8 @@ import { validateRegister } from "../validation/auth.validation.js";
 
 const router = express.Router();
 
-// Public
+// Public routes
 router.post("/register", validateRegister, register);
-router.post("/register", register);
 router.post("/login", login);
 
 // Protected (Super Admin only)
