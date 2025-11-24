@@ -23,3 +23,20 @@ export const registerService = async (userData) => {
     const response = await axios.post(USER_ENDPOINTS.REGISTER_USER, userData);
     return response.data;
 }
+
+export const createUniversityService = async (uniData) => {
+    const response = await axios.post(USER_ENDPOINTS.SUPERADMIN_ADD_UNIVERSITY,
+        uniData,
+        getAuthHeader()
+    );
+    return response.data;
+};
+
+export const updateUniversityService = async (id, uniData) => {
+    const response = await axios.put(
+       `${USER_ENDPOINTS.SUPERADMIN_UPDATE_UNIVERSITY}/${id}`,
+        uniData,
+        getAuthHeader(),
+    );
+    return response.data;
+}

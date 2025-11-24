@@ -4,14 +4,14 @@ import UniversityModal from '../Modals/UniAddModal';
 import ConfirmationModal from '../Modals/deleteModal';
 
 const universityData = [
-    { id: 1, name: 'Harvard University', address_line_1: 'Massachusetts Hall', address_line_2: 'Admissions Office', city: 'Cambridge', state: 'MA', postcode: '02138', status: 'Accredited' },
-    { id: 2, name: 'Stanford University', address_line_1: '450 Serra Mall', address_line_2: null, city: 'Stanford', state: 'CA', postcode: '94305', status: 'Accredited' },
-    { id: 3, name: 'MIT', address_line_1: '77 Massachusetts Ave', address_line_2: '', city: 'Cambridge', state: 'MA', postcode: '02139', status: 'Pending' }, // address_line_2 is empty string
-    { id: 4, name: 'Yale University', address_line_1: '320 Temple St', address_line_2: 'Law School', city: 'New Haven', state: 'CT', postcode: '06511', status: 'Accredited' },
-    { id: 5, name: 'Princeton University', address_line_1: 'Nassau Hall', address_line_2: 'Main Campus', city: 'Princeton', state: 'NJ', postcode: '08544', status: 'Accredited' },
-    { id: 6, name: 'Columbia University', address_line_1: '116th Street', address_line_2: 'Alumni Center', city: 'New York', state: 'NY', postcode: '10027', status: 'Accredited' },
-    { id: 7, name: 'UChicago', address_line_1: '5801 S Ellis Ave', address_line_2: 'Graduate Studies', city: 'Chicago', state: '', postcode: '60637', status: 'Pending' }, // state is empty string
-    { id: 8, name: 'Duke University', address_line_1: '2138 Campus Dr', address_line_2: 'Box 90034', city: 'Durham', state: 'NC', postcode: '27708', status: 'Accredited' },
+    // { id: 1, name: 'Harvard University', address_line_1: 'Massachusetts Hall', address_line_2: 'Admissions Office', city: 'Cambridge', state: 'MA', postcode: '02138', status: 'Accredited' },
+    // { id: 2, name: 'Stanford University', address_line_1: '450 Serra Mall', address_line_2: null, city: 'Stanford', state: 'CA', postcode: '94305', status: 'Accredited' },
+    // { id: 3, name: 'MIT', address_line_1: '77 Massachusetts Ave', address_line_2: '', city: 'Cambridge', state: 'MA', postcode: '02139', status: 'Pending' }, // address_line_2 is empty string
+    // { id: 4, name: 'Yale University', address_line_1: '320 Temple St', address_line_2: 'Law School', city: 'New Haven', state: 'CT', postcode: '06511', status: 'Accredited' },
+    // { id: 5, name: 'Princeton University', address_line_1: 'Nassau Hall', address_line_2: 'Main Campus', city: 'Princeton', state: 'NJ', postcode: '08544', status: 'Accredited' },
+    // { id: 6, name: 'Columbia University', address_line_1: '116th Street', address_line_2: 'Alumni Center', city: 'New York', state: 'NY', postcode: '10027', status: 'Accredited' },
+    // { id: 7, name: 'UChicago', address_line_1: '5801 S Ellis Ave', address_line_2: 'Graduate Studies', city: 'Chicago', state: '', postcode: '60637', status: 'Pending' }, // state is empty string
+    // { id: 8, name: 'Duke University', address_line_1: '2138 Campus Dr', address_line_2: 'Box 90034', city: 'Durham', state: 'NC', postcode: '27708', status: 'Accredited' },
 
 ];
 
@@ -125,7 +125,7 @@ const ManageUniversities = () => {
     };
 
     return (
-        <div className="min-h-screen mt-16 ml-56 font-[Inter] bg-gray-50 p-4 sm:p-8 ">
+        <div className="min-h-screen mt-14 ml-56 font-[Inter] bg-gray-50 p-4 sm:p-8 ">
             <div className="max-w-8xl">
 
                 {/* Header Section */}
@@ -321,7 +321,7 @@ const ManageUniversities = () => {
                         </div>
                     ) : (
                         // No Data Message
-                        <div className="flex items-center justify-center min-h-[600px]">
+                        <div className="flex items-center justify-center min-h-[500px]">
                             <div className="p-16 text-center text-gray-500">
                                 <svg
                                     className="mx-auto h-12 w-12 text-gray-400"
