@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login, reset } from "../../features/userSlice";
-import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "./login.css";
 import { NavLink } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { useToast } from "../../context/ToastContext";
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { showToast } = useToast();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -18,37 +20,53 @@ const Login = () => {
   const { user, isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.auth
   );
+
   const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({});
 
 
-  // ADD THIS useEffect:
   useEffect(() => {
     if (isError) {
-      toast.error(message || "Login failed");
+      showToast(message || "Invalid email or password", "error");
+
+      setTimeout(() => {
+        dispatch(reset());
+      }, 100);
     }
 
     if (isSuccess && user) {
-      toast.success("Login successful!");
+      showToast("Login successful!", "success");
       navigate("/student-dashboard");
+
+      setTimeout(() => {
+        dispatch(reset());
+      }, 100);
     }
-
-    dispatch(reset());
-  }, [user, isError, isSuccess, message, navigate, dispatch]);
-
+  }, [user, isError, isSuccess, message, dispatch, navigate]);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+    setErrors((prev) => ({
+      ...prev,
+      [e.target.name]: false,
+    }));
   };
-
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!formData.email || !formData.password) {
-      toast.error("Please fill in all fields");
+    const newErrors = {};
+
+    if (!formData.email) newErrors.email = true;
+    if (!formData.password) newErrors.password = true;
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      showToast("Please fill in all fields", "error");
       return;
     }
 
@@ -70,8 +88,16 @@ const Login = () => {
               <p>Make a difference in someone's life</p>
 
               <form autoComplete="off" onSubmit={handleSubmit}>
-                <input type="text" name="fakeusernameremembered" style={{ display: 'none' }} />
-                <input type="password" name="fakepasswordremembered" style={{ display: 'none' }} />
+                <input
+                  type="text"
+                  name="fakeusernameremembered"
+                  style={{ display: "none" }}
+                />
+                <input
+                  type="password"
+                  name="fakepasswordremembered"
+                  style={{ display: "none" }}
+                />
 
                 <div className="login-form-group">
                   <label htmlFor="email">Email</label>
@@ -79,7 +105,8 @@ const Login = () => {
                     id="email"
                     name="email"
                     type="email"
-                    className="login-input"
+                    className={`login-input ${errors.email ? "input-error" : ""
+                      }`}
                     autoComplete="off"
                     placeholder="Enter your email"
                     value={formData.email}
@@ -94,7 +121,8 @@ const Login = () => {
                       id="password"
                       name="password"
                       type={showPassword ? "text" : "password"}
-                      className="login-input"
+                      className={`login-input ${errors.password ? "input-error" : ""
+                        }`}
                       autoComplete="new-password"
                       placeholder="Enter your password"
                       value={formData.password}
@@ -119,7 +147,9 @@ const Login = () => {
                 <div className="login-options">
                   <div className="login-remember-me">
                     <input type="radio" id="rememberMe" />
-                    <label htmlFor="rememberMe" style={{ paddingLeft: "4px" }}>Remember Me</label>
+                    <label htmlFor="rememberMe" style={{ paddingLeft: "4px" }}>
+                      Remember Me
+                    </label>
                   </div>
                   <div className="login-forgot-password">
                     <NavLink>Forgot Password?</NavLink>
@@ -138,7 +168,18 @@ const Login = () => {
 
               <div className="login-signup-link">
                 <p>
-                  Don't have an Account? <button style={{ background: "none", border: "none", color: "#E9B342", cursor: "pointer" }} onClick={() => navigate("/signup")}>Sign Up</button>
+                  Don't have an Account?{" "}
+                  <button
+                    style={{
+                      background: "none",
+                      border: "none",
+                      color: "#E9B342",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => navigate("/signup")}
+                  >
+                    Sign Up
+                  </button>
                 </p>
               </div>
             </div>

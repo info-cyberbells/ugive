@@ -77,7 +77,10 @@ const authSlice = createSlice({
             .addCase(login.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = false;
-                state.user = action.payload.user;
+                state.isError = true; 
+                state.message = action.payload;
+                // state.user = action.payload.user;
+                state.user = null; 
             })
 
             //Register Student
@@ -92,7 +95,9 @@ const authSlice = createSlice({
             .addCase(register.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = false;
-                state.user = action.payload.user;
+                state.isError = true; 
+                state.message = action.payload;
+                // state.user = action.payload.user;
                 state.user = null;
             })
 
