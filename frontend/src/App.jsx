@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import './App.css'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { } from "react-router-dom";
 import Login from './pages/Login/Login';
 import Signup from './pages/Signup/Signup';
 import Dashboard from './pages/dashboard/dashboard';
@@ -16,22 +17,7 @@ import ManageColleges from './pages/SuperAdmin/ManageColleges/ManageColleges';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [pageLoading, setPageLoading] = useState(true);
 
-  useEffect(() => {
-    // Handle page refresh/initial load
-    const handlePageLoad = () => {
-      setPageLoading(false);
-    };
-
-    if (document.readyState === 'complete') {
-      setPageLoading(false);
-    } else {
-      window.addEventListener('load', handlePageLoad);
-    }
-
-    return () => window.removeEventListener('load', handlePageLoad);
-  }, []);
 
 
   useEffect(() => {
@@ -49,7 +35,7 @@ function App() {
     };
   }, []);
 
-  if (isLoading || pageLoading) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-100">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -59,18 +45,35 @@ function App() {
 
   return (
     <>
-      <Router>
-        {isAuthenticated && <Navbar />}
-        <Routes>
-          <Route path='/' element={<Login />} />
-          <Route path='/signUp' element={<Signup />} />
-          <Route path='/dashboard' element={<Dashboard />} />
-          {/* <Route path='/profile' element={<Profile />} /> */}
-          <Route path='/manage-students' element={<ManageStudents />} />
-          <Route path='/manage-universities' element={<ManageUniversities />} />
-          <Route path='/manage-colleges' element={<ManageColleges />} />
-        </Routes>
-      </Router>
+      {isAuthenticated && <Navbar />}
+
+      <Routes>
+        <Route
+          path='/'
+          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />}
+        />
+        <Route
+          path='/signUp'
+          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Signup />}
+        />
+
+        <Route
+          path='/dashboard'
+          element={isAuthenticated ? <Dashboard /> : <Navigate to="/" replace />}
+        />
+        <Route
+          path='/manage-students'
+          element={isAuthenticated ? <ManageStudents /> : <Navigate to="/" replace />}
+        />
+        <Route
+          path='/manage-universities'
+          element={isAuthenticated ? <ManageUniversities /> : <Navigate to="/" replace />}
+        />
+        <Route
+          path='/manage-colleges'
+          element={isAuthenticated ? <ManageColleges /> : <Navigate to="/" replace />}
+        />
+      </Routes>
     </>
   )
 }

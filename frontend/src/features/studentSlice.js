@@ -54,6 +54,7 @@ const authSlice = createSlice({
             .addCase(login.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
+                state.message = "Login successful";
 
                 const user = action.payload.user;
 
@@ -71,7 +72,6 @@ const authSlice = createSlice({
                     }
 
                     localStorage.setItem("user", JSON.stringify(minimalUser));
-                    window.dispatchEvent(new Event('authChange'));
                 }
             })
             .addCase(login.rejected, (state, action) => {

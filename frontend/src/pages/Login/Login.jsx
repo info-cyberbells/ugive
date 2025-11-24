@@ -28,21 +28,18 @@ const Login = () => {
   useEffect(() => {
     if (isError) {
       showToast(message || "Invalid email or password", "error");
-
-      setTimeout(() => {
-        dispatch(reset());
-      }, 100);
+      dispatch(reset());
     }
 
-    if (isSuccess && user) {
+    if (isSuccess) {
       showToast("Login successful!", "success");
-      navigate("/dashboard");
-
+      dispatch(reset());
       setTimeout(() => {
-        dispatch(reset());
-      }, 100);
+        window.dispatchEvent(new Event('authChange'));
+        navigate("/dashboard");
+      }, 700);
     }
-  }, [user, isError, isSuccess, message, dispatch, navigate]);
+  }, [isError, isSuccess, message, navigate, dispatch]);
 
   const handleChange = (e) => {
     setFormData({
