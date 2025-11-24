@@ -5,6 +5,10 @@ export const USER_ENDPOINTS = {
     LOGIN_USER: `${API_BASE_URL}/auth/login`,
     REGISTER_USER: `${API_BASE_URL}/auth/register`,
 
+    SUPERADMIN_ADD_UNIVERSITY:  `${API_BASE_URL}/super_admin/universities`,
+    SUPERADMIN_UPDATE_UNIVERSITY:  `${API_BASE_URL}/super_admin/universities`,
+    
+
 };
 
 

@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useToast } from '../../../context/ToastContext';
+import { useDispatch } from "react-redux";
+import { createUniversity } from '../../../features/universitySlice';
 
 const UniversityModal = ({ isOpen, onClose, university, onSave }) => {
 
+    const dispatch = useDispatch();
     const { showToast } = useToast();
 
     const [formData, setFormData] = useState({
@@ -53,40 +56,63 @@ const UniversityModal = ({ isOpen, onClose, university, onSave }) => {
         });
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+   const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        const newErrors = {};
+    const newErrors = {};
 
-        
-        const requiredFields = ['name', 'address_line_1', 'city','address_line_2', 'state', 'postcode'];
+    const requiredFields = [
+        "name",
+        "address_line_1",
+        "city",
+        "address_line_2",
+        "state",
+        "postcode",
+    ];
 
-        requiredFields.forEach((key) => {
-            if (!formData[key] || String(formData[key]).trim() === '') {
-                newErrors[key] = true;
-            }
-        });
-
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
-
-            showToast("Required fields must be filled!", "error");
-            console.log("Required fields must be filled!");
-
-            return;
+    requiredFields.forEach((key) => {
+        if (!formData[key] || String(formData[key]).trim() === "") {
+            newErrors[key] = true;
         }
+    });
 
-        console.log("Final valid data being saved:", formData);
-        showToast("Uni Added Successfully","success");
+    if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
+        showToast("Required fields must be filled!", "error");
+        return;
+    }
 
-       
-        onSave({
-            ...formData,
-            id: university?.id, 
+    if (isEditMode) {
+        dispatch(
+            updateUniversity({
+                id: university.id,
+                uniData: formData,
+            })
+        )
+            .unwrap()
+            .then(() => {
+                showToast("University updated successfully!", "success");
+                onClose();
+            })
+            .catch((error) => {
+                showToast(error || "Failed to update university", "error");
+            });
+
+        return;
+    }
+
+   
+    dispatch(createUniversity(formData))
+        .unwrap()
+        .then(() => {
+            showToast("University added successfully!", "success");
+            onClose();
+        })
+        .catch((error) => {
+            showToast(error || "Failed to add university", "error");
         });
+};
 
-        onClose();
-    };
 
     return (
         <div className="fixed inset-0 bg-black/30 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
