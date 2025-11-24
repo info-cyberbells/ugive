@@ -14,11 +14,10 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   return (
     <header
       className="
-        fixed ml-60 mr-60 top-0 right-[250px] h-[60px]
-        bg-white border-b border-gray-200 z-[100]
-        flex items-center justify-between px-5 pr-12
-        md:left-0 md:right-0 md:pr-14
-      "
+  fixed left-60 top-0 right-0 h-[60px]
+  bg-white border-b border-gray-200 z-[100]
+  flex items-center justify-between px-5 pr-12
+"
     >
       {/* Left Section */}
       <div className="flex items-center gap-2">

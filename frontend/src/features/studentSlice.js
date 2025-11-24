@@ -33,24 +33,6 @@ export const register = createAsyncThunk("auth/register",
     }
 );
 
-// export const verify = createAsyncThunk("auth/verify",
-//     async (_, thunkAPI) => {
-//         try {
-//             return await verifyService();
-//         } catch (error) {
-//             return thunkAPI.rejectWithValue(error.response?.data?.message || error.message);
-//         }
-//     }
-// );
-
-// export const logout = createAsyncThunk("auth/logout",
-//     async () => {
-//         return await logoutService();
-//     }
-// )
-
-
-
 
 const authSlice = createSlice({
     name: "auth",
@@ -72,15 +54,32 @@ const authSlice = createSlice({
             .addCase(login.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
-                state.user = action.payload.user;
+
+                const user = action.payload.user;
+
+                if (user && user._id) {
+                    const minimalUser = {
+                        _id: user._id,
+                        name: user.name || user.fullName || user.firstName || "",
+                        role: user.role || "",
+                    };
+
+                    state.user = minimalUser;
+
+                    if (action.payload.token) {
+                        localStorage.setItem("token", action.payload.token);
+                    }
+
+                    localStorage.setItem("user", JSON.stringify(minimalUser));
+                    window.dispatchEvent(new Event('authChange'));
+                }
             })
             .addCase(login.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = false;
-                state.isError = true; 
+                state.isError = true;
                 state.message = action.payload;
-                // state.user = action.payload.user;
-                state.user = null; 
+                state.user = null;
             })
 
             //Register Student
@@ -95,21 +94,10 @@ const authSlice = createSlice({
             .addCase(register.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = false;
-                state.isError = true; 
+                state.isError = true;
                 state.message = action.payload;
-                // state.user = action.payload.user;
                 state.user = null;
             })
-
-        // //verify user
-        // .addCase(verify.fulfilled, (state, action) => {
-        //     state.user = action.payload.user;
-        // })
-
-        // //Logout user
-        // .addCase(logout.fulfilled, (state) => {
-        //     state.user = null;
-        // })
     }
 })
 

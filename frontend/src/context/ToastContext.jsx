@@ -15,7 +15,7 @@ export const ToastProvider = ({ children }) => {
 
   const showToast = (message, type = "info") => {
     const id = Date.now();
-    setToasts((prev) => [...prev, { id, message, type }]);
+    setToasts([{ id, message, type }]);
   };
 
   const closeToast = (id) => {

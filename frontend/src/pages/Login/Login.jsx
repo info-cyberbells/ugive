@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { login, reset } from "../../features/userSlice";
+import { login, reset } from "../../features/studentSlice";
 import { useNavigate } from "react-router-dom";
 import "./login.css";
 import { NavLink } from "react-router-dom";
@@ -36,7 +36,7 @@ const Login = () => {
 
     if (isSuccess && user) {
       showToast("Login successful!", "success");
-      navigate("/student-dashboard");
+      navigate("/dashboard");
 
       setTimeout(() => {
         dispatch(reset());
@@ -129,13 +129,13 @@ const Login = () => {
                       onChange={handleChange}
                     />
                     {showPassword ? (
-                      <EyeOff
+                      <Eye
                         className="input-icon1"
                         onClick={() => setShowPassword(!showPassword)}
                         size={18}
                       />
                     ) : (
-                      <Eye
+                      <EyeOff
                         className="input-icon1"
                         onClick={() => setShowPassword(!showPassword)}
                         size={18}

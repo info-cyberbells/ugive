@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { ChevronDown, ChevronRight, LogOut } from "lucide-react";
 import Blog from "/menuIcons/Blog.svg";
 import ChatsTeardrop from "/menuIcons/ChatsTeardrop.svg";
 import IdentificationCard from "/menuIcons/IdentificationCard.svg";
@@ -11,11 +11,19 @@ import overView from "/menuIcons/overView.svg";
 import Projects from "/menuIcons/Projects.svg";
 
 const MenuItems = () => {
+  const navigate = useNavigate();
   const [openDrawer, setOpenDrawer] = useState(null);
 
   const toggleDrawer = (name) => {
     setOpenDrawer(openDrawer === name ? null : name);
   };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    window.dispatchEvent(new Event('authChange'));
+    navigate("/");
+  };
+
 
   const sections = [
     {
@@ -69,7 +77,7 @@ const MenuItems = () => {
       <div className="mt-2">
         <nav className="flex flex-col gap-2 text-sm">
           <NavLink
-            to="/"
+            to="/dashboard"
             className="flex items-center gap-2 text-black relative before:content-['•'] before:text-[#00000033] before:text-lg before:mr-2"
           >
             Overview
@@ -102,8 +110,8 @@ const MenuItems = () => {
           className="w-full flex items-center justify-between text-left"
         >
           <div className="flex items-center gap-2">
-            
-              <ChevronRight className="w-4 h-4 text-black/50" />
+
+            <ChevronRight className="w-4 h-4 text-black/50" />
 
             <img src={ecommerce} className="w-6 h-6" alt="icon" />
 
@@ -117,9 +125,9 @@ const MenuItems = () => {
           className="w-full flex items-center justify-between text-left"
         >
           <div className="flex items-center gap-2">
-            
-              <ChevronRight className="w-4 h-4 text-black/50" />
-          
+
+            <ChevronRight className="w-4 h-4 text-black/50" />
+
 
             <img src={Projects} className="w-6 h-6" alt="icon" />
 
@@ -170,6 +178,16 @@ const MenuItems = () => {
             )}
           </div>
         ))}
+
+        {/* LOGOUT OPTION */}
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-2 py-2 px-1 rounded-lg hover:bg-red-50 text-red-600 mt-4 cursor-pointer"
+        >
+          <LogOut className="w-5 h-5" />
+          <span className="text-sm font-medium">Logout</span>
+        </button>
+
       </div>
     </div>
   );

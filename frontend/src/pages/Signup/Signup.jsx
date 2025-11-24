@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { register, reset } from "../../features/userSlice";
+import { register, reset } from "../../features/studentSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "./signup.css";
@@ -40,18 +40,7 @@ const Signup = () => {
     }));
   };
 
-  // useEffect(() => {
-  //   if (isError) {
-  //     toast.error(message || "Registration failed");
-  //   }
 
-  //   if (isSuccess && user) {
-  //     toast.success("Registration successful!");
-  //     navigate("/");
-  //   }
-
-  //   dispatch(reset());
-  // }, [user, isError, isSuccess, message, navigate, dispatch]);
 
   useEffect(() => {
     if (isError) {
@@ -79,11 +68,13 @@ const Signup = () => {
     }
 
     if (isSuccess && user) {
-      showToast("Registration successful!");
-      navigate("/");
-      setTimeout(() => dispatch(reset()), 150);
+      showToast("Registration successful! Please login.");
+      dispatch(reset());
+      setTimeout(() => {
+        window.location.replace("/");
+      }, 1500);
     }
-  }, [user, isError, isSuccess, message, navigate, dispatch]);
+  }, [user, isError, isSuccess, message, dispatch]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -104,12 +95,12 @@ const Signup = () => {
       return;
     }
 
-     const phoneRegex = /^[0-9]+$/;
-      if (!phoneRegex.test(formData.phoneNumber)) {
-        setErrors({ phoneNumber: true });
-        showToast("Phone number must be digits", "error");
-        return;
-      }
+    const phoneRegex = /^[0-9]+$/;
+    if (!phoneRegex.test(formData.phoneNumber)) {
+      setErrors({ phoneNumber: true });
+      showToast("Phone number must be digits", "error");
+      return;
+    }
 
     if (formData.password !== formData.confirmPassword) {
       setErrors({
@@ -120,7 +111,7 @@ const Signup = () => {
       return;
     }
 
-    const {confirmPassword, ...finalData} = formData;
+    const { confirmPassword, ...finalData } = formData;
 
     // Submit form
     dispatch(register(finalData));
@@ -158,9 +149,8 @@ const Signup = () => {
                     id="name"
                     name="name"
                     type="text"
-                    className={`signup-input ${
-                      errors.name ? "input-error" : ""
-                    }`}
+                    className={`signup-input ${errors.name ? "input-error" : ""
+                      }`}
                     placeholder="Enter your name"
                     value={formData.name}
                     onChange={handleChange}
@@ -173,9 +163,8 @@ const Signup = () => {
                     id="studentUniId"
                     name="studentUniId"
                     type="text"
-                    className={`signup-input ${
-                      errors.studentUniId ? "input-error" : ""
-                    }`}
+                    className={`signup-input ${errors.studentUniId ? "input-error" : ""
+                      }`}
                     placeholder="Enter your student ID"
                     value={formData.studentUniId}
                     onChange={handleChange}
@@ -188,9 +177,8 @@ const Signup = () => {
                     id="university"
                     name="university"
                     type="text"
-                    className={`signup-input ${
-                      errors.university ? "input-error" : ""
-                    }`}
+                    className={`signup-input ${errors.university ? "input-error" : ""
+                      }`}
                     placeholder="Enter your university"
                     value={formData.university}
                     onChange={handleChange}
@@ -203,9 +191,8 @@ const Signup = () => {
                     id="email"
                     name="email"
                     type="email"
-                    className={`signup-input ${
-                      errors.email ? "input-error" : ""
-                    }`}
+                    className={`signup-input ${errors.email ? "input-error" : ""
+                      }`}
                     autoComplete="off"
                     placeholder="Enter your email"
                     value={formData.email}
@@ -219,9 +206,8 @@ const Signup = () => {
                     id="phoneNumber"
                     name="phoneNumber"
                     type="text"
-                    className={`signup-input ${
-                      errors.phoneNumber ? "input-error" : ""
-                    }`}
+                    className={`signup-input ${errors.phoneNumber ? "input-error" : ""
+                      }`}
                     placeholder="Enter your phone number"
                     value={formData.phoneNumber}
                     onChange={handleChange}
@@ -234,22 +220,21 @@ const Signup = () => {
                     id="password-wrapper"
                     name="password"
                     type={showSignPassword ? "text" : "password"}
-                    className={`signup-input ${
-                      errors.password ? "input-error" : ""
-                    }`}
+                    className={`signup-input ${errors.password ? "input-error" : ""
+                      }`}
                     autoComplete="new-password"
                     placeholder="Enter your password"
                     value={formData.password}
                     onChange={handleChange}
                   />
                   {showSignPassword ? (
-                    <EyeOff
+                    <Eye
                       className="input-icon"
                       onClick={() => setShowSignPassword(!showSignPassword)}
                       size={18}
                     />
                   ) : (
-                    <Eye
+                    <EyeOff
                       className="input-icon"
                       onClick={() => setShowSignPassword(!showSignPassword)}
                       size={18}
@@ -263,16 +248,15 @@ const Signup = () => {
                     id="password-wrapper-confirm"
                     name="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
-                    className={`signup-input ${
-                      errors.confirmPassword ? "input-error" : ""
-                    }`}
+                    className={`signup-input ${errors.confirmPassword ? "input-error" : ""
+                      }`}
                     autoComplete="new-password"
                     placeholder="Confirm your password"
                     value={formData.confirmPassword}
                     onChange={handleChange}
                   />
                   {showConfirmPassword ? (
-                    <EyeOff
+                    <Eye
                       className="input-icon"
                       onClick={() =>
                         setShowConfirmPassword(!showConfirmPassword)
@@ -280,7 +264,7 @@ const Signup = () => {
                       size={18}
                     />
                   ) : (
-                    <Eye
+                    <EyeOff
                       className="input-icon"
                       onClick={() =>
                         setShowConfirmPassword(!showConfirmPassword)
