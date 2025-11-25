@@ -128,7 +128,7 @@ const manageColleges = () => {
 
 
     return (
-        <div className="min-h-screen mt-16 ml-56 font-[Inter] bg-gray-50 p-4 sm:p-8 ">
+        <div className="min-h-screen lg:mt-14 lg:ml-56 font-[Inter] bg-gray-50 p-4 sm:p-8 ">
             <div className="max-w-8xl ">
 
                 {/* Header Section */}

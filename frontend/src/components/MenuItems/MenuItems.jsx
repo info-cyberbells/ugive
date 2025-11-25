@@ -68,13 +68,17 @@ const MenuItems = () => {
       <div className="flex flex-col gap-2 mt-4">
         <h2 className="text-[#00000066]">Dashboards</h2>
 
-        <div
-          onClick={() => navigate("/dashboard")}
-          className="text-black flex items-center gap-2 px-2 py-1 rounded-md hover:bg-[#0000000A] cursor-pointer"
+        <NavLink
+          to="/dashboard"
+          className={({ isActive }) =>
+            `flex items-center gap-2 px-2 py-1 rounded-md cursor-pointer
+     ${isActive ? "bg-[#0000000A] font-semibold text-black" : "hover:bg-[#0000000A]"}`
+          }
         >
           <LayoutDashboard className="w-5 h-5" />
           Overview
-        </div>
+        </NavLink>
+
       </div>
 
       {/* PAGES SECTION */}
@@ -83,14 +87,18 @@ const MenuItems = () => {
 
         {/* MAIN MENU ITEMS */}
         {sections.map((section) => (
-          <div
+          <NavLink
             key={section.id}
-            onClick={() => navigate("/" + section.id)}
-            className="w-full flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-[#0000000A] cursor-pointer"
+            to={"/" + section.id}
+            className={({ isActive }) =>
+              `w-full flex items-center gap-3 py-2 px-2 rounded-lg cursor-pointer
+     ${isActive ? "bg-[#0000000A] font-semibold text-black" : "hover:bg-[#0000000A]"}`
+            }
           >
             <section.icon className="w-5 h-5" />
-            <p className="text-sm text-black">{section.title}</p>
-          </div>
+            <p className="text-sm">{section.title}</p>
+          </NavLink>
+
         ))}
 
         {/* LOGOUT */}

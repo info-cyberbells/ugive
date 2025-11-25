@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { register, reset } from "../../features/studentSlice";
-import { toast } from "react-toastify";
+import { register, reset, getUniversities } from "../../features/studentSlice";
 import { useNavigate } from "react-router-dom";
 import "./signup.css";
 import { Eye, EyeOff } from "lucide-react";
@@ -22,7 +21,7 @@ const Signup = () => {
     studentUniId: "",
   });
 
-  const { user, isLoading, isError, isSuccess, message } = useSelector(
+  const { user, isLoading, isError, isSuccess, message, universities } = useSelector(
     (state) => state.auth
   );
   const [showSignPassword, setShowSignPassword] = useState(false);
@@ -40,6 +39,10 @@ const Signup = () => {
     }));
   };
 
+  //fetch public universities
+  useEffect(() => {
+    dispatch(getUniversities());
+  }, [dispatch]);
 
 
   useEffect(() => {
@@ -173,17 +176,38 @@ const Signup = () => {
 
                 <div className="signup-form-group">
                   <label htmlFor="university">Your University</label>
-                  <input
-                    id="university"
-                    name="university"
-                    type="text"
-                    className={`signup-input ${errors.university ? "input-error" : ""
-                      }`}
-                    placeholder="Enter your university"
-                    value={formData.university}
-                    onChange={handleChange}
-                  />
+
+                  <div className="relative">
+                    <select
+                      id="university"
+                      name="university"
+                      className={`signup-input appearance-none pr-10 ${errors.university ? "input-error" : ""
+                        }`}
+                      value={formData.university}
+                      onChange={handleChange}
+                    >
+                      <option value="">Select your university</option>
+                      {universities?.map((uni) => (
+                        <option key={uni._id} value={uni._id}>
+                          {uni.name}
+                        </option>
+                      ))}
+                    </select>
+
+                    <svg
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 pointer-events-none"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </div>
                 </div>
+
 
                 <div className="signup-form-group">
                   <label htmlFor="email">Email</label>

@@ -24,6 +24,14 @@ export const registerService = async (userData) => {
     return response.data;
 }
 
+//get all pubic universities - atsignup
+export const getPublicUniversitiesService = async () => {
+    const response = await axios.get(USER_ENDPOINTS.PUBLIC_UNIVERSITIES);
+    return response.data;
+}
+
+
+
 export const createUniversityService = async (uniData) => {
     const response = await axios.post(USER_ENDPOINTS.SUPERADMIN_ADD_UNIVERSITY,
         uniData,
@@ -34,7 +42,7 @@ export const createUniversityService = async (uniData) => {
 
 export const updateUniversityService = async (id, uniData) => {
     const response = await axios.put(
-       `${USER_ENDPOINTS.SUPERADMIN_UPDATE_UNIVERSITY}/${id}`,
+        `${USER_ENDPOINTS.SUPERADMIN_UPDATE_UNIVERSITY}/${id}`,
         uniData,
         getAuthHeader(),
     );

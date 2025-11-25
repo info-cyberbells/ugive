@@ -1,16 +1,17 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { loginService, registerService } from "../auth/authServices";
-
+import { loginService, registerService, getPublicUniversitiesService } from "../auth/authServices";
+ 
 const user = JSON.parse(localStorage.getItem("User"));
-
+ 
 const initialState = {
     user: user || null,
     isLoading: false,
     isError: false,
     isSuccess: false,
     message: "",
+    universities: [],
 }
-
+ 
 //Login Thunk
 export const login = createAsyncThunk("auth/login",
     async (userData, thunkAPI) => {
@@ -21,7 +22,7 @@ export const login = createAsyncThunk("auth/login",
         }
     }
 );
-
+ 
 //Register Thunk
 export const register = createAsyncThunk("auth/register",
     async (userData, thunkAPI) => {
@@ -32,8 +33,21 @@ export const register = createAsyncThunk("auth/register",
         }
     }
 );
-
-
+ 
+ 
+// Get Public Universities
+export const getUniversities = createAsyncThunk(
+    "auth/getUniversities",
+    async (_, thunkAPI) => {
+        try {
+            return await getPublicUniversitiesService();
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+ 
+ 
 const authSlice = createSlice({
     name: "auth",
     initialState,
@@ -55,22 +69,22 @@ const authSlice = createSlice({
                 state.isLoading = false;
                 state.isSuccess = true;
                 state.message = "Login successful";
-
+ 
                 const user = action.payload.user;
-
+ 
                 if (user && user._id) {
                     const minimalUser = {
                         _id: user._id,
                         name: user.name || user.fullName || user.firstName || "",
                         role: user.role || "",
                     };
-
+ 
                     state.user = minimalUser;
-
+ 
                     if (action.payload.token) {
                         localStorage.setItem("token", action.payload.token);
                     }
-
+ 
                     localStorage.setItem("user", JSON.stringify(minimalUser));
                 }
             })
@@ -81,7 +95,7 @@ const authSlice = createSlice({
                 state.message = action.payload;
                 state.user = null;
             })
-
+ 
             //Register Student
             .addCase(register.pending, (state) => {
                 state.isLoading = true;
@@ -98,8 +112,23 @@ const authSlice = createSlice({
                 state.message = action.payload;
                 state.user = null;
             })
+ 
+            //get all public universities
+            .addCase(getUniversities.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(getUniversities.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.universities = action.payload.data;
+            })
+            .addCase(getUniversities.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+ 
     }
 })
-
+ 
 export const { reset } = authSlice.actions;
 export default authSlice.reducer;
