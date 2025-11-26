@@ -8,10 +8,18 @@ export const USER_ENDPOINTS = {
 
 
     SUPERADMIN_GET_PROFILE: `${API_BASE_URL}/super_admin/profile`,
+
     SUPERADMIN_ADD_UNIVERSITY: `${API_BASE_URL}/super_admin/universities`,
     SUPERADMIN_UPDATE_UNIVERSITY: `${API_BASE_URL}/super_admin/universities`,
-     SUPERADMIN_GET_ALL_UNIVERSITY: `${API_BASE_URL}/super_admin/get-all-universities`,
+    SUPERADMIN_GET_ALL_UNIVERSITY: `${API_BASE_URL}/super_admin/get-all-universities`,
+    SUPERADMIN_GET_SINGLE_UNIVERSITY: `${API_BASE_URL}/super_admin/universities`,
+    SUPERADMIN_DELETE_UNIVERSITY: `${API_BASE_URL}/super_admin/universities`,
+
+
+
     SUPERADMIN_GET_ALL_COLLEGES: `${API_BASE_URL}/super_admin/get-all-colleges`,
+
+
     SUPERADMIN_GET_ALL_STUDENTS: `${API_BASE_URL}/super_admin/get-all-students`,
 
 

@@ -70,6 +70,26 @@ export const getAllUniversitiesDataService = async (uniData) => {
     return response.data;
 }
 
+//get single university data -suuperadmin
+export const getSingleUniversityService = async (id) => {
+    const response = await axios.get(
+        `${USER_ENDPOINTS.SUPERADMIN_GET_SINGLE_UNIVERSITY}/${id}`,
+        getAuthHeader()
+    );
+    return response.data;
+};
+
+//delete unniversity - superadmin
+export const deleteUniversityService = async (id) => {
+    const response = await axios.delete(
+        `${USER_ENDPOINTS.SUPERADMIN_DELETE_UNIVERSITY}/${id}`,
+        getAuthHeader()
+    );
+    return response.data;
+};
+
+
+
 // get all colleges data
 export const getAllCollegesDataService = async (uniData) => {
     const response = await axios.get(
@@ -80,11 +100,12 @@ export const getAllCollegesDataService = async (uniData) => {
     );
     return response.data;
 }
+
 // get all student data
-export const getAllStudentDataService = async (uniData) => {
+export const getAllStudentDataService = async (studentData) => {
     const response = await axios.get(
         USER_ENDPOINTS.SUPERADMIN_GET_ALL_STUDENTS, {
-        params: uniData,
+        params: studentData,
         ...getAuthHeader(),
     },
     );

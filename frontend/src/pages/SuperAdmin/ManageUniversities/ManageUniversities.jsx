@@ -3,52 +3,17 @@ import { Trash2, Filter, Download, Plus, ArrowUpDown } from "lucide-react";
 import UniversityModal from "../Modals/UniAddModal";
 import ConfirmationModal from "../Modals/deleteModal";
 import { useDispatch, useSelector } from "react-redux";
-import { getUniversitiesData } from "../../../features/universitySlice";
-
-const universityData = [
-  // { id: 1, name: 'Harvard University', address_line_1: 'Massachusetts Hall', address_line_2: 'Admissions Office', city: 'Cambridge', state: 'MA', postcode: '02138', status: 'Accredited' },
-  // { id: 2, name: 'Stanford University', address_line_1: '450 Serra Mall', address_line_2: null, city: 'Stanford', state: 'CA', postcode: '94305', status: 'Accredited' },
-  // { id: 3, name: 'MIT', address_line_1: '77 Massachusetts Ave', address_line_2: '', city: 'Cambridge', state: 'MA', postcode: '02139', status: 'Pending' }, // address_line_2 is empty string
-  // { id: 4, name: 'Yale University', address_line_1: '320 Temple St', address_line_2: 'Law School', city: 'New Haven', state: 'CT', postcode: '06511', status: 'Accredited' },
-  // { id: 5, name: 'Princeton University', address_line_1: 'Nassau Hall', address_line_2: 'Main Campus', city: 'Princeton', state: 'NJ', postcode: '08544', status: 'Accredited' },
-  // { id: 6, name: 'Columbia University', address_line_1: '116th Street', address_line_2: 'Alumni Center', city: 'New York', state: 'NY', postcode: '10027', status: 'Accredited' },
-  // { id: 7, name: 'UChicago', address_line_1: '5801 S Ellis Ave', address_line_2: 'Graduate Studies', city: 'Chicago', state: '', postcode: '60637', status: 'Pending' }, // state is empty string
-  // { id: 8, name: 'Duke University', address_line_1: '2138 Campus Dr', address_line_2: 'Box 90034', city: 'Durham', state: 'NC', postcode: '27708', status: 'Accredited' },
-];
-
-const StatusBadge = ({ status }) => {
-  // Mapping status to colors
-  const colorMap = {
-    Accredited: "bg-green-100 text-green-800",
-    Pending: "bg-yellow-100 text-yellow-800",
-  };
-  const dotColorMap = {
-    Accredited: "bg-green-500",
-    Pending: "bg-yellow-500",
-  };
-
-  const color = colorMap[status] || "bg-gray-100 text-gray-800";
-  const dotColor = dotColorMap[status] || "bg-gray-500";
-
-  return (
-    <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${color}`}
-    >
-      <span className={`w-2 h-2 mr-1.5 rounded-full ${dotColor}`}></span>
-      {status}
-    </span>
-  );
-};
+import { getUniversitiesData, getSingleUniversity, deleteUniversity } from "../../../features/universitySlice";
 
 const ManageUniversities = () => {
   const dispatch = useDispatch();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentUniversity, setCurrentUniversity] = useState(null);
-
+  const { currentUniversity } = useSelector((state) => state.university);
+  const [isViewMode, setIsViewMode] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [universityToDelete, setUniversityToDelete] = useState(null); // For single delete
-  const [isBulkDelete, setIsBulkDelete] = useState(false); // For bulk delete
+  const [universityToDelete, setUniversityToDelete] = useState(null);
+  const [isBulkDelete, setIsBulkDelete] = useState(false);
 
   const [limit, setLimit] = useState(10);
 
@@ -99,22 +64,19 @@ const ManageUniversities = () => {
 
   // Modal Handlers
   const openModalForAdd = () => {
-    setCurrentUniversity(null);
     setIsModalOpen(true);
   };
 
   const openModalForEdit = (uni) => {
-    setCurrentUniversity(uni);
+    dispatch(getSingleUniversity(uni._id));
     setIsModalOpen(true);
   };
-
   const closeModal = () => {
     setIsModalOpen(false);
-    setCurrentUniversity(null);
   };
 
   // Logic to save/update data
-  const handleSave = (newUniData) => {};
+  const handleSave = (newUniData) => { };
 
   // --- Delete Modal Handlers ---
   const openDeleteModalForSingle = (student) => {
@@ -138,9 +100,38 @@ const ManageUniversities = () => {
 
   const confirmDelete = () => {
     if (isBulkDelete) {
+      selectedUniversityIds.forEach((id) => dispatch(deleteUniversity(id)));
+      setSelectedUniversityIds([]);
     } else if (universityToDelete) {
+      dispatch(deleteUniversity(universityToDelete._id));
     }
     closeDeleteModal();
+  };
+
+  const SkeletonTable = () => {
+    return (
+      <div className="animate-pulse p-4">
+        <div className="h-6 w-48 bg-gray-200 rounded mb-4"></div>
+
+        <div className="border border-gray-200 rounded-xl overflow-hidden">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="flex items-center p-4 gap-4">
+              <div className="w-4 h-4 bg-gray-200 rounded"></div>
+              <div className="flex-1 h-4 bg-gray-200 rounded"></div>
+              <div className="flex-1 h-4 bg-gray-200 rounded"></div>
+              <div className="flex-1 h-4 bg-gray-200 rounded"></div>
+              <div className="flex-1 h-4 bg-gray-200 rounded"></div>
+              <div className="w-20 h-4 bg-gray-200 rounded"></div>
+              <div className="w-20 h-4 bg-gray-200 rounded"></div>
+              <div className="w-20 h-4 bg-gray-200 rounded"></div>
+              <div className="w-20 h-4 bg-gray-200 rounded"></div>
+              <div className="w-20 h-4 bg-gray-200 rounded"></div>
+
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -161,11 +152,10 @@ const ManageUniversities = () => {
               {/* Delete Button - Disabled when no universities are selected */}
               <button
                 onClick={openDeleteModalForBulk}
-                className={`flex cursor-pointer items-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 ${
-                  isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600"
-                    : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
-                }`}
+                className={`flex cursor-pointer items-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 ${isAnySelected
+                  ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600"
+                  : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
+                  }`}
                 aria-label="Delete Selected"
                 disabled={!isAnySelected}
               >
@@ -174,18 +164,17 @@ const ManageUniversities = () => {
               </button>
 
               {/* Filters Button (Always active) */}
-              <button className="flex cursor-pointer items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+              {/* <button className="flex cursor-pointer items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
                 Filters
                 <Filter className="h-4 w-4 ml-2" />
-              </button>
+              </button> */}
 
               {/* Export Button - Disabled when no universities are selected */}
               <button
-                className={`flex cursor-pointer items-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150  ${
-                  isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-gray-50"
-                    : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
-                }`}
+                className={`flex cursor-pointer items-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150  ${isAnySelected
+                  ? "text-gray-700 bg-white hover:bg-gray-50"
+                  : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
+                  }`}
                 disabled={!isAnySelected}
               >
                 Export
@@ -206,7 +195,10 @@ const ManageUniversities = () => {
 
         {/* Table/List Container */}
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-          {data.length > 0 ? (
+          {loading || data.length === 0 && !error ? (
+            <SkeletonTable />
+          ) : data && data.length > 0 ? (
+
             <>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200 ">
@@ -229,7 +221,7 @@ const ManageUniversities = () => {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
-                          Name <ArrowUpDown size={14} />
+                          Name 
                         </div>
                       </th>
                       <th
@@ -237,23 +229,23 @@ const ManageUniversities = () => {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
-                          Address Line 1 <ArrowUpDown size={14} />
+                          Address Line 1 
                         </div>
                       </th>
-                      <th
+                      {/* <th
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
                           Address Line 2 <ArrowUpDown size={14} />
                         </div>
-                      </th>
+                      </th> */}
                       <th
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
-                          City <ArrowUpDown size={14} />
+                          City
                         </div>
                       </th>
                       <th
@@ -261,7 +253,7 @@ const ManageUniversities = () => {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
-                          State <ArrowUpDown size={14} />
+                          State 
                         </div>
                       </th>
                       <th
@@ -269,7 +261,7 @@ const ManageUniversities = () => {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
-                          Postcode <ArrowUpDown size={14} />
+                          Postcode 
                         </div>
                       </th>
                       {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150">
@@ -291,11 +283,10 @@ const ManageUniversities = () => {
                     {data.map((uni) => (
                       <tr
                         key={uni._id}
-                        className={`transition duration-150 ${
-                          selectedUniversityIds.includes(uni.id)
-                            ? "bg-indigo-50 hover:bg-indigo-100"
-                            : "hover:bg-gray-50"
-                        }`}
+                        className={`transition duration-150 ${selectedUniversityIds.includes(uni.id)
+                          ? "bg-indigo-50 hover:bg-indigo-100"
+                          : "hover:bg-gray-50"
+                          }`}
                       >
                         <td className="px-6 py-4 whitespace-nowrap w-4">
                           <input
@@ -312,14 +303,14 @@ const ManageUniversities = () => {
                         </td>
 
                         {/* Address Line 1 Column */}
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="px-6 py-4 text-sm text-gray-600 max-w-[200px] whitespace-normal break-words">
                           {uni.address_line_1 || "N/A"}
                         </td>
 
                         {/* Address Line 2 Column */}
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                           {uni.address_line_2 || "N/A"}
-                        </td>
+                        </td> */}
 
                         {/* City Column */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
@@ -343,15 +334,28 @@ const ManageUniversities = () => {
 
                         {/* Action Column (View, Edit, Delete) */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
-                          <button className="cursor-pointer text-blue-600 hover:text-blue-900">
+                          <button
+                            onClick={() => {
+                              dispatch(getSingleUniversity(uni._id));
+                              setIsViewMode(true);
+                              setIsModalOpen(true);
+                            }}
+                            className="cursor-pointer text-blue-600 hover:text-blue-900"
+                          >
                             View
                           </button>
+
                           <button
-                            onClick={() => openModalForEdit(uni)}
+                            onClick={() => {
+                              dispatch(getSingleUniversity(uni._id));
+                              setIsViewMode(false);
+                              setIsModalOpen(true);
+                            }}
                             className="cursor-pointer text-yellow-600 hover:text-yellow-900"
                           >
                             Edit
                           </button>
+
                           <button
                             onClick={() => openDeleteModalForSingle(uni)}
                             className="cursor-pointer text-red-600 hover:text-red-900"
@@ -387,11 +391,10 @@ const ManageUniversities = () => {
                     onClick={() => handlePageChange(page - 1)}
                     disabled={page === 1}
                     className={`px-3 py-1 text-sm border rounded 
-                ${
-                  page === 1
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-white hover:bg-gray-50"
-                }
+                ${page === 1
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-white hover:bg-gray-50"
+                      }
             `}
                   >
                     Prev
@@ -406,11 +409,10 @@ const ManageUniversities = () => {
                     onClick={() => handlePageChange(page + 1)}
                     disabled={page === totalPages}
                     className={`px-3 py-1 text-sm border rounded 
-                ${
-                  page === totalPages
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-white hover:bg-gray-50"
-                }
+                ${page === totalPages
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-white hover:bg-gray-50"
+                      }
             `}
                   >
                     Next
@@ -454,8 +456,10 @@ const ManageUniversities = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         university={currentUniversity}
+        isViewMode={isViewMode}
         onSave={handleSave}
       />
+
       <ConfirmationModal
         isOpen={isDeleteModalOpen}
         onClose={closeDeleteModal}
