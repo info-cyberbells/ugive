@@ -1,11 +1,16 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   createUniversityService,
+  getAllUniversitiesDataService,
   updateUniversityService,
 } from "../auth/authServices";
 
 const initialState = {
   university: [],
+  page: 1,
+  limit: 10,
+  total: 0,
+  totalPages: 1,
   isLoading: false,
   isError: false,
   isSuccess: false,
@@ -41,6 +46,22 @@ export const updateUniversity = createAsyncThunk(
     }
   }
 );
+
+//get all university data thunk
+
+export const getUniversitiesData = createAsyncThunk(
+  "university/getAllData",
+  async(uniData, thunkAPI)=>{
+    try {
+      const response = await getAllUniversitiesDataService(uniData);
+    return response;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || error.message
+      );
+    }
+  }
+)
 
 const universitySlice = createSlice({
   name: "university",
@@ -86,7 +107,26 @@ const universitySlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
-      });
+      })
+      // get all university data
+     
+    .addCase(getUniversitiesData.pending, (state) => {
+      state.isLoading = true;
+    })
+    .addCase(getUniversitiesData.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.university = action.payload.data;
+      state.page = action.payload.page;
+      state.limit = action.payload.limit;
+      state.total = action.payload.total;
+      state.totalPages = action.payload.totalPages;
+    })
+    .addCase(getUniversitiesData.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = action.payload;
+    });
+
+
   },
 });
 
