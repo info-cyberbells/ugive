@@ -1,21 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 // Import Lucide icons
 import { Trash2, Filter, Download, Plus, ChevronDown, ArrowUpDown } from 'lucide-react';
 import StudentModal from '../Modals/StudentAddModal';
 import ConfirmationModal from '../Modals/deleteModal';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllStudentsData } from '../../../features/studentDataSlice';
 
-const studentData = [
-    { id: 1, name: 'Alice Johnson', email: 'alice.j@university.edu', phone: '555-0101', status: 'Active' },
-    { id: 2, name: 'Bob Williams', email: 'bob.w@university.edu', phone: '555-0102', status: 'Inactive' },
-    { id: 3, name: 'Charlie Brown', email: 'charlie.b@university.edu', phone: '', status: 'Active' },
-    { id: 4, name: 'Diana Prince', email: 'diana.p@university.edu', phone: '555-0104', status: 'Active' },
-    { id: 5, name: 'Ethan Hunt', email: 'ethan.h@university.edu', phone: '555-0105', status: 'Inactive' },
-    { id: 6, name: 'Alice Johnson', email: 'alice.j@university.edu', phone: '555-0101', status: 'Active' },
-    { id: 7, name: 'Bob Williams', email: 'bob.w@university.edu', phone: '555-0102', status: 'Inactive' },
-    { id: 8, name: 'Charlie Brown', email: 'charlie.b@university.edu', phone: '555-0103', status: 'Active' },
-    { id: 9, name: 'Diana Prince', email: 'diana.p@university.edu', phone: '555-0104', status: 'Active' },
-
-];
 
 const StatusBadge = ({ status }) => {
     const isActive = status === 'Active';
@@ -32,6 +22,10 @@ const StatusBadge = ({ status }) => {
 
 const ManageStudents = () => {
 
+    const dispatch = useDispatch();
+
+    const {studentData, isLoading, error, page, totalPages } = useSelector((state => state.studentData));
+
     const [selectedStudentIds, setSelectedStudentIds] = useState([]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,10 +39,28 @@ const ManageStudents = () => {
     const isAllSelected = selectedStudentIds.length === studentData.length && studentData.length > 0;
     const isAnySelected = selectedStudentIds.length > 0;
 
+      const [limit, setLimit] = useState(10);
+    
+
+    useEffect(()=>{
+        dispatch(getAllStudentsData({page: 1, limit}))
+    },[dispatch, limit]);
+
+    
+      const handlePageChange = (newPage) => {
+        if (newPage < 1 || newPage > totalPages) return;
+        dispatch(getAllStudentsData({ page: newPage, limit }));
+      };
+    
+      const handleLimitChange = (newLimit) => {
+        const newLimitValue = Number(newLimit);
+        setLimit(newLimitValue);
+      };
+
     // Handler to select/deselect all students
     const handleSelectAll = (e) => {
         if (e.target.checked) {
-            setSelectedStudentIds(studentData.map((student) => student.id));
+            setSelectedStudentIds(studentData.map((student) => student._id));
         } else {
             setSelectedStudentIds([]);
         }
@@ -113,7 +125,6 @@ const ManageStudents = () => {
         }
         closeDeleteModal();
     };
-
 
 
     return (
@@ -182,7 +193,7 @@ const ManageStudents = () => {
                 {/* Table/List Container */}
                 <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
                     {studentData.length > 0 ? (
-
+                        <>
                         <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200 ">
                                 <thead>
@@ -211,11 +222,17 @@ const ManageStudents = () => {
                                                 Phone Number <ArrowUpDown size={14} />
                                             </div>
                                         </th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 transition duration-150">
+                                        {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 transition duration-150">
                                             <div className="flex items-center gap-1">
                                                 Status <ArrowUpDown size={14} />
+                                            </div> 
+                                        </th> */}
+                                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 transition duration-150">
+                                            <div className="flex items-center gap-1">
+                                                Student Uni Id <ArrowUpDown size={14} />
                                             </div>
                                         </th>
+
                                         {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 transition duration-150">
                                             <div className="flex items-center gap-1">
                                                 Reviews <ArrowUpDown size={14} />
@@ -233,14 +250,14 @@ const ManageStudents = () => {
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {studentData.map((student) => (
                                         <tr
-                                            key={student.id}
-                                            className={`transition duration-150 ${selectedStudentIds.includes(student.id) ? 'bg-indigo-50 hover:bg-indigo-100' : 'hover:bg-gray-50'}`}
+                                            key={student._id}
+                                            className={`transition duration-150 ${selectedStudentIds.includes(student._id) ? 'bg-indigo-50 hover:bg-indigo-100' : 'hover:bg-gray-50'}`}
                                         >
                                             <td className="px-6 py-4 whitespace-nowrap w-4">
                                                 <input
                                                     type="checkbox"
-                                                    checked={selectedStudentIds.includes(student.id)}
-                                                    onChange={() => handleSelectStudent(student.id)}
+                                                    checked={selectedStudentIds.includes(student._id)}
+                                                    onChange={() => handleSelectStudent(student._id)}
                                                     className="form-checkbox cursor-pointer h-4 w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
                                                 />
                                             </td>
@@ -257,12 +274,15 @@ const ManageStudents = () => {
 
                                             {/* Phone Column */}
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                                {student.phone || 'N/A'}
+                                                {student.phoneNumber || 'N/A'}
                                             </td>
 
                                             {/* Status Column (Badge) */}
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                            {/* <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                 <StatusBadge status={student.status} />
+                                            </td> */}
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                {student.studentUniId || "N/A"}
                                             </td>
 
                                             {/* Reviews/Count Column (View Button) */}
@@ -274,9 +294,9 @@ const ManageStudents = () => {
 
                                             {/* Action Column (View, Edit, Delete) */}
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
-                                                <button className="cursor-pointer text-blue-600 hover:text-blue-900">
+                                                {/* <button className="cursor-pointer text-blue-600 hover:text-blue-900">
                                                     View
-                                                </button>
+                                                </button> */}
                                                 <button
                                                     onClick={() => openModalForEdit(student)}
                                                     className="cursor-pointer text-yellow-600 hover:text-yellow-900">
@@ -293,6 +313,59 @@ const ManageStudents = () => {
                                 </tbody>
                             </table>
                         </div>
+                        <div className="flex justify-between items-center p-4 bg-white">
+                {/* Limit Dropdown */}
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">Rows per page:</span>
+                  <select
+                    className="border cursor-pointer rounded px-2 py-1 text-sm"
+                    value={limit}
+                    onChange={(e) => handleLimitChange(e.target.value)}
+                  >
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                  </select>
+                </div>
+
+                {/* Pagination Buttons */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handlePageChange(page - 1)}
+                    disabled={page === 1}
+                    className={`px-3 py-1 text-sm border rounded 
+                ${
+                  page === 1
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-white cursor-pointer hover:bg-gray-50"
+                }
+            `}
+                  >
+                    Prev
+                  </button>
+
+                  <span className="text-sm text-gray-700">
+                    Page <strong>{page}</strong> of{" "}
+                    <strong>{totalPages}</strong>
+                  </span>
+
+                  <button
+                    onClick={() => handlePageChange(page + 1)}
+                    disabled={page === totalPages}
+                    className={`px-3 py-1 text-sm border rounded 
+                ${
+                  page === totalPages
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-white cursor-pointer hover:bg-gray-50"
+                }
+            `}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+                        </>
                     ) : (
                         // No Data Message
                         <div className="flex items-center justify-center min-h-[600px]">
