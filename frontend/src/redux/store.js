@@ -12,6 +12,7 @@ export const store = configureStore({
         superadmin: superadminReducer,
         college: collegeReducer,
         studentData: studentDataReducer,
+       
 
     }
 })
