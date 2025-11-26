@@ -31,10 +31,9 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
     // Input classes with base 'border' class and conditional error styling
     const inputClasses = (field) =>
         `mt-1 block w-full rounded-lg border shadow-sm sm:text-sm p-2 transition duration-150 
-        ${
-            errors[field]
-                ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-                : "border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+        ${errors[field]
+            ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+            : "border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
         }`;
 
     const handleChange = (e) => {
@@ -54,7 +53,7 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
 
         const newErrors = {};
 
-       const requiredFields = ['name', 'email', 'phone'];
+        const requiredFields = ['name', 'email', 'phone'];
 
         requiredFields.forEach((key) => {
             // Check for empty string, null, or undefined after trimming whitespace
@@ -85,7 +84,7 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
         // Save + close
         onSave({
             ...formData,
-            id: student?.id, 
+            id: student?.id,
         });
 
         onClose();
@@ -94,7 +93,7 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
     return (
         <div className="fixed inset-0 bg-black/30 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
             <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg mx-auto">
-                
+
                 {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b">
                     <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
@@ -117,7 +116,7 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
                             className={inputClasses("name")}
                         />
                     </div>
-                    
+
                     {/* Email */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Email</label>
@@ -129,7 +128,7 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
                             className={inputClasses("email")}
                         />
                     </div>
-                    
+
                     <div className="grid grid-cols-2 gap-4">
                         {/* Phone */}
                         <div>
@@ -140,10 +139,10 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
                                 value={formData.phone}
                                 onChange={handleChange}
                                 className={inputClasses("phone")}
-                           />
+                            />
                         </div>
 
-                        
+
                     </div>
 
                     {/* Actions */}

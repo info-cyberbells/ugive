@@ -2,8 +2,8 @@ import express from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
 import { authorizeRoles } from "../middleware/role.middleware.js";
 import { getProfile, updateProfile } from "../controllers/profile.controller.js";
-import { createUniversity, createCollege, updateUniversity, updateCollege, deleteUniversity, deleteCollege, getAllUniversitiesSuperAdmin, getAllCollegesSuperAdmin } from "../controllers/university.controller.js";
-import { getAllStudentsSuperAdmin } from "../controllers/student.controller.js";
+import { createUniversity, createCollege, updateUniversity, updateCollege, deleteUniversity, deleteCollege, getAllUniversitiesSuperAdmin, getAllCollegesSuperAdmin, getSingleUniversitySuperAdmin, getSingleCollegeSuperAdmin } from "../controllers/university.controller.js";
+import { getAllStudentsSuperAdmin, createStudentSuperAdmin, getSingleStudentSuperAdmin, updateStudentSuperAdmin, deleteStudentSuperAdmin, } from "../controllers/student.controller.js";
 
 
 const router = express.Router();
@@ -24,17 +24,26 @@ router.put("/profile", updateProfile);
 router.post("/universities", createUniversity);
 router.put("/universities/:id", updateUniversity);
 router.delete("/universities/:id", deleteUniversity);
-
 router.get("/get-all-universities", getAllUniversitiesSuperAdmin);
-router.get("/get-all-colleges", getAllCollegesSuperAdmin);
+router.get("/universities/:id", getSingleUniversitySuperAdmin);
+
+
 
 //Student Management'
+router.post("/create-student", createStudentSuperAdmin);
 router.get("/get-all-students", getAllStudentsSuperAdmin);
+router.get("/students/:id", getSingleStudentSuperAdmin);
+router.put("/update-students/:id", updateStudentSuperAdmin);
+router.delete("/delete-students/:id", deleteStudentSuperAdmin);
 
 
+//college routes
 router.post("/colleges", createCollege);
 router.put("/colleges/:id", updateCollege);
 router.delete("/colleges/:id", deleteCollege);
+router.get("/get-all-colleges", getAllCollegesSuperAdmin);
+router.get("/colleges/:id", getSingleCollegeSuperAdmin);
+
 
 
 export default router;

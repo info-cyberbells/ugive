@@ -31,7 +31,16 @@ export const getPublicUniversitiesService = async () => {
 }
 
 
+//get superadmin profile
+export const getSuperAdminProfileService = async () => {
+    const response = await axios.get(
+        USER_ENDPOINTS.SUPERADMIN_GET_PROFILE,
+        getAuthHeader()
+    );
+    return response.data;
+};
 
+//create university - superadmmin
 export const createUniversityService = async (uniData) => {
     const response = await axios.post(USER_ENDPOINTS.SUPERADMIN_ADD_UNIVERSITY,
         uniData,
@@ -40,11 +49,44 @@ export const createUniversityService = async (uniData) => {
     return response.data;
 };
 
+//update university - superadmin
 export const updateUniversityService = async (id, uniData) => {
     const response = await axios.put(
         `${USER_ENDPOINTS.SUPERADMIN_UPDATE_UNIVERSITY}/${id}`,
         uniData,
         getAuthHeader(),
+    );
+    return response.data;
+}
+
+// get All Universities Data
+export const getAllUniversitiesDataService = async (uniData) => {
+    const response = await axios.get(
+        USER_ENDPOINTS.SUPERADMIN_GET_ALL_UNIVERSITY, {
+        params: uniData,
+        ...getAuthHeader(),
+    },
+    );
+    return response.data;
+}
+
+// get all colleges data
+export const getAllCollegesDataService = async (uniData) => {
+    const response = await axios.get(
+        USER_ENDPOINTS.SUPERADMIN_GET_ALL_COLLEGES, {
+        params: uniData,
+        ...getAuthHeader(),
+    },
+    );
+    return response.data;
+}
+// get all student data
+export const getAllStudentDataService = async (uniData) => {
+    const response = await axios.get(
+        USER_ENDPOINTS.SUPERADMIN_GET_ALL_STUDENTS, {
+        params: uniData,
+        ...getAuthHeader(),
+    },
     );
     return response.data;
 }

@@ -12,6 +12,17 @@ export const getUniversities = async (req, res) => {
   }
 };
 
+// Get all collegese
+export const getColleges = async (req, res) => {
+  try {
+    const colleges = await College.find().select("name domain");
+    res.json({ success: true, data: colleges });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
 // Get colleges by university ID
 export const getCollegesByUniversity = async (req, res) => {
   try {
@@ -218,6 +229,34 @@ export const getAllUniversitiesSuperAdmin = async (req, res) => {
   }
 };
 
+// Get single university by ID
+export const getSingleUniversitySuperAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const university = await University.findById(id);
+
+    if (!university) {
+      return res.status(404).json({
+        success: false,
+        message: "University not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "University fetched successfully",
+      data: university,
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
 
 
 
@@ -245,6 +284,37 @@ export const getAllCollegesSuperAdmin = async (req, res) => {
       total,
       totalPages: Math.ceil(total / limit),
       data: colleges,
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+
+// Get single college by ID
+export const getSingleCollegeSuperAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const college = await College.findById(id)
+      .populate("university", "name city state postcode");
+
+    if (!college) {
+      return res.status(404).json({
+        success: false,
+        message: "College not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "College fetched successfully",
+      data: college,
     });
 
   } catch (err) {

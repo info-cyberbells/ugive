@@ -6,7 +6,7 @@ import Login from './pages/Login/Login';
 import Signup from './pages/Signup/Signup';
 import Dashboard from './pages/dashboard/dashboard';
 import Navbar from './components/Navbar/Navbar';
-// import Profile from './pages/Profile/Profile';
+import Profile from './pages/Profile/Profile';
 import ManageStudents from './pages/SuperAdmin/ManageStudents/ManageStudents'
 import ManageUniversities from './pages/SuperAdmin/ManageUniversities/ManageUniversities';
 import ManageColleges from './pages/SuperAdmin/ManageColleges/ManageColleges';
@@ -72,6 +72,11 @@ function App() {
         <Route
           path='/manage-colleges'
           element={isAuthenticated ? <ManageColleges /> : <Navigate to="/" replace />}
+        />
+
+        <Route
+          path='/profile'
+          element={isAuthenticated ? <Profile /> : <Navigate to="/" replace />}
         />
       </Routes>
     </>

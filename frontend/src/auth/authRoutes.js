@@ -6,8 +6,13 @@ export const USER_ENDPOINTS = {
     REGISTER_USER: `${API_BASE_URL}/auth/register`,
     PUBLIC_UNIVERSITIES: `${API_BASE_URL}/public/universities`,
 
+
+    SUPERADMIN_GET_PROFILE: `${API_BASE_URL}/super_admin/profile`,
     SUPERADMIN_ADD_UNIVERSITY: `${API_BASE_URL}/super_admin/universities`,
     SUPERADMIN_UPDATE_UNIVERSITY: `${API_BASE_URL}/super_admin/universities`,
+     SUPERADMIN_GET_ALL_UNIVERSITY: `${API_BASE_URL}/super_admin/get-all-universities`,
+    SUPERADMIN_GET_ALL_COLLEGES: `${API_BASE_URL}/super_admin/get-all-colleges`,
+    SUPERADMIN_GET_ALL_STUDENTS: `${API_BASE_URL}/super_admin/get-all-students`,
 
 
 };

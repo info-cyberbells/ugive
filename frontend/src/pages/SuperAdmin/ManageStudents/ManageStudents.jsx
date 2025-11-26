@@ -14,7 +14,7 @@ const studentData = [
     { id: 7, name: 'Bob Williams', email: 'bob.w@university.edu', phone: '555-0102', status: 'Inactive' },
     { id: 8, name: 'Charlie Brown', email: 'charlie.b@university.edu', phone: '555-0103', status: 'Active' },
     { id: 9, name: 'Diana Prince', email: 'diana.p@university.edu', phone: '555-0104', status: 'Active' },
-   
+
 ];
 
 const StatusBadge = ({ status }) => {
@@ -34,10 +34,10 @@ const ManageStudents = () => {
 
     const [selectedStudentIds, setSelectedStudentIds] = useState([]);
 
-      const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentStudent, setCurrentStudent] = useState(null);
 
-      const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [studentToDelete, setStudentToDelete] = useState(null); // For single delete
     const [isBulkDelete, setIsBulkDelete] = useState(false); // For bulk delete
 
@@ -88,8 +88,8 @@ const ManageStudents = () => {
     // --- Delete Modal Handlers ---
     const openDeleteModalForSingle = (student) => {
         setIsBulkDelete(false);
-setStudentToDelete(student);   // set BEFORE opening modal
-setIsDeleteModalOpen(true);
+        setStudentToDelete(student);   // set BEFORE opening modal
+        setIsDeleteModalOpen(true);
     };
 
     const openDeleteModalForBulk = () => {
@@ -107,13 +107,13 @@ setIsDeleteModalOpen(true);
 
     const confirmDelete = () => {
         if (isBulkDelete) {
-           
+
         } else if (studentToDelete) {
-           
+
         }
         closeDeleteModal();
     };
-    
+
 
 
     return (
@@ -134,8 +134,8 @@ setIsDeleteModalOpen(true);
                         {/* Action Buttons Group */}
                         <div className="flex space-x-3 w-full sm:w-auto">
 
-                            <button                                   
-                              onClick={openDeleteModalForBulk}
+                            <button
+                                onClick={openDeleteModalForBulk}
                                 className={`flex cursor-pointer items-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 ${isAnySelected
                                     ? 'text-gray-700 bg-white hover:bg-red-50 hover:text-red-600'
                                     : 'text-gray-400 bg-gray-100 cursor-not-allowed opacity-70'
@@ -170,7 +170,7 @@ setIsDeleteModalOpen(true);
 
                         {/* Add New Student Button (Always active) */}
                         <button
-                        onClick={openModalForAdd}
+                            onClick={openModalForAdd}
                             className="flex cursor-pointer items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 transition duration-150 "
                         >
                             <Plus className="h-5 w-5 mr-2 -ml-1" />
@@ -278,13 +278,13 @@ setIsDeleteModalOpen(true);
                                                     View
                                                 </button>
                                                 <button
-                                                onClick={() => openModalForEdit(student)}
-                                                className="cursor-pointer text-yellow-600 hover:text-yellow-900">
+                                                    onClick={() => openModalForEdit(student)}
+                                                    className="cursor-pointer text-yellow-600 hover:text-yellow-900">
                                                     Edit
                                                 </button>
-                                                <button 
-                                                onClick={() => openDeleteModalForSingle(student)}
-                                                className="cursor-pointer text-red-600 hover:text-red-900">
+                                                <button
+                                                    onClick={() => openDeleteModalForSingle(student)}
+                                                    className="cursor-pointer text-red-600 hover:text-red-900">
                                                     Delete
                                                 </button>
                                             </td>
@@ -331,13 +331,13 @@ setIsDeleteModalOpen(true);
                 onSave={handleSave}
             />
             <ConfirmationModal
-    isOpen={isDeleteModalOpen}
-    onClose={closeDeleteModal}
-    onConfirm={confirmDelete}
-    count={isBulkDelete ? selectedStudentIds.length : 1}
-    entity="student"
-    itemName={studentToDelete?.name}
-/>
+                isOpen={isDeleteModalOpen}
+                onClose={closeDeleteModal}
+                onConfirm={confirmDelete}
+                count={isBulkDelete ? selectedStudentIds.length : 1}
+                entity="student"
+                itemName={studentToDelete?.name}
+            />
         </div>
     );
 };
