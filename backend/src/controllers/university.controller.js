@@ -41,9 +41,9 @@ export const createUniversity = async (req, res) => {
     // Handle Mongoose validation errors
     if (err.name === "ValidationError") {
       const errors = Object.values(err.errors).map(e => e.message);
-      return res.status(400).json({ 
-        success: false, 
-        message: errors.join(", ") 
+      return res.status(400).json({
+        success: false,
+        message: errors.join(", ")
       });
     }
     res.status(500).json({ success: false, message: "Server Error" });
@@ -66,9 +66,9 @@ export const createCollege = async (req, res) => {
     // Handle Mongoose validation errors
     if (err.name === "ValidationError") {
       const errors = Object.values(err.errors).map(e => e.message);
-      return res.status(400).json({ 
-        success: false, 
-        message: errors.join(", ") 
+      return res.status(400).json({
+        success: false,
+        message: errors.join(", ")
       });
     }
     res.status(500).json({ success: false, message: "Server Error" });
@@ -80,7 +80,7 @@ export const updateUniversity = async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
-    console.log('updates',updates);
+    console.log('updates', updates);
     // Ensure university exists
     const university = await University.findById(id);
     if (!university) {
@@ -113,7 +113,7 @@ export const updateCollege = async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
-    console.log('updates',updates);
+    console.log('updates', updates);
     // Ensure college exists
     const college = await College.findById(id);
     if (!college) {
@@ -179,5 +179,79 @@ export const deleteCollege = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+
+
+//get all universities for superadmin
+export const getAllUniversitiesSuperAdmin = async (req, res) => {
+  try {
+    let { page = 1, limit = 10 } = req.query;
+
+    page = Number(page);
+    limit = Number(limit);
+
+    const total = await University.countDocuments();
+
+    const universities = await University.find()
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.status(200).json({
+      success: true,
+      message: "Universities fetched successfully",
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+      data: universities,
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+
+
+
+//get  all colleges for superadmin
+export const getAllCollegesSuperAdmin = async (req, res) => {
+  try {
+    let { page = 1, limit = 10 } = req.query;
+
+    page = Number(page);
+    limit = Number(limit);
+
+    const total = await College.countDocuments();
+
+    const colleges = await College.find()
+      .populate("university", "name city state")
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    res.status(200).json({
+      success: true,
+      message: "Colleges fetched successfully",
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+      data: colleges,
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
   }
 };
