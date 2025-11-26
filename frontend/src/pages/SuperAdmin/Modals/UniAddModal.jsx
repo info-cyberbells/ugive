@@ -106,7 +106,7 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
 
         if (isEditMode && !hasChanges()) {
             showToast("No changes detected!", "info");
-             onClose();
+            onClose();
             return;
         }
 
@@ -164,6 +164,7 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
                             disabled={isViewMode}
                             type="text"
                             name="name"
+                            placeholder="Harvard University"
                             value={formData.name}
                             onChange={handleChange}
                             className={inputClasses("name")}
@@ -177,6 +178,8 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
                             disabled={isViewMode}
                             type="text"
                             name="address_line_1"
+                            placeholder="Cambridge Campus"
+                            autoComplete="off"
                             value={formData.address_line_1}
                             onChange={handleChange}
                             className={inputClasses("address_line_1")}
@@ -190,6 +193,8 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
                             disabled={isViewMode}
                             type="text"
                             name="address_line_2"
+                            placeholder="Cambridge Campus"
+                            autoComplete="off"
                             value={formData.address_line_2}
                             onChange={handleChange}
                             className={inputClasses("address_line_2")}
@@ -205,6 +210,8 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
                                 disabled={isViewMode}
                                 type="text"
                                 name="city"
+                                placeholder="Cambridge"
+                                autoComplete="off"
                                 value={formData.city}
                                 onChange={handleChange}
                                 className={inputClasses("city")}
@@ -217,6 +224,8 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
                                 disabled={isViewMode}
                                 type="text"
                                 name="state"
+                                placeholder="Massachusetts"
+                                autoComplete="off"
                                 value={formData.state}
                                 onChange={handleChange}
                                 className={inputClasses("state")}
@@ -229,6 +238,8 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
                                 disabled={isViewMode}
                                 type="text"
                                 name="postcode"
+                                placeholder="02138"
+                                autoComplete="off"
                                 value={formData.postcode}
                                 onChange={handleChange}
                                 className={inputClasses("postcode")}

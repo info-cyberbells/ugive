@@ -18,6 +18,10 @@ export const USER_ENDPOINTS = {
 
 
     SUPERADMIN_GET_ALL_COLLEGES: `${API_BASE_URL}/super_admin/get-all-colleges`,
+    SUPERADMIN_GET_SINGLE_COLLEGE: `${API_BASE_URL}/super_admin/colleges`, 
+    SUPERADMIN_ADD_COLLEGE: `${API_BASE_URL}/super_admin/colleges`,
+    SUPERADMIN_UPDATE_COLLEGE: `${API_BASE_URL}/super_admin/colleges`,
+    SUPERADMIN_DELETE_COLLEGE: `${API_BASE_URL}/super_admin/colleges`,
 
 
     SUPERADMIN_GET_ALL_STUDENTS: `${API_BASE_URL}/super_admin/get-all-students`,

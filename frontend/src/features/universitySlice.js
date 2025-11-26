@@ -112,7 +112,8 @@ const universitySlice = createSlice({
       .addCase(createUniversity.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.university.push(action.payload);
+        const newUni = action.payload.data || action.payload;
+        state.university = [newUni, ...state.university];
       })
       .addCase(createUniversity.rejected, (state, action) => {
         state.isLoading = false;
@@ -137,7 +138,7 @@ const universitySlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-      
+
       // get all university data
       .addCase(getUniversitiesData.pending, (state) => {
         state.isLoading = true;

@@ -1,61 +1,43 @@
 import React, { useState, useEffect } from 'react';
-// Import Lucide icons
 import { Trash2, Filter, Download, Plus, ChevronDown, ArrowUpDown } from 'lucide-react';
 import StudentModal from '../Modals/StudentAddModal';
 import ConfirmationModal from '../Modals/deleteModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllStudentsData } from '../../../features/studentDataSlice';
+import { getAllStudentsData, deleteCollege, updateCollege, addCollege } from '../../../features/studentDataSlice';
+import { useToast } from "../../../context/ToastContext";
 
 
-const StatusBadge = ({ status }) => {
-    const isActive = status === 'Active';
-    const color = isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-    const dotColor = isActive ? 'bg-green-500' : 'bg-red-500';
-
-    return (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${color}`}>
-            <span className={`w-2 h-2 mr-1.5 rounded-full ${dotColor}`}></span>
-            {status}
-        </span>
-    );
-};
 
 const ManageStudents = () => {
-
     const dispatch = useDispatch();
-
-    const {studentData, isLoading, error, page, totalPages } = useSelector((state => state.studentData));
-
+    const { showToast } = useToast();
+    const { studentData, isLoading, error, page, totalPages } = useSelector((state => state.studentData));
     const [selectedStudentIds, setSelectedStudentIds] = useState([]);
-
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentStudent, setCurrentStudent] = useState(null);
-
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [studentToDelete, setStudentToDelete] = useState(null); // For single delete
-    const [isBulkDelete, setIsBulkDelete] = useState(false); // For bulk delete
-
-
+    const [studentToDelete, setStudentToDelete] = useState(null);
+    const [isBulkDelete, setIsBulkDelete] = useState(false);
     const isAllSelected = selectedStudentIds.length === studentData.length && studentData.length > 0;
     const isAnySelected = selectedStudentIds.length > 0;
 
-      const [limit, setLimit] = useState(10);
-    
+    const [limit, setLimit] = useState(10);
 
-    useEffect(()=>{
-        dispatch(getAllStudentsData({page: 1, limit}))
-    },[dispatch, limit]);
 
-    
-      const handlePageChange = (newPage) => {
+    useEffect(() => {
+        dispatch(getAllStudentsData({ page: 1, limit }))
+    }, [dispatch, limit]);
+
+
+    const handlePageChange = (newPage) => {
         if (newPage < 1 || newPage > totalPages) return;
         dispatch(getAllStudentsData({ page: newPage, limit }));
-      };
-    
-      const handleLimitChange = (newLimit) => {
+    };
+
+    const handleLimitChange = (newLimit) => {
         const newLimitValue = Number(newLimit);
         setLimit(newLimitValue);
-      };
+    };
 
     // Handler to select/deselect all students
     const handleSelectAll = (e) => {
@@ -93,20 +75,42 @@ const ManageStudents = () => {
         setCurrentStudent(null);
     };
 
-    const handleSave = () => {
+    const handleSave = (data) => {
+        if (currentStudent) {
+            dispatch(updateCollege({ studentId: currentStudent._id, data }))
+                .unwrap()
+                .then(() => {
+                    showToast("Student updated successfully!", "success");
+                    dispatch(getAllStudentsData({ page, limit }));
+                })
+                .catch((err) => {
+                    showToast(err || "Failed to update student!", "error");
+                });
+        } else {
+            dispatch(addCollege(data))
+                .unwrap()
+                .then(() => {
+                    showToast("New student added successfully!", "success");
+                    dispatch(getAllStudentsData({ page, limit }));
+                })
+                .catch((err) => {
+                    showToast(err || "Failed to add student!", "error");
+                });
+        }
+    };
 
-    }
+
 
     // --- Delete Modal Handlers ---
     const openDeleteModalForSingle = (student) => {
         setIsBulkDelete(false);
-        setStudentToDelete(student);   // set BEFORE opening modal
+        setStudentToDelete(student);
         setIsDeleteModalOpen(true);
     };
 
     const openDeleteModalForBulk = () => {
         if (!isAnySelected) return;
-        setStudentToDelete(null); // Clear single item reference
+        setStudentToDelete(null);
         setIsBulkDelete(true);
         setIsDeleteModalOpen(true);
     };
@@ -119,12 +123,58 @@ const ManageStudents = () => {
 
     const confirmDelete = () => {
         if (isBulkDelete) {
-
+            dispatch(deleteCollege(selectedStudentIds))
+                .unwrap()
+                .then(() => {
+                    showToast(`Deleted ${selectedStudentIds.length} students successfully!`, "success");
+                    dispatch(getAllStudentsData({ page, limit }));
+                })
+                .catch((err) => {
+                    showToast(err || "Failed to delete students!", "error");
+                });
         } else if (studentToDelete) {
-
+            dispatch(deleteCollege([studentToDelete._id]))
+                .unwrap()
+                .then(() => {
+                    showToast("Student deleted successfully!", "success");
+                    dispatch(getAllStudentsData({ page, limit }));
+                })
+                .catch((err) => {
+                    showToast(err || "Failed to delete student!", "error");
+                });
         }
+
         closeDeleteModal();
     };
+
+
+
+    const SkeletonTable = () => {
+        return (
+            <div className="animate-pulse p-4">
+                <div className="h-6 w-48 bg-gray-200 rounded mb-4"></div>
+
+                <div className="border border-gray-200 rounded-xl overflow-hidden">
+                    {[...Array(10)].map((_, i) => (
+                        <div key={i} className="flex items-center p-4 gap-4">
+                            <div className="w-4 h-4 bg-gray-200 rounded"></div>
+                            <div className="flex-1 h-4 bg-gray-200 rounded"></div>
+                            <div className="flex-1 h-4 bg-gray-200 rounded"></div>
+                            <div className="flex-1 h-4 bg-gray-200 rounded"></div>
+                            <div className="flex-1 h-4 bg-gray-200 rounded"></div>
+                            <div className="w-20 h-4 bg-gray-200 rounded"></div>
+                            <div className="w-20 h-4 bg-gray-200 rounded"></div>
+                            <div className="w-20 h-4 bg-gray-200 rounded"></div>
+                            <div className="w-20 h-4 bg-gray-200 rounded"></div>
+                            <div className="w-20 h-4 bg-gray-200 rounded"></div>
+
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    };
+
 
 
     return (
@@ -159,12 +209,12 @@ const ManageStudents = () => {
                             </button>
 
                             {/* Filters Button (Always active) */}
-                            <button
+                            {/* <button
                                 className="flex cursor-pointer items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                             >
                                 Filters
                                 <Filter className="h-4 w-4 ml-2" />
-                            </button>
+                            </button> */}
 
                             {/* Export Button - Disabled when no students are selected */}
                             <button
@@ -192,179 +242,179 @@ const ManageStudents = () => {
 
                 {/* Table/List Container */}
                 <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-                    {studentData.length > 0 ? (
+                    {isLoading || studentData.length === 0 && !error ? (
+                        <SkeletonTable />
+                    ) : studentData.length > 0 ? (
                         <>
-                        <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200 ">
-                                <thead>
-                                    <tr className="bg-gray-50">
-                                        <th scope="col" className="px-6 py-3 w-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            <input
-                                                type="checkbox"
-                                                checked={isAllSelected}
-                                                onChange={handleSelectAll}
-                                                className="form-checkbox cursor-pointer h-4 w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
-                                            />
-                                        </th>
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full divide-y divide-gray-200 ">
+                                    <thead>
+                                        <tr className="bg-gray-50">
+                                            <th scope="col" className="px-6 py-3 w-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={isAllSelected}
+                                                    onChange={handleSelectAll}
+                                                    className="form-checkbox cursor-pointer h-4 w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
+                                                />
+                                            </th>
 
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider  hover:bg-gray-100 transition duration-150">
-                                            <div className="flex items-center gap-1">
-                                                Name <ArrowUpDown size={14} />
-                                            </div>
-                                        </th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider  hover:bg-gray-100 transition duration-150">
-                                            <div className="flex items-center gap-1">
-                                                Email <ArrowUpDown size={14} />
-                                            </div>
-                                        </th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 transition duration-150">
-                                            <div className="flex items-center gap-1">
-                                                Phone Number <ArrowUpDown size={14} />
-                                            </div>
-                                        </th>
-                                        {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 transition duration-150">
+                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider  hover:bg-gray-100 transition duration-150">
+                                                <div className="flex items-center gap-1">
+                                                    Name
+                                                </div>
+                                            </th>
+                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider  hover:bg-gray-100 transition duration-150">
+                                                <div className="flex items-center gap-1">
+                                                    Email
+                                                </div>
+                                            </th>
+                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 transition duration-150">
+                                                <div className="flex items-center gap-1">
+                                                    Phone Number
+                                                </div>
+                                            </th>
+                                            {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 transition duration-150">
                                             <div className="flex items-center gap-1">
                                                 Status <ArrowUpDown size={14} />
                                             </div> 
                                         </th> */}
-                                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 transition duration-150">
-                                            <div className="flex items-center gap-1">
-                                                Student Uni Id <ArrowUpDown size={14} />
-                                            </div>
-                                        </th>
+                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 transition duration-150">
+                                                <div className="flex items-center gap-1">
+                                                    Student Uni Id
+                                                </div>
+                                            </th>
 
-                                        {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 transition duration-150">
+                                            {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 transition duration-150">
                                             <div className="flex items-center gap-1">
                                                 Reviews <ArrowUpDown size={14} />
                                             </div>
                                         </th> */}
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 transition duration-150">
-                                            <div className="flex items-center gap-1">
-                                                Action <ArrowUpDown size={14} />
-                                            </div>
-                                        </th>
-                                    </tr>
-                                </thead>
+                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 transition duration-150">
+                                                <div className="flex items-center gap-1">
+                                                    Action
+                                                </div>
+                                            </th>
+                                        </tr>
+                                    </thead>
 
-                                {/* Table Body */}
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {studentData.map((student) => (
-                                        <tr
-                                            key={student._id}
-                                            className={`transition duration-150 ${selectedStudentIds.includes(student._id) ? 'bg-indigo-50 hover:bg-indigo-100' : 'hover:bg-gray-50'}`}
-                                        >
-                                            <td className="px-6 py-4 whitespace-nowrap w-4">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedStudentIds.includes(student._id)}
-                                                    onChange={() => handleSelectStudent(student._id)}
-                                                    className="form-checkbox cursor-pointer h-4 w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
-                                                />
-                                            </td>
+                                    {/* Table Body */}
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                        {studentData.map((student) => (
+                                            <tr
+                                                key={student._id}
+                                                className={`transition duration-150 ${selectedStudentIds.includes(student._id) ? 'bg-indigo-50 hover:bg-indigo-100' : 'hover:bg-gray-50'}`}
+                                            >
+                                                <td className="px-6 py-4 whitespace-nowrap w-4">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedStudentIds.includes(student._id)}
+                                                        onChange={() => handleSelectStudent(student._id)}
+                                                        className="form-checkbox cursor-pointer h-4 w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
+                                                    />
+                                                </td>
 
-                                            {/* Name Column (Bold Text) */}
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                {student.name || 'N/A'}
-                                            </td>
+                                                {/* Name Column (Bold Text) */}
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                    {student.name || 'N/A'}
+                                                </td>
 
-                                            {/* Email Column */}
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                                {student.email || 'N/A'}
-                                            </td>
+                                                {/* Email Column */}
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                    {student.email || 'N/A'}
+                                                </td>
 
-                                            {/* Phone Column */}
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                                {student.phoneNumber || 'N/A'}
-                                            </td>
+                                                {/* Phone Column */}
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                    {student.phoneNumber || 'N/A'}
+                                                </td>
 
-                                            {/* Status Column (Badge) */}
-                                            {/* <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                                {/* Status Column (Badge) */}
+                                                {/* <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                 <StatusBadge status={student.status} />
                                             </td> */}
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                                {student.studentUniId || "N/A"}
-                                            </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                    {student.studentUniId || "N/A"}
+                                                </td>
 
-                                            {/* Reviews/Count Column (View Button) */}
-                                            {/* <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                                {/* Reviews/Count Column (View Button) */}
+                                                {/* <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                 <button className="text-indigo-600 hover:text-indigo-900 font-medium">
                                                     View ({student.reviews})
                                                 </button>
                                             </td> */}
 
-                                            {/* Action Column (View, Edit, Delete) */}
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
-                                                {/* <button className="cursor-pointer text-blue-600 hover:text-blue-900">
-                                                    View
-                                                </button> */}
-                                                <button
-                                                    onClick={() => openModalForEdit(student)}
-                                                    className="cursor-pointer text-yellow-600 hover:text-yellow-900">
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    onClick={() => openDeleteModalForSingle(student)}
-                                                    className="cursor-pointer text-red-600 hover:text-red-900">
-                                                    Delete
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="flex justify-between items-center p-4 bg-white">
-                {/* Limit Dropdown */}
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">Rows per page:</span>
-                  <select
-                    className="border cursor-pointer rounded px-2 py-1 text-sm"
-                    value={limit}
-                    onChange={(e) => handleLimitChange(e.target.value)}
-                  >
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                  </select>
-                </div>
+                                                {/* Action Column (View, Edit, Delete) */}
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
+                                                    <button className="cursor-pointer text-blue-600 hover:text-blue-900">
+                                                        View
+                                                    </button>
+                                                    <button
+                                                        onClick={() => openModalForEdit(student)}
+                                                        className="cursor-pointer text-yellow-600 hover:text-yellow-900">
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        onClick={() => openDeleteModalForSingle(student)}
+                                                        className="cursor-pointer text-red-600 hover:text-red-900">
+                                                        Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="flex justify-between items-center p-4 bg-white border-t">
+                                {/* Limit Dropdown */}
+                                <div className="flex items-center gap-2">
+                                    <span className="text-sm text-gray-600">Rows per page:</span>
+                                    <select
+                                        className="border cursor-pointer rounded px-2 py-1 text-sm"
+                                        value={limit}
+                                        onChange={(e) => handleLimitChange(e.target.value)}
+                                    >
+                                        <option value="10">10</option>
+                                        <option value="20">20</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
 
-                {/* Pagination Buttons */}
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handlePageChange(page - 1)}
-                    disabled={page === 1}
-                    className={`px-3 py-1 text-sm border rounded 
-                ${
-                  page === 1
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-white cursor-pointer hover:bg-gray-50"
-                }
+                                {/* Pagination Buttons */}
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => handlePageChange(page - 1)}
+                                        disabled={page === 1}
+                                        className={`px-3 py-1 text-sm border rounded 
+                ${page === 1
+                                                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                                : "bg-white cursor-pointer hover:bg-gray-50"
+                                            }
             `}
-                  >
-                    Prev
-                  </button>
+                                    >
+                                        Prev
+                                    </button>
 
-                  <span className="text-sm text-gray-700">
-                    Page <strong>{page}</strong> of{" "}
-                    <strong>{totalPages}</strong>
-                  </span>
+                                    <span className="text-sm text-gray-700">
+                                        Page <strong>{page}</strong> of{" "}
+                                        <strong>{totalPages}</strong>
+                                    </span>
 
-                  <button
-                    onClick={() => handlePageChange(page + 1)}
-                    disabled={page === totalPages}
-                    className={`px-3 py-1 text-sm border rounded 
-                ${
-                  page === totalPages
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-white cursor-pointer hover:bg-gray-50"
-                }
+                                    <button
+                                        onClick={() => handlePageChange(page + 1)}
+                                        disabled={page === totalPages}
+                                        className={`px-3 py-1 text-sm border rounded 
+                ${page === totalPages
+                                                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                                : "bg-white cursor-pointer hover:bg-gray-50"
+                                            }
             `}
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                            </div>
                         </>
                     ) : (
                         // No Data Message

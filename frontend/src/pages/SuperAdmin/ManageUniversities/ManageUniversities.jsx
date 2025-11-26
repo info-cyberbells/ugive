@@ -4,10 +4,12 @@ import UniversityModal from "../Modals/UniAddModal";
 import ConfirmationModal from "../Modals/deleteModal";
 import { useDispatch, useSelector } from "react-redux";
 import { getUniversitiesData, getSingleUniversity, deleteUniversity } from "../../../features/universitySlice";
+import { useToast } from "../../../context/ToastContext";
+
 
 const ManageUniversities = () => {
   const dispatch = useDispatch();
-
+  const { showToast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { currentUniversity } = useSelector((state) => state.university);
   const [isViewMode, setIsViewMode] = useState(false);
@@ -67,10 +69,7 @@ const ManageUniversities = () => {
     setIsModalOpen(true);
   };
 
-  const openModalForEdit = (uni) => {
-    dispatch(getSingleUniversity(uni._id));
-    setIsModalOpen(true);
-  };
+
   const closeModal = () => {
     setIsModalOpen(false);
   };
@@ -98,15 +97,24 @@ const ManageUniversities = () => {
     setIsBulkDelete(false);
   };
 
-  const confirmDelete = () => {
-    if (isBulkDelete) {
-      selectedUniversityIds.forEach((id) => dispatch(deleteUniversity(id)));
-      setSelectedUniversityIds([]);
-    } else if (universityToDelete) {
-      dispatch(deleteUniversity(universityToDelete._id));
+  const confirmDelete = async () => {
+    try {
+      if (isBulkDelete) {
+        for (const id of selectedUniversityIds) {
+          await dispatch(deleteUniversity(id)).unwrap();
+        }
+        showToast(`${selectedUniversityIds.length} universities deleted successfully`, "success");
+        setSelectedUniversityIds([]);
+      } else if (universityToDelete) {
+        await dispatch(deleteUniversity(universityToDelete._id)).unwrap();
+        showToast("University deleted successfully", "success");
+      }
+    } catch (error) {
+      showToast(error || "Failed to delete", "error");
     }
     closeDeleteModal();
   };
+
 
   const SkeletonTable = () => {
     return (
@@ -114,7 +122,7 @@ const ManageUniversities = () => {
         <div className="h-6 w-48 bg-gray-200 rounded mb-4"></div>
 
         <div className="border border-gray-200 rounded-xl overflow-hidden">
-          {[...Array(6)].map((_, i) => (
+          {[...Array(10)].map((_, i) => (
             <div key={i} className="flex items-center p-4 gap-4">
               <div className="w-4 h-4 bg-gray-200 rounded"></div>
               <div className="flex-1 h-4 bg-gray-200 rounded"></div>
@@ -221,7 +229,7 @@ const ManageUniversities = () => {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
-                          Name 
+                          Name
                         </div>
                       </th>
                       <th
@@ -229,7 +237,7 @@ const ManageUniversities = () => {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
-                          Address Line 1 
+                          Address Line 1
                         </div>
                       </th>
                       {/* <th
@@ -253,7 +261,7 @@ const ManageUniversities = () => {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
-                          State 
+                          State
                         </div>
                       </th>
                       <th
@@ -261,7 +269,7 @@ const ManageUniversities = () => {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
-                          Postcode 
+                          Postcode
                         </div>
                       </th>
                       {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150">

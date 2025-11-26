@@ -30,6 +30,14 @@ export const getPublicUniversitiesService = async () => {
     return response.data;
 }
 
+//get specific college of a university - at signup 
+export const getCollegesService = async (universityId) => {
+    const response = await axios.get(`${USER_ENDPOINTS.PUBLIC_UNIVERSITIES}/${universityId}/colleges`);
+    return response.data;
+};
+
+
+
 
 //get superadmin profile
 export const getSuperAdminProfileService = async () => {
@@ -111,3 +119,33 @@ export const getAllStudentDataService = async (studentData) => {
     );
     return response.data;
 }
+
+//get single college - superadmin
+export const getSingleCollegeService = async (collegeId) => {
+    return axios.get(
+        `${USER_ENDPOINTS.SUPERADMIN_GET_SINGLE_COLLEGE}/${collegeId}`
+    ).then(res => res.data);
+};
+
+//add new college -  superadmin
+export const addCollegeService = async (data) => {
+    return axios.post(
+        USER_ENDPOINTS.SUPERADMIN_ADD_COLLEGE,
+        data
+    ).then(res => res.data);
+};
+
+//update  college  -  superadmin
+export const updateCollegeService = async (collegeId, data) => {
+    return axios.put(
+        `${USER_ENDPOINTS.SUPERADMIN_UPDATE_COLLEGE}/${collegeId}`,
+        data
+    ).then(res => res.data);
+};
+
+//delete college - superadmin
+export const deleteCollegeService = async (collegeId) => {
+    return axios.delete(
+        `${USER_ENDPOINTS.SUPERADMIN_DELETE_COLLEGE}/${collegeId}`
+    ).then(res => res.data);
+};
