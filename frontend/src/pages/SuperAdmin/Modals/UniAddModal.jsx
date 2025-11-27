@@ -241,7 +241,10 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
                                 placeholder="02138"
                                 autoComplete="off"
                                 value={formData.postcode}
-                                onChange={handleChange}
+                                onChange={(e) => {
+                                    const numericValue = e.target.value.replace(/\D/g, "");
+                                    setFormData((prev) => ({ ...prev, postcode: numericValue }));
+                                }} 
                                 className={inputClasses("postcode")}
                             />
                         </div>

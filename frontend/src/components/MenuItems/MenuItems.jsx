@@ -38,7 +38,7 @@ const MenuItems = () => {
   const dispatch = useDispatch();
 
   const user = JSON.parse(localStorage.getItem("user"));
-  const role = user?.role?.toLowerCase(); 
+  const role = user?.role?.toLowerCase();
 
   // Load role-based menu
   const sections = ROLE_BASED_MENUS[role] || [];
@@ -58,7 +58,7 @@ const MenuItems = () => {
         <h2 className="text-[#00000066]">Dashboards</h2>
 
         <NavLink
-          to="/dashboard"
+          to={role === "student" ? "/student-dashboard" : "/dashboard"}
           className={({ isActive }) =>
             `flex items-center gap-2 px-2 py-1 rounded-md cursor-pointer
      ${isActive ? "bg-[#0000000A] font-semibold text-black" : "hover:bg-[#0000000A]"}`
@@ -67,6 +67,7 @@ const MenuItems = () => {
           <LayoutDashboard className="w-5 h-5" />
           Overview
         </NavLink>
+
 
       </div>
 

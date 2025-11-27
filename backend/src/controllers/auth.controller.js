@@ -6,7 +6,7 @@ import University from "../models/university.model.js";
 // Register
 export const register = async (req, res) => {
   try {
-    const { name, email, password, role, university, phoneNumber, studentUniId } = req.body;
+    const { name, email, password, role, university, college, phoneNumber, studentUniId } = req.body;
     // Check if user already exists
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ message: "User already exists" });
@@ -41,6 +41,7 @@ export const register = async (req, res) => {
       role: "student",
       university,
       phoneNumber,
+      college,
       studentUniId,
     });
 

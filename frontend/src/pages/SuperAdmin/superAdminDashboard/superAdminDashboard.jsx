@@ -16,7 +16,7 @@ import {
   Cell,
 } from "recharts";
 
-const dashboard = () => {
+const SuperAdminDashboard = () => {
   const stats = [
     {
       title: "Views",
@@ -101,7 +101,7 @@ const dashboard = () => {
   return (
     <div className="bg-[#F5F5F5] font-[Inter] min-h-screen mt-14 px-4 pt-6 pb-4 lg:ml-60">
       <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-6">
-        Welcome Back,
+        Welcome Back, SuperAdmin
       </h2>
 
       {/* === TOP SECTION === */}
@@ -314,4 +314,4 @@ const dashboard = () => {
   );
 };
 
-export default dashboard;
+export default SuperAdminDashboard;

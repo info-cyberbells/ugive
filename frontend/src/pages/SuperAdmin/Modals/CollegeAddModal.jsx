@@ -13,7 +13,7 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
 
     const [initialData, setInitialData] = useState({});
 
-    const {universities} = useSelector((state) => state.auth);
+    const { universities } = useSelector((state) => state.auth);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -28,56 +28,55 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
     const [errors, setErrors] = useState({});
 
     const isEditMode = college && college._id ? true : false;
-;
+    ;
     const title = isViewMode ? "View College Details" : isEditMode ? 'Edit College Details' : 'Add New College';
 
-      useEffect(() => {
+    useEffect(() => {
         dispatch(getUniversities());
-      }, [dispatch]);
-    
+    }, [dispatch]);
 
-   
-  useEffect(() => {
-    if (college && college._id) {
-        const data = {
-            name: college?.name || "",
-            universityId: college?.university?._id || "",
-            address_line_1: college?.address_line_1 || "",
-            address_line_2: college?.address_line_2 || "",
-            city: college?.city || "",
-            state: college?.state || "",
-            postcode: college?.postcode || "",
-        };
 
-        setFormData(data);
-        setInitialData(data);
-    } else {
-        // ⭐ RESET FORM WHEN ADD MODE ⭐
-        setFormData({
-            name: "",
-            universityId: "",
-            address_line_1: "",
-            address_line_2: "",
-            city: "",
-            state: "",
-            postcode: "",
-        });
-        setInitialData({});
-    }
 
-    setErrors({});
-}, [college, isOpen]);
+    useEffect(() => {
+        if (college && college._id) {
+            const data = {
+                name: college?.name || "",
+                universityId: college?.university?._id || "",
+                address_line_1: college?.address_line_1 || "",
+                address_line_2: college?.address_line_2 || "",
+                city: college?.city || "",
+                state: college?.state || "",
+                postcode: college?.postcode || "",
+            };
+
+            setFormData(data);
+            setInitialData(data);
+        } else {
+            setFormData({
+                name: "",
+                universityId: "",
+                address_line_1: "",
+                address_line_2: "",
+                city: "",
+                state: "",
+                postcode: "",
+            });
+            setInitialData({});
+        }
+
+        setErrors({});
+    }, [college, isOpen]);
 
 
 
 
     if (!isOpen) return null;
 
-   const inputClasses = (field) =>
-    `mt-1 block w-full rounded-lg border shadow-sm sm:text-sm p-2 transition duration-150
+    const inputClasses = (field) =>
+        `mt-1 block w-full rounded-lg border shadow-sm sm:text-sm p-2 transition duration-150
     ${errors[field]
-        ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-        : "border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"}`;
+            ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+            : "border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"}`;
 
 
     const handleChange = (e) => {
@@ -101,7 +100,7 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
 
         const newErrors = {};
 
-        const requiredFields = ['name', 'universityId', 'address_line_1', 'address_line_2','city', 'state', 'postcode'];
+        const requiredFields = ['name', 'universityId', 'address_line_1', 'city', 'state', 'postcode'];
 
         requiredFields.forEach((key) => {
             if (!formData[key] || String(formData[key]).trim() === '') {
@@ -118,66 +117,66 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
             return;
         }
 
-         if (isEditMode && !hasChanges()) {
-                    showToast("No changes detected!", "info");
-                     onClose();
-                    return;
-                }
-        
-                if (isEditMode) {
-                    dispatch(
-                        updateCollege({
-                            id: college._id,
-                            collegeData: formData,
-                        })
-                    )
-                        .unwrap()
-                        .then(() => {
-                            showToast("College info updated successfully!", "success");
-                            setFormData({
-        name: "",
-        universityId: "",
-        address_line_1: "",
-        // address_line_2: "",
-        city: "",
-        state: "",
-        postcode: "",
-      });
-                            onClose();
-                        })
-                        .catch((error) => {
-                            showToast(error || "Failed to update college info", "error");
-                        });
-        
-                    return;
-                }
+        if (isEditMode && !hasChanges()) {
+            showToast("No changes detected!", "info");
+            onClose();
+            return;
+        }
 
-      dispatch(createCollege(formData))
-                  .unwrap()
-                  .then(() => {
-                      showToast("College added successfully!", "success");
-                       setFormData({
-        name: "",
-        universityId: "",
-        address_line_1: "",
-        // address_line_2: "",
-        city: "",
-        state: "",
-        postcode: "",
-      });
+        if (isEditMode) {
+            dispatch(
+                updateCollege({
+                    id: college._id,
+                    collegeData: formData,
+                })
+            )
+                .unwrap()
+                .then(() => {
+                    showToast("College info updated successfully!", "success");
+                    setFormData({
+                        name: "",
+                        universityId: "",
+                        address_line_1: "",
+                        // address_line_2: "",
+                        city: "",
+                        state: "",
+                        postcode: "",
+                    });
+                    onClose();
+                })
+                .catch((error) => {
+                    showToast(error || "Failed to update college info", "error");
+                });
 
-      setInitialData({});
-                      onClose();
-                  })
-                  .catch((error) => {
-                      showToast(error || "Failed to add College", "error");
-                  });
+            return;
+        }
+
+        dispatch(createCollege(formData))
+            .unwrap()
+            .then(() => {
+                showToast("College added successfully!", "success");
+                setFormData({
+                    name: "",
+                    universityId: "",
+                    address_line_1: "",
+                    // address_line_2: "",
+                    city: "",
+                    state: "",
+                    postcode: "",
+                });
+
+                setInitialData({});
+                onClose();
+            })
+            .catch((error) => {
+                showToast(error || "Failed to add College", "error");
+            });
     };
 
     return (
         <div className="fixed inset-0 bg-black/30 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
             <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg mx-auto">
-                
+
                 {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b">
                     <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
@@ -189,39 +188,40 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="p-6 space-y-4">
 
- <div className="relative">
-                            <label className="block text-sm font-medium text-gray-700">University Name</label>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">
+                            University Name
+                        </label>
 
-                    <select
-                      id="universityId"
-                      name="universityId"
-                      disabled={isViewMode}
-                      className={`signup-input appearance-none pr-10 ${errors.university ? "input-error" : ""
-                        }`}
-                    value={formData.universityId}
-                            onChange={handleChange}
-                    >
-                      <option value="">Select your university</option>
-                      {universities?.map((uni) => (
-                        <option key={uni._id} value={uni._id}>
-                          {uni.name}
-                        </option>
-                      ))}
-                    </select>
+                        <div className="relative">
+                            <select
+                                id="universityId"
+                                name="universityId"
+                                value={formData.universityId}
+                                onChange={handleChange}
+                                disabled={isViewMode}
+                                className={`${inputClasses("universityId")} appearance-none pr-10`}
+                            >
+                                <option value="">Select your university</option>
+                                {universities?.map((uni) => (
+                                    <option key={uni._id} value={uni._id}>
+                                        {uni.name}
+                                    </option>
+                                ))}
+                            </select>
 
-                    <svg
-                      className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 pointer-events-none"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M6 9l6 6 6-6" />
-                    </svg>
-                  </div>
-                
+                            <svg
+                                className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 pointer-events-none"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 9l6 6 6-6" />
+                            </svg>
+                        </div>
+                    </div>
+
+
                     {/* Name */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700">College Name</label>
@@ -235,8 +235,8 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
                             className={inputClasses("name")}
                         />
                     </div>
-                   
-                    
+
+
                     {/* University ID */}
                     {/* <div>
                         <label className="block text-sm font-medium text-gray-700">University ID</label>
@@ -314,7 +314,10 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
                                 placeholder='948773'
                                 disabled={isViewMode}
                                 value={formData.postcode}
-                                onChange={handleChange}
+                                onChange={(e) => {
+                                    const numericValue = e.target.value.replace(/\D/g, "");
+                                    setFormData((prev) => ({ ...prev, postcode: numericValue }));
+                                }} 
                                 className={inputClasses("postcode")}
                             />
                         </div>
@@ -329,7 +332,7 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
                         >
                             Cancel
                         </button>
-                         {!isViewMode && (
+                        {!isViewMode && (
                             <button
                                 type="submit"
                                 className="px-4 py-2 cursor-pointer text-sm font-medium text-white bg-indigo-600 

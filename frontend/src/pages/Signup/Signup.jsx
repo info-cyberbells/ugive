@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { register, reset, getUniversities } from "../../features/studentSlice";
+import { register, reset, getUniversities, getColleges } from "../../features/studentSlice";
 import { useNavigate } from "react-router-dom";
 import "./signup.css";
 import { Eye, EyeOff } from "lucide-react";
@@ -17,11 +17,12 @@ const Signup = () => {
     confirmPassword: "",
     role: "student",
     university: "",
+    college: "",
     phoneNumber: "",
     studentUniId: "",
   });
 
-  const { user, isLoading, isError, isSuccess, message, universities } = useSelector(
+  const { user, isLoading, isError, isSuccess, message, universities, colleges } = useSelector(
     (state) => state.auth
   );
   const [showSignPassword, setShowSignPassword] = useState(false);
@@ -44,6 +45,11 @@ const Signup = () => {
     dispatch(getUniversities());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (formData.university) {
+      dispatch(getColleges(formData.university));
+    }
+  }, [formData.university, dispatch]);
 
   useEffect(() => {
     if (isError) {
@@ -56,6 +62,8 @@ const Signup = () => {
         backendErrors.phoneNumber = true;
       if (message?.toLowerCase().includes("university"))
         backendErrors.university = true;
+      if (message?.toLowerCase().includes("college"))
+        backendErrors.college = true;
       if (message?.toLowerCase().includes("student"))
         backendErrors.studentUniId = true;
       if (message?.toLowerCase().includes("password"))
@@ -91,6 +99,8 @@ const Signup = () => {
     if (!formData.phoneNumber) newErrors.phoneNumber = true;
     if (!formData.studentUniId) newErrors.studentUniId = true;
     if (!formData.university) newErrors.university = true;
+    if (!formData.college) newErrors.college = true;
+
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -190,6 +200,42 @@ const Signup = () => {
                       {universities?.map((uni) => (
                         <option key={uni._id} value={uni._id}>
                           {uni.name}
+                        </option>
+                      ))}
+                    </select>
+
+                    <svg
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600 pointer-events-none"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
+                  </div>
+                </div>
+
+
+                <div className="signup-form-group">
+                  <label htmlFor="university">Your College</label>
+
+                  <div className="relative">
+                    <select
+                      id="college"
+                      name="college"
+                      className={`signup-input appearance-none pr-10 ${errors.college ? "input-error" : ""
+                        }`}
+                      value={formData.college}
+                      onChange={handleChange}
+                      disabled={!formData.university}
+                    >
+                      <option value="">Select your college</option>
+                      {colleges?.map((col) => (
+                        <option key={col._id} value={col._id}>
+                          {col.name}
                         </option>
                       ))}
                     </select>

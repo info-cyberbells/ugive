@@ -31,15 +31,20 @@ const Login = () => {
       dispatch(reset());
     }
 
-    if (isSuccess) {
+    if (isSuccess && user) {
       showToast("Login successful!", "success");
       dispatch(reset());
       setTimeout(() => {
         window.dispatchEvent(new Event('authChange'));
-        navigate("/dashboard");
+
+        if (user.role === 'student') {
+          navigate("/student-dashboard");
+        } else {
+          navigate("/dashboard");
+        }
       }, 700);
     }
-  }, [isError, isSuccess, message, navigate, dispatch]);
+  }, [isError, isSuccess, message, navigate, dispatch, user]);
 
   const handleChange = (e) => {
     setFormData({

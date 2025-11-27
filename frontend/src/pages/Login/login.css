@@ -186,6 +186,7 @@
 
   .login-image-section {
     height: 250px;
+    display: none;
   }
 }
 

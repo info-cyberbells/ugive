@@ -18,10 +18,10 @@ const StudentModal = ({ isOpen, onClose, student, onSave, mode, studentId }) => 
     const isAddMode = !studentId;
 
     useEffect(() => {
-    if (isOpen) {
-        setErrors({});   // <-- RESET ALL ERRORS WHEN MODAL OPENS
-    }
-}, [isOpen]);
+        if (isOpen) {
+            setErrors({});   // <-- RESET ALL ERRORS WHEN MODAL OPENS
+        }
+    }, [isOpen]);
 
 
     const [formData, setFormData] = useState({
@@ -34,7 +34,7 @@ const StudentModal = ({ isOpen, onClose, student, onSave, mode, studentId }) => 
         password: '',
         confirmPassword: '',
     });
-
+    const [originalData, setOriginalData] = useState(null);
 
     const [errors, setErrors] = useState({});
 
@@ -60,48 +60,52 @@ const StudentModal = ({ isOpen, onClose, student, onSave, mode, studentId }) => 
         }
     };
 
-useEffect(() => {
-    if (!isOpen) return;
- 
-    if (!studentId) {
-        // ADD MODE → RESET FORM
-        setFormData({
-            name: "",
-            email: "",
-            phoneNumber: "",
-            university: "",
-            college: "",
-            studentUniId: "",
-            password: "",
-            confirmPassword: "",
-        });
-        return;
-    }
- 
-    // VIEW / EDIT → Load student data
-    dispatch(getSingleStudent(studentId))
-        .unwrap()
-        .then((res) => {
-            const s = res.data;
-            setFormData({
-                name: s.name || "",
-                email: s.email || "",
-                phoneNumber: s.phoneNumber || "",
-                university: s.university?._id || "",
-                college: s.college?._id || "",
-                studentUniId: s.studentUniId || "",
-              
-            });
-              // IMPORTANT: Load colleges for selected university
-            // if (s.university) {
-            //     dispatch(getColleges(s.university));
-            // }
-            if (s.university?._id) {
-    dispatch(getColleges(s.university._id));
-}
+    useEffect(() => {
+        if (!isOpen) return;
 
-        });
-}, [isOpen, studentId]);
+        if (!studentId) {
+            // ADD MODE → RESET FORM
+            setFormData({
+                name: "",
+                email: "",
+                phoneNumber: "",
+                university: "",
+                college: "",
+                studentUniId: "",
+                password: "",
+                confirmPassword: "",
+            });
+            return;
+        }
+
+        // VIEW / EDIT → Load student data
+        dispatch(getSingleStudent(studentId))
+            .unwrap()
+            .then((res) => {
+                const s = res.data;
+                setFormData({
+                    name: s.name || "",
+                    email: s.email || "",
+                    phoneNumber: s.phoneNumber || "",
+                    university: s.university?._id || "",
+                    college: s.college?._id || "",
+                    studentUniId: s.studentUniId || "",
+
+                });
+                setOriginalData({
+                    name: s.name || "",
+                    email: s.email || "",
+                    phoneNumber: s.phoneNumber || "",
+                    university: s.university?._id || "",
+                    college: s.college?._id || "",
+                    studentUniId: s.studentUniId || "",
+                });
+                if (s.university?._id) {
+                    dispatch(getColleges(s.university._id));
+                }
+
+            });
+    }, [isOpen, studentId]);
 
     if (!isOpen) return null;
 
@@ -124,88 +128,85 @@ useEffect(() => {
         });
     };
 
-const handleSubmit = (e) => {
-  e.preventDefault();
+    const handleSubmit = (e) => {
+        e.preventDefault();
 
-  const newErrors = {};
+        const newErrors = {};
+        const requiredFields = [
+            "name",
+            "email",
+            "phoneNumber",
+            "university",
+            "college",
+            "studentUniId",
+        ];
+        if (isAddMode) {
+            requiredFields.push("password", "confirmPassword");
+        }
 
-  // Required fields for both add and edit
-  const requiredFields = [
-    "name",
-    "email",
-    "phoneNumber",
-    "university",
-    "college",
-    "studentUniId",
-  ];
+        requiredFields.forEach((key) => {
+            if (!formData[key] || String(formData[key]).trim() === "") {
+                newErrors[key] = true;
+            }
+        });
 
-  // Password is required only in Add Mode
-  if (isAddMode) {
-    requiredFields.push("password", "confirmPassword");
-  }
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            showToast("Please fill all required fields", "error");
+            return;
+        }
 
-  // Check empty fields FIRST
-  requiredFields.forEach((key) => {
-    if (!formData[key] || String(formData[key]).trim() === "") {
-      newErrors[key] = true;
-    }
-  });
+        const emailRegex = /^[^\s@]+@usq\.edu\.au$/;
+        if (!emailRegex.test(formData.email)) {
+            setErrors((prev) => ({ ...prev, email: true }));
+            showToast("Only @usq.edu.au email is allowed", "error");
+            return;
+        }
 
-  // If any field is empty → show ONE toast and stop
-  if (Object.keys(newErrors).length > 0) {
-    setErrors(newErrors);
-    showToast("Please fill all required fields", "error");
-    return;
-  }
+        const phoneRegex = /^[0-9]+$/;
+        if (!phoneRegex.test(formData.phoneNumber)) {
+            setErrors((prev) => ({ ...prev, phoneNumber: true }));
+            showToast("Phone number must contain only digits", "error");
+            return;
+        }
+        if (isAddMode || formData.password || formData.confirmPassword) {
 
-  // Email must end with @usq.edu.au
-  const emailRegex = /^[^\s@]+@usq\.edu\.au$/;
-  if (!emailRegex.test(formData.email)) {
-    setErrors((prev) => ({ ...prev, email: true }));
-    showToast("Only @usq.edu.au email is allowed", "error");
-    return;
-  }
+            if (formData.password.length < 6) {
+                setErrors((prev) => ({ ...prev, password: true }));
+                showToast("Password must be at least 6 characters long", "error");
+                return;
+            }
 
-  // Phone number must contain only digits
-  const phoneRegex = /^[0-9]+$/;
-  if (!phoneRegex.test(formData.phoneNumber)) {
-    setErrors((prev) => ({ ...prev, phoneNumber: true }));
-    showToast("Phone number must contain only digits", "error");
-    return;
-  }
+            if (formData.password !== formData.confirmPassword) {
+                setErrors((prev) => ({
+                    ...prev,
+                    password: true,
+                    confirmPassword: true,
+                }));
+                showToast("Passwords do not match", "error");
+                return;
+            }
+        }
 
-  //  Password validations (only if Add OR user typed something)
-  if (isAddMode || formData.password || formData.confirmPassword) {
+        const payload = { ...formData, id: studentId };
 
-    if (formData.password.length < 6) {
-      setErrors((prev) => ({ ...prev, password: true }));
-      showToast("Password must be at least 6 characters long", "error");
-      return;
-    }
+        if (!isAddMode && !formData.password && !formData.confirmPassword) {
+            delete payload.password;
+            delete payload.confirmPassword;
+        }
 
-    if (formData.password !== formData.confirmPassword) {
-      setErrors((prev) => ({
-        ...prev,
-        password: true,
-        confirmPassword: true,
-      }));
-      showToast("Passwords do not match", "error");
-      return;
-    }
-  }
+        if (isEditMode) {
+            const { password, confirmPassword, ...currentValues } = formData;
 
-  // Final cleaned data for backend
-  const payload = { ...formData, id: studentId };
-
-  // Remove password fields in edit mode if empty
-  if (!isAddMode && !formData.password && !formData.confirmPassword) {
-    delete payload.password;
-    delete payload.confirmPassword;
-  }
-
-  onSave(payload);
-  onClose();
-};
+            if (JSON.stringify(currentValues) === JSON.stringify(originalData)) {
+                showToast("No changes detected!", "info");
+                onClose();
+                return;
+            }
+        }
+        onSave(payload);
+        onClose();
+    };
 
 
 
@@ -389,7 +390,7 @@ const handleSubmit = (e) => {
                                         <button
                                             type="button"
                                             onClick={() => setShowPassword(!showPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 cursor-pointer"
                                         >
                                             {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                                         </button>
@@ -416,7 +417,7 @@ const handleSubmit = (e) => {
                                         <button
                                             type="button"
                                             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 cursor-pointer"
                                         >
                                             {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                                         </button>

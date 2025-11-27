@@ -5,6 +5,7 @@ import { } from "react-router-dom";
 import Login from './pages/Login/Login';
 import Signup from './pages/Signup/Signup';
 import Dashboard from './pages/superAdmin/superAdminDashboard/superAdminDashboard';
+import StudentDashboard from './pages/dashboard/StudentDashbaord';
 import Navbar from './components/Navbar/Navbar';
 import Profile from './pages/Profile/Profile';
 import ManageStudents from './pages/SuperAdmin/ManageStudents/ManageStudents'
@@ -18,13 +19,22 @@ import Social from './pages/SuperAdmin/Social/Social';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [userRole, setUserRole] = useState(null);
 
 
 
   useEffect(() => {
     const checkAuth = () => {
       const token = localStorage.getItem('token');
+      const user = localStorage.getItem('user');
+
       setIsAuthenticated(!!token);
+
+      if (user) {
+        const parsedUser = JSON.parse(user);
+        setUserRole(parsedUser.role);
+      }
+
       setIsLoading(false);
     };
     checkAuth();
@@ -51,17 +61,53 @@ function App() {
       <Routes>
         <Route
           path='/'
-          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />}
-        />
-        <Route
-          path='/signUp'
-          element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Signup />}
+          element={
+            isAuthenticated ? (
+              userRole === 'student' ? (
+                <Navigate to="/student-dashboard" replace />
+              ) : (
+                <Navigate to="/dashboard" replace />
+              )
+            ) : (
+              <Login />
+            )
+          }
         />
 
         <Route
-          path='/dashboard'
-          element={isAuthenticated ? <Dashboard /> : <Navigate to="/" replace />}
+          path='/signUp'
+          element={
+            isAuthenticated ? (
+              userRole === 'student' ? (
+                <Navigate to="/student-dashboard" replace />
+              ) : (
+                <Navigate to="/dashboard" replace />
+              )
+            ) : (
+              <Signup />
+            )
+          }
         />
+        <Route
+          path='/dashboard'
+          element={
+            isAuthenticated ? (
+              userRole === 'student' ? (
+                <Navigate to="/student-dashboard" replace />
+              ) : (
+                <Dashboard />
+              )
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+
+        <Route
+          path='/student-dashboard'
+          element={isAuthenticated ? <StudentDashboard /> : <Navigate to="/" replace />}
+        />
+
         <Route
           path='/manage-students'
           element={isAuthenticated ? <ManageStudents /> : <Navigate to="/" replace />}
@@ -83,6 +129,21 @@ function App() {
         <Route
           path='/social'
           element={isAuthenticated ? <Social /> : <Navigate to="/" replace />}
+        />
+
+        <Route
+          path='*'
+          element={
+            isAuthenticated ? (
+              userRole === 'student' ? (
+                <Navigate to="/student-dashboard" replace />
+              ) : (
+                <Navigate to="/dashboard" replace />
+              )
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
         />
       </Routes>
     </>
