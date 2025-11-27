@@ -10,6 +10,7 @@ import Profile from './pages/Profile/Profile';
 import ManageStudents from './pages/SuperAdmin/ManageStudents/ManageStudents'
 import ManageUniversities from './pages/SuperAdmin/ManageUniversities/ManageUniversities';
 import ManageColleges from './pages/SuperAdmin/ManageColleges/ManageColleges';
+import Social from './pages/SuperAdmin/Social/Social';
 
 
 
@@ -77,6 +78,11 @@ function App() {
         <Route
           path='/profile'
           element={isAuthenticated ? <Profile /> : <Navigate to="/" replace />}
+        />
+
+        <Route
+          path='/social'
+          element={isAuthenticated ? <Social /> : <Navigate to="/" replace />}
         />
       </Routes>
     </>

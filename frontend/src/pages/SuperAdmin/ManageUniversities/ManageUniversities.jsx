@@ -66,6 +66,8 @@ const ManageUniversities = () => {
 
   // Modal Handlers
   const openModalForAdd = () => {
+    dispatch({ type: 'university/clearCurrentUniversity' });
+    setIsViewMode(false);
     setIsModalOpen(true);
   };
 
@@ -113,6 +115,46 @@ const ManageUniversities = () => {
       showToast(error || "Failed to delete", "error");
     }
     closeDeleteModal();
+  };
+
+
+  const handleExportCSV = () => {
+    const selected = data.filter((uni) =>
+      selectedUniversityIds.includes(uni._id)
+    );
+
+    if (selected.length === 0) return;
+
+    const headers = ["Name", "Address Line 1", "City", "State", "Postcode"];
+
+    const rows = selected.map((uni) => [
+      uni.name,
+      uni.address_line_1,
+      uni.city,
+      uni.state,
+      uni.postcode,
+    ]);
+
+    const escapeCSV = (value) => {
+      if (value === null || value === undefined) return "";
+      const str = String(value).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    let csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers, ...rows]
+        .map((row) => row.map(escapeCSV).join(","))
+        .join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "universities_export.csv");
+    document.body.appendChild(link);
+    link.click();
+
+    showToast("CSV exported successfully!", "success");
   };
 
 
@@ -179,6 +221,7 @@ const ManageUniversities = () => {
 
               {/* Export Button - Disabled when no universities are selected */}
               <button
+                onClick={handleExportCSV}
                 className={`flex cursor-pointer items-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150  ${isAnySelected
                   ? "text-gray-700 bg-white hover:bg-gray-50"
                   : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
@@ -188,6 +231,7 @@ const ManageUniversities = () => {
                 Export
                 <Download className="h-4 w-4 ml-2" />
               </button>
+
             </div>
 
             {/* Add New University Button (Always active) */}

@@ -39,7 +39,7 @@ const StatusBadge = ({ status }) => {
 
 const manageColleges = () => {
   const dispatch = useDispatch();
-  const {showToast} = useToast();
+  const { showToast } = useToast();
 
   const { college, loading, error, page, totalPages } = useSelector(
     (state) => state.college
@@ -49,13 +49,13 @@ const manageColleges = () => {
   // const data = collegeData;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-//   const [currentCollege, setCurrentCollege] = useState(null);
+  //   const [currentCollege, setCurrentCollege] = useState(null);
   const { currentCollege } = useSelector((state) => state.college);
 
 
   const [limit, setLimit] = useState(10);
 
-    const [isViewMode, setIsViewMode] = useState(false);
+  const [isViewMode, setIsViewMode] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [collegeToDelete, setCollegeToDelete] = useState(null); // For single delete
   const [isBulkDelete, setIsBulkDelete] = useState(false); // For bulk delete
@@ -103,6 +103,8 @@ const manageColleges = () => {
   };
 
   const openModalForAdd = () => {
+    dispatch({ type: 'college/clearCurrentCollege' });
+    setIsViewMode(false);
     setIsModalOpen(true);
   };
 
@@ -117,7 +119,7 @@ const manageColleges = () => {
     // setCurrentCollege(null);
   };
 
-  const handleSave = () => {};
+  const handleSave = () => { };
 
   // --- Delete Modal Handlers ---
   const openDeleteModalForSingle = (student) => {
@@ -140,32 +142,77 @@ const manageColleges = () => {
   };
 
   const confirmDelete = () => {
-  if (isBulkDelete) {
-    Promise.all(
-      selectedCollegeIds.map((id) =>
-        dispatch(deleteCollege(id)).unwrap()
+    if (isBulkDelete) {
+      Promise.all(
+        selectedCollegeIds.map((id) =>
+          dispatch(deleteCollege(id)).unwrap()
+        )
       )
-    )
-      .then(() => {
-       showToast("Selected colleges deleted successfully!", "success");
-        setSelectedCollegeIds([]);
-      })
-      .catch((err) => {
-       showToast(err || "Failed to delete selected colleges", "error");
-      });
-  } else if (collegeToDelete) {
-    dispatch(deleteCollege(collegeToDelete._id))
-      .unwrap()
-      .then(() => {
-       showToast("College deleted successfully!", "success");
-      })
-      .catch((err) => {
-       showToast(err || "Failed to delete college", "error");
-      });
-  }
+        .then(() => {
+          showToast("Selected colleges deleted successfully!", "success");
+          setSelectedCollegeIds([]);
+        })
+        .catch((err) => {
+          showToast(err || "Failed to delete selected colleges", "error");
+        });
+    } else if (collegeToDelete) {
+      dispatch(deleteCollege(collegeToDelete._id))
+        .unwrap()
+        .then(() => {
+          showToast("College deleted successfully!", "success");
+        })
+        .catch((err) => {
+          showToast(err || "Failed to delete college", "error");
+        });
+    }
 
-  closeDeleteModal();
-};
+    closeDeleteModal();
+  };
+
+  const handleExportCSV = () => {
+    const selected = data.filter(col => selectedCollegeIds.includes(col._id));
+
+    if (selected.length === 0) {
+      showToast("No colleges selected!", "error");
+      return;
+    }
+
+    const headers = [
+      "College Name",
+      "University ID",
+      "Address Line 1",
+      "State"
+    ];
+
+    const rows = selected.map(col => [
+      col.name,
+      col.university?._id,
+      col.address_line_1,
+      col.state,
+    ]);
+
+
+    const escapeCSV = (value) => {
+      if (value === null || value === undefined) return "";
+      const str = String(value).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers, ...rows]
+        .map(row => row.map(escapeCSV).join(","))
+        .join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "colleges_export.csv");
+    document.body.appendChild(link);
+    link.click();
+
+    showToast("CSV exported successfully!", "success");
+  };
 
 
   const SkeletonTable = () => {
@@ -212,11 +259,10 @@ const manageColleges = () => {
               {/* Delete Button - Disabled when no colleges are selected */}
               <button
                 onClick={openDeleteModalForBulk}
-                className={`flex cursor-pointer items-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
-                  isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600"
-                    : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
-                }`}
+                className={`flex cursor-pointer items-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${isAnySelected
+                  ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600"
+                  : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
+                  }`}
                 aria-label="Delete Selected"
                 disabled={!isAnySelected}
               >
@@ -225,23 +271,24 @@ const manageColleges = () => {
               </button>
 
               {/* Filters Button (Always active) */}
-              <button className="flex cursor-pointer items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 shadow-sm">
+              {/* <button className="flex cursor-pointer items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 shadow-sm">
                 Filters
                 <Filter className="h-4 w-4 ml-2" />
-              </button>
+              </button> */}
 
               {/* Export Button - Disabled when no colleges are selected */}
               <button
-                className={`flex cursor-pointer items-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
-                  isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-gray-50"
-                    : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
-                }`}
+                onClick={handleExportCSV}
+                className={`flex cursor-pointer items-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${isAnySelected
+                  ? "text-gray-700 bg-white hover:bg-gray-50"
+                  : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
+                  }`}
                 disabled={!isAnySelected}
               >
                 Export
                 <Download className="h-4 w-4 ml-2" />
               </button>
+
             </div>
 
             {/* Add New College Button (Always active) */}
@@ -291,7 +338,7 @@ const manageColleges = () => {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
-                          Uni. ID 
+                          Uni. ID
                         </div>
                       </th>
                       <th
@@ -299,7 +346,7 @@ const manageColleges = () => {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
-                          Address Line 1 
+                          Address Line 1
                         </div>
                       </th>
                       {/* <th
@@ -315,7 +362,7 @@ const manageColleges = () => {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
-                          State 
+                          State
                         </div>
                       </th>
                       {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150">
@@ -342,11 +389,10 @@ const manageColleges = () => {
                     {data.map((college) => (
                       <tr
                         key={college._id}
-                        className={`transition duration-150 ${
-                          selectedCollegeIds.includes(college._id)
-                            ? "bg-indigo-50 hover:bg-indigo-100"
-                            : "hover:bg-gray-50"
-                        }`}
+                        className={`transition duration-150 ${selectedCollegeIds.includes(college._id)
+                          ? "bg-indigo-50 hover:bg-indigo-100"
+                          : "hover:bg-gray-50"
+                          }`}
                       >
                         <td className="px-6 py-4 whitespace-nowrap w-4">
                           <input
@@ -395,20 +441,20 @@ const manageColleges = () => {
                         {/* Action Column (View, Edit, Delete) */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
                           <button
-                          onClick={() => {
-    dispatch(getSingleCollege(college._id));
-    setIsViewMode(true);  
-    setIsModalOpen(true);
-  }}
-                          className="cursor-pointer text-blue-600 hover:text-blue-900">
+                            onClick={() => {
+                              dispatch(getSingleCollege(college._id));
+                              setIsViewMode(true);
+                              setIsModalOpen(true);
+                            }}
+                            className="cursor-pointer text-blue-600 hover:text-blue-900">
                             View
                           </button>
                           <button
-                             onClick={() => {
-                                                          dispatch(getSingleCollege(college._id));
-                                                          setIsViewMode(false);
-                                                          setIsModalOpen(true);
-                                                        }}
+                            onClick={() => {
+                              dispatch(getSingleCollege(college._id));
+                              setIsViewMode(false);
+                              setIsModalOpen(true);
+                            }}
                             className="cursor-pointer text-yellow-600 hover:text-yellow-900"
                           >
                             Edit
@@ -447,11 +493,10 @@ const manageColleges = () => {
                     onClick={() => handlePageChange(page - 1)}
                     disabled={page === 1}
                     className={`px-3 py-1 text-sm border rounded 
-                ${
-                  page === 1
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-white hover:bg-gray-50"
-                }
+                ${page === 1
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-white hover:bg-gray-50"
+                      }
             `}
                   >
                     Prev
@@ -466,11 +511,10 @@ const manageColleges = () => {
                     onClick={() => handlePageChange(page + 1)}
                     disabled={page === totalPages}
                     className={`px-3 py-1 text-sm border rounded 
-                ${
-                  page === totalPages
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-white hover:bg-gray-50"
-                }
+                ${page === totalPages
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-white hover:bg-gray-50"
+                      }
             `}
                   >
                     Next
@@ -514,7 +558,7 @@ const manageColleges = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         college={currentCollege}
-                isViewMode={isViewMode}
+        isViewMode={isViewMode}
 
         onSave={handleSave}
       />

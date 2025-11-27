@@ -102,6 +102,9 @@ const universitySlice = createSlice({
       state.isError = false;
       state.message = "";
     },
+    clearCurrentUniversity: (state) => {
+      state.currentUniversity = null;
+    },
   },
   extraReducers: (builder) => {
     builder

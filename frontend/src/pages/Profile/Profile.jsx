@@ -145,14 +145,7 @@ const ProfileSettings = () => {
 
     const formDataToSend = new FormData();
     formDataToSend.append("name", formData.fullName);
-    // formDataToSend.append("email", formData.email);
-    // formDataToSend.append("municipality", formData.municipality);
-    // formDataToSend.append("licenseNumber", formData.license);
     formDataToSend.append("phoneNumber", formData.phoneNumber);
-    // formDataToSend.append("city", formData.city);
-    // formDataToSend.append("country", formData.country);
-    // formDataToSend.append("dob", formData.dob);
-    // formDataToSend.append("validUntil", formData.validUntil);
 
     if (profileImage) {
       formDataToSend.append("profileImage", profileImage);
@@ -237,7 +230,7 @@ const ProfileSettings = () => {
         <div className="flex border-b border-gray-200 mb-6">
           <button
             onClick={() => setActiveTab("profile")}
-            className={`pb-2 px-4 text-sm font-medium transition ${
+            className={`pb-2 px-4 text-sm cursor-pointer font-medium transition ${
               activeTab === "profile"
                 ? "text-[#3565E3] border-b-2 border-blue-600"
                 : "text-[#718EBF]"
@@ -248,7 +241,7 @@ const ProfileSettings = () => {
 
           <button
             onClick={() => setActiveTab("security")}
-            className={`pb-2 px-4 text-sm font-medium transition ${
+            className={`pb-2 px-4 text-sm font-medium cursor-pointer transition ${
               activeTab === "security"
                 ? "text-blue-600 border-b-2 border-blue-600"
                 : "text-[#718EBF]"

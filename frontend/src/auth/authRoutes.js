@@ -34,6 +34,14 @@ export const USER_ENDPOINTS = {
 
 
 
+
+
+
+    //student endpoints
+    STUDENT_GET_PROFILE: `${API_BASE_URL}/student/profile`,
+    STUDENT_UPDATE_PROFILE: `${API_BASE_URL}/student/profile`,
+    STUDENT_CHANGE_PASSWORD: `${API_BASE_URL}/student/change-password`,
+
 };
 
 

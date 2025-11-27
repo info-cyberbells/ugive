@@ -20,10 +20,10 @@ const initialState = {
 
 export const getCollegesData = createAsyncThunk(
   "college/getAllcollegesData",
-  async(uniData, thunkAPI)=>{
+  async (uniData, thunkAPI) => {
     try {
       const response = await getAllCollegesDataService(uniData);
-    return response;
+      return response;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || error.message
@@ -98,97 +98,100 @@ const collegeSlice = createSlice({
       state.isError = false;
       state.message = "";
     },
+    clearCurrentCollege: (state) => {
+      state.currentCollege = null;
+    },
   },
   extraReducers: (builder) => {
     builder
-     
+
       // get all university data
-     
-    .addCase(getCollegesData.pending, (state) => {
-      state.isLoading = true;
-    })
-    .addCase(getCollegesData.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.college = action.payload.data;
-      state.page = action.payload.page;
-      state.limit = action.payload.limit;
-      state.total = action.payload.total;
-      state.totalPages = action.payload.totalPages;
-    })
-    .addCase(getCollegesData.rejected, (state, action) => {
-      state.isLoading = false;
-      state.isError = action.payload;
-    })
 
-    // Create college
-          .addCase(createCollege.pending, (state) => {
-            state.isLoading = true;
-          })
-          .addCase(createCollege.fulfilled, (state, action) => {
-            state.isLoading = false;
-            state.isSuccess = true;
-            state.college.push(action.payload);
-          })
-          .addCase(createCollege.rejected, (state, action) => {
-            state.isLoading = false;
-            state.isSuccess = false;
-            state.isError = true;
-            state.message = action.payload;
-          })
+      .addCase(getCollegesData.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getCollegesData.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.college = action.payload.data;
+        state.page = action.payload.page;
+        state.limit = action.payload.limit;
+        state.total = action.payload.total;
+        state.totalPages = action.payload.totalPages;
+      })
+      .addCase(getCollegesData.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = action.payload;
+      })
 
-          //get single college
-                .addCase(getSingleCollege.pending, (state) => {
-                  state.isLoading = true;
-                  state.isError = false;
-                })
-                .addCase(getSingleCollege.fulfilled, (state, action) => {
-                  state.isLoading = false;
-                  state.currentCollege = action.payload.data;
-                  state.message = "College fetched successfully";
-                })
-                .addCase(getSingleCollege.rejected, (state, action) => {
-                  state.isLoading = false;
-                  state.isError = true;
-                  state.message = action.payload;
-                })
+      // Create college
+      .addCase(createCollege.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(createCollege.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.college.push(action.payload);
+      })
+      .addCase(createCollege.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
 
-                // UPDATE College
-                      .addCase(updateCollege.pending, (state) => {
-                        state.isLoading = true;
-                      })
-                      .addCase(updateCollege.fulfilled, (state, action) => {
-                        state.isLoading = false;
-                        state.isSuccess = true;
-                        state.college = state.college.map((college) =>
-                          college._id === action.payload._id ? action.payload : college
-                        );
-                      })
-                      .addCase(updateCollege.rejected, (state, action) => {
-                        state.isLoading = false;
-                        state.isError = true;
-                        state.message = action.payload;
-                      })
+      //get single college
+      .addCase(getSingleCollege.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(getSingleCollege.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentCollege = action.payload.data;
+        state.message = "College fetched successfully";
+      })
+      .addCase(getSingleCollege.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
 
-                
-                      //delete college
-                      .addCase(deleteCollege.pending, (state) => {
-                        state.isLoading = true;
-                        state.isError = false;
-                      })
-                      .addCase(deleteCollege.fulfilled, (state, action) => {
-                        state.isLoading = false;
-                        state.isSuccess = true;
-                        state.college = state.college.filter(
-                          (college) => college._id !== action.meta.arg
-                        );
-                
-                        state.message = "College deleted successfully";
-                      })
-                      .addCase(deleteCollege.rejected, (state, action) => {
-                        state.isLoading = false;
-                        state.isError = true;
-                        state.message = action.payload;
-                      });
+      // UPDATE College
+      .addCase(updateCollege.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateCollege.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.college = state.college.map((college) =>
+          college._id === action.payload._id ? action.payload : college
+        );
+      })
+      .addCase(updateCollege.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+
+
+      //delete college
+      .addCase(deleteCollege.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(deleteCollege.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.college = state.college.filter(
+          (college) => college._id !== action.meta.arg
+        );
+
+        state.message = "College deleted successfully";
+      })
+      .addCase(deleteCollege.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      });
 
   },
 });

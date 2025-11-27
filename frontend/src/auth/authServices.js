@@ -38,7 +38,6 @@ export const getCollegesService = async (universityId) => {
 
 
 
-
 //get superadmin profile
 export const getSuperAdminProfileService = async () => {
     const response = await axios.get(
@@ -226,3 +225,39 @@ export const deleteStudentService = async (id) => {
     );
     return response.data;
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//student get profile   
+export const getStudentProfileService = async () => {
+    const response = await axios.get(
+        USER_ENDPOINTS.STUDENT_GET_PROFILE,
+        getAuthHeader()
+    );
+    return response.data;
+}

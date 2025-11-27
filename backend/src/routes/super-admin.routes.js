@@ -1,7 +1,7 @@
 import express from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
 import { authorizeRoles } from "../middleware/role.middleware.js";
-import { getProfile, updateProfile, changeSuperAdminPassword  } from "../controllers/profile.controller.js";
+import { getProfile, updateProfile, changePassword  } from "../controllers/profile.controller.js";
 import { createUniversity, createCollege, updateUniversity, updateCollege, deleteUniversity, deleteCollege, getAllUniversitiesSuperAdmin, getAllCollegesSuperAdmin, getSingleUniversitySuperAdmin, getSingleCollegeSuperAdmin } from "../controllers/university.controller.js";
 import { getAllStudentsSuperAdmin, createStudentSuperAdmin, getSingleStudentSuperAdmin, updateStudentSuperAdmin, deleteStudentSuperAdmin, } from "../controllers/student.controller.js";
 import upload from "../middleware/upload.middleware.js";
@@ -21,7 +21,7 @@ router.get("/dashboard", (req, res) => {
 // Profile
 router.get("/profile", getProfile);
 router.put("/profile", upload.single("profileImage"), updateProfile);
-router.put("/change-password", changeSuperAdminPassword);
+router.put("/change-password", changePassword);
 
 
 // University & College Management

@@ -1,26 +1,24 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import {
-    changeSuperAdminPasswordService,
-    getSuperAdminProfileService,
-    updateSuperAdminProfileService,
-    // createUniversityService,
-    // updateUniversityService
+  changeSuperAdminPasswordService,
+  getSuperAdminProfileService,
+  updateSuperAdminProfileService,
 } from '..//auth/authServices';
 
 
 //fetch superadmin profile
 export const fetchSuperAdminProfile = createAsyncThunk(
-    'superadmin/fetchProfile',
-    async (_, { rejectWithValue }) => {
-        try {
-            const response = await getSuperAdminProfileService();
-            return response.user;
-        } catch (error) {
-            return rejectWithValue(
-                error.response?.data?.message || 'Failed to fetch profile'
-            );
-        }
+  'superadmin/fetchProfile',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getSuperAdminProfileService();
+      return response.user;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || 'Failed to fetch profile'
+      );
     }
+  }
 );
 
 // update superAdmin profie thunk
@@ -30,7 +28,7 @@ export const updateSuperAdminProfile = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await updateSuperAdminProfileService(formData);
-      return response.user;  
+      return response.user;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Profile update failed"
@@ -40,7 +38,6 @@ export const updateSuperAdminProfile = createAsyncThunk(
 );
 
 // change super admin password thunk
-
 export const changeSuperAdminPassword = createAsyncThunk(
   "superadmin/changePassword",
   async (passwordData, thunkAPI) => {
@@ -55,82 +52,53 @@ export const changeSuperAdminPassword = createAsyncThunk(
 );
 
 
-// // Create University (EXISTING)
-// export const createUniversity = createAsyncThunk(
-//     'superadmin/createUniversity',
-//     async (universityData, { rejectWithValue }) => {
-//         try {
-//             const response = await createUniversityService(universityData);
-//             return response.university;
-//         } catch (error) {
-//             return rejectWithValue(
-//                 error.response?.data?.message || 'Failed to create university'
-//             );
-//         }
-//     }
-// );
-
-// // Update University (EXISTING)
-// export const updateUniversity = createAsyncThunk(
-//     'superadmin/updateUniversity',
-//     async ({ id, universityData }, { rejectWithValue }) => {
-//         try {
-//             const response = await updateUniversityService(id, universityData);
-//             return response.university;
-//         } catch (error) {
-//             return rejectWithValue(
-//                 error.response?.data?.message || 'Failed to update university'
-//             );
-//         }
-//     }
-// );
 
 const initialState = {
-    profile: null,
-    profileLoading: false,
-    profileError: null,
+  profile: null,
+  profileLoading: false,
+  profileError: null,
 
-    universities: [],
-    universitiesLoading: false,
-    universitiesError: null,
+  universities: [],
+  universitiesLoading: false,
+  universitiesError: null,
 
-    loading: false,
-    error: null,
-    success: false,
+  loading: false,
+  error: null,
+  success: false,
 };
 
 const superadminSlice = createSlice({
-    name: 'superadmin',
-    initialState,
-    reducers: {
-        resetState: (state) => {
-            state.success = false;
-            state.error = null;
-        },
-        clearProfile: (state) => {
-            state.profile = null;
-            state.profileError = null;
-        },
+  name: 'superadmin',
+  initialState,
+  reducers: {
+    resetState: (state) => {
+      state.success = false;
+      state.error = null;
     },
-    extraReducers: (builder) => {
-        builder
-           //fetch superadmin profile
-            .addCase(fetchSuperAdminProfile.pending, (state) => {
-                state.profileLoading = true;
-                state.profileError = null;
-            })
-            .addCase(fetchSuperAdminProfile.fulfilled, (state, action) => {
-                state.profileLoading = false;
-                state.profile = action.payload;
-                state.profileError = null;
-            })
-            .addCase(fetchSuperAdminProfile.rejected, (state, action) => {
-                state.profileLoading = false;
-                state.profileError = action.payload;
-            })
+    clearProfile: (state) => {
+      state.profile = null;
+      state.profileError = null;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      //fetch superadmin profile
+      .addCase(fetchSuperAdminProfile.pending, (state) => {
+        state.profileLoading = true;
+        state.profileError = null;
+      })
+      .addCase(fetchSuperAdminProfile.fulfilled, (state, action) => {
+        state.profileLoading = false;
+        state.profile = action.payload;
+        state.profileError = null;
+      })
+      .addCase(fetchSuperAdminProfile.rejected, (state, action) => {
+        state.profileLoading = false;
+        state.profileError = action.payload;
+      })
 
-            // update superAdmin profile
-             .addCase(updateSuperAdminProfile.pending, (state) => {
+      // update superAdmin profile
+      .addCase(updateSuperAdminProfile.pending, (state) => {
         state.loading = true;
         state.error = null;
         state.success = false;
@@ -157,8 +125,8 @@ const superadminSlice = createSlice({
         state.error = action.payload;
       });
 
-        
-    },
+
+  },
 });
 
 export const { resetState, clearProfile } = superadminSlice.actions;

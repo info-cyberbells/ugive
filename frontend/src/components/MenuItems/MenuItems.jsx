@@ -3,13 +3,6 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { reset } from "../../features/studentSlice";
 
-// import UserProfile from "/menuIcons/UserProfile.svg";
-// import IdentificationCard from "/menuIcons/IdentificationCard.svg";
-// import UsersThree from "/menuIcons/UsersThree.svg";
-// import Blog from "/menuIcons/Blog.svg";
-// import ChatsTeardrop from "/menuIcons/ChatsTeardrop.svg";
-// import overView from "/menuIcons/overView.svg";
-
 import {
   LayoutDashboard,
   UserCircle,
@@ -44,8 +37,8 @@ const MenuItems = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-   const user = JSON.parse(localStorage.getItem("user"));
-  const role = user?.role?.toLowerCase(); // "super_admin"
+  const user = JSON.parse(localStorage.getItem("user"));
+  const role = user?.role?.toLowerCase(); 
 
   // Load role-based menu
   const sections = ROLE_BASED_MENUS[role] || [];
@@ -56,34 +49,6 @@ const MenuItems = () => {
     window.dispatchEvent(new Event("authChange"));
     navigate("/");
   };
-
-  const section = [
-    {
-      id: "profile",
-      title: "User Profile",
-      icon: UserCircle,
-    },
-    {
-      id: "manage-universities",
-      title: "Manage Universities",
-      icon: School,
-    },
-    {
-      id: "manage-colleges",
-      title: "Manage Colleges",
-      icon: GraduationCap,
-    },
-    {
-      id: "manage-students",
-      title: "Manage Students",
-      icon: BookOpen,
-    },
-    {
-      id: "social",
-      title: "Social",
-      icon: Share2,
-    },
-  ];
 
   return (
     <div className="w-full pl-2 font-[Inter] text-black/70 mb-8 h-screen overflow-y-auto">

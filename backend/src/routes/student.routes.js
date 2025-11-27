@@ -2,7 +2,7 @@ import express from "express";
 import upload from "../middleware/upload.middleware.js";
 import { authenticate } from "../middleware/auth.middleware.js";
 import { authorizeRoles } from "../middleware/role.middleware.js";
-import { getProfile, updateProfile } from "../controllers/profile.controller.js";
+import { getProfile, updateProfile, changePassword } from "../controllers/profile.controller.js";
 import { createCard, getCardsByCollege, getCardProgress, checkCardEligibility, getSentCards } from "../controllers/card.controller.js";
 import { sendFriendRequest, acceptFriendRequest, deleteFriendRequest, unfriendUser, getSentRequests, getReceivedRequests, getMyFriends } from "../controllers/manageFriends.controller.js";
 
@@ -19,6 +19,8 @@ router.get("/dashboard", (req, res) => {
 // Profile
 router.get("/profile", getProfile);
 router.put("/profile", upload.single("profileImage"), updateProfile);
+router.put("/change-password", changePassword);
+
 
 // Card Routes
 router.post("/cards", createCard);

@@ -345,7 +345,7 @@ export const updateProfile = async (req, res) => {
 };
 
 
-export const changeSuperAdminPassword = async (req, res) => {
+export const changePassword = async (req, res) => {
   try {
     const userId = req.user.id;
     const { currentPassword, newPassword } = req.body;
@@ -366,13 +366,6 @@ export const changeSuperAdminPassword = async (req, res) => {
       });
     }
 
-    if (user.role !== "super_admin") {
-      return res.status(403).json({
-        success: false,
-        message: "Only Super Admin can change password here.",
-      });
-    }
-
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
       return res.status(400).json({
@@ -388,6 +381,7 @@ export const changeSuperAdminPassword = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Password updated successfully!",
+      role: user.role,
     });
 
   } catch (error) {

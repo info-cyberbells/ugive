@@ -172,6 +172,53 @@ const ManageStudents = () => {
     };
 
 
+    const handleExportCSV = () => {
+        const selected = studentData.filter(stu =>
+            selectedStudentIds.includes(stu._id)
+        );
+
+        if (selected.length === 0) {
+            showToast("No students selected!", "error");
+            return;
+        }
+
+        const headers = [
+            "Name",
+            "Email",
+            "Phone Number",
+            "Student Uni ID"
+        ];
+
+        const rows = selected.map(stu => [
+            stu.name,
+            stu.email,
+            stu.phoneNumber,
+            stu.studentUniId
+        ]);
+
+        // Fix CSV — wrap values in quotes to prevent merging
+        const escapeCSV = (value) => {
+            if (value === null || value === undefined) return "";
+            const str = String(value).replace(/"/g, '""');
+            return `"${str}"`;
+        };
+
+        const csvContent =
+            "data:text/csv;charset=utf-8," +
+            [headers, ...rows]
+                .map(row => row.map(escapeCSV).join(","))
+                .join("\n");
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.href = encodedUri;
+        link.download = "students_export.csv";
+        document.body.appendChild(link);
+        link.click();
+
+        showToast("CSV exported successfully!", "success");
+    };
+
 
     const SkeletonTable = () => {
         return (
@@ -242,6 +289,7 @@ const ManageStudents = () => {
 
                             {/* Export Button - Disabled when no students are selected */}
                             <button
+                                onClick={handleExportCSV}
                                 className={`flex cursor-pointer items-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 ${isAnySelected
                                     ? 'text-gray-700 bg-white hover:bg-gray-50'
                                     : 'text-gray-400 bg-gray-100 cursor-not-allowed opacity-70'
@@ -251,6 +299,7 @@ const ManageStudents = () => {
                                 Export
                                 <Download className="h-4 w-4 ml-2" />
                             </button>
+
                         </div>
 
                         {/* Add New Student Button (Always active) */}
