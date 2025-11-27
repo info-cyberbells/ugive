@@ -50,7 +50,10 @@ export const getProfileOLD = async (req, res) => {
 
       case "super_admin":
         roleData = {
-          message: "Super admin access granted",
+          phoneNumber: user.phoneNumber || null,
+          profileImage: user.profileImage
+            ? `${baseURL}${user.profileImage}`
+            : null,
         };
         break;
 
@@ -126,7 +129,10 @@ export const getProfile = async (req, res) => {
 
       case "super_admin":
         roleData = {
-          message: "Super admin access granted",
+          phoneNumber: user.phoneNumber || null,
+          profileImage: user.profileImage
+            ? `${baseURL}${user.profileImage}`
+            : null,
         };
         break;
 
@@ -301,22 +307,32 @@ export const updateProfile = async (req, res) => {
     await user.save();
     const populatedUser = await User.findById(user._id).select("-password").populate("university", "name").populate("college", "name");
 
-    return res.status(200).json({
-      success: true,
-      message: "Profile updated successfully!",
-      user: {
-        id: populatedUser._id,
-        name: populatedUser.name,
-        email: populatedUser.email,
-        role: populatedUser.role,
-        phoneNumber: populatedUser.phoneNumber,
+    let responseUser = {
+      id: populatedUser._id,
+      name: populatedUser.name,
+      email: populatedUser.email,
+      role: populatedUser.role,
+      phoneNumber: populatedUser.phoneNumber,
+      profileImage: populatedUser.profileImage
+        ? `${req.protocol}://${req.get("host")}${populatedUser.profileImage}`
+        : null,
+    };
+
+    if (role === "student") {
+      responseUser = {
+        ...responseUser,
         university: populatedUser.university?._id || null,
         university_name: populatedUser.university?.name || null,
         college: populatedUser.college?._id || null,
         college_name: populatedUser.college?.name || null,
         studentUniId: populatedUser.studentUniId || null,
-        profileImage: populatedUser.profileImage ? `${req.protocol}://${req.get("host")}${populatedUser.profileImage}` : null,
-      },
+      };
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully!",
+      user: responseUser,
     });
 
   } catch (error) {

@@ -4,6 +4,8 @@ import { authorizeRoles } from "../middleware/role.middleware.js";
 import { getProfile, updateProfile } from "../controllers/profile.controller.js";
 import { createUniversity, createCollege, updateUniversity, updateCollege, deleteUniversity, deleteCollege, getAllUniversitiesSuperAdmin, getAllCollegesSuperAdmin, getSingleUniversitySuperAdmin, getSingleCollegeSuperAdmin } from "../controllers/university.controller.js";
 import { getAllStudentsSuperAdmin, createStudentSuperAdmin, getSingleStudentSuperAdmin, updateStudentSuperAdmin, deleteStudentSuperAdmin, } from "../controllers/student.controller.js";
+import upload from "../middleware/upload.middleware.js";
+
 
 
 const router = express.Router();
@@ -18,7 +20,7 @@ router.get("/dashboard", (req, res) => {
 
 // Profile
 router.get("/profile", getProfile);
-router.put("/profile", updateProfile);
+router.put("/profile", upload.single("profileImage"), updateProfile);
 
 // University & College Management
 router.post("/universities", createUniversity);
