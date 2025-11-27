@@ -5,6 +5,8 @@ import {
   createStudentService,
   updateStudentService,
   deleteStudentService,
+  getStudentProfileService,
+  updateStudentProfileService,
 } from "../auth/authServices";
 
 const initialState = {
@@ -18,6 +20,7 @@ const initialState = {
   isError: false,
   isSuccess: false,
   message: "",
+  studentProfile: null,
 };
 
 
@@ -82,6 +85,33 @@ export const deleteStudent = createAsyncThunk(
       return await deleteStudentService(studentId);
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data?.message || err.message);
+    }
+  }
+);
+
+// get student profile detail on Student panel
+
+export const fetchProfile = createAsyncThunk(
+  'student/getProfile',
+  async(_, thunkAPI) => {
+    try {
+      return await getStudentProfileService(); 
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data?.message || error.message)
+    }
+  }
+);
+
+export const updateStudentProfile = createAsyncThunk(
+  "student/updateProfile",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await updateStudentProfileService(formData);
+      return response.user;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Profile update failed"
+      );
     }
   }
 );
@@ -180,9 +210,39 @@ const studentDataSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
-      });
+      })
 
+      // get student profile 
+      .addCase(fetchProfile.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.studentProfile = action.payload.user;
+      })
+      .addCase(fetchProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload.user;
+        state.user = null;
+      })
 
+      // update profile student
+      .addCase(updateStudentProfile.pending, (state) => {
+              state.isLoading = true;
+              state.isError = null;
+              state.isSuccess = false;
+            })
+            .addCase(updateStudentProfile.fulfilled, (state, action) => {
+              state.isLoading = false;
+              state.isSuccess = true;
+              state.studentProfile = action.payload;
+            })
+            .addCase(updateStudentProfile.rejected, (state, action) => {
+              state.isLoading = false;
+              state.isError = action.payload;
+            })
   },
 });
 
