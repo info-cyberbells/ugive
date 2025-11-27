@@ -17,11 +17,17 @@ const StudentModal = ({ isOpen, onClose, student, onSave, mode, studentId }) => 
     const isEditMode = mode === "edit";
     const isAddMode = !studentId;
 
+    useEffect(() => {
+    if (isOpen) {
+        setErrors({});   // <-- RESET ALL ERRORS WHEN MODAL OPENS
+    }
+}, [isOpen]);
+
 
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        phone: '',
+        phoneNumber: '',
         university: '',
         college: '',
         studentUniId: '',
@@ -32,7 +38,7 @@ const StudentModal = ({ isOpen, onClose, student, onSave, mode, studentId }) => 
 
     const [errors, setErrors] = useState({});
 
-    const title = isEditMode ? 'Edit Student Details' : 'Add New Student';
+    const title = isViewMode ? "View Student Details" : isEditMode ? 'Edit Student Details' : 'Add New Student';
 
     useEffect(() => {
         if (isOpen) {
@@ -54,27 +60,48 @@ const StudentModal = ({ isOpen, onClose, student, onSave, mode, studentId }) => 
         }
     };
 
-    useEffect(() => {
-        if (isOpen && studentId) {
-            dispatch(getSingleStudent(studentId))
-                .unwrap()
-                .then((res) => {
-                    const s = res.data;
-                    setFormData({
-                        name: s.name || "",
-                        email: s.email || "",
-                        phone: s.phoneNumber || "",
-                        university: s.university || "",
-                        college: s.college || "",
-                        studentUniId: s.studentUniId || "",
-                        password: "",
-                        confirmPassword: "",
-                    });
-                });
-        }
-    }, [isOpen, studentId]);
+useEffect(() => {
+    if (!isOpen) return;
+ 
+    if (!studentId) {
+        // ADD MODE → RESET FORM
+        setFormData({
+            name: "",
+            email: "",
+            phoneNumber: "",
+            university: "",
+            college: "",
+            studentUniId: "",
+            password: "",
+            confirmPassword: "",
+        });
+        return;
+    }
+ 
+    // VIEW / EDIT → Load student data
+    dispatch(getSingleStudent(studentId))
+        .unwrap()
+        .then((res) => {
+            const s = res.data;
+            setFormData({
+                name: s.name || "",
+                email: s.email || "",
+                phoneNumber: s.phoneNumber || "",
+                university: s.university?._id || "",
+                college: s.college?._id || "",
+                studentUniId: s.studentUniId || "",
+              
+            });
+              // IMPORTANT: Load colleges for selected university
+            // if (s.university) {
+            //     dispatch(getColleges(s.university));
+            // }
+            if (s.university?._id) {
+    dispatch(getColleges(s.university._id));
+}
 
-
+        });
+}, [isOpen, studentId]);
 
     if (!isOpen) return null;
 
@@ -97,47 +124,90 @@ const StudentModal = ({ isOpen, onClose, student, onSave, mode, studentId }) => 
         });
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-        const newErrors = {};
+  const newErrors = {};
 
-        const requiredFields = ['name', 'email', 'phone'];
+  // Required fields for both add and edit
+  const requiredFields = [
+    "name",
+    "email",
+    "phoneNumber",
+    "university",
+    "college",
+    "studentUniId",
+  ];
 
-        requiredFields.forEach((key) => {
-            // Check for empty string, null, or undefined after trimming whitespace
-            if (!formData[key] || String(formData[key]).trim() === '') {
-                newErrors[key] = true;
-            }
-        });
+  // Password is required only in Add Mode
+  if (isAddMode) {
+    requiredFields.push("password", "confirmPassword");
+  }
 
-        if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = true;
-            showToast("Invalid email format!", "error");
-        }
+  // Check empty fields FIRST
+  requiredFields.forEach((key) => {
+    if (!formData[key] || String(formData[key]).trim() === "") {
+      newErrors[key] = true;
+    }
+  });
+
+  // If any field is empty → show ONE toast and stop
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    showToast("Please fill all required fields", "error");
+    return;
+  }
+
+  // Email must end with @usq.edu.au
+  const emailRegex = /^[^\s@]+@usq\.edu\.au$/;
+  if (!emailRegex.test(formData.email)) {
+    setErrors((prev) => ({ ...prev, email: true }));
+    showToast("Only @usq.edu.au email is allowed", "error");
+    return;
+  }
+
+  // Phone number must contain only digits
+  const phoneRegex = /^[0-9]+$/;
+  if (!phoneRegex.test(formData.phoneNumber)) {
+    setErrors((prev) => ({ ...prev, phoneNumber: true }));
+    showToast("Phone number must contain only digits", "error");
+    return;
+  }
+
+  //  Password validations (only if Add OR user typed something)
+  if (isAddMode || formData.password || formData.confirmPassword) {
+
+    if (formData.password.length < 6) {
+      setErrors((prev) => ({ ...prev, password: true }));
+      showToast("Password must be at least 6 characters long", "error");
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setErrors((prev) => ({
+        ...prev,
+        password: true,
+        confirmPassword: true,
+      }));
+      showToast("Passwords do not match", "error");
+      return;
+    }
+  }
+
+  // Final cleaned data for backend
+  const payload = { ...formData, id: studentId };
+
+  // Remove password fields in edit mode if empty
+  if (!isAddMode && !formData.password && !formData.confirmPassword) {
+    delete payload.password;
+    delete payload.confirmPassword;
+  }
+
+  onSave(payload);
+  onClose();
+};
 
 
-        // If error -> stop + toast
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
-            if (!Object.keys(newErrors).includes('email')) {
-                showToast("Required fields must be filled!", "error");
-            }
-            console.log("Validation failed:", newErrors);
-
-            return;
-        }
-
-        console.log("Final valid data being saved:", formData);
-
-        // Save + close
-        onSave({
-            ...formData,
-            id: studentId,
-        });
-
-        onClose();
-    };
 
     return (
         <div className="fixed inset-0 bg-black/30 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
@@ -173,12 +243,12 @@ const StudentModal = ({ isOpen, onClose, student, onSave, mode, studentId }) => 
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Email</label>
                         <input
-                            type="email"
+                            type="text"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
                             disabled={isViewMode}
-                            placeholder="+1 9876543210"
+                            placeholder="stansmith@usq.edu.au"
                             autoComplete="off"
                             className={inputClasses("email")}
                         />
@@ -276,13 +346,13 @@ const StudentModal = ({ isOpen, onClose, student, onSave, mode, studentId }) => 
                             <label className="block text-sm font-medium text-gray-700">Phone Number</label>
                             <input
                                 type="text"
-                                name="phone"
-                                value={formData.phone}
+                                name="phoneNumber"
+                                value={formData.phoneNumber}
                                 onChange={handleChange}
                                 disabled={isViewMode}
                                 placeholder="+1 9876543210"
                                 autoComplete="off"
-                                className={inputClasses("phone")}
+                                className={inputClasses("phoneNumber")}
                             />
                         </div>
 
