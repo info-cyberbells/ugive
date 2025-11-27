@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
   getAllStudentDataService,
-  getSingleCollegeService,
-  addCollegeService,
-  updateCollegeService,
-  deleteCollegeService,
+  getSingleStudentService,
+  createStudentService,
+  updateStudentService,
+  deleteStudentService,
 } from "../auth/authServices";
 
 const initialState = {
@@ -12,6 +12,7 @@ const initialState = {
   page: 1,
   limit: 10,
   total: 0,
+  singleStudent: null,
   totalPages: 1,
   isLoading: false,
   isError: false,
@@ -21,7 +22,7 @@ const initialState = {
 
 
 
-//get all university data thunk
+//get all students data thunk
 export const getAllStudentsData = createAsyncThunk(
   "students/getAllStudentsData",
   async (studentsData, thunkAPI) => {
@@ -37,48 +38,48 @@ export const getAllStudentsData = createAsyncThunk(
 )
 
 
-// Get single college
-export const getSingleCollege = createAsyncThunk(
-  "colleges/getSingleCollege",
-  async (collegeId, thunkAPI) => {
+// Get single student data
+export const getSingleStudent = createAsyncThunk(
+  "students/getSingleStudent",
+  async (studentId, thunkAPI) => {
     try {
-      return await getSingleCollegeService(collegeId);
+      return await getSingleStudentService(studentId);
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data?.message || err.message);
     }
   }
 );
 
-// Add new college
-export const addCollege = createAsyncThunk(
-  "colleges/addCollege",
+// Add new student 
+export const addStudent = createAsyncThunk(
+  "students/addStudent",
   async (data, thunkAPI) => {
     try {
-      return await addCollegeService(data);
+      return await createStudentService(data);
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data?.message || err.message);
     }
   }
 );
 
-// Update college
-export const updateCollege = createAsyncThunk(
-  "colleges/updateCollege",
-  async ({ collegeId, data }, thunkAPI) => {
+// Update student
+export const updateStudent = createAsyncThunk(
+  "students/updateStudent",
+  async ({ studentId, data }, thunkAPI) => {
     try {
-      return await updateCollegeService({ collegeId, data });
+      return await updateStudentService({ studentId, data });
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data?.message || err.message);
     }
   }
 );
 
-// Delete college
-export const deleteCollege = createAsyncThunk(
-  "colleges/deleteCollege",
-  async (collegeId, thunkAPI) => {
+// Delete student
+export const deleteStudent = createAsyncThunk(
+  "students/deleteStudent",
+  async (studentId, thunkAPI) => {
     try {
-      return await deleteCollegeService(collegeId);
+      return await deleteStudentService(studentId);
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data?.message || err.message);
     }
@@ -99,7 +100,7 @@ const studentDataSlice = createSlice({
   extraReducers: (builder) => {
     builder
 
-      // get all university data
+      // get all getAllStudentsData 
       .addCase(getAllStudentsData.pending, (state) => {
         state.isLoading = true;
       })
@@ -116,65 +117,66 @@ const studentDataSlice = createSlice({
         state.isError = action.payload;
       })
 
-      /* ------- GET SINGLE COLLEGE ------- */
-      .addCase(getSingleCollege.pending, (state) => {
+      /* ------- GET SINGLE studdent data ------- */
+      .addCase(getSingleStudent.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getSingleCollege.fulfilled, (state, action) => {
+      .addCase(getSingleStudent.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.singleCollege = action.payload.data;
+        state.singleStudent = action.payload.data;
       })
-      .addCase(getSingleCollege.rejected, (state, action) => {
+      .addCase(getSingleStudent.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
       })
 
-      /* ------- ADD COLLEGE ------- */
-      .addCase(addCollege.pending, (state) => {
+      /* ------- ADD new student ------- */
+      .addCase(addStudent.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(addCollege.fulfilled, (state, action) => {
+      .addCase(addStudent.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.colleges.push(action.payload.data);
         state.isSuccess = true;
+        state.message = "Student added successfully";
       })
-      .addCase(addCollege.rejected, (state, action) => {
+      .addCase(addStudent.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
       })
 
-      /* ------- UPDATE COLLEGE ------- */
-      .addCase(updateCollege.pending, (state) => {
+      /* ------- UPDATE student details ------- */
+      .addCase(updateStudent.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(updateCollege.fulfilled, (state, action) => {
+      .addCase(updateStudent.fulfilled, (state, action) => {
         state.isLoading = false;
-
+        state.isSuccess = true;
+        state.message = "Student updated successfully";
         const updated = action.payload.data;
-        state.colleges = state.colleges.map((c) =>
-          c._id === updated._id ? updated : c
+        state.studentData = state.studentData.map((student) =>
+          student._id === updated._id ? updated : student
         );
-
-        state.isSuccess = true;
       })
-      .addCase(updateCollege.rejected, (state, action) => {
+      .addCase(updateStudent.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
       })
 
-      /* ------- DELETE COLLEGE ------- */
-      .addCase(deleteCollege.pending, (state) => {
+      /* ------- DELETE student details ------- */
+      .addCase(deleteStudent.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(deleteCollege.fulfilled, (state, action) => {
+      .addCase(deleteStudent.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.isSuccess = true;
+        state.message = "Student deleted successfully";
         const deletedId = action.meta.arg;
-        state.colleges = state.colleges.filter((c) => c._id !== deletedId);
+        state.studentData = state.studentData.filter((student) => student._id !== deletedId);
       })
-      .addCase(deleteCollege.rejected, (state, action) => {
+      .addCase(deleteStudent.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

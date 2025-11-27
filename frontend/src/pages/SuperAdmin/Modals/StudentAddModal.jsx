@@ -3,14 +3,19 @@ import { X, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '../../../context/ToastContext';
 import { useDispatch, useSelector } from "react-redux";
 import { getUniversities, getColleges } from "../../../features/studentSlice";
+import { getSingleStudent } from "../../../features/studentDataSlice";
 
 
-const StudentModal = ({ isOpen, onClose, student, onSave }) => {
+const StudentModal = ({ isOpen, onClose, student, onSave, mode, studentId }) => {
     const dispatch = useDispatch();
     const { universities, colleges } = useSelector((state) => state.auth);
     const { showToast } = useToast();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const isViewMode = mode === "view";
+    const isEditMode = mode === "edit";
+    const isAddMode = !studentId;
 
 
     const [formData, setFormData] = useState({
@@ -27,7 +32,6 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
 
     const [errors, setErrors] = useState({});
 
-    const isEditMode = !!student?.id;
     const title = isEditMode ? 'Edit Student Details' : 'Add New Student';
 
     useEffect(() => {
@@ -50,19 +54,30 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
         }
     };
 
-
     useEffect(() => {
-        setFormData({
-            name: student?.name || '',
-            email: student?.email || '',
-            phone: student?.phone || '',
-        });
-        setErrors({});
-    }, [student, isOpen]);
+        if (isOpen && studentId) {
+            dispatch(getSingleStudent(studentId))
+                .unwrap()
+                .then((res) => {
+                    const s = res.data;
+                    setFormData({
+                        name: s.name || "",
+                        email: s.email || "",
+                        phone: s.phoneNumber || "",
+                        university: s.university || "",
+                        college: s.college || "",
+                        studentUniId: s.studentUniId || "",
+                        password: "",
+                        confirmPassword: "",
+                    });
+                });
+        }
+    }, [isOpen, studentId]);
+
+
 
     if (!isOpen) return null;
 
-    // Input classes with base 'border' class and conditional error styling
     const inputClasses = (field) =>
         `mt-1 block w-full rounded-lg border shadow-sm sm:text-sm p-2 transition duration-150 
         ${errors[field]
@@ -118,7 +133,7 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
         // Save + close
         onSave({
             ...formData,
-            id: student?.id,
+            id: studentId,
         });
 
         onClose();
@@ -146,6 +161,7 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
                             type="text"
                             name="name"
                             value={formData.name}
+                            disabled={isViewMode}
                             onChange={handleChange}
                             placeholder="John Carter"
                             autoComplete="off"
@@ -161,6 +177,7 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
+                            disabled={isViewMode}
                             placeholder="+1 9876543210"
                             autoComplete="off"
                             className={inputClasses("email")}
@@ -175,6 +192,7 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
                                 name="university"
                                 value={formData.university || ""}
                                 onChange={handleUniversityChange}
+                                disabled={isViewMode}
                                 className={`${inputClasses("university")} appearance-none pr-10`}
                             >
                                 <option value="">Select University</option>
@@ -210,7 +228,7 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
                                 value={formData.college || ""}
                                 onChange={handleChange}
                                 className={`${inputClasses("college")} appearance-none pr-10`}
-                                disabled={!formData.university}
+                                disabled={!formData.university || isViewMode}
                             >
                                 {!formData.university && (
                                     <option value="">Select a university first</option>
@@ -261,6 +279,7 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
                                 name="phone"
                                 value={formData.phone}
                                 onChange={handleChange}
+                                disabled={isViewMode}
                                 placeholder="+1 9876543210"
                                 autoComplete="off"
                                 className={inputClasses("phone")}
@@ -274,63 +293,66 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
                                 name="studentUniId"
                                 value={formData.studentUniId}
                                 onChange={handleChange}
+                                disabled={isViewMode}
                                 placeholder="UG2025CS1023"
                                 autoComplete="off"
                                 className={inputClasses("studentUniId")}
                             />
                         </div>
 
-                        {!isEditMode && (
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Password</label>
+                        {isAddMode && (
+                            <>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Password</label>
 
-                                <div className="relative">
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        name="password"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        placeholder="********"
-                                        autoComplete="new-password"
-                                        className={`${inputClasses("password")} pr-10`}
-                                    />
+                                    <div className="relative">
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            name="password"
+                                            value={formData.password}
+                                            onChange={handleChange}
+                                            placeholder="********"
+                                            autoComplete="new-password"
+                                            className={`${inputClasses("password")} pr-10`}
+                                        />
 
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
-                                    >
-                                        {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
-                                    </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
+                                        >
+                                            {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        )}
 
 
-                        {!isEditMode && (
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
 
-                                <div className="relative">
-                                    <input
-                                        type={showConfirmPassword ? "text" : "password"}
-                                        name="confirmPassword"
-                                        value={formData.confirmPassword}
-                                        onChange={handleChange}
-                                        placeholder="********"
-                                        autoComplete="new-password"
-                                        className={`${inputClasses("confirmPassword")} pr-10`}
-                                    />
 
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
-                                    >
-                                        {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
-                                    </button>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
+
+                                    <div className="relative">
+                                        <input
+                                            type={showConfirmPassword ? "text" : "password"}
+                                            name="confirmPassword"
+                                            value={formData.confirmPassword}
+                                            onChange={handleChange}
+                                            placeholder="********"
+                                            autoComplete="new-password"
+                                            className={`${inputClasses("confirmPassword")} pr-10`}
+                                        />
+
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600"
+                                        >
+                                            {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
+                            </>
                         )}
 
 
@@ -346,12 +368,15 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
                         >
                             Cancel
                         </button>
-                        <button
-                            type="submit"
-                            className="px-4 py-2 text-sm font-medium text-white cursor-pointer bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 shadow-sm transition"
-                        >
-                            {isEditMode ? 'Save Changes' : 'Add Student'}
-                        </button>
+                        {!isViewMode && (
+                            <button
+                                type="submit"
+                                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg cursor-pointer"
+                            >
+                                {isEditMode ? 'Save Changes' : 'Add Student'}
+                            </button>
+                        )}
+
                     </div>
 
                 </form>

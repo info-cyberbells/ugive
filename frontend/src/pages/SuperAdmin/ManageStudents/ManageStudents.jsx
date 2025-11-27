@@ -3,7 +3,14 @@ import { Trash2, Filter, Download, Plus, ChevronDown, ArrowUpDown } from 'lucide
 import StudentModal from '../Modals/StudentAddModal';
 import ConfirmationModal from '../Modals/deleteModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllStudentsData, deleteCollege, updateCollege, addCollege } from '../../../features/studentDataSlice';
+import {
+    getAllStudentsData,
+    addStudent,
+    updateStudent,
+    deleteStudent,
+    getSingleStudent,
+    reset
+} from '../../../features/studentDataSlice';
 import { useToast } from "../../../context/ToastContext";
 
 
@@ -11,7 +18,9 @@ import { useToast } from "../../../context/ToastContext";
 const ManageStudents = () => {
     const dispatch = useDispatch();
     const { showToast } = useToast();
-    const { studentData, isLoading, error, page, totalPages } = useSelector((state => state.studentData));
+    const { studentData, isLoading, isError, isSuccess, message, page, total, totalPages } = useSelector(
+        (state) => state.studentData
+    );
     const [selectedStudentIds, setSelectedStudentIds] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentStudent, setCurrentStudent] = useState(null);
@@ -60,6 +69,17 @@ const ManageStudents = () => {
         });
     };
 
+    useEffect(() => {
+        if (isSuccess && message) {
+            showToast(message, 'success');
+            dispatch(reset());
+        }
+        if (isError && message) {
+            showToast(message, 'error');
+            dispatch(reset());
+        }
+    }, [isSuccess, isError, message, dispatch, showToast]);
+
     const openModalForAdd = () => {
         setCurrentStudent(null);
         setIsModalOpen(true);
@@ -76,29 +96,31 @@ const ManageStudents = () => {
     };
 
     const handleSave = (data) => {
-        if (currentStudent) {
-            dispatch(updateCollege({ studentId: currentStudent._id, data }))
+        if (currentStudent?.mode === "edit") {
+            dispatch(updateStudent({ studentId: currentStudent.id, data }))
                 .unwrap()
                 .then(() => {
                     showToast("Student updated successfully!", "success");
+                    setIsModalOpen(false);
+                    setCurrentStudent(null);
                     dispatch(getAllStudentsData({ page, limit }));
                 })
                 .catch((err) => {
                     showToast(err || "Failed to update student!", "error");
                 });
         } else {
-            dispatch(addCollege(data))
+            dispatch(addStudent(data))
                 .unwrap()
                 .then(() => {
                     showToast("New student added successfully!", "success");
-                    dispatch(getAllStudentsData({ page, limit }));
+                    setIsModalOpen(false);
+                    dispatch(getAllStudentsData({ page: 1, limit }));
                 })
                 .catch((err) => {
                     showToast(err || "Failed to add student!", "error");
                 });
         }
     };
-
 
 
     // --- Delete Modal Handlers ---
@@ -123,28 +145,30 @@ const ManageStudents = () => {
 
     const confirmDelete = () => {
         if (isBulkDelete) {
-            dispatch(deleteCollege(selectedStudentIds))
-                .unwrap()
+            Promise.all(selectedStudentIds.map(id => dispatch(deleteStudent(id)).unwrap()))
                 .then(() => {
                     showToast(`Deleted ${selectedStudentIds.length} students successfully!`, "success");
+                    setSelectedStudentIds([]);
                     dispatch(getAllStudentsData({ page, limit }));
+                    closeDeleteModal();
                 })
                 .catch((err) => {
                     showToast(err || "Failed to delete students!", "error");
+                    closeDeleteModal();
                 });
         } else if (studentToDelete) {
-            dispatch(deleteCollege([studentToDelete._id]))
+            dispatch(deleteStudent(studentToDelete._id))
                 .unwrap()
                 .then(() => {
                     showToast("Student deleted successfully!", "success");
                     dispatch(getAllStudentsData({ page, limit }));
+                    closeDeleteModal();
                 })
                 .catch((err) => {
                     showToast(err || "Failed to delete student!", "error");
+                    closeDeleteModal();
                 });
         }
-
-        closeDeleteModal();
     };
 
 
@@ -242,7 +266,7 @@ const ManageStudents = () => {
 
                 {/* Table/List Container */}
                 <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-                    {isLoading || studentData.length === 0 && !error ? (
+                    {isLoading || studentData.length === 0 && !isError ? (
                         <SkeletonTable />
                     ) : studentData.length > 0 ? (
                         <>
@@ -346,11 +370,24 @@ const ManageStudents = () => {
 
                                                 {/* Action Column (View, Edit, Delete) */}
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
-                                                    <button className="cursor-pointer text-blue-600 hover:text-blue-900">
+                                                    <button
+                                                        onClick={() => {
+                                                            setCurrentStudent({ id: student._id, mode: "view" });
+                                                            setIsModalOpen(true);
+                                                        }}
+
+                                                        className="cursor-pointer text-blue-600 hover:text-blue-900"
+                                                    >
                                                         View
                                                     </button>
+
                                                     <button
-                                                        onClick={() => openModalForEdit(student)}
+                                                        onClick={() => {
+                                                            setCurrentStudent({ id: student._id, mode: "edit" });
+                                                            setIsModalOpen(true);
+                                                        }}
+
+
                                                         className="cursor-pointer text-yellow-600 hover:text-yellow-900">
                                                         Edit
                                                     </button>
@@ -450,9 +487,11 @@ const ManageStudents = () => {
             <StudentModal
                 isOpen={isModalOpen}
                 onClose={closeModal}
-                student={currentStudent}
+                studentId={currentStudent?.id}
+                mode={currentStudent?.mode}
                 onSave={handleSave}
             />
+
             <ConfirmationModal
                 isOpen={isDeleteModalOpen}
                 onClose={closeDeleteModal}

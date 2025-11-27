@@ -8,6 +8,8 @@ export const USER_ENDPOINTS = {
 
 
     SUPERADMIN_GET_PROFILE: `${API_BASE_URL}/super_admin/profile`,
+    SUPERADMIN_UPDATE_PROFILE: `${API_BASE_URL}/super_admin/profile`,
+    SUPERADMIN_CHANGE_PASSWORD: `${API_BASE_URL}/super_admin/change-password`,
 
     SUPERADMIN_ADD_UNIVERSITY: `${API_BASE_URL}/super_admin/universities`,
     SUPERADMIN_UPDATE_UNIVERSITY: `${API_BASE_URL}/super_admin/universities`,
@@ -18,13 +20,18 @@ export const USER_ENDPOINTS = {
 
 
     SUPERADMIN_GET_ALL_COLLEGES: `${API_BASE_URL}/super_admin/get-all-colleges`,
-    SUPERADMIN_GET_SINGLE_COLLEGE: `${API_BASE_URL}/super_admin/colleges`, 
     SUPERADMIN_ADD_COLLEGE: `${API_BASE_URL}/super_admin/colleges`,
+    SUPERADMIN_GET_SINGLE_COLLEGE: `${API_BASE_URL}/super_admin/colleges`,
     SUPERADMIN_UPDATE_COLLEGE: `${API_BASE_URL}/super_admin/colleges`,
     SUPERADMIN_DELETE_COLLEGE: `${API_BASE_URL}/super_admin/colleges`,
 
 
     SUPERADMIN_GET_ALL_STUDENTS: `${API_BASE_URL}/super_admin/get-all-students`,
+    SUPERADMIN_GET_SINGLE_STUDENT: `${API_BASE_URL}/super_admin/students`,
+    SUPERADMIN_ADD_STUDENT: `${API_BASE_URL}/super_admin/create-student`,
+    SUPERADMIN_UPDATE_STUDENT: `${API_BASE_URL}/super_admin/update-students`,
+    SUPERADMIN_DELETE_STUDENT: `${API_BASE_URL}/super_admin/delete-students`,
+
 
 
 };

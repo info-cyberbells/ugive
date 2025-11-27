@@ -48,6 +48,36 @@ export const getSuperAdminProfileService = async () => {
     return response.data;
 };
 
+//update superadmin profile
+export const updateSuperAdminProfileService = async (formData) => {
+    const auth = getAuthHeader();
+
+    const res = await axios.put(
+        USER_ENDPOINTS.SUPERADMIN_UPDATE_PROFILE,
+        formData,
+        {
+            headers: {
+                ...auth.headers,
+                "Content-Type": "multipart/form-data",
+            },
+        }
+    );
+
+    return res.data;
+};
+
+// super admin change password service
+export const changeSuperAdminPasswordService = async (data) => {
+    const response = await axios.put(
+        USER_ENDPOINTS.SUPERADMIN_CHANGE_PASSWORD,
+        data,
+        getAuthHeader()
+    );
+    return response.data;
+};
+
+
+
 //create university - superadmmin
 export const createUniversityService = async (uniData) => {
     const response = await axios.post(USER_ENDPOINTS.SUPERADMIN_ADD_UNIVERSITY,
@@ -109,6 +139,46 @@ export const getAllCollegesDataService = async (uniData) => {
     return response.data;
 }
 
+
+// create college
+export const createCollegeService = async (collegeData) => {
+    const response = await axios.post(USER_ENDPOINTS.SUPERADMIN_ADD_COLLEGE,
+        collegeData,
+        getAuthHeader()
+    );
+    return response.data;
+};
+
+//get single college data -suuperadmin
+export const getSingleCollegeService = async (id) => {
+    const response = await axios.get(
+        `${USER_ENDPOINTS.SUPERADMIN_GET_SINGLE_COLLEGE}/${id}`,
+        getAuthHeader()
+    );
+    return response.data;
+};
+
+// update College
+export const updateCollegeService = async (id, collegeData) => {
+    const response = await axios.put(
+        `${USER_ENDPOINTS.SUPERADMIN_UPDATE_COLLEGE}/${id}`,
+        collegeData,
+        getAuthHeader(),
+    );
+    return response.data;
+}
+
+//delete college - superadmin
+export const deleteCollegeService = async (id) => {
+    const response = await axios.delete(
+        `${USER_ENDPOINTS.SUPERADMIN_DELETE_COLLEGE}/${id}`,
+        getAuthHeader()
+    );
+    return response.data;
+};
+
+
+
 // get all student data
 export const getAllStudentDataService = async (studentData) => {
     const response = await axios.get(
@@ -120,32 +190,39 @@ export const getAllStudentDataService = async (studentData) => {
     return response.data;
 }
 
-//get single college - superadmin
-export const getSingleCollegeService = async (collegeId) => {
-    return axios.get(
-        `${USER_ENDPOINTS.SUPERADMIN_GET_SINGLE_COLLEGE}/${collegeId}`
-    ).then(res => res.data);
+// create student
+export const createStudentService = async (collegeData) => {
+    const response = await axios.post(USER_ENDPOINTS.SUPERADMIN_ADD_STUDENT,
+        collegeData,
+        getAuthHeader()
+    );
+    return response.data;
 };
 
-//add new college -  superadmin
-export const addCollegeService = async (data) => {
-    return axios.post(
-        USER_ENDPOINTS.SUPERADMIN_ADD_COLLEGE,
-        data
-    ).then(res => res.data);
+//get single student data -suuperadmin
+export const getSingleStudentService = async (id) => {
+    const response = await axios.get(
+        `${USER_ENDPOINTS.SUPERADMIN_GET_SINGLE_STUDENT}/${id}`,
+        getAuthHeader()
+    );
+    return response.data;
 };
 
-//update  college  -  superadmin
-export const updateCollegeService = async (collegeId, data) => {
-    return axios.put(
-        `${USER_ENDPOINTS.SUPERADMIN_UPDATE_COLLEGE}/${collegeId}`,
-        data
-    ).then(res => res.data);
-};
+// update student data
+export const updateStudentService = async ({ studentId, data }) => {
+    const response = await axios.put(
+        `${USER_ENDPOINTS.SUPERADMIN_UPDATE_STUDENT}/${studentId}`,
+        data,
+        getAuthHeader(),
+    );
+    return response.data;
+}
 
-//delete college - superadmin
-export const deleteCollegeService = async (collegeId) => {
-    return axios.delete(
-        `${USER_ENDPOINTS.SUPERADMIN_DELETE_COLLEGE}/${collegeId}`
-    ).then(res => res.data);
+//delete student superadmin
+export const deleteStudentService = async (id) => {
+    const response = await axios.delete(
+        `${USER_ENDPOINTS.SUPERADMIN_DELETE_STUDENT}/${id}`,
+        getAuthHeader()
+    );
+    return response.data;
 };
