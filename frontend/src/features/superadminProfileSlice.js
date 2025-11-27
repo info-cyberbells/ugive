@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import {
+    changeSuperAdminPasswordService,
     getSuperAdminProfileService,
+    updateSuperAdminProfileService,
     // createUniversityService,
     // updateUniversityService
 } from '..//auth/authServices';
@@ -20,6 +22,38 @@ export const fetchSuperAdminProfile = createAsyncThunk(
         }
     }
 );
+
+// update superAdmin profie thunk
+
+export const updateSuperAdminProfile = createAsyncThunk(
+  "superAdmin/updateProfile",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await updateSuperAdminProfileService(formData);
+      return response.user;  
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Profile update failed"
+      );
+    }
+  }
+);
+
+// change super admin password thunk
+
+export const changeSuperAdminPassword = createAsyncThunk(
+  "superadmin/changePassword",
+  async (passwordData, thunkAPI) => {
+    try {
+      return await changeSuperAdminPasswordService(passwordData);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Password update failed"
+      );
+    }
+  }
+);
+
 
 // // Create University (EXISTING)
 // export const createUniversity = createAsyncThunk(
@@ -95,40 +129,35 @@ const superadminSlice = createSlice({
                 state.profileError = action.payload;
             })
 
-            // // ===== CREATE UNIVERSITY (EXISTING) =====
-            // .addCase(createUniversity.pending, (state) => {
-            //     state.universitiesLoading = true;
-            //     state.universitiesError = null;
-            // })
-            // .addCase(createUniversity.fulfilled, (state, action) => {
-            //     state.universitiesLoading = false;
-            //     state.universities.push(action.payload);
-            //     state.success = true;
-            // })
-            // .addCase(createUniversity.rejected, (state, action) => {
-            //     state.universitiesLoading = false;
-            //     state.universitiesError = action.payload;
-            // })
+            // update superAdmin profile
+             .addCase(updateSuperAdminProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.success = false;
+      })
+      .addCase(updateSuperAdminProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.profile = action.payload;
+      })
+      .addCase(updateSuperAdminProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // change password  builder
+      .addCase(changeSuperAdminPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(changeSuperAdminPassword.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(changeSuperAdminPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
 
-            // // ===== UPDATE UNIVERSITY (EXISTING) =====
-            // .addCase(updateUniversity.pending, (state) => {
-            //     state.universitiesLoading = true;
-            //     state.universitiesError = null;
-            // })
-            // .addCase(updateUniversity.fulfilled, (state, action) => {
-            //     state.universitiesLoading = false;
-            //     const index = state.universities.findIndex(
-            //         (uni) => uni.id === action.payload.id
-            //     );
-            //     if (index !== -1) {
-            //         state.universities[index] = action.payload;
-            //     }
-            //     state.success = true;
-            // })
-            // .addCase(updateUniversity.rejected, (state, action) => {
-            //     state.universitiesLoading = false;
-            //     state.universitiesError = action.payload;
-            // });
+        
     },
 });
 
