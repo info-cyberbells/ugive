@@ -10,19 +10,9 @@ import {
 import CollegeModal from "../Modals/CollegeAddModal";
 import ConfirmationModal from "../Modals/deleteModal";
 import { useDispatch, useSelector } from "react-redux";
-import { getCollegesData } from "../../../features/collegesSlice";
+import { deleteCollege, getCollegesData, getSingleCollege } from "../../../features/collegesSlice";
+import { useToast } from "../../../context/ToastContext";
 
-// --- DUMMY DATA FOR COLLEGES ---
-const collegeData = [
-  // { id: 101, name: 'College of Arts & Sciences', universityId: 'uni-harvard-001', address_line_1: '54 Oxford St', address_line_2: 'Sever Hall', city: 'Cambridge', state: 'MA', postcode: '02138', status: 'Operational' },
-  // { id: 102, name: 'School of Engineering', universityId: 'uni-stanford-002', address_line_1: '450 Serra Mall', address_line_2: null, city: 'Stanford', state: 'CA', postcode: '94305', status: 'Operational' },
-  // { id: 103, name: 'Sloan School of Management', universityId: 'uni-mit-003', address_line_1: '100 Main St', address_line_2: 'Building 54', city: 'Cambridge', state: 'MA', postcode: '02142', status: 'Under Review' },
-  // { id: 104, name: 'College of Medicine', universityId: 'uni-yale-004', address_line_1: '333 Cedar St', address_line_2: 'Medical Campus', city: 'New Haven', state: 'CT', postcode: '06510', status: 'Operational' },
-  // { id: 105, name: 'Woodrow Wilson School', universityId: 'uni-princeton-005', address_line_1: 'Princeton Campus', address_line_2: 'Robertson Hall', city: 'Princeton', state: 'NJ', postcode: '08544', status: 'Operational' },
-  // { id: 106, name: 'Journalism School', universityId: 'uni-columbia-006', address_line_1: '2950 Broadway', address_line_2: 'Pulitzer Hall', city: 'New York', state: 'NY', postcode: '10027', status: 'Operational' },
-  // { id: 107, name: 'Harris Public Policy', universityId: 'uni-uchicago-007', address_line_1: '1307 E 60th St', address_line_2: null, city: 'Chicago', state: '', postcode: '60637', status: 'Under Review' }, // state is intentionally missing
-  // { id: 108, name: 'Trinity College', universityId: 'uni-duke-008', address_line_1: 'West Campus', address_line_2: 'Duke Chapel', city: 'Durham', state: 'NC', postcode: '27708', status: 'Operational' },
-];
 
 const StatusBadge = ({ status }) => {
   const colorMap = {
@@ -49,8 +39,9 @@ const StatusBadge = ({ status }) => {
 
 const manageColleges = () => {
   const dispatch = useDispatch();
+  const {showToast} = useToast();
 
-  const { college, isLoading, error, page, totalPages } = useSelector(
+  const { college, loading, error, page, totalPages } = useSelector(
     (state) => state.college
   );
 
@@ -58,10 +49,13 @@ const manageColleges = () => {
   // const data = collegeData;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentCollege, setCurrentCollege] = useState(null);
+//   const [currentCollege, setCurrentCollege] = useState(null);
+  const { currentCollege } = useSelector((state) => state.college);
+
 
   const [limit, setLimit] = useState(10);
 
+    const [isViewMode, setIsViewMode] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [collegeToDelete, setCollegeToDelete] = useState(null); // For single delete
   const [isBulkDelete, setIsBulkDelete] = useState(false); // For bulk delete
@@ -100,7 +94,7 @@ const manageColleges = () => {
     setSelectedCollegeIds((prevSelected) => {
       if (prevSelected.includes(id)) {
         // Deselect
-        return prevSelected.filter((collegeId) => collegeId !== _id);
+        return prevSelected.filter((collegeId) => collegeId !== id);
       } else {
         // Select
         return [...prevSelected, id];
@@ -109,19 +103,18 @@ const manageColleges = () => {
   };
 
   const openModalForAdd = () => {
-    setCurrentCollege(null);
     setIsModalOpen(true);
   };
 
   // This handler opens the modal in editable mode
   const openModalForEdit = (college) => {
-    setCurrentCollege(college);
+    // setCurrentCollege(college);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setCurrentCollege(null);
+    // setCurrentCollege(null);
   };
 
   const handleSave = () => {};
@@ -147,10 +140,58 @@ const manageColleges = () => {
   };
 
   const confirmDelete = () => {
-    if (isBulkDelete) {
-    } else if (universityToDelete) {
-    }
-    closeDeleteModal();
+  if (isBulkDelete) {
+    Promise.all(
+      selectedCollegeIds.map((id) =>
+        dispatch(deleteCollege(id)).unwrap()
+      )
+    )
+      .then(() => {
+       showToast("Selected colleges deleted successfully!", "success");
+        setSelectedCollegeIds([]);
+      })
+      .catch((err) => {
+       showToast(err || "Failed to delete selected colleges", "error");
+      });
+  } else if (collegeToDelete) {
+    dispatch(deleteCollege(collegeToDelete._id))
+      .unwrap()
+      .then(() => {
+       showToast("College deleted successfully!", "success");
+      })
+      .catch((err) => {
+       showToast(err || "Failed to delete college", "error");
+      });
+  }
+
+  closeDeleteModal();
+};
+
+
+  const SkeletonTable = () => {
+    return (
+      <div className="animate-pulse p-4">
+        <div className="h-6 w-48 bg-gray-200 rounded mb-4"></div>
+
+        <div className="border border-gray-200 rounded-xl overflow-hidden">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="flex items-center p-4 gap-4">
+              <div className="w-4 h-4 bg-gray-200 rounded"></div>
+              <div className="flex-1 h-4 bg-gray-200 rounded"></div>
+              <div className="flex-1 h-4 bg-gray-200 rounded"></div>
+              <div className="flex-1 h-4 bg-gray-200 rounded"></div>
+              <div className="flex-1 h-4 bg-gray-200 rounded"></div>
+              <div className="w-20 h-4 bg-gray-200 rounded"></div>
+              <div className="w-20 h-4 bg-gray-200 rounded"></div>
+              <div className="w-20 h-4 bg-gray-200 rounded"></div>
+              <div className="w-20 h-4 bg-gray-200 rounded"></div>
+              <div className="w-20 h-4 bg-gray-200 rounded"></div>
+
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -216,7 +257,10 @@ const manageColleges = () => {
 
         {/* Table/List Container */}
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-          {data.length > 0 ? (
+          {loading || data.length === 0 && !error ? (
+            <SkeletonTable />
+          ) : data &&
+            data.length > 0 ? (
             <>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200 ">
@@ -239,7 +283,7 @@ const manageColleges = () => {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
-                          College Name <ArrowUpDown size={14} />
+                          College Name
                         </div>
                       </th>
                       <th
@@ -247,7 +291,7 @@ const manageColleges = () => {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
-                          Uni. ID <ArrowUpDown size={14} />
+                          Uni. ID 
                         </div>
                       </th>
                       <th
@@ -255,23 +299,23 @@ const manageColleges = () => {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
-                          Address Line 1 <ArrowUpDown size={14} />
+                          Address Line 1 
                         </div>
                       </th>
+                      {/* <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                      >
+                        <div className="flex items-center gap-1">
+                          City 
+                        </div>
+                      </th> */}
                       <th
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
-                          City <ArrowUpDown size={14} />
-                        </div>
-                      </th>
-                      <th
-                        scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
-                      >
-                        <div className="flex items-center gap-1">
-                          State <ArrowUpDown size={14} />
+                          State 
                         </div>
                       </th>
                       {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150">
@@ -324,14 +368,14 @@ const manageColleges = () => {
                         </td>
 
                         {/* Address Line 1 Column */}
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="px-6 py-4 text-sm text-gray-600 max-w-[200px] whitespace-normal break-words">
                           {college.address_line_1 || "N/A"}
                         </td>
 
                         {/* City Column */}
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                           {college.city || "N/A"}
-                        </td>
+                        </td> */}
 
                         {/* State Column */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
@@ -350,11 +394,21 @@ const manageColleges = () => {
 
                         {/* Action Column (View, Edit, Delete) */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
-                          <button className="cursor-pointer text-blue-600 hover:text-blue-900">
+                          <button
+                          onClick={() => {
+    dispatch(getSingleCollege(college._id));
+    setIsViewMode(true);  
+    setIsModalOpen(true);
+  }}
+                          className="cursor-pointer text-blue-600 hover:text-blue-900">
                             View
                           </button>
                           <button
-                            onClick={() => openModalForEdit(college)}
+                             onClick={() => {
+                                                          dispatch(getSingleCollege(college._id));
+                                                          setIsViewMode(false);
+                                                          setIsModalOpen(true);
+                                                        }}
                             className="cursor-pointer text-yellow-600 hover:text-yellow-900"
                           >
                             Edit
@@ -371,7 +425,7 @@ const manageColleges = () => {
                   </tbody>
                 </table>
               </div>
-              <div className="flex justify-between items-center p-4 bg-white border-t">
+              <div className="flex justify-between items-center p-4 bg-white ">
                 {/* Limit Dropdown */}
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-600">Rows per page:</span>
@@ -460,6 +514,8 @@ const manageColleges = () => {
         isOpen={isModalOpen}
         onClose={closeModal}
         college={currentCollege}
+                isViewMode={isViewMode}
+
         onSave={handleSave}
       />
       <ConfirmationModal
