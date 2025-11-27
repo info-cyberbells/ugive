@@ -20,11 +20,35 @@ import {
   LogOut
 } from "lucide-react";
 
+const ROLE_BASED_MENUS = {
+  super_admin: [
+    { id: "profile", title: "User Profile", icon: UserCircle },
+    { id: "manage-universities", title: "Manage Universities", icon: School },
+    { id: "manage-colleges", title: "Manage Colleges", icon: GraduationCap },
+    { id: "manage-students", title: "Manage Students", icon: BookOpen },
+    { id: "social", title: "Social", icon: Share2 },
+  ],
 
+  admin: [
+    { id: "profile", title: "User Profile", icon: UserCircle },
+    { id: "manage-students", title: "Manage Students", icon: BookOpen },
+  ],
+
+  student: [
+    { id: "profile", title: "User Profile", icon: UserCircle },
+    { id: "social", title: "Social", icon: Share2 },
+  ],
+};
 
 const MenuItems = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+   const user = JSON.parse(localStorage.getItem("user"));
+  const role = user?.role?.toLowerCase(); // "super_admin"
+
+  // Load role-based menu
+  const sections = ROLE_BASED_MENUS[role] || [];
 
   const handleLogout = () => {
     localStorage.clear();
@@ -33,7 +57,7 @@ const MenuItems = () => {
     navigate("/");
   };
 
-  const sections = [
+  const section = [
     {
       id: "profile",
       title: "User Profile",
