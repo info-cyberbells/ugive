@@ -226,33 +226,6 @@ export const deleteStudentService = async (id) => {
     return response.data;
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //student get profile   
 export const getStudentProfileService = async () => {
     const response = await axios.get(
@@ -261,3 +234,23 @@ export const getStudentProfileService = async () => {
     );
     return response.data;
 }
+
+
+// update student profilr 
+
+export const updateStudentProfileService = async (formData) => {
+  const authHeader = getAuthHeader();  
+
+  const response = await api.put(
+    USER_ENDPOINTS.STUDENT_UPDATE_PROFILE,
+    formData,
+    {
+      headers: {
+        ...authHeader.headers,                     
+        "Content-Type": "multipart/form-data",     
+      }
+    }
+  );
+
+  return response.data;
+};
