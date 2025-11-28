@@ -1,24 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-    changeSuperAdminPassword,
+  changeSuperAdminPassword,
   fetchSuperAdminProfile,
   updateSuperAdminProfile,
 } from "../../features/superadminProfileSlice";
 import { Eye, EyeOff } from "lucide-react";
 import { useToast } from "../../context/ToastContext";
 import imageCompression from "browser-image-compression";
-import { fetchProfile, updateStudentProfile } from "../../features/studentDataSlice";
 
 const ProfileSettings = () => {
-  
   const [activeTab, setActiveTab] = useState("profile");
   const dispatch = useDispatch();
   const { showToast } = useToast();
-  // const { profile, loading } = useSelector((state) => state.superadmin);
-
-
-
+  const { profile, loading } = useSelector((state) => state.superadmin);
   const [showCurrentPass, setShowCurrentPass] = useState(false);
   const [showNewPass, setShowNewPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
@@ -28,62 +23,19 @@ const ProfileSettings = () => {
     confirmPassword: false,
   });
 
-  
-
-  
-  // ---------------- ROLE FROM LOCAL STORAGE ---------------- //
-const user = JSON.parse(localStorage.getItem("user"));
-const role = user?.role?.toLowerCase() || "super_admin";
-
-const superadminState = useSelector((state) => state.superadmin);
-const studentState = useSelector((state) => state.studentData);
-
-const profile = role === "student" 
-  ? studentState.studentProfile 
-  : superadminState.profile;
-
-const loading = role === "student"
-  ? studentState.isLoading
-  : superadminState.loading;
-
-// ---------------- ROLE BASED FIELD VISIBILITY ---------------- //
-const ROLE_BASED_FIELDS = {
-  super_admin: [
-    { id: "fullName", field: "name", label: "Full Name" },
-    { id: "email", field: "email", label: "Email" },
-    { id: "phoneNumber", field: "phoneNumber", label: "Phone Number" }
-  ],
-
-  admin: [
-    { id: "fullName", field: "name", label: "Full Name" },
-    { id: "phoneNumber", field: "phoneNumber", label: "Phone Number" }
-  ],
-
-  student: [
-    { id: "fullName", field: "name", label: "Full Name" },
-    { id: "email", field: "email", label: "Email" },
-    { id: "phoneNumber", field: "phoneNumber", label: "Phone Number" },
-    { id: "studentUniId", field: "studentUniId", label: "Student University ID" },
-    { id: "university", field: "university", label: "University" },
-    { id: "college", field: "college", label: "College" },
-  ]
-};
-
-
-
-const visibleFields = ROLE_BASED_FIELDS[role] || [];
-
-
   // 🧠 Profile form state (all empty)
- const [formData, setFormData] = useState({
-  fullName: "",
-  email: "",
-  phoneNumber: "",
-  studentUniId: "",
-  university: "",
-  college: "",
-});
-
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    dob: "",
+    municipality: "",
+    license: "",
+    phoneNumber: "",
+    city: "",
+    validUntil: "",
+    country: "",
+  });
 
   const [initialProfile, setInitialProfile] = useState(null);
 
@@ -97,39 +49,23 @@ const visibleFields = ROLE_BASED_FIELDS[role] || [];
     confirmPassword: "",
   });
 
- useEffect(() => {
-  if (!role) return;
+  useEffect(() => {
+    dispatch(fetchSuperAdminProfile());
+  }, [dispatch]);
 
-  if (role === "super_admin") {
-    dispatch(fetchSuperAdminProfile());     // already exists
-  } 
-  else if (role === "student") {
-    dispatch(fetchProfile());        // your student API thunk
-  }
-}, [dispatch, role]);
+  useEffect(() => {
+    if (profile) {
+      const loaded = {
+        fullName: profile.name || "",
+        email: profile.email || "",
+        phoneNumber: profile.phoneNumber || "",
+      };
 
-
-useEffect(() => {
-  if (!profile) return;
-
-  const filtered = {};
-
-  visibleFields.forEach((field) => {
-    if (field.field === "name") filtered[field.id] = profile.name || "";
-    else if (field.field === "email") filtered[field.id] = profile.email || "";
-    else if (field.field === "university") filtered[field.id] = profile.university?.name || "";
-    else if (field.field === "college") filtered[field.id] = profile.college?.name || "";
-    else filtered[field.id] = profile[field.field] || "";
-  });
-
-  setFormData(filtered);
-  setInitialProfile(filtered);
-
-  if (profile.profileImage) {
-    setImagePreview(profile.profileImage);
-  }
-}, [profile]);
-
+      setFormData(loaded);
+      setInitialProfile(loaded);
+      setImagePreview(profile.profileImage || null);
+    }
+  }, [profile]);
 
   const hasChanges = () => {
     if (!initialProfile) return true;
@@ -199,97 +135,41 @@ useEffect(() => {
     }
   };
 
-const handleSave = (e) => {
-  e.preventDefault();
+  const handleSave = (e) => {
+    e.preventDefault();
 
-  if (!hasChanges()) {
-    showToast("No changes detected!", "info");
-    return;
-  }
+    if (!hasChanges()) {
+      showToast("No changes detected!", "info");
+      return;
+    }
 
-  const formDataToSend = new FormData();
-  formDataToSend.append("name", formData.fullName);
-  formDataToSend.append("phoneNumber", formData.phoneNumber);
+    const formDataToSend = new FormData();
+    formDataToSend.append("name", formData.fullName);
+    formDataToSend.append("phoneNumber", formData.phoneNumber);
 
-  if (role === "student") {
-    formDataToSend.append("studentUniId", formData.studentUniId);
-    formDataToSend.append("university", formData.university);
-    formDataToSend.append("college", formData.college);
-  }
+    if (profileImage) {
+      formDataToSend.append("profileImage", profileImage);
+    }
 
-  if (profileImage) {
-    formDataToSend.append("profileImage", profileImage);
-  }
-
-  // 🌟 FINAL: ONE SINGLE ROLE–BASED API LOGIC
-  if (role === "student") {
-    // STUDENT UPDATE API
-    dispatch(updateStudentProfile(formDataToSend))
-      .unwrap()
-      .then((res) => {
-        const updated = res;
-
-        setInitialProfile({
-          fullName: updated.name,
-          email: updated.email,
-          phoneNumber: updated.phoneNumber,
-          studentUniId: updated.studentUniId,
-          university: updated.university_name,
-          college: updated.college_name,
-        });
-
-        setProfileImage(null);
-        showToast("Student profile updated successfully!", "success");
-      })
-      .catch((err) => {
-        showToast(err || "Failed to update student profile!", "error");
-      });
-
-    return;
-  }
-
-  if (role === "admin") {
-    // ADMIN UPDATE API (same endpoint as super admin?)
     dispatch(updateSuperAdminProfile(formDataToSend))
       .unwrap()
       .then((updatedUser) => {
-        setInitialProfile({
+        showToast("Profile updated successfully!", "success");
+        const updated = {
           fullName: updatedUser.name,
           email: updatedUser.email,
           phoneNumber: updatedUser.phoneNumber,
-        });
+        };
 
+        setInitialProfile(updated);
         setProfileImage(null);
-        showToast("Admin profile updated successfully!", "success");
       })
+
       .catch((err) => {
-        showToast(err || "Failed to update admin profile!", "error");
+        showToast("Failed to update profile!", "error");
+        console.error(err);
       });
-
-    return;
-  }
-
-  if (role === "super_admin") {
-    // SUPER ADMIN UPDATE API
-    dispatch(updateSuperAdminProfile(formDataToSend))
-      .unwrap()
-      .then((updatedUser) => {
-        setInitialProfile({
-          fullName: updatedUser.name,
-          email: updatedUser.email,
-          phoneNumber: updatedUser.phoneNumber,
-        });
-
-        setProfileImage(null);
-        showToast("Super admin profile updated successfully!", "success");
-      })
-      .catch((err) => {
-        showToast(err || "Failed to update super admin profile!", "error");
-      });
-
-    return;
-  }
-};
+  };
 
   const handlePassChange = () => {
     const { currentPassword, newPassword, confirmPassword } = securityData;
@@ -316,30 +196,30 @@ const handleSave = (e) => {
     }
 
     dispatch(changeSuperAdminPassword({ currentPassword, newPassword }))
-  .unwrap()
-  .then(() => {
-    showToast("Password changed successfully!", "success");
+      .unwrap()
+      .then(() => {
+        showToast("Password changed successfully!", "success");
 
-    setSecurityData({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
+        setSecurityData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
 
-    setPasswordErrors({
-      currentPassword: false,
-      newPassword: false,
-      confirmPassword: false,
-    });
+        setPasswordErrors({
+          currentPassword: false,
+          newPassword: false,
+          confirmPassword: false,
+        });
 
-    setShowCurrentPass(false);
-    setShowNewPass(false);
-    setShowConfirmPass(false);
-    setActiveTab("profile");
-  })
-  .catch((err) => {
-    showToast(err || "Failed to change password!", "error");
-  });
+        setShowCurrentPass(false);
+        setShowNewPass(false);
+        setShowConfirmPass(false);
+        setActiveTab("profile");
+      })
+      .catch((err) => {
+        showToast(err || "Failed to change password!", "error");
+      });
 
   };
 
@@ -350,22 +230,20 @@ const handleSave = (e) => {
         <div className="flex border-b border-gray-200 mb-6">
           <button
             onClick={() => setActiveTab("profile")}
-            className={`pb-2 px-4 text-sm cursor-pointer font-medium transition ${
-              activeTab === "profile"
+            className={`pb-2 px-4 text-sm cursor-pointer font-medium transition ${activeTab === "profile"
                 ? "text-[#3565E3] border-b-2 border-blue-600"
                 : "text-[#718EBF]"
-            }`}
+              }`}
           >
             Edit Profile
           </button>
 
           <button
             onClick={() => setActiveTab("security")}
-            className={`pb-2 px-4 text-sm font-medium cursor-pointer transition ${
-              activeTab === "security"
+            className={`pb-2 px-4 text-sm font-medium cursor-pointer transition ${activeTab === "security"
                 ? "text-blue-600 border-b-2 border-blue-600"
                 : "text-[#718EBF]"
-            }`}
+              }`}
           >
             Security
           </button>
@@ -426,39 +304,9 @@ const handleSave = (e) => {
               </div>
 
               {/* Form Section */}
-              {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full"> */}
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-
-  {visibleFields.map((field) => (
-    <div key={field.id}>
-      <label className="text-sm">{field.label}</label>
-
-      {field.id === "dob" ? (
-        <input
-          type="date"
-          name={field.id}
-          value={formData[field.id] || ""}
-          onChange={handleProfileChange}
-          className="w-full border border-gray-200 rounded-xl px-3 py-2.5 mt-1 text-sm text-[#718EBF]"
-        />
-      ) : (
-        <input
-          type="text"
-          name={field.id}
-          value={formData[field.id] || ""}
-          onChange={handleProfileChange}
-          placeholder={field.label}
-          disabled={field.id === "email"}
-          className={`w-full border border-gray-200 rounded-xl px-3 py-2.5 mt-1 text-sm text-[#718EBF] 
-            ${field.id === "email" ? "bg-gray-100 cursor-not-allowed" : ""}`}
-        />
-      )}
-    </div>
-  ))}
-
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                 {/* Full Name */}
-                {/* <div>
+                <div>
                   <label className="text-sm">Full Name</label>
                   <input
                     type="text"
@@ -468,10 +316,10 @@ const handleSave = (e) => {
                     placeholder="Full Name"
                     className="w-full border text-[#718EBF] border-gray-200 rounded-xl px-3 py-2.5 mt-1 text-sm focus:ring-1 focus:ring-[#DFEAF2] outline-none"
                   />
-                </div> */}
+                </div>
 
                 {/* Email */}
-                {/* <div>
+                <div>
                   <label className="text-sm">Email</label>
                   <input
                     type="email"
@@ -483,10 +331,10 @@ const handleSave = (e) => {
                     placeholder="Enter email"
                     className="w-full border border-gray-200 rounded-xl text-[#718EBF] focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
                   />
-                </div> */}
+                </div>
 
                 {/* Phone Number */}
-                {/* <div>
+                <div>
                   <label className="text-sm">Phone Number</label>
                   <input
                     type="tel"
@@ -496,7 +344,7 @@ const handleSave = (e) => {
                     placeholder="Enter phone number"
                     className="w-full border border-gray-200 rounded-xl text-[#718EBF] focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
                   />
-                </div> */}
+                </div>
 
                 {/* Date of Birth */}
                 {/* <div>
@@ -583,11 +431,10 @@ const handleSave = (e) => {
                     onClick={handleSave}
                     type="button"
                     disabled={loading}
-                    className={`${
-                      loading
+                    className={`${loading
                         ? "bg-gray-400 cursor-not-allowed"
                         : "bg-[#3565E3] cursor-pointer hover:bg-blue-700"
-                    } text-white text-xs rounded-xl px-16 py-2.5 transition`}
+                      } text-white text-xs rounded-xl px-16 py-2.5 transition`}
                   >
                     {loading ? "Saving..." : "Save"}
                   </button>
@@ -612,11 +459,10 @@ const handleSave = (e) => {
                       onChange={handleSecurityChange}
                       placeholder="Enter current password"
                       autoComplete="new-password"
-                      className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${
-                        passwordErrors.currentPassword
+                      className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${passwordErrors.currentPassword
                           ? "border-red-500 bg-red-50 focus:ring-red-300"
                           : "border-gray-200 focus:ring-[#DFEAF2]"
-                      } text-[#718EBF]`}
+                        } text-[#718EBF]`}
                     />
                     <button
                       type="button"
@@ -642,11 +488,10 @@ const handleSave = (e) => {
                       value={securityData.newPassword}
                       onChange={handleSecurityChange}
                       placeholder="Enter new password"
-                      className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${
-                        passwordErrors.newPassword
+                      className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${passwordErrors.newPassword
                           ? "border-red-500 bg-red-50 focus:ring-red-300"
                           : "border-gray-200 focus:ring-[#DFEAF2]"
-                      } text-[#718EBF]`}
+                        } text-[#718EBF]`}
                     />
                     <button
                       type="button"
@@ -671,11 +516,10 @@ const handleSave = (e) => {
                       value={securityData.confirmPassword}
                       onChange={handleSecurityChange}
                       placeholder="Re-enter new password"
-                      className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${
-                        passwordErrors.confirmPassword
+                      className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${passwordErrors.confirmPassword
                           ? "border-red-500 bg-red-50 focus:ring-red-300"
                           : "border-gray-200 focus:ring-[#DFEAF2]"
-                      } text-[#718EBF]`}
+                        } text-[#718EBF]`}
                     />
                     <button
                       type="button"
@@ -697,8 +541,8 @@ const handleSave = (e) => {
                   onClick={handlePassChange}
                   className="bg-[#3565E3] text-white text-xs rounded-xl px-16 py-2.5 cursor-pointer hover:bg-blue-700 transition"
                 >
-                  {loading ? "Updating..." : "Change Password"} 
-                 
+                  {loading ? "Updating..." : "Change Password"}
+
                 </button>
               </div>
             </div>
