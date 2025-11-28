@@ -7,6 +7,7 @@ import {
   deleteStudentService,
   getStudentProfileService,
   updateStudentProfileService,
+  changeStudentPasswordService,
 } from "../auth/authServices";
 
 const initialState = {
@@ -111,6 +112,21 @@ export const updateStudentProfile = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Profile update failed"
+      );
+    }
+  }
+);
+
+// student cahnge password thunk
+
+export const changeStudentPassword = createAsyncThunk(
+  "student/changePassword",
+  async (passwordData, thunkAPI) => {
+    try {
+      return await changeStudentPasswordService(passwordData);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Password update failed"
       );
     }
   }
@@ -243,6 +259,19 @@ const studentDataSlice = createSlice({
               state.isLoading = false;
               state.isError = action.payload;
             })
+
+            // cahnge student password 
+            .addCase(changeStudentPassword.pending, (state) => {
+                    state.isLoading = true;
+                    state.isError = null;
+                  })
+                  .addCase(changeStudentPassword.fulfilled, (state) => {
+                    state.isLoading = false;
+                  })
+                  .addCase(changeStudentPassword.rejected, (state, action) => {
+                    state.isLoading = false;
+                    state.isError = action.payload;
+                  });
   },
 });
 

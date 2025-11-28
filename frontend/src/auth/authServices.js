@@ -236,21 +236,31 @@ export const getStudentProfileService = async () => {
 }
 
 
-// update student profilr 
+// update student profile
 
 export const updateStudentProfileService = async (formData) => {
-  const authHeader = getAuthHeader();  
+  const auth = getAuthHeader();  
 
-  const response = await api.put(
+  const response = await axios.put(
     USER_ENDPOINTS.STUDENT_UPDATE_PROFILE,
     formData,
     {
       headers: {
-        ...authHeader.headers,                     
+        ...auth.headers,                     
         "Content-Type": "multipart/form-data",     
       }
     }
   );
 
   return response.data;
+};
+
+// change password service student
+export const changeStudentPasswordService = async (data) => {
+    const response = await axios.put(
+        USER_ENDPOINTS.STUDENT_CHANGE_PASSWORD,
+        data,
+        getAuthHeader()
+    );
+    return response.data;
 };
