@@ -339,22 +339,20 @@ const ProfileSettings = () => {
         <div className="flex border-b border-gray-200 mb-6">
           <button
             onClick={() => setActiveTab("profile")}
-            className={`pb-2 px-4 text-sm cursor-pointer font-medium transition ${
-              activeTab === "profile"
+            className={`pb-2 px-4 text-sm cursor-pointer font-medium transition ${activeTab === "profile"
                 ? "text-[#3565E3] border-b-2 border-blue-600"
                 : "text-[#718EBF]"
-            }`}
+              }`}
           >
             Edit Profile
           </button>
 
           <button
             onClick={() => setActiveTab("security")}
-            className={`pb-2 px-4 text-sm font-medium cursor-pointer transition ${
-              activeTab === "security"
+            className={`pb-2 px-4 text-sm font-medium cursor-pointer transition ${activeTab === "security"
                 ? "text-blue-600 border-b-2 border-blue-600"
                 : "text-[#718EBF]"
-            }`}
+              }`}
           >
             Security
           </button>
@@ -509,7 +507,7 @@ const ProfileSettings = () => {
                       Loading
                         ? "bg-gray-400 cursor-not-allowed"
                         : "bg-[#3565E3] cursor-pointer hover:bg-blue-700"
-                    } text-white text-xs rounded-xl px-16 py-2.5 transition`}
+                      } text-white text-xs rounded-xl px-16 py-2.5 transition`}
                   >
                     {loading ? "Saving..." : "Save"}
                   </button>
@@ -534,11 +532,10 @@ const ProfileSettings = () => {
                       onChange={handleSecurityChange}
                       placeholder="Enter current password"
                       autoComplete="new-password"
-                      className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${
-                        passwordErrors.currentPassword
+                      className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${passwordErrors.currentPassword
                           ? "border-red-500 bg-red-50 focus:ring-red-300"
                           : "border-gray-200 focus:ring-[#DFEAF2]"
-                      } text-[#718EBF]`}
+                        } text-[#718EBF]`}
                     />
                     <button
                       type="button"
@@ -564,11 +561,10 @@ const ProfileSettings = () => {
                       value={securityData.newPassword}
                       onChange={handleSecurityChange}
                       placeholder="Enter new password"
-                      className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${
-                        passwordErrors.newPassword
+                      className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${passwordErrors.newPassword
                           ? "border-red-500 bg-red-50 focus:ring-red-300"
                           : "border-gray-200 focus:ring-[#DFEAF2]"
-                      } text-[#718EBF]`}
+                        } text-[#718EBF]`}
                     />
                     <button
                       type="button"
@@ -593,11 +589,10 @@ const ProfileSettings = () => {
                       value={securityData.confirmPassword}
                       onChange={handleSecurityChange}
                       placeholder="Re-enter new password"
-                      className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${
-                        passwordErrors.confirmPassword
+                      className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${passwordErrors.confirmPassword
                           ? "border-red-500 bg-red-50 focus:ring-red-300"
                           : "border-gray-200 focus:ring-[#DFEAF2]"
-                      } text-[#718EBF]`}
+                        } text-[#718EBF]`}
                     />
                     <button
                       type="button"
