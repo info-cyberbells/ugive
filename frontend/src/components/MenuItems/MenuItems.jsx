@@ -15,7 +15,7 @@ import {
 
 const ROLE_BASED_MENUS = {
   super_admin: [
-    { id: "profile", title: "User Profile", icon: UserCircle },
+    { id: "profile", title: "Manage Profile", icon: UserCircle },
     { id: "manage-universities", title: "Manage Universities", icon: School },
     { id: "manage-colleges", title: "Manage Colleges", icon: GraduationCap },
     { id: "manage-students", title: "Manage Students", icon: BookOpen },
