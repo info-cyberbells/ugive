@@ -13,7 +13,6 @@ import {
   fetchProfile,
   updateStudentProfile,
 } from "../../features/studentDataSlice";
-import { getUniversities, getColleges } from "../../features/studentSlice";
 
 const ProfileSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
