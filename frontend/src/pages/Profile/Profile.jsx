@@ -8,12 +8,21 @@ import {
 import { Eye, EyeOff } from "lucide-react";
 import { useToast } from "../../context/ToastContext";
 import imageCompression from "browser-image-compression";
+import {
+  changeStudentPassword,
+  fetchProfile,
+  updateStudentProfile,
+} from "../../features/studentDataSlice";
+import { getUniversities, getColleges } from "../../features/studentSlice";
 
 const ProfileSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const dispatch = useDispatch();
   const { showToast } = useToast();
   const { profile, loading } = useSelector((state) => state.superadmin);
+  const { studentProfile, isLoading } = useSelector(
+    (state) => state.studentData
+  );
   const [showCurrentPass, setShowCurrentPass] = useState(false);
   const [showNewPass, setShowNewPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
@@ -27,20 +36,23 @@ const ProfileSettings = () => {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
-    password: "",
-    dob: "",
-    municipality: "",
-    license: "",
     phoneNumber: "",
-    city: "",
-    validUntil: "",
-    country: "",
+    universityId: "",
+    universityName: "",
+    collegeId: "",
+    collegeName: "",
+    studentId: "",
   });
 
   const [initialProfile, setInitialProfile] = useState(null);
 
   const [profileImage, setProfileImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+
+  const [formErrors, setFormErrors] = useState({
+    fullName: "",
+    phoneNumber: "",
+  });
 
   // Security form state
   const [securityData, setSecurityData] = useState({
@@ -49,39 +61,90 @@ const ProfileSettings = () => {
     confirmPassword: "",
   });
 
-  useEffect(() => {
-    dispatch(fetchSuperAdminProfile());
-  }, [dispatch]);
+  const user = JSON.parse(localStorage.getItem("user"));
+  const role = user?.role?.toLowerCase();
+
+  const Loading = role === "super_admin" ? loading : isLoading;
 
   useEffect(() => {
-    if (profile) {
+    if (role == "super_admin") {
+      dispatch(fetchSuperAdminProfile());
+    }
+    if (role == "student") {
+      dispatch(fetchProfile());
+    }
+  }, [dispatch, role]);
+
+  useEffect(() => {
+    // SUPER ADMIN PROFILE
+    if (role === "super_admin" && profile) {
       const loaded = {
         fullName: profile.name || "",
         email: profile.email || "",
         phoneNumber: profile.phoneNumber || "",
       };
 
-      setFormData(loaded);
+      setFormData((prev) => ({ ...prev, ...loaded }));
       setInitialProfile(loaded);
       setImagePreview(profile.profileImage || null);
     }
-  }, [profile]);
+
+    // STUDENT PROFILE
+    if (role === "student" && studentProfile) {
+      const loaded = {
+        fullName: studentProfile.name || "",
+        email: studentProfile.email || "",
+        phoneNumber: studentProfile.phoneNumber || "",
+
+        universityName:
+          studentProfile.university?.name ||
+          studentProfile.university_name ||
+          "",
+        collegeName:
+          studentProfile.college?.name || studentProfile.college_name || "",
+
+        studentId: studentProfile.studentUniId || "",
+      };
+
+      setFormData((prev) => ({ ...prev, ...loaded }));
+      setInitialProfile(loaded);
+      setImagePreview(studentProfile.profileImage || null);
+    }
+  }, [role, profile, studentProfile]);
 
   const hasChanges = () => {
     if (!initialProfile) return true;
 
-    const basicChanged =
-      formData.fullName !== initialProfile.fullName ||
-      formData.phoneNumber !== initialProfile.phoneNumber;
+    let fieldsToCheck = ["fullName", "phoneNumber"];
 
+    // Check if any formData field differs from initialProfile
+    const basicChanged = fieldsToCheck.some(
+      (field) => formData[field] !== initialProfile[field]
+    );
+
+    // Image changed?
     const imageChanged = profileImage !== null;
 
     return basicChanged || imageChanged;
   };
 
-  // Handle profile input
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
+
+    if (name === "fullName") {
+      if (!/^[A-Za-z\s]*$/.test(value)) {
+        showToast("Name must contain letters only!", "error");
+        return; // stop update
+      }
+    }
+
+    if (name === "phoneNumber") {
+      if (!/^[0-9]*$/.test(value)) {
+        showToast("Phone number must contain digits only!", "error");
+        return;
+      }
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -151,30 +214,50 @@ const ProfileSettings = () => {
       formDataToSend.append("profileImage", profileImage);
     }
 
-    dispatch(updateSuperAdminProfile(formDataToSend))
-      .unwrap()
-      .then((updatedUser) => {
-        showToast("Profile updated successfully!", "success");
-        const updated = {
-          fullName: updatedUser.name,
-          email: updatedUser.email,
-          phoneNumber: updatedUser.phoneNumber,
-        };
+    if (role === "super_admin") {
+      dispatch(updateSuperAdminProfile(formDataToSend))
+        .unwrap()
+        .then((updatedUser) => {
+          showToast("Profile updated successfully!", "success");
+          const updated = {
+            fullName: updatedUser.name,
+            phoneNumber: updatedUser.phoneNumber,
+          };
+          setInitialProfile(updated);
+          setProfileImage(null);
+        })
+        .catch((err) => {
+          showToast("Failed to update profile!", "error");
+          console.error(err);
+        });
+    }
 
-        setInitialProfile(updated);
-        setProfileImage(null);
-      })
+    if (role === "student") {
+      dispatch(updateStudentProfile(formDataToSend))
+        .unwrap()
+        .then((updatedUser) => {
+          showToast("Profile updated successfully!", "success");
+          const updated = {
+            fullName: updatedUser.name,
+            phoneNumber: updatedUser.phoneNumber,
+          };
 
-      .catch((err) => {
-        showToast("Failed to update profile!", "error");
-        console.error(err);
-      });
+          setInitialProfile(updated);
+          setProfileImage(null);
+          //  dispatch(fetchProfile());
+        })
+        .catch((err) => {
+          showToast("Failed to update profile!", "error");
+          console.error(err);
+        });
+    }
   };
 
   const handlePassChange = () => {
     const { currentPassword, newPassword, confirmPassword } = securityData;
     const errors = {};
 
+    // Empty field validation
     if (!currentPassword.trim()) errors.currentPassword = true;
     if (!newPassword.trim()) errors.newPassword = true;
     if (!confirmPassword.trim()) errors.confirmPassword = true;
@@ -182,24 +265,49 @@ const ProfileSettings = () => {
     setPasswordErrors(errors);
 
     if (Object.keys(errors).length > 0) {
-      showToast("Please fill all password fields!", "error");
+    showToast("Please fill all password fields!", "error");
+    return;
+  }
+
+  // 🔥 New password must be at least 6 characters
+  if (newPassword.length < 6) {
+    showToast("New password must be at least 6 characters long!", "error");
+    setPasswordErrors((prev) => ({ ...prev, newPassword: true }));
+    return;
+  }
+
+  // Password match validation
+  if (newPassword !== confirmPassword) {
+    showToast("New passwords do not match!", "error");
+    setPasswordErrors({
+      newPassword: true,
+      confirmPassword: true,
+    });
+    return;
+  }
+
+    let action;
+
+    if (role === "super_admin") {
+      action = changeSuperAdminPassword({ currentPassword, newPassword });
+    }
+
+    if (role === "student") {
+      action = changeStudentPassword({ currentPassword, newPassword });
+    }
+
+    // If no valid role
+    if (!action) {
+      showToast("Invalid user role!", "error");
       return;
     }
 
-    if (newPassword !== confirmPassword) {
-      showToast("New passwords do not match!", "error");
-      setPasswordErrors({
-        newPassword: true,
-        confirmPassword: true,
-      });
-      return;
-    }
-
-    dispatch(changeSuperAdminPassword({ currentPassword, newPassword }))
+    dispatch(action)
       .unwrap()
       .then(() => {
         showToast("Password changed successfully!", "success");
 
+        // Reset form
         setSecurityData({
           currentPassword: "",
           newPassword: "",
@@ -212,15 +320,17 @@ const ProfileSettings = () => {
           confirmPassword: false,
         });
 
+        // Hide toggles
         setShowCurrentPass(false);
         setShowNewPass(false);
         setShowConfirmPass(false);
+
+        // Switch back to profile tab
         setActiveTab("profile");
       })
       .catch((err) => {
         showToast(err || "Failed to change password!", "error");
       });
-
   };
 
   return (
@@ -326,10 +436,9 @@ const ProfileSettings = () => {
                     name="email"
                     value={formData.email}
                     disabled
-                    onChange={handleProfileChange}
                     autoComplete="off"
                     placeholder="Enter email"
-                    className="w-full border border-gray-200 rounded-xl text-[#718EBF] focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
+                    className="w-full border border-gray-200 bg-gray-100  text-gray-500 rounded-xl focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
                   />
                 </div>
 
@@ -337,8 +446,9 @@ const ProfileSettings = () => {
                 <div>
                   <label className="text-sm">Phone Number</label>
                   <input
-                    type="tel"
+                    type="text"
                     name="phoneNumber"
+                    maxLength={15}
                     value={formData.phoneNumber}
                     onChange={handleProfileChange}
                     placeholder="Enter phone number"
@@ -346,92 +456,56 @@ const ProfileSettings = () => {
                   />
                 </div>
 
-                {/* Date of Birth */}
-                {/* <div>
-                                    <label className="text-sm">Date of Birth</label>
-                                    <input
-                                        type="date"
-                                        name="dob"
-                                        value={formData.dob}
-                                        onChange={handleProfileChange}
-                                        className={`w-full border border-gray-200 rounded-xl text-[#718EBF] focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm ${!formData.dob ? "text-gray-400" : "text-black"
-                                            }`}
-                                        placeholder="Select date"
-                                    />
-                                </div> */}
+                {/* University */}
 
-                {/* Municipality */}
-                {/* <div>
-                                    <label className="text-sm">Municipality</label>
-                                    <input
-                                        type="text"
-                                        name="municipality"
-                                        value={formData.municipality}
-                                        onChange={handleProfileChange}
-                                        placeholder="Enter municipality"
-                                        className="w-full border border-gray-200 rounded-xl text-[#718EBF] focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
-                                    />
-                                </div> */}
+                {role == "student" && (
+                  <div>
+                    <label className="text-sm">University</label>
+                    <input
+                      type="text"
+                      name="university"
+                      value={formData.universityName}
+                      disabled
+                      className="w-full border border-gray-200 rounded-xl bg-gray-100  text-gray-500 focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
+                    />
+                  </div>
+                )}
 
-                {/* License Number */}
-                {/* <div>
-                                    <label className="text-sm">Driving License Number</label>
-                                    <input
-                                        type="text"
-                                        name="license"
-                                        value={formData.license}
-                                        onChange={handleProfileChange}
-                                        placeholder="Enter license number"
-                                        className="w-full border border-gray-200 rounded-xl text-[#718EBF] focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
-                                    />
-                                </div> */}
+                {role == "student" && (
+                  <div>
+                    <label className="text-sm">College</label>
+                    <input
+                      type="text"
+                      name="university"
+                      value={formData.collegeName}
+                      disabled
+                      className="w-full border border-gray-200 rounded-xl bg-gray-100  text-gray-500 focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
+                    />
+                  </div>
+                )}
 
-                {/* City */}
-                {/* <div>
-                                    <label className="text-sm">City</label>
-                                    <input
-                                        type="text"
-                                        name="city"
-                                        value={formData.city}
-                                        onChange={handleProfileChange}
-                                        placeholder="Enter city"
-                                        className="w-full border border-gray-200 rounded-xl text-[#718EBF] focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
-                                    />
-                                </div> */}
-
-                {/* Valid Until */}
-                {/* <div>
-                                    <label className="text-sm">Valid Until</label>
-                                    <input
-                                        type="text"
-                                        name="validUntil"
-                                        value={formData.validUntil}
-                                        onChange={handleProfileChange}
-                                        placeholder="Enter expiry date"
-                                        className="w-full border border-gray-200 rounded-xl text-[#718EBF] focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
-                                    />
-                                </div> */}
-
-                {/* Country */}
-                {/* <div>
-                                    <label className="text-sm">Country</label>
-                                    <input
-                                        type="text"
-                                        name="country"
-                                        value={formData.country}
-                                        onChange={handleProfileChange}
-                                        placeholder="Enter country"
-                                        className="w-full border border-gray-200 rounded-xl text-[#718EBF] focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
-                                    />
-                                </div> */}
+                {role == "student" && (
+                  <div>
+                    <label className="text-sm">Student Id</label>
+                    <input
+                      type="text"
+                      name="studentId"
+                      disabled
+                      value={formData.studentId}
+                      placeholder="Student ID"
+                      className="w-full border border-gray-200 rounded-xl bg-gray-100  text-gray-500 focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
+                    />
+                  </div>
+                )}
 
                 {/* Save Button */}
                 <div className="flex justify-end mt-6 md:col-span-2">
                   <button
                     onClick={handleSave}
                     type="button"
-                    disabled={loading}
-                    className={`${loading
+                    disabled={Loading}
+                    className={`${
+                      Loading
                         ? "bg-gray-400 cursor-not-allowed"
                         : "bg-[#3565E3] cursor-pointer hover:bg-blue-700"
                       } text-white text-xs rounded-xl px-16 py-2.5 transition`}
@@ -542,7 +616,6 @@ const ProfileSettings = () => {
                   className="bg-[#3565E3] text-white text-xs rounded-xl px-16 py-2.5 cursor-pointer hover:bg-blue-700 transition"
                 >
                   {loading ? "Updating..." : "Change Password"}
-
                 </button>
               </div>
             </div>
