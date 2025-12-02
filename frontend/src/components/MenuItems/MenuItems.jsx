@@ -10,7 +10,14 @@ import {
   School,
   BookOpen,
   Share2,
-  LogOut
+  LogOut,
+   Gift,
+  Flame,
+  Activity,
+  Users,
+  Bell,
+  Settings,
+  HelpCircle,
 } from "lucide-react";
 
 const ROLE_BASED_MENUS = {
@@ -26,12 +33,25 @@ const ROLE_BASED_MENUS = {
     { id: "profile", title: "User Profile", icon: UserCircle },
     { id: "manage-students", title: "Manage Students", icon: BookOpen },
   ],
-
-  student: [
-    { id: "profile", title: "User Profile", icon: UserCircle },
-    { id: "social", title: "Social", icon: Share2 },
-  ],
+ student : [
+  { id: "profile", title: "User Profile", icon: UserCircle },
+  { id: "social", title: "Social", icon: Share2 },
+  { id: "rewards-catalogs", title: "Rewards Catalog", icon: Gift },
+  { id: "streaks", title: "Streaks", icon: Flame },
+  { id: "activities", title: "Activities", icon: Activity },
+  { id: "friends", title: "Friends", icon: Users },
+  { id: "notifications", title: "Notifications", icon: Bell },
+  { id: "settings", title: "Settings", icon: Settings },
+  { id: "support", title: "Support", icon: HelpCircle },
+],
 };
+
+const ROLE_BASED_BG_COLOR = {
+  super_admin: ["bg-purple-600"],
+  admin: ["bg-purple-600"],
+  student: ["bg-white"],
+};
+
 
 const MenuItems = () => {
   const navigate = useNavigate();
@@ -72,7 +92,7 @@ const MenuItems = () => {
       </div>
 
       {/* PAGES SECTION */}
-      <div className="mt-6 flex flex-col gap-3">
+      <div className="mt-6 flex flex-col gap-1">
         <h2 className="text-[#00000066] text-base">Pages</h2>
 
         {/* MAIN MENU ITEMS */}

@@ -7,7 +7,7 @@ export const registerSchema = Joi.object({
   role: Joi.string().valid("super_admin", "admin", "student").default("student"),
   university: Joi.string().required(),
   college: Joi.string().required(),
-  phoneNumber: Joi.string().pattern(/^\+?[1-9]\d{1,14}$/),
+  phoneNumber: Joi.string().pattern(/^04\s?\d{4}\s?\d{3}\s?\d{3}$/).required(),
   studentUniId: Joi.string(),
 });
 

@@ -4,12 +4,25 @@ import Topbar from "../Topbar/Topbar";
 import RightPanel from "../RightPanel/RightPanel";
 import ugiveBlack from "/UGIVEBlack.svg";
 
+const ROLE_BASED_BG_COLOR = {
+  super_admin: ["bg-gradient-to-b from-[#8B78D0] via-[#8B78D09A] to-white"],
+  admin: ["bg-gradient-to-b from-[#8B78D0] via-[#8B78D09A] to-white"],
+  student: ["bg-white"],
+};
+
 const Navbar = () => {
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const role = user?.role?.toLowerCase();
+
+    const roleBg = ROLE_BASED_BG_COLOR[role] || ["bg-white"];
+
+
   return (
     <div className="relative ">
 
       {/* LEFT SIDEBAR */}
-      <aside className="fixed left-0 top-0 w-60 min-h-screen bg-gradient-to-b from-[#8B78D0] via-[#8B78D09A] to-white border-r border-gray-200 z-50">
+      <aside className={`fixed left-0 top-0 w-60 min-h-screen ${roleBg.join(" ")} border-r border-gray-200 z-50`}>
 
         {/* Logo */}
         <div className="flex justify-center pt-6">
