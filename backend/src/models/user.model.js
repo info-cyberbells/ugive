@@ -36,18 +36,22 @@ const userSchema = new mongoose.Schema({
     ref: "College",
   },
   // universityDomain: { type: String, trim: true }, // internal helper
-  phoneNumber: {
-    type: String,
-    validate: {
-      validator: function (value) {
-        if (this.role === "student") {
-          return /^\+?[1-9]\d{1,14}$/.test(value);
-        }
-        return true;
-      },
-      message: "Invalid phone number format",
+ phoneNumber: {
+  type: String,
+  validate: {
+    validator: function (value) {
+      if (this.role === "student") {
+        // Remove spaces for validation
+        const cleaned = value.replace(/\s/g, "");
+
+        // Must start with 04 and have 10–12 digits total
+        return /^04\d{8,10}$/.test(cleaned);
+      }
+      return true;
     },
+    message: "Invalid phone number format",
   },
+},
   studentUniId: {
     type: String,
     required: function () {
