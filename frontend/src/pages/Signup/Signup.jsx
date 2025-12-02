@@ -108,13 +108,13 @@ const Signup = () => {
       return;
     }
 
-   const cleanedPhone = formData.phoneNumber.replace(/\s/g, "");
+    const cleanedPhone = formData.phoneNumber.replace(/\s/g, "");
 
-if (!/^[0-9]+$/.test(cleanedPhone)) {
-  setErrors({ phoneNumber: true });
-  showToast("Phone number must be digits", "error");
-  return;
-}
+    if (!/^[0-9]+$/.test(cleanedPhone)) {
+      setErrors({ phoneNumber: true });
+      showToast("Phone number must be digits", "error");
+      return;
+    }
 
 
     if (formData.password !== formData.confirmPassword) {
@@ -133,36 +133,33 @@ if (!/^[0-9]+$/.test(cleanedPhone)) {
   };
 
   const handlePhoneChange = (e) => {
-  let value = e.target.value;
+    let value = e.target.value;
 
-  // Remove non-numeric characters
-  value = value.replace(/\D/g, "");
+    // Remove non-numeric characters and "04" prefix if present
+    value = value.replace(/\D/g, "");
 
-  // Always start with "04"
-  if (!value.startsWith("04")) {
-    value = "04" + value;
-  }
+    // Remove "04" if user typed it
+    if (value.startsWith("04")) {
+      value = value.slice(2);
+    }
 
-  // Limit digits (04 + 10 more = max 12 digits)
-  value = value.slice(0, 12);
+    // Limit to 8 digits (after "04")
+    value = value.slice(0, 8);
 
-  // Format into "04 1234 567 890"
-  let formatted = "";
-  if (value.length <= 2) {
-    formatted = value;
-  } else if (value.length <= 6) {
-    formatted = value.replace(/(\d{2})(\d{0,4})/, "$1 $2");
-  } else if (value.length <= 9) {
-    formatted = value.replace(/(\d{2})(\d{4})(\d{0,3})/, "$1 $2 $3");
-  } else {
-    formatted = value.replace(
-      /(\d{2})(\d{4})(\d{3})(\d{0,3})/,
-      "$1 $2 $3 $4"
-    );
-  }
+    // Format as "04XX XXX XXX"
+    let formatted = "04";
+    if (value.length > 0) {
+      if (value.length <= 2) {
+        formatted += value;
+      } else if (value.length <= 5) {
+        formatted += value.slice(0, 2) + " " + value.slice(2);
+      } else {
+        formatted += value.slice(0, 2) + " " + value.slice(2, 5) + " " + value.slice(5);
+      }
+    }
 
-  setFormData({ ...formData, phoneNumber: formatted });
-};
+    setFormData({ ...formData, phoneNumber: formatted });
+  };
 
 
   return (
@@ -199,7 +196,7 @@ if (!/^[0-9]+$/.test(cleanedPhone)) {
                     type="text"
                     className={`signup-input ${errors.name ? "input-error" : ""
                       }`}
-                    placeholder="Enter your name"
+                    placeholder="John Doe"
                     value={formData.name}
                     onChange={handleChange}
                   />
@@ -213,7 +210,7 @@ if (!/^[0-9]+$/.test(cleanedPhone)) {
                     type="text"
                     className={`signup-input ${errors.studentUniId ? "input-error" : ""
                       }`}
-                    placeholder="Enter your student ID"
+                    placeholder="S12345678"
                     value={formData.studentUniId}
                     onChange={handleChange}
                   />
@@ -299,25 +296,25 @@ if (!/^[0-9]+$/.test(cleanedPhone)) {
                     className={`signup-input ${errors.email ? "input-error" : ""
                       }`}
                     autoComplete="off"
-                    placeholder="Enter your email"
+                    placeholder="john.doe@usq.edu.au"
                     value={formData.email}
                     onChange={handleChange}
                   />
                 </div>
 
                 <div className="signup-form-group">
-  <label htmlFor="number">Phone Number</label>
-  <input
-    id="phoneNumber"
-    name="phoneNumber"
-    type="text"
-    className={`signup-input ${errors.phoneNumber ? "input-error" : ""}`}
-    placeholder="04 1234 567 890"
-    value={formData.phoneNumber}
-    onChange={handlePhoneChange}  
-    maxLength={15}                 
-  />
-</div>
+                  <label htmlFor="number">Phone Number</label>
+                  <input
+                    id="phoneNumber"
+                    name="phoneNumber"
+                    type="text"
+                    className={`signup-input ${errors.phoneNumber ? "input-error" : ""}`}
+                    placeholder="0405 150 817"
+                    value={formData.phoneNumber}
+                    onChange={handlePhoneChange}
+                    maxLength={12}
+                  />
+                </div>
 
 
                 <div className="signup-form-group">
@@ -329,7 +326,7 @@ if (!/^[0-9]+$/.test(cleanedPhone)) {
                     className={`signup-input ${errors.password ? "input-error" : ""
                       }`}
                     autoComplete="new-password"
-                    placeholder="Enter your password"
+                    placeholder="StrongPass@123"
                     value={formData.password}
                     onChange={handleChange}
                   />
@@ -357,7 +354,7 @@ if (!/^[0-9]+$/.test(cleanedPhone)) {
                     className={`signup-input ${errors.confirmPassword ? "input-error" : ""
                       }`}
                     autoComplete="new-password"
-                    placeholder="Confirm your password"
+                    placeholder="Re-enter your password"
                     value={formData.confirmPassword}
                     onChange={handleChange}
                   />

@@ -25,7 +25,7 @@ const StudentModal = ({
 
   useEffect(() => {
     if (isOpen) {
-      setErrors({}); 
+      setErrors({});
     }
   }, [isOpen]);
 
@@ -46,16 +46,16 @@ const StudentModal = ({
   const title = isViewMode
     ? "View Student Details"
     : isEditMode
-    ? "Edit Student Details"
-    : "Add New Student";
+      ? "Edit Student Details"
+      : "Add New Student";
 
   useEffect(() => {
     if (!isOpen) return;
 
-    if (mode === "add" || mode === "edit") {
+    if (!isViewMode) {
       dispatch(getUniversities());
     }
-  }, [isOpen, mode]);
+  }, [isOpen]);
 
   const handleUniversityChange = (e) => {
     const universityId = e.target.value;
@@ -74,35 +74,27 @@ const StudentModal = ({
   const handlePhoneFormat = (e) => {
     let value = e.target.value;
 
-    // Remove all non-digits
     value = value.replace(/\D/g, "");
 
-    // Always start with "04"
-    if (!value.startsWith("04")) {
-      value = "04" + value;
+    if (value.startsWith("04")) {
+      value = value.slice(2);
     }
 
-    // Max digits: 04 + 10 = 12 digits
-    value = value.slice(0, 12);
+    value = value.slice(0, 8);
 
-    // Format into: 04 1234 567 890
-    let formatted = "";
-    if (value.length <= 2) {
-      formatted = value;
-    } else if (value.length <= 6) {
-      formatted = value.replace(/(\d{2})(\d{0,4})/, "$1 $2");
-    } else if (value.length <= 9) {
-      formatted = value.replace(/(\d{2})(\d{4})(\d{0,3})/, "$1 $2 $3");
-    } else {
-      formatted = value.replace(
-        /(\d{2})(\d{4})(\d{3})(\d{0,3})/,
-        "$1 $2 $3 $4"
-      );
+    let formatted = "04";
+    if (value.length > 0) {
+      if (value.length <= 2) {
+        formatted += value;
+      } else if (value.length <= 5) {
+        formatted += value.slice(0, 2) + " " + value.slice(2);
+      } else {
+        formatted += value.slice(0, 2) + " " + value.slice(2, 5) + " " + value.slice(5);
+      }
     }
 
     setFormData((prev) => ({ ...prev, phoneNumber: formatted }));
 
-    // Clear phone error
     setErrors((prev) => {
       const { phoneNumber, ...rest } = prev;
       return rest;
@@ -158,11 +150,10 @@ const StudentModal = ({
 
   const inputClasses = (field) =>
     `mt-1 block w-full rounded-lg border shadow-sm sm:text-sm p-2 transition duration-150 
-        ${
-          errors[field]
-            ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-            : "border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
-        }`;
+        ${errors[field]
+      ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+      : "border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+    }`;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -210,11 +201,11 @@ const StudentModal = ({
       return;
     }
 
-    const cleanedPhone = formData.phoneNumber.replace(/[^\d]/g, "");
+    const cleanedPhone = formData.phoneNumber.replace(/\s/g, "");
 
-    if (!/^04\d{10}$/.test(cleanedPhone)) {
+    if (!/^04\d{8}$/.test(cleanedPhone)) {
       setErrors((prev) => ({ ...prev, phoneNumber: true }));
-      showToast("Phone number must be in format: 04 1234 567 890", "error");
+      showToast("Phone number must be in format: 04XX XXX XXX", "error");
       return;
     }
     if (isAddMode || formData.password || formData.confirmPassword) {
@@ -409,7 +400,7 @@ const StudentModal = ({
                 value={formData.phoneNumber}
                 onChange={handlePhoneFormat}
                 disabled={isViewMode}
-                placeholder="04 9876 543 210"
+                placeholder="0405 150 817"
                 autoComplete="off"
                 className={inputClasses("phoneNumber")}
               />

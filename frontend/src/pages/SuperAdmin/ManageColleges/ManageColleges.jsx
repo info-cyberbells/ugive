@@ -179,14 +179,14 @@ const manageColleges = () => {
 
     const headers = [
       "College Name",
-      "University ID",
+      "University Name",
       "Address Line 1",
       "State"
     ];
 
     const rows = selected.map(col => [
       col.name,
-      col.university?._id,
+      col.university?.name,
       col.address_line_1,
       col.state,
     ]);
@@ -338,7 +338,7 @@ const manageColleges = () => {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
-                          Uni. ID
+                          University Name
                         </div>
                       </th>
                       <th
@@ -410,7 +410,7 @@ const manageColleges = () => {
 
                         {/* University ID Column */}
                         <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 font-mono">
-                          {college.university._id || "N/A"}
+                          {college.university.name || "N/A"}
                         </td>
 
                         {/* Address Line 1 Column */}

@@ -128,36 +128,33 @@ const ProfileSettings = () => {
   };
 
   const handlePhoneFormat = (e) => {
-  let value = e.target.value;
+    let value = e.target.value;
 
-  // Remove non-numeric characters
-  value = value.replace(/\D/g, "");
+    // Remove non-numeric characters and "04" prefix if present
+    value = value.replace(/\D/g, "");
 
-  // Always start with "04"
-  if (!value.startsWith("04")) {
-    value = "04" + value;
-  }
+    // Remove "04" if user typed it
+    if (value.startsWith("04")) {
+      value = value.slice(2);
+    }
 
-  // Allow max 12 digits (04 + 10 digits)
-  value = value.slice(0, 12);
+    // Limit to 8 digits (after "04")
+    value = value.slice(0, 8);
 
-  // Apply formatting: 04 1234 567 890
-  let formatted = "";
-  if (value.length <= 2) {
-    formatted = value;
-  } else if (value.length <= 6) {
-    formatted = value.replace(/(\d{2})(\d{0,4})/, "$1 $2");
-  } else if (value.length <= 9) {
-    formatted = value.replace(/(\d{2})(\d{4})(\d{0,3})/, "$1 $2 $3");
-  } else {
-    formatted = value.replace(
-      /(\d{2})(\d{4})(\d{3})(\d{0,3})/,
-      "$1 $2 $3 $4"
-    );
-  }
+    // Format as "04XX XXX XXX"
+    let formatted = "04";
+    if (value.length > 0) {
+      if (value.length <= 2) {
+        formatted += value;
+      } else if (value.length <= 5) {
+        formatted += value.slice(0, 2) + " " + value.slice(2);
+      } else {
+        formatted += value.slice(0, 2) + " " + value.slice(2, 5) + " " + value.slice(5);
+      }
+    }
 
-  setFormData((prev) => ({ ...prev, phoneNumber: formatted }));
-};
+    setFormData((prev) => ({ ...prev, phoneNumber: formatted }));
+  };
 
 
   const handleProfileChange = (e) => {
@@ -238,12 +235,12 @@ const ProfileSettings = () => {
       return;
     }
 
-  const cleanedPhone = formData.phoneNumber.replace(/[^\d]/g, "");
+    const cleanedPhone = formData.phoneNumber.replace(/\s/g, "");
 
-if (!/^04\d{10}$/.test(cleanedPhone)) {
-  showToast("Phone number must be in format: 04 1234 567 890", "error");
-  return;
-}
+    if (!/^04\d{8}$/.test(cleanedPhone)) {
+      showToast("Phone number must be in format: 04XX XXX XXX", "error");
+      return;
+    }
 
     const formDataToSend = new FormData();
     formDataToSend.append("name", formData.fullName);
@@ -304,26 +301,26 @@ if (!/^04\d{10}$/.test(cleanedPhone)) {
     setPasswordErrors(errors);
 
     if (Object.keys(errors).length > 0) {
-    showToast("Please fill all password fields!", "error");
-    return;
-  }
+      showToast("Please fill all password fields!", "error");
+      return;
+    }
 
-  // 🔥 New password must be at least 6 characters
-  if (newPassword.length < 6) {
-    showToast("New password must be at least 6 characters long!", "error");
-    setPasswordErrors((prev) => ({ ...prev, newPassword: true }));
-    return;
-  }
+    // 🔥 New password must be at least 6 characters
+    if (newPassword.length < 6) {
+      showToast("New password must be at least 6 characters long!", "error");
+      setPasswordErrors((prev) => ({ ...prev, newPassword: true }));
+      return;
+    }
 
-  // Password match validation
-  if (newPassword !== confirmPassword) {
-    showToast("New passwords do not match!", "error");
-    setPasswordErrors({
-      newPassword: true,
-      confirmPassword: true,
-    });
-    return;
-  }
+    // Password match validation
+    if (newPassword !== confirmPassword) {
+      showToast("New passwords do not match!", "error");
+      setPasswordErrors({
+        newPassword: true,
+        confirmPassword: true,
+      });
+      return;
+    }
 
     let action;
 
@@ -380,8 +377,8 @@ if (!/^04\d{10}$/.test(cleanedPhone)) {
           <button
             onClick={() => setActiveTab("profile")}
             className={`pb-2 px-4 text-sm cursor-pointer font-medium transition ${activeTab === "profile"
-                ? "text-[#3565E3] border-b-2 border-blue-600"
-                : "text-[#718EBF]"
+              ? "text-[#3565E3] border-b-2 border-blue-600"
+              : "text-[#718EBF]"
               }`}
           >
             Edit Profile
@@ -390,8 +387,8 @@ if (!/^04\d{10}$/.test(cleanedPhone)) {
           <button
             onClick={() => setActiveTab("security")}
             className={`pb-2 px-4 text-sm font-medium cursor-pointer transition ${activeTab === "security"
-                ? "text-blue-600 border-b-2 border-blue-600"
-                : "text-[#718EBF]"
+              ? "text-blue-600 border-b-2 border-blue-600"
+              : "text-[#718EBF]"
               }`}
           >
             Security
@@ -490,7 +487,7 @@ if (!/^04\d{10}$/.test(cleanedPhone)) {
                     maxLength={15}
                     value={formData.phoneNumber}
                     onChange={handlePhoneFormat}
-                    placeholder="Enter phone number"
+                    placeholder="0405 150 817"
                     className="w-full border border-gray-200 rounded-xl text-[#718EBF] focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
                   />
                 </div>
@@ -543,8 +540,7 @@ if (!/^04\d{10}$/.test(cleanedPhone)) {
                     onClick={handleSave}
                     type="button"
                     disabled={Loading}
-                    className={`${
-                      Loading
+                    className={`${Loading
                         ? "bg-gray-400 cursor-not-allowed"
                         : "bg-[#3565E3] cursor-pointer hover:bg-blue-700"
                       } text-white text-xs rounded-xl px-16 py-2.5 transition`}
@@ -573,8 +569,8 @@ if (!/^04\d{10}$/.test(cleanedPhone)) {
                       placeholder="Enter current password"
                       autoComplete="new-password"
                       className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${passwordErrors.currentPassword
-                          ? "border-red-500 bg-red-50 focus:ring-red-300"
-                          : "border-gray-200 focus:ring-[#DFEAF2]"
+                        ? "border-red-500 bg-red-50 focus:ring-red-300"
+                        : "border-gray-200 focus:ring-[#DFEAF2]"
                         } text-[#718EBF]`}
                     />
                     <button
@@ -602,8 +598,8 @@ if (!/^04\d{10}$/.test(cleanedPhone)) {
                       onChange={handleSecurityChange}
                       placeholder="Enter new password"
                       className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${passwordErrors.newPassword
-                          ? "border-red-500 bg-red-50 focus:ring-red-300"
-                          : "border-gray-200 focus:ring-[#DFEAF2]"
+                        ? "border-red-500 bg-red-50 focus:ring-red-300"
+                        : "border-gray-200 focus:ring-[#DFEAF2]"
                         } text-[#718EBF]`}
                     />
                     <button
@@ -630,8 +626,8 @@ if (!/^04\d{10}$/.test(cleanedPhone)) {
                       onChange={handleSecurityChange}
                       placeholder="Re-enter new password"
                       className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${passwordErrors.confirmPassword
-                          ? "border-red-500 bg-red-50 focus:ring-red-300"
-                          : "border-gray-200 focus:ring-[#DFEAF2]"
+                        ? "border-red-500 bg-red-50 focus:ring-red-300"
+                        : "border-gray-200 focus:ring-[#DFEAF2]"
                         } text-[#718EBF]`}
                     />
                     <button

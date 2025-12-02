@@ -110,7 +110,7 @@ const Login = () => {
                     className={`login-input ${errors.email ? "input-error" : ""
                       }`}
                     autoComplete="off"
-                    placeholder="Enter your email"
+                    placeholder="john.doe@usq.edu.au"
                     value={formData.email}
                     onChange={handleChange}
                   />
@@ -126,7 +126,7 @@ const Login = () => {
                       className={`login-input ${errors.password ? "input-error" : ""
                         }`}
                       autoComplete="new-password"
-                      placeholder="Enter your password"
+                      placeholder="Password@123"
                       value={formData.password}
                       onChange={handleChange}
                     />
