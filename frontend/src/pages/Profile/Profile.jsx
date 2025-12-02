@@ -127,6 +127,39 @@ const ProfileSettings = () => {
     return basicChanged || imageChanged;
   };
 
+  const handlePhoneFormat = (e) => {
+  let value = e.target.value;
+
+  // Remove non-numeric characters
+  value = value.replace(/\D/g, "");
+
+  // Always start with "04"
+  if (!value.startsWith("04")) {
+    value = "04" + value;
+  }
+
+  // Allow max 12 digits (04 + 10 digits)
+  value = value.slice(0, 12);
+
+  // Apply formatting: 04 1234 567 890
+  let formatted = "";
+  if (value.length <= 2) {
+    formatted = value;
+  } else if (value.length <= 6) {
+    formatted = value.replace(/(\d{2})(\d{0,4})/, "$1 $2");
+  } else if (value.length <= 9) {
+    formatted = value.replace(/(\d{2})(\d{4})(\d{0,3})/, "$1 $2 $3");
+  } else {
+    formatted = value.replace(
+      /(\d{2})(\d{4})(\d{3})(\d{0,3})/,
+      "$1 $2 $3 $4"
+    );
+  }
+
+  setFormData((prev) => ({ ...prev, phoneNumber: formatted }));
+};
+
+
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
 
@@ -204,6 +237,13 @@ const ProfileSettings = () => {
       showToast("No changes detected!", "info");
       return;
     }
+
+  const cleanedPhone = formData.phoneNumber.replace(/[^\d]/g, "");
+
+if (!/^04\d{10}$/.test(cleanedPhone)) {
+  showToast("Phone number must be in format: 04 1234 567 890", "error");
+  return;
+}
 
     const formDataToSend = new FormData();
     formDataToSend.append("name", formData.fullName);
@@ -449,7 +489,7 @@ const ProfileSettings = () => {
                     name="phoneNumber"
                     maxLength={15}
                     value={formData.phoneNumber}
-                    onChange={handleProfileChange}
+                    onChange={handlePhoneFormat}
                     placeholder="Enter phone number"
                     className="w-full border border-gray-200 rounded-xl text-[#718EBF] focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
                   />

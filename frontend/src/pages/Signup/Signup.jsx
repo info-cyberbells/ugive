@@ -108,12 +108,14 @@ const Signup = () => {
       return;
     }
 
-    const phoneRegex = /^[0-9]+$/;
-    if (!phoneRegex.test(formData.phoneNumber)) {
-      setErrors({ phoneNumber: true });
-      showToast("Phone number must be digits", "error");
-      return;
-    }
+   const cleanedPhone = formData.phoneNumber.replace(/\s/g, "");
+
+if (!/^[0-9]+$/.test(cleanedPhone)) {
+  setErrors({ phoneNumber: true });
+  showToast("Phone number must be digits", "error");
+  return;
+}
+
 
     if (formData.password !== formData.confirmPassword) {
       setErrors({
@@ -129,6 +131,39 @@ const Signup = () => {
     // Submit form
     dispatch(register(finalData));
   };
+
+  const handlePhoneChange = (e) => {
+  let value = e.target.value;
+
+  // Remove non-numeric characters
+  value = value.replace(/\D/g, "");
+
+  // Always start with "04"
+  if (!value.startsWith("04")) {
+    value = "04" + value;
+  }
+
+  // Limit digits (04 + 10 more = max 12 digits)
+  value = value.slice(0, 12);
+
+  // Format into "04 1234 567 890"
+  let formatted = "";
+  if (value.length <= 2) {
+    formatted = value;
+  } else if (value.length <= 6) {
+    formatted = value.replace(/(\d{2})(\d{0,4})/, "$1 $2");
+  } else if (value.length <= 9) {
+    formatted = value.replace(/(\d{2})(\d{4})(\d{0,3})/, "$1 $2 $3");
+  } else {
+    formatted = value.replace(
+      /(\d{2})(\d{4})(\d{3})(\d{0,3})/,
+      "$1 $2 $3 $4"
+    );
+  }
+
+  setFormData({ ...formData, phoneNumber: formatted });
+};
+
 
   return (
     <div className="signup-main-Container">
@@ -271,18 +306,19 @@ const Signup = () => {
                 </div>
 
                 <div className="signup-form-group">
-                  <label htmlFor="number">Phone Number</label>
-                  <input
-                    id="phoneNumber"
-                    name="phoneNumber"
-                    type="text"
-                    className={`signup-input ${errors.phoneNumber ? "input-error" : ""
-                      }`}
-                    placeholder="Enter your phone number"
-                    value={formData.phoneNumber}
-                    onChange={handleChange}
-                  />
-                </div>
+  <label htmlFor="number">Phone Number</label>
+  <input
+    id="phoneNumber"
+    name="phoneNumber"
+    type="text"
+    className={`signup-input ${errors.phoneNumber ? "input-error" : ""}`}
+    placeholder="04 1234 567 890"
+    value={formData.phoneNumber}
+    onChange={handlePhoneChange}  
+    maxLength={15}                 
+  />
+</div>
+
 
                 <div className="signup-form-group">
                   <label htmlFor="password">Password</label>
