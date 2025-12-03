@@ -34,6 +34,7 @@ export const USER_ENDPOINTS = {
     
     
     SUPERADMIN_GET_ALL_REWARDS: `${API_BASE_URL}/super_admin/get-all-rewards`,
+    SUPERADMIN_ADD_REWARD: `${API_BASE_URL}/super_admin/create-reward`,
 
 
 

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getAllRewardsService } from "../auth/authServices";
+import { getAllRewardsService, createRewardService } from "../auth/authServices";
 
 
 const initialState = {
@@ -34,6 +34,18 @@ export const getAllRewards = createAsyncThunk(
 
 
 
+export const createReward = createAsyncThunk(
+    "reward/create",
+    async (formData, thunkAPI) => {
+        try {
+            return await createRewardService(formData);
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to create reward");
+        }
+    }
+);
+
+
 
 
 const rewardSlice = createSlice({
@@ -60,6 +72,22 @@ const rewardSlice = createSlice({
                 state.rewards = action.payload.rewards;             
             })
             .addCase(getAllRewards.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+
+
+              // CREATE
+            .addCase(createReward.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(createReward.fulfilled, (state) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.message = "Reward added successfully!";
+            })
+            .addCase(createReward.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;

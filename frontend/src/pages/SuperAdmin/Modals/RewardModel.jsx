@@ -16,9 +16,9 @@ const RewardModal = ({
   const dispatch = useDispatch();
   const { universities, colleges } = useSelector((state) => state.auth);
   const { showToast } = useToast();
-   const [rewardImage, setRewardImage] = useState(null);
+  const [rewardImage, setRewardImage] = useState(null);
   const [rewardImagePreview, setRewardImagePreview] = useState(null);
-   
+
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -30,7 +30,7 @@ const RewardModal = ({
 
   const isViewMode = mode === "view";
   const isEditMode = mode === "edit";
-//   const isAddMode = !studentId;
+  //   const isAddMode = !studentId;
 
   useEffect(() => {
     if (isOpen) {
@@ -79,18 +79,18 @@ const RewardModal = ({
   };
 
   const resetForm = () => {
-  setFormData({
-    name: "",
-    rewardPoints: "",
-    university: "",
-    rewardDescription:"",
-    college: "",
-    rewardImage: "",
-  });
-  setRewardImage(null);
-  setRewardImagePreview(null);
-  setErrors({});
-};
+    setFormData({
+      name: "",
+      rewardPoints: "",
+      university: "",
+      rewardDescription: "",
+      college: "",
+      rewardImage: "",
+    });
+    setRewardImage(null);
+    setRewardImagePreview(null);
+    setErrors({});
+  };
 
   if (!isOpen) return null;
 
@@ -105,15 +105,15 @@ const RewardModal = ({
     const { name, value } = e.target;
 
     const handleChange = (e) => {
-  const { name, value } = e.target;
+      const { name, value } = e.target;
 
-  setFormData((prev) => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
 
-  setErrors((prev) => {
-    const { [name]: removed, ...rest } = prev;
-    return rest;
-  });
-};
+      setErrors((prev) => {
+        const { [name]: removed, ...rest } = prev;
+        return rest;
+      });
+    };
 
 
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -143,8 +143,8 @@ const RewardModal = ({
     });
 
     if (!rewardImagePreview) {
-  newErrors.rewardImage = true;
-}
+      newErrors.rewardImage = true;
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -155,7 +155,7 @@ const RewardModal = ({
 
     const payload = { ...formData, id: studentId };
 
-    
+
 
     if (isEditMode) {
 
@@ -166,7 +166,11 @@ const RewardModal = ({
         return;
       }
     }
-    onSave(payload);
+    onSave({
+      ...formData,
+      rewardImage,
+      rewardPoints: formData.rewardPoints
+    });
     onClose();
   };
 
@@ -195,7 +199,7 @@ const RewardModal = ({
               <select
                 name="university"
                 value={formData.university || ""}
-                onChange={handleChange}
+                onChange={handleUniversityChange || handleChange}
                 disabled={isViewMode}
                 className={`${inputClasses(
                   "university"
@@ -277,7 +281,7 @@ const RewardModal = ({
               </svg>
             </div>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Reward Name
@@ -294,7 +298,7 @@ const RewardModal = ({
             />
           </div>
 
-<div>
+          <div>
             <label className="block text-sm font-medium text-gray-700">
               Reward Description
             </label>
@@ -309,7 +313,7 @@ const RewardModal = ({
               className={inputClasses("name")}
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Reward Points
@@ -326,50 +330,50 @@ const RewardModal = ({
             />
           </div>
 
-        <div>
-  <div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">
-    Reward Image
-  </label>
+          <div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Reward Image
+              </label>
 
-  {!rewardImagePreview && (
-    <input
-      type="file"
-      accept="image/*"
-      onChange={handleImageChange}
-      className={`block w-full text-sm text-gray-700 file:mr-3 file:py-2 
+              {!rewardImagePreview && (
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className={`block w-full text-sm text-gray-700 file:mr-3 file:py-2 
                  file:px-4 file:rounded-md file:border-0 
                  ${errors.rewardImage ? "file:bg-red-100 file:text-red-600 " : "file:bg-indigo-50 file:text-indigo-600"}
                  hover:file:bg-indigo-100 cursor-pointer`}
-    />
-  )}
+                />
+              )}
 
-  {rewardImagePreview && (
-    <div className="relative inline-block mt-2">
-      <img
-        src={rewardImagePreview}
-        alt="Reward"
-        className="h-16 w-16 rounded-lg object-cover"
-      />
+              {rewardImagePreview && (
+                <div className="relative inline-block mt-2">
+                  <img
+                    src={rewardImagePreview}
+                    alt="Reward"
+                    className="h-16 w-16 rounded-lg object-cover"
+                  />
 
-      <button
-        type="button"
-        onClick={() => {
-          setRewardImage(null);
-          setRewardImagePreview(null);
-          setFormData((prev) => ({ ...prev, rewardImage: "" }));
-        }}
-        className="absolute -top-2 -right-2 bg-red-100 text-black rounded-full 
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRewardImage(null);
+                      setRewardImagePreview(null);
+                      setFormData((prev) => ({ ...prev, rewardImage: "" }));
+                    }}
+                    className="absolute -top-2 -right-2 bg-red-100 text-black rounded-full 
                    w-5 h-5 flex items-center justify-center text-sm shadow-md 
                    hover:bg-red-300 cursor-pointer"
-      >
-        <X className="w-3 h-3" />
-      </button>
-    </div>
-  )}
-</div>
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
+            </div>
 
-</div>
+          </div>
 
 
 
@@ -378,9 +382,9 @@ const RewardModal = ({
             <button
               type="button"
               onClick={() => {
-  resetForm();
-  onClose();
-}}
+                resetForm();
+                onClose();
+              }}
 
               className="px-4 py-2 text-sm font-medium text-gray-700 cursor-pointer bg-white border border-gray-300 rounded-lg hover:bg-gray-50 shadow-sm transition"
             >

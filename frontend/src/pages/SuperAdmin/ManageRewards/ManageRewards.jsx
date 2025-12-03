@@ -5,14 +5,14 @@ import ConfirmationModal from '../Modals/deleteModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { useToast } from "../../../context/ToastContext";
 import RewardModal from '../Modals/RewardModel';
-import { getAllRewards } from '../../../features/rewardSlice';
+import { getAllRewards, createReward } from '../../../features/rewardSlice';
 
 
 
 const ManageRewards = () => {
     const dispatch = useDispatch();
     const { showToast } = useToast();
-    const { rewards, isLoading, isError } = useSelector((state)=> state.reward);
+    const { rewards, isLoading, isError } = useSelector((state) => state.reward);
 
     const [selectedRewardIds, setSelectedRewardIds] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,8 +20,10 @@ const ManageRewards = () => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [rewardToDelete, setRewardToDelete] = useState(null);
     const [isBulkDelete, setIsBulkDelete] = useState(false);
-    const isAllSelected =  selectedRewardIds.length === rewards.length && rewards.length > 0;
+    const isAllSelected = selectedRewardIds.length === rewards.length && rewards.length > 0;
     const isAnySelected = selectedRewardIds.length > 0;
+    const [previewImage, setPreviewImage] = useState(null);
+
 
     const [limit, setLimit] = useState(10);
 
@@ -43,24 +45,22 @@ const ManageRewards = () => {
 
     // Handler to select/deselect all students
     const handleSelectAll = (e) => {
-        // if (e.target.checked) {
-        //     setSelectedRewardIds(studentData.map((student) => student._id));
-        // } else {
-        //     setSelectedStudentIds([]);
-        // }
+        if (e.target.checked) {
+            setSelectedRewardIds(rewards.map((r) => r._id));
+        } else {
+            setSelectedRewardIds([]);
+        }
     };
 
+
     const handleSelectReward = (id) => {
-        // setSelectedStudentIds((prevSelected) => {
-        //     if (prevSelected.includes(id)) {
-        //         // Deselect
-        //         return prevSelected.filter((studentId) => studentId !== id);
-        //     } else {
-        //         // Select
-        //         return [...prevSelected, id];
-        //     }
-        // });
+        setSelectedRewardIds((prev) =>
+            prev.includes(id)
+                ? prev.filter((rid) => rid !== id)  
+                : [...prev, id]        
+        );
     };
+
 
     // useEffect(() => {
     //     if (isSuccess && message) {
@@ -73,7 +73,7 @@ const ManageRewards = () => {
     //     }
     // }, [
     //     // isSuccess, isError, message,
-        
+
     //     dispatch, showToast]);
 
     const openModalForAdd = () => {
@@ -91,32 +91,32 @@ const ManageRewards = () => {
         setCurrentReward(null);
     };
 
+
+
     const handleSave = (data) => {
-        // if (currentStudent?.mode === "edit") {
-        //     dispatch(updateStudent({ studentId: currentStudent.id, data }))
-        //         .unwrap()
-        //         .then(() => {
-        //             showToast("Student updated successfully!", "success");
-        //             setIsModalOpen(false);
-        //             setCurrentStudent(null);
-        //             dispatch(getAllStudentsData({ page, limit }));
-        //         })
-        //         .catch((err) => {
-        //             showToast(err || "Failed to update student!", "error");
-        //         });
-        // } else {
-        //     dispatch(addStudent(data))
-        //         .unwrap()
-        //         .then(() => {
-        //             showToast("New student added successfully!", "success");
-        //             setIsModalOpen(false);
-        //             dispatch(getAllStudentsData({ page: 1, limit }));
-        //         })
-        //         .catch((err) => {
-        //             showToast(err || "Failed to add student!", "error");
-        //         });
-        // }
+        const formData = new FormData();
+
+        formData.append("name", data.name);
+        formData.append("university", data.university);
+        formData.append("college", data.college);
+        formData.append("rewardDescription", data.rewardDescription);
+
+        formData.append("points", data.rewardPoints);
+
+        if (data.rewardImage) {
+            formData.append("rewardImage", data.rewardImage);
+        }
+        dispatch(createReward(formData))
+            .unwrap()
+            .then(() => {
+                showToast("Reward created successfully!", "success");
+                setIsModalOpen(false);
+            })
+            .catch((err) => {
+                showToast(err || "Failed to create reward", "error");
+            });
     };
+
 
 
     // --- Delete Modal Handlers ---
@@ -255,7 +255,7 @@ const ManageRewards = () => {
                         Reward's List
                         <span className="text-sm text-gray-500 font-normal ml-3">
                             {/* {studentData.length} */}
-                             Rewards
+                            Rewards
                         </span>
                     </h1>
 
@@ -312,7 +312,7 @@ const ManageRewards = () => {
 
                 {/* Table/List Container */}
                 <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-                    { isLoading || rewards.length === 0 && !isError ? (
+                    {isLoading || rewards.length === 0 && !isError ? (
                         <SkeletonTable />
                     ) : rewards.length > 0 ? (
                         <>
@@ -331,9 +331,16 @@ const ManageRewards = () => {
 
                                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider  hover:bg-gray-100 transition duration-150">
                                                 <div className="flex items-center gap-1">
-                                                    Name
+                                                    Reward Name
                                                 </div>
                                             </th>
+
+                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider  hover:bg-gray-100 transition duration-150">
+                                                <div className="flex items-center gap-1">
+                                                    University
+                                                </div>
+                                            </th>
+
                                             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider  hover:bg-gray-100 transition duration-150">
                                                 <div className="flex items-center gap-1">
                                                     College
@@ -385,8 +392,45 @@ const ManageRewards = () => {
                                                 </td>
 
                                                 {/* Name Column (Bold Text) */}
+                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                    <div className="flex items-center gap-4">
+
+                                                        {/* Image Box */}
+                                                        <div
+                                                            className="relative group cursor-pointer"
+                                                            onClick={() => setPreviewImage(reward.rewardImage)}
+                                                        >
+                                                            <img
+                                                                src={reward.rewardImage}
+                                                                alt={reward.name}
+                                                                className="w-14 h-14 rounded-xl object-cover shadow-md border border-gray-200 group-hover:opacity-90 transition-all"
+                                                            />
+
+                                                            {/* Hover Overlay */}
+                                                            <div className="absolute inset-0 bg-black/30 rounded-xl opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                                                                <span className="text-white text-xs bg-black/40 px-2 py-1 rounded-md">
+                                                                    View
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Reward Details */}
+                                                        <div>
+                                                            <p className="text-gray-900 font-semibold text-sm">
+                                                                {reward.name}
+                                                            </p>
+
+                                                            <p className="text-gray-500 text-xs mt-1">
+                                                                {reward.points} Points
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+
+
+
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                    {reward.name || 'N/A'}
+                                                    {reward.university?.name || 'N/A'}
                                                 </td>
 
                                                 {/* Email Column */}
@@ -546,6 +590,29 @@ const ManageRewards = () => {
                 entity="reward"
                 itemName={rewardToDelete?.name}
             />
+
+            {previewImage && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                    <div className="relative bg-white rounded-xl shadow-xl p-4 max-w-lg w-full">
+
+                        {/* Close Button */}
+                        <button
+                            onClick={() => setPreviewImage(null)}
+                            className="absolute top-3 right-3 text-gray-600 hover:text-black cursor-pointer"
+                        >
+                            ✕
+                        </button>
+
+                        {/* Big Image */}
+                        <img
+                            src={previewImage}
+                            alt="Preview"
+                            className="w-full h-auto rounded-xl object-cover shadow-md"
+                        />
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };

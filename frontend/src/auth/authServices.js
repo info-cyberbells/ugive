@@ -226,6 +226,45 @@ export const deleteStudentService = async (id) => {
     return response.data;
 };
 
+
+// get all rewards
+export const getAllRewardsService = async () => {
+    const response = await axios.get(USER_ENDPOINTS.SUPERADMIN_GET_ALL_REWARDS,
+        getAuthHeader()
+    );
+    return response.data;
+}
+
+//create a reward - superadmin
+export const createRewardService = async (rewardData) => {
+    const authHeader = getAuthHeader();
+
+    const response = await axios.post(
+        USER_ENDPOINTS.SUPERADMIN_ADD_REWARD,
+        rewardData,
+        {
+            headers: {
+                ...authHeader.headers,
+                "Content-Type": "multipart/form-data",
+            },
+        }
+    );
+
+    return response.data;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
 //student get profile   
 export const getStudentProfileService = async () => {
     const response = await axios.get(
@@ -239,20 +278,20 @@ export const getStudentProfileService = async () => {
 // update student profile
 
 export const updateStudentProfileService = async (formData) => {
-  const auth = getAuthHeader();  
+    const auth = getAuthHeader();
 
-  const response = await axios.put(
-    USER_ENDPOINTS.STUDENT_UPDATE_PROFILE,
-    formData,
-    {
-      headers: {
-        ...auth.headers,                     
-        "Content-Type": "multipart/form-data",     
-      }
-    }
-  );
+    const response = await axios.put(
+        USER_ENDPOINTS.STUDENT_UPDATE_PROFILE,
+        formData,
+        {
+            headers: {
+                ...auth.headers,
+                "Content-Type": "multipart/form-data",
+            }
+        }
+    );
 
-  return response.data;
+    return response.data;
 };
 
 // change password service student
@@ -265,10 +304,3 @@ export const changeStudentPasswordService = async (data) => {
     return response.data;
 };
 
-// get all rewards
-export const getAllRewardsService = async () => {
-    const response = await axios.get(USER_ENDPOINTS.SUPERADMIN_GET_ALL_REWARDS,
-        getAuthHeader()
-    );
-    return response.data;
-}
