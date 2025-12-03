@@ -6,11 +6,14 @@ import "./login.css";
 import { NavLink } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { useToast } from "../../context/ToastContext";
+import ForgotPassword from "../ForgotPasswordModel/ForgotPasswordModel";
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { showToast } = useToast();
+
+  const [open, setOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -154,7 +157,10 @@ const Login = () => {
                     </label>
                   </div>
                   <div className="login-forgot-password">
-                    <NavLink>Forgot Password?</NavLink>
+                    <button type="button"
+                    className="cursor-pointer hover:text-gray-900 transition "
+                     onClick={() => setOpen(true)}
+                    >Forgot Password</button>
                   </div>
                 </div>
 
@@ -201,6 +207,10 @@ const Login = () => {
           />
         </div>
       </div>
+      <ForgotPassword
+      isOpen={open}
+      onClose={()=> setOpen(false)}
+      />
     </div>
   );
 };
