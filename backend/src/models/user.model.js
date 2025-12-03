@@ -57,6 +57,8 @@ const userSchema = new mongoose.Schema({
     },
     trim: true,
   },
+  resetCode: { type: String },
+  resetCodeExpires: { type: Date },
   profileImage: { type: String, default: null },
 }, { timestamps: true });
 
