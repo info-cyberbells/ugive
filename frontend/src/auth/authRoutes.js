@@ -31,6 +31,9 @@ export const USER_ENDPOINTS = {
     SUPERADMIN_ADD_STUDENT: `${API_BASE_URL}/super_admin/create-student`,
     SUPERADMIN_UPDATE_STUDENT: `${API_BASE_URL}/super_admin/update-students`,
     SUPERADMIN_DELETE_STUDENT: `${API_BASE_URL}/super_admin/delete-students`,
+    
+    
+    SUPERADMIN_GET_ALL_REWARDS: `${API_BASE_URL}/super_admin/get-all-rewards`,
 
 
 

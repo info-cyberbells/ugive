@@ -264,3 +264,11 @@ export const changeStudentPasswordService = async (data) => {
     );
     return response.data;
 };
+
+// get all rewards
+export const getAllRewardsService = async () => {
+    const response = await axios.get(USER_ENDPOINTS.SUPERADMIN_GET_ALL_REWARDS,
+        getAuthHeader()
+    );
+    return response.data;
+}

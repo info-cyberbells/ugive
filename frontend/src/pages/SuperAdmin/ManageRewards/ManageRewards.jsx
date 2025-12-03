@@ -3,43 +3,32 @@ import { Trash2, Filter, Download, Plus, ChevronDown, ArrowUpDown } from 'lucide
 import StudentModal from '../Modals/StudentAddModal';
 import ConfirmationModal from '../Modals/deleteModal';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    getAllStudentsData,
-    addStudent,
-    updateStudent,
-    deleteStudent,
-    getSingleStudent,
-    reset
-} from '../../../features/studentDataSlice';
 import { useToast } from "../../../context/ToastContext";
 import RewardModal from '../Modals/RewardModel';
+import { getAllRewards } from '../../../features/rewardSlice';
 
 
 
 const ManageRewards = () => {
     const dispatch = useDispatch();
     const { showToast } = useToast();
-    // const { studentData, isLoading, isError, isSuccess, message, page, total, totalPages } = useSelector(
-    //     (state) => state.studentData
-    // );
+    const { rewards, isLoading, isError } = useSelector((state)=> state.reward);
+
     const [selectedRewardIds, setSelectedRewardIds] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentReward, setCurrentReward] = useState(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [rewardToDelete, setRewardToDelete] = useState(null);
     const [isBulkDelete, setIsBulkDelete] = useState(false);
-    const isAllSelected = 0;
-    // selectedRewardIds.length === rewardData.length && rewardData.length > 0;
-    const isAnySelected = 0;
-    // selectedRewardIds.length > 0;
+    const isAllSelected =  selectedRewardIds.length === rewards.length && rewards.length > 0;
+    const isAnySelected = selectedRewardIds.length > 0;
 
     const [limit, setLimit] = useState(10);
-    const rewardData = {};
 
 
-    // useEffect(() => {
-    //     dispatch(getAllStudentsData({ page: 1, limit }))
-    // }, [dispatch, limit]);
+    useEffect(() => {
+        dispatch(getAllRewards())
+    }, []);
 
 
     const handlePageChange = (newPage) => {
@@ -55,7 +44,7 @@ const ManageRewards = () => {
     // Handler to select/deselect all students
     const handleSelectAll = (e) => {
         // if (e.target.checked) {
-        //     setSelectedStudentIds(studentData.map((student) => student._id));
+        //     setSelectedRewardIds(studentData.map((student) => student._id));
         // } else {
         //     setSelectedStudentIds([]);
         // }
@@ -323,11 +312,9 @@ const ManageRewards = () => {
 
                 {/* Table/List Container */}
                 <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-                    {
-                    // isLoading || 
-                    rewardData.length === 0 && !isError ? (
+                    { isLoading || rewards.length === 0 && !isError ? (
                         <SkeletonTable />
-                    ) : rewardData.length > 0 ? (
+                    ) : rewards.length > 0 ? (
                         <>
                             <div className="overflow-x-auto">
                                 <table className="min-w-full divide-y divide-gray-200 ">
@@ -383,15 +370,15 @@ const ManageRewards = () => {
 
                                     {/* Table Body */}
                                     <tbody className="bg-white divide-y divide-gray-200">
-                                        {rewardData.map((reward) => (
+                                        {rewards.map((reward) => (
                                             <tr
                                                 key={reward._id}
-                                                className={`transition duration-150 ${selectedrewardIds.includes(reward._id) ? 'bg-indigo-50 hover:bg-indigo-100' : 'hover:bg-gray-50'}`}
+                                                className={`transition duration-150 ${selectedRewardIds.includes(reward._id) ? 'bg-indigo-50 hover:bg-indigo-100' : 'hover:bg-gray-50'}`}
                                             >
                                                 <td className="px-6 py-4 whitespace-nowrap w-4">
                                                     <input
                                                         type="checkbox"
-                                                        checked={selectedrewardIds.includes(reward._id)}
+                                                        checked={selectedRewardIds.includes(reward._id)}
                                                         onChange={() => handleSelectReward(reward._id)}
                                                         className="form-checkbox cursor-pointer h-4 w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
                                                     />
@@ -404,7 +391,7 @@ const ManageRewards = () => {
 
                                                 {/* Email Column */}
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                                    {reward.college || 'N/A'}
+                                                    {reward.college?.name || 'N/A'}
                                                 </td>
 
                                                 {/* Phone Column */}
@@ -463,7 +450,7 @@ const ManageRewards = () => {
                             </div>
                             <div className="flex justify-between items-center p-4 bg-white border-t">
                                 {/* Limit Dropdown */}
-                                <div className="flex items-center gap-2">
+                                {/* <div className="flex items-center gap-2">
                                     <span className="text-sm text-gray-600">Rows per page:</span>
                                     <select
                                         className="border cursor-pointer rounded px-2 py-1 text-sm"
@@ -475,10 +462,10 @@ const ManageRewards = () => {
                                         <option value="50">50</option>
                                         <option value="100">100</option>
                                     </select>
-                                </div>
+                                </div> */}
 
                                 {/* Pagination Buttons */}
-                                <div className="flex items-center gap-2">
+                                {/* <div className="flex items-center gap-2">
                                     <button
                                         onClick={() => handlePageChange(page - 1)}
                                         disabled={page === 1}
@@ -509,7 +496,7 @@ const ManageRewards = () => {
                                     >
                                         Next
                                     </button>
-                                </div>
+                                </div> */}
                             </div>
                         </>
                     ) : (
