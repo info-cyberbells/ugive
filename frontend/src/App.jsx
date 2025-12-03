@@ -13,6 +13,7 @@ import ManageUniversities from './pages/SuperAdmin/ManageUniversities/ManageUniv
 import ManageColleges from './pages/SuperAdmin/ManageColleges/ManageColleges';
 import Social from './pages/SuperAdmin/Social/Social';
 import StuDashboard from './pages/dashboard/stuDashboard';
+import ManageRewards from './pages/SuperAdmin/ManageRewards/ManageRewards';
 
 
 
@@ -125,6 +126,9 @@ function App() {
         <Route
           path='/profile'
           element={isAuthenticated ? <Profile /> : <Navigate to="/" replace />}
+        />
+
+        <Route path="/manage-rewards" element={isAuthenticated ? <ManageRewards /> : <Navigate to='/' replace />}
         />
 
         <Route

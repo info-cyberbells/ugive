@@ -26,6 +26,7 @@ const ROLE_BASED_MENUS = {
     { id: "manage-universities", title: "Manage Universities", icon: School },
     { id: "manage-colleges", title: "Manage Colleges", icon: GraduationCap },
     { id: "manage-students", title: "Manage Students", icon: BookOpen },
+    { id: "manage-rewards", title: "Manage Rewards", icon: Gift },
     { id: "social", title: "Social", icon: Share2 },
   ],
 
