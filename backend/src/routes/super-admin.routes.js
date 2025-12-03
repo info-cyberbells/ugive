@@ -1,10 +1,12 @@
 import express from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
 import { authorizeRoles } from "../middleware/role.middleware.js";
-import { getProfile, updateProfile, changePassword  } from "../controllers/profile.controller.js";
+import { getProfile, updateProfile, changePassword } from "../controllers/profile.controller.js";
 import { createUniversity, createCollege, updateUniversity, updateCollege, deleteUniversity, deleteCollege, getAllUniversitiesSuperAdmin, getAllCollegesSuperAdmin, getSingleUniversitySuperAdmin, getSingleCollegeSuperAdmin } from "../controllers/university.controller.js";
 import { getAllStudentsSuperAdmin, createStudentSuperAdmin, getSingleStudentSuperAdmin, updateStudentSuperAdmin, deleteStudentSuperAdmin, } from "../controllers/student.controller.js";
 import upload from "../middleware/upload.middleware.js";
+import uploadReward from "../middleware/uploadReward.middleware.js";
+import { createReward, getRewards, getSingleReward, updateReward, deleteReward } from "../controllers/reward.controller.js";
 
 
 
@@ -47,6 +49,14 @@ router.put("/colleges/:id", updateCollege);
 router.delete("/colleges/:id", deleteCollege);
 router.get("/get-all-colleges", getAllCollegesSuperAdmin);
 router.get("/colleges/:id", getSingleCollegeSuperAdmin);
+
+
+//reward routes
+router.post("/create-reward", uploadReward.single("rewardImage"), createReward);
+router.get("/get-all-rewards", getRewards);
+router.get("/get-reward/:id", getSingleReward);
+router.put("/update-reward/:id", uploadReward.single("rewardImage"), updateReward);
+router.delete("/delete-reward/:id", deleteReward);
 
 
 
