@@ -228,9 +228,12 @@ export const deleteStudentService = async (id) => {
 
 
 // get all rewards
-export const getAllRewardsService = async () => {
+export const getAllRewardsService = async (query) => {
     const response = await axios.get(USER_ENDPOINTS.SUPERADMIN_GET_ALL_REWARDS,
-        getAuthHeader()
+        {
+            params: query,
+            ...getAuthHeader(),
+        }
     );
     return response.data;
 }
@@ -252,6 +255,36 @@ export const createRewardService = async (rewardData) => {
 
     return response.data;
 };
+
+// delete reward super admin
+
+export const deleteRewardService = async (id) => {
+    const response  = await axios.delete(
+        `${USER_ENDPOINTS.SUPERADMIN_DELETE_REWARD}/${id}`,
+        getAuthHeader(),
+    )
+    return response.data;
+}
+
+//get single reward
+export const getSingleRewardService = async (id) => {
+    const response = await axios.get(
+        `${USER_ENDPOINTS.SUPERADMIN_GET_SINGLE_REWARD}/${id}`,
+        getAuthHeader()
+    );
+    return response.data;
+};
+ 
+//update reward data
+export const updateRewardService = async (id, rewardData) => {
+    const response = await axios.put(
+        `${USER_ENDPOINTS.SUPERADMIN_UPDATE_REWARD}/${id}`,
+        rewardData,
+        getAuthHeader()
+    );
+    return response.data;
+};
+ 
 
 
 

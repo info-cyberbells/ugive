@@ -5,14 +5,14 @@ import ConfirmationModal from '../Modals/deleteModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { useToast } from "../../../context/ToastContext";
 import RewardModal from '../Modals/RewardModel';
-import { getAllRewards, createReward } from '../../../features/rewardSlice';
+import { getAllRewards, createReward, deleteReward, updateReward, getSingleReward } from '../../../features/rewardSlice';
 
 
 
 const ManageRewards = () => {
     const dispatch = useDispatch();
     const { showToast } = useToast();
-    const { rewards, isLoading, isError } = useSelector((state) => state.reward);
+    const { rewards, tableLoading,isLoading, isError, page, limit, totalPages, totalRewards } = useSelector((state) => state.reward);
 
     const [selectedRewardIds, setSelectedRewardIds] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,24 +24,28 @@ const ManageRewards = () => {
     const isAnySelected = selectedRewardIds.length > 0;
     const [previewImage, setPreviewImage] = useState(null);
 
-
-    const [limit, setLimit] = useState(10);
-
-
-    useEffect(() => {
-        dispatch(getAllRewards())
-    }, []);
+    const [currentPage, setCurrentPage] = useState(page);
+    const [currentLimit, setCurrentLimit] = useState(limit);
 
 
-    const handlePageChange = (newPage) => {
-        if (newPage < 1 || newPage > totalPages) return;
-        // dispatch(getAllStudentsData({ page: newPage, limit }));
-    };
 
-    const handleLimitChange = (newLimit) => {
-        const newLimitValue = Number(newLimit);
-        setLimit(newLimitValue);
-    };
+   useEffect(() => {
+    dispatch(getAllRewards({ page: currentPage, limit: currentLimit }));
+}, [dispatch, currentPage, currentLimit]);
+
+
+
+   const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setCurrentPage(newPage);
+};
+
+   const handleLimitChange = (value) => {
+    setCurrentLimit(Number(value));
+    setCurrentPage(1); // reset to page 1
+};
+
+
 
     // Handler to select/deselect all students
     const handleSelectAll = (e) => {
@@ -81,9 +85,23 @@ const ManageRewards = () => {
         setIsModalOpen(true);
     };
 
-    const openModalForEdit = (reward) => {
-        setCurrentReward(reward);
-        setIsModalOpen(true);
+    // const openModalForEdit = (reward) => {
+    //     setCurrentReward(reward);
+    //     setIsModalOpen(true);
+    // };
+
+     const openModalForEdit = (reward) => {
+        dispatch(getSingleReward(reward._id)).then(() => {
+            setCurrentReward({ ...reward, mode: "edit" });
+            setIsModalOpen(true);
+        });
+    };
+
+    const openModalForView = (reward) => {
+        dispatch(getSingleReward(reward._id)).then(() => {
+            setCurrentReward({ ...reward, mode: "view" });
+            setIsModalOpen(true);
+        });
     };
 
     const closeModal = () => {
@@ -110,6 +128,7 @@ const ManageRewards = () => {
             .unwrap()
             .then(() => {
                 showToast("Reward created successfully!", "success");
+                dispatch(getAllRewards({ page: currentPage, limit: currentLimit }));
                 setIsModalOpen(false);
             })
             .catch((err) => {
@@ -140,79 +159,81 @@ const ManageRewards = () => {
     };
 
     const confirmDelete = () => {
-        // if (isBulkDelete) {
-        //     Promise.all(selectedStudentIds.map(id => dispatch(deleteStudent(id)).unwrap()))
-        //         .then(() => {
-        //             showToast(`Deleted ${selectedStudentIds.length} students successfully!`, "success");
-        //             setSelectedStudentIds([]);
-        //             dispatch(getAllStudentsData({ page, limit }));
-        //             closeDeleteModal();
-        //         })
-        //         .catch((err) => {
-        //             showToast(err || "Failed to delete students!", "error");
-        //             closeDeleteModal();
-        //         });
-        // } else if (studentToDelete) {
-        //     dispatch(deleteStudent(studentToDelete._id))
-        //         .unwrap()
-        //         .then(() => {
-        //             showToast("Student deleted successfully!", "success");
-        //             dispatch(getAllStudentsData({ page, limit }));
-        //             closeDeleteModal();
-        //         })
-        //         .catch((err) => {
-        //             showToast(err || "Failed to delete student!", "error");
-        //             closeDeleteModal();
-        //         });
-        // }
+        if (isBulkDelete) {
+            Promise.all(selectedRewardIds.map(id => dispatch(deleteReward(id)).unwrap()))
+                .then(() => {
+                    showToast(`Deleted ${selectedRewardIds.length} rewards successfully!`, "success");
+                    setSelectedRewardIds([]);
+                    dispatch(getAllRewards({ page: currentPage, limit: currentLimit }));
+                    closeDeleteModal();
+                })
+                .catch((err) => {
+                    showToast(err || "Failed to delete students!", "error");
+                    closeDeleteModal();
+                });
+        } else if (rewardToDelete) {
+            dispatch(deleteReward(rewardToDelete._id))
+                .unwrap()
+                .then(() => {
+                    showToast("Reward deleted successfully!", "success");
+                    dispatch(getAllRewards({ page: currentPage, limit: currentLimit }));
+                    closeDeleteModal();
+                })
+                .catch((err) => {
+                    showToast(err || "Failed to delete Reward!", "error");
+                    closeDeleteModal();
+                });
+        }
     };
 
 
     const handleExportCSV = () => {
-        // const selected = studentData.filter(stu =>
-        //     selectedStudentIds.includes(stu._id)
-        // );
+        const selected = rewards.filter(reward =>
+            selectedRewardIds.includes(reward._id)
+        );
 
-        // if (selected.length === 0) {
-        //     showToast("No students selected!", "error");
-        //     return;
-        // }
+        if (selected.length === 0) {
+            showToast("No Reward selected!", "error");
+            return;
+        }
 
-        // const headers = [
-        //     "Name",
-        //     "Email",
-        //     "Phone Number",
-        //     "Student Uni ID"
-        // ];
+        const headers = [
+            "Name",
+            "Points",
+            "Reward Desc.",
+            "Uni Name",
+            "College"
+        ];
 
-        // const rows = selected.map(stu => [
-        //     stu.name,
-        //     stu.email,
-        //     stu.phoneNumber,
-        //     stu.studentUniId
-        // ]);
+        const rows = selected.map(reward => [
+            reward.name,
+            reward.points,
+            reward.rewardDescription,
+            reward.university?.name,
+            reward.college?.name
+        ]);
 
-        // // Fix CSV — wrap values in quotes to prevent merging
-        // const escapeCSV = (value) => {
-        //     if (value === null || value === undefined) return "";
-        //     const str = String(value).replace(/"/g, '""');
-        //     return `"${str}"`;
-        // };
+        // Fix CSV — wrap values in quotes to prevent merging
+        const escapeCSV = (value) => {
+            if (value === null || value === undefined) return "";
+            const str = String(value).replace(/"/g, '""');
+            return `"${str}"`;
+        };
 
-        // const csvContent =
-        //     "data:text/csv;charset=utf-8," +
-        //     [headers, ...rows]
-        //         .map(row => row.map(escapeCSV).join(","))
-        //         .join("\n");
+        const csvContent =
+            "data:text/csv;charset=utf-8," +
+            [headers, ...rows]
+                .map(row => row.map(escapeCSV).join(","))
+                .join("\n");
 
-        // const encodedUri = encodeURI(csvContent);
-        // const link = document.createElement("a");
-        // link.href = encodedUri;
-        // link.download = "students_export.csv";
-        // document.body.appendChild(link);
-        // link.click();
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.href = encodedUri;
+        link.download = "rewards_export.csv";
+        document.body.appendChild(link);
+        link.click();
 
-        // showToast("CSV exported successfully!", "success");
+        showToast("CSV exported successfully!", "success");
     };
 
 
@@ -312,7 +333,7 @@ const ManageRewards = () => {
 
                 {/* Table/List Container */}
                 <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-                    {isLoading || rewards.length === 0 && !isError ? (
+                    {tableLoading || rewards.length === 0 && !isError ? (
                         <SkeletonTable />
                     ) : rewards.length > 0 ? (
                         <>
@@ -461,10 +482,12 @@ const ManageRewards = () => {
                                                 {/* Action Column (View, Edit, Delete) */}
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
                                                     <button
-                                                        onClick={() => {
-                                                            setCurrentReward({ id: reward._id, mode: "view" });
-                                                            setIsModalOpen(true);
-                                                        }}
+                                                        // onClick={() => {
+                                                        //     setCurrentReward({ id: reward._id, mode: "view" });
+                                                        //     setIsModalOpen(true);
+                                                        // }}
+
+                                                        onClick={() => openModalForView(reward)}
 
                                                         className="cursor-pointer text-blue-600 hover:text-blue-900"
                                                     >
@@ -472,10 +495,12 @@ const ManageRewards = () => {
                                                     </button>
 
                                                     <button
-                                                        onClick={() => {
-                                                            setCurrentReward({ id: reward._id, mode: "edit" });
-                                                            setIsModalOpen(true);
-                                                        }}
+                                                        // onClick={() => {
+                                                        //     setCurrentReward({ id: reward._id, mode: "edit" });
+                                                        //     setIsModalOpen(true);
+                                                        // }}
+
+                                                        onClick={() => openModalForEdit(reward)}
 
 
                                                         className="cursor-pointer text-yellow-600 hover:text-yellow-900">
@@ -494,7 +519,7 @@ const ManageRewards = () => {
                             </div>
                             <div className="flex justify-between items-center p-4 bg-white border-t">
                                 {/* Limit Dropdown */}
-                                {/* <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2">
                                     <span className="text-sm text-gray-600">Rows per page:</span>
                                     <select
                                         className="border cursor-pointer rounded px-2 py-1 text-sm"
@@ -506,10 +531,10 @@ const ManageRewards = () => {
                                         <option value="50">50</option>
                                         <option value="100">100</option>
                                     </select>
-                                </div> */}
+                                </div>
 
-                                {/* Pagination Buttons */}
-                                {/* <div className="flex items-center gap-2">
+                             
+                                <div className="flex items-center gap-2">
                                     <button
                                         onClick={() => handlePageChange(page - 1)}
                                         disabled={page === 1}
@@ -540,7 +565,7 @@ const ManageRewards = () => {
                                     >
                                         Next
                                     </button>
-                                </div> */}
+                                </div>
                             </div>
                         </>
                     ) : (
@@ -577,9 +602,11 @@ const ManageRewards = () => {
             <RewardModal
                 isOpen={isModalOpen}
                 onClose={closeModal}
-                studentId={currentReward?.id}
+                rewardId={currentReward?._id}
                 mode={currentReward?.mode}
                 onSave={handleSave}
+                page={currentPage}
+                limit={currentLimit}
             />
 
             <ConfirmationModal

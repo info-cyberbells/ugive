@@ -1,7 +1,7 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { reset } from "../../features/studentSlice";
+import { logout, reset } from "../../features/studentSlice";
 
 import {
   LayoutDashboard,
@@ -19,6 +19,8 @@ import {
   Settings,
   HelpCircle,
 } from "lucide-react";
+import { resetStudentState } from "../../features/studentDataSlice";
+import { clearProfile } from "../../features/superadminProfileSlice";
 
 const ROLE_BASED_MENUS = {
   super_admin: [
@@ -36,7 +38,6 @@ const ROLE_BASED_MENUS = {
   ],
  student : [
   { id: "profile", title: "User Profile", icon: UserCircle },
-  { id: "social", title: "Social", icon: Share2 },
   { id: "rewards-catalogs", title: "Rewards Catalog", icon: Gift },
   { id: "streaks", title: "Streaks", icon: Flame },
   { id: "activities", title: "Activities", icon: Activity },
@@ -44,6 +45,7 @@ const ROLE_BASED_MENUS = {
   { id: "notifications", title: "Notifications", icon: Bell },
   { id: "settings", title: "Settings", icon: Settings },
   { id: "support", title: "Support", icon: HelpCircle },
+  { id: "social", title: "Social", icon: Share2 },
 ],
 };
 
@@ -67,6 +69,9 @@ const MenuItems = () => {
   const handleLogout = () => {
     localStorage.clear();
     dispatch(reset());
+    dispatch(logout());
+    dispatch((resetStudentState()));
+    dispatch(clearProfile());
     window.dispatchEvent(new Event("authChange"));
     navigate("/");
   };

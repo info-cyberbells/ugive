@@ -142,6 +142,19 @@ const studentDataSlice = createSlice({
       state.isError = false;
       state.message = "";
     },
+    resetStudentState: (state) => {
+    state.studentProfile = null;
+    state.singleStudent = null;
+    state.studentData = [];
+    state.page = 1;
+    state.limit = 10;
+    state.total = 0;
+    state.totalPages = 1;
+    state.isLoading = false;
+    state.isError = false;
+    state.isSuccess = false;
+    state.message = "";
+},
   },
   extraReducers: (builder) => {
     builder
@@ -275,5 +288,5 @@ const studentDataSlice = createSlice({
   },
 });
 
-export const { reset } = studentDataSlice.actions;
+export const { reset, resetStudentState } = studentDataSlice.actions;
 export default studentDataSlice.reducer;

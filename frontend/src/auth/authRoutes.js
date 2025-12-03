@@ -35,6 +35,9 @@ export const USER_ENDPOINTS = {
     
     SUPERADMIN_GET_ALL_REWARDS: `${API_BASE_URL}/super_admin/get-all-rewards`,
     SUPERADMIN_ADD_REWARD: `${API_BASE_URL}/super_admin/create-reward`,
+    SUPERADMIN_DELETE_REWARD: `${API_BASE_URL}/super_admin/delete-reward`,
+    SUPERADMIN_GET_SINGLE_REWARD: `${API_BASE_URL}/super_admin/get-reward`,
+    SUPERADMIN_UPDATE_REWARD: `${API_BASE_URL}/super_admin/update-reward`,
 
 
 
