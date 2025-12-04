@@ -18,6 +18,7 @@ import RewardCatalogs from './pages/RewardCatalogs/RewardCatalogs';
 import WriteCard from './pages/WriteCard/WriteCard';
 import StudentDashboard from './pages/dashboard/StudentDashbaord';
 import LetsGo from './pages/LetsGo/LetsGo';
+import MyStudentProfile from './pages/Profile/MyStudentProfile';
 
 
 
@@ -141,6 +142,9 @@ function App() {
         <Route path="/terms-and-conditions" element={isAuthenticated ? <TermsAndCondition /> : <Navigate to='/' replace />}
         />
         <Route path='/rewards-catalog' element={isAuthenticated ? <RewardCatalogs /> : <Navigate to="/" replace />} />
+
+        <Route path="/my-profile" element={isAuthenticated ? <MyStudentProfile /> : <Navigate to='/' replace />}
+        />
         {/* <Route
           path='/social'
           element={isAuthenticated ? <Social /> : <Navigate to="/" replace />}

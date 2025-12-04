@@ -100,12 +100,12 @@ const RewardCatalogs = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen ml-60 font-[Poppins] mt-14 bg-gray-50 p-4">
-        <h1 className="text-2xl font-medium text-purple-700 mb-10">
+      <div className="min-h-screen ml-60 font-[Poppins] mt-14 bg-gray-50 p-6">
+        <h1 className="text-2xl font-medium text-purple-700 mb-0">
           Rewards Catalogue
         </h1>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl w-full p-6 rounded-3xl">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl w-full p-2 rounded-3xl">
           {[1].map((i) => (
             <div key={i} className="flex flex-col items-center p-4 animate-pulse">
               <div className="relative w-32 h-32 mb-4">
@@ -124,8 +124,8 @@ const RewardCatalogs = () => {
 
   if (rewards.length === 0) {
     return (
-      <div className="min-h-screen ml-60 font-[Poppins] mt-14 bg-gray-50 p-4">
-        <h1 className="text-2xl font-medium text-purple-700 mb-10">
+      <div className="min-h-screen ml-60 font-[Poppins] mt-14 bg-gray-50 p-6">
+        <h1 className="text-2xl font-medium text-purple-700 mb-0">
           Rewards Catalogue
         </h1>
         <div className="flex flex-col items-center justify-center py-20">
@@ -137,14 +137,14 @@ const RewardCatalogs = () => {
   }
 
   return (
-    <div className="min-h-screen ml-60 font-[Poppins] mt-14 bg-gray-50 p-4">
-      <h1 className="text-2xl font-medium text-purple-700 mb-10">
+    <div className="min-h-screen ml-60 font-[Poppins] mt-14 bg-gray-50 p-6">
+      <h1 className="text-2xl font-medium text-purple-700 mt-0">
         Rewards Catalogue
       </h1>
 
       <div className="
         grid grid-cols-2 md:grid-cols-4 gap-8
-        max-w-4xl w-full p-6 rounded-3xl
+        max-w-4xl w-full p-2 rounded-3xl
       ">
         {rewards.map((reward) => (
           <RewardBadge

@@ -3,32 +3,34 @@ import { Menu, X } from "lucide-react";
 import { fetchSuperAdminProfile } from "../../features/superadminProfileSlice";
 import { fetchProfile } from "../../features/studentDataSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from 'react-router-dom';
 
 const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const [isMobile, setIsMobile] = useState(false);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
 
-  
+
   const { profile } = useSelector((state) => state.superadmin);
-const { studentProfile } = useSelector((state) => state.studentData);
+  const { studentProfile } = useSelector((state) => state.studentData);
 
-const role =
-  profile?.role?.toLowerCase() ||
-  studentProfile?.role?.toLowerCase();
+  const role =
+    profile?.role?.toLowerCase() ||
+    studentProfile?.role?.toLowerCase();
 
-const userData =
-  profile || studentProfile || {};
+  const userData =
+    profile || studentProfile || {};
 
-    
-   useEffect(() => {
-  const storedUser = JSON.parse(localStorage.getItem("user"));
-  const storedRole = storedUser?.role?.toLowerCase();
 
-  if (storedRole === "super_admin") dispatch(fetchSuperAdminProfile());
-  if (storedRole === "student") dispatch(fetchProfile());
-}, []);
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    const storedRole = storedUser?.role?.toLowerCase();
+
+    if (storedRole === "super_admin") dispatch(fetchSuperAdminProfile());
+    if (storedRole === "student") dispatch(fetchProfile());
+  }, []);
 
 
   useEffect(() => {
@@ -37,6 +39,12 @@ const userData =
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const handleProfileClick = () => {
+    if (role === "student") {
+      navigate("/my-profile");
+    }
+  };
 
   return (
     <header
@@ -74,39 +82,46 @@ const userData =
 
       {/* Right Section */}
       <div className="flex items-center gap-4 md:gap-3">
-       
-
-      
-
-  
-
-      <button className="cursor-pointer bg-red-50 p-3 rounded-lg">
-  <svg width="20" height="20" fill="none" stroke="#FACC15" strokeWidth="1">
-    <path d="M4 8a6 6 0 0112 0c0 7 3 8 3 8H1s3-1 3-8z" />
-    <circle cx="10" cy="18" r="1" />
-  </svg>
-</button>
 
 
 
-        <div className="flex items-center gap-3">
+
+
+
+        <button className="cursor-pointer bg-red-50 p-3 rounded-lg">
+          <svg width="20" height="20" fill="none" stroke="#FACC15" strokeWidth="1">
+            <path d="M4 8a6 6 0 0112 0c0 7 3 8 3 8H1s3-1 3-8z" />
+            <circle cx="10" cy="18" r="1" />
+          </svg>
+        </button>
+
+
+
+        <div
+          className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition"
+          onClick={handleProfileClick}
+        >
           {/* User Image */}
           <div>
-            <img
-              src={
-       userData?.profileImage ||
-      "https://cdn-icons-png.flaticon.com/512/149/149071.png"
-    }
-
-              alt="User"
-              className="w-12 h-12 rounded-md object-cover"
-            />
+            {userData?.profileImage ? (
+              <img
+                src={userData.profileImage}
+                alt="User"
+                className="w-12 h-12 rounded-md object-cover"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-md bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                <span className="text-white font-semibold text-lg">
+                  {userData?.name?.charAt(0)?.toUpperCase() || "S"}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* User Info */}
           <div>
             <h5 className="text-gray-800 font-semibold">     {userData?.name || "user"}
-</h5>
+            </h5>
             <h6 className="text-gray-500 text-sm">{role?.replace("_", " ") || "role"}</h6>
           </div>
         </div>
