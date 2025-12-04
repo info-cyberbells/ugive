@@ -5,18 +5,18 @@ import { } from "react-router-dom";
 import Login from './pages/Login/Login';
 import Signup from './pages/Signup/Signup';
 import Dashboard from './pages/superAdmin/superAdminDashboard/superAdminDashboard';
-// import StudentDashboard from './pages/dashboard/StudentDashbaord';
 import Navbar from './components/Navbar/Navbar';
 import Profile from './pages/Profile/Profile';
 import ManageStudents from './pages/SuperAdmin/ManageStudents/ManageStudents'
 import ManageUniversities from './pages/SuperAdmin/ManageUniversities/ManageUniversities';
 import ManageColleges from './pages/SuperAdmin/ManageColleges/ManageColleges';
 import Social from './pages/SuperAdmin/Social/Social';
-import StuDashboard from './pages/dashboard/stuDashboard';
 import ManageRewards from './pages/SuperAdmin/ManageRewards/ManageRewards';
 import PrivacyPolicy from './pages/PrivacyPolicy/PrivacyPolicy';
 import TermsAndCondition from './pages/TermsAndConditions/TermsAndCondition';
 import RewardCatalogs from './pages/RewardCatalogs/RewardCatalogs';
+import WriteCard from './pages/WriteCard/WriteCard';
+import StudentDashboard from './pages/dashboard/StudentDashbaord';
 
 
 
@@ -110,7 +110,7 @@ function App() {
 
         <Route
           path='/student-dashboard'
-          element={isAuthenticated ? <StuDashboard /> : <Navigate to="/" replace />}
+          element={isAuthenticated ? <StudentDashboard /> : <Navigate to="/" replace />}
         />
 
         <Route
@@ -144,6 +144,8 @@ function App() {
           path='/social'
           element={isAuthenticated ? <Social /> : <Navigate to="/" replace />}
         /> */}
+
+        <Route path='/write-card' element={isAuthenticated ? <WriteCard /> : <Navigate to="/" replace />} />
 
         <Route
           path='*'
