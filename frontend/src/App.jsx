@@ -17,6 +17,7 @@ import TermsAndCondition from './pages/TermsAndConditions/TermsAndCondition';
 import RewardCatalogs from './pages/RewardCatalogs/RewardCatalogs';
 import WriteCard from './pages/WriteCard/WriteCard';
 import StudentDashboard from './pages/dashboard/StudentDashbaord';
+import LetsGo from './pages/LetsGo/LetsGo';
 
 
 
@@ -146,6 +147,7 @@ function App() {
         /> */}
 
         <Route path='/write-card' element={isAuthenticated ? <WriteCard /> : <Navigate to="/" replace />} />
+        <Route path='/lets-go' element={isAuthenticated ? <LetsGo /> : <Navigate to="/" replace />} />
 
         <Route
           path='*'

@@ -90,7 +90,7 @@ const CardForm = ({ onSubmit }) => {
             <div className="flex items-center mb-4 text-indigo-800">
                 <button
                     onClick={() => navigate(-1)}
-                    className="p-2 mr-4 rounded-full cursor-pointer hover:bg-indigo-50 transition duration-150"
+                    className="p-2 mr-4 rounded-full cursor-pointer hover:bg-indigo-50 transition hover:scale-[1.10] duration-150"
                 >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -204,6 +204,12 @@ const CardForm = ({ onSubmit }) => {
 
 
 const SuccessMessage = ({ onGoBack }) => {
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
     
     const navigate = useNavigate();
 
@@ -211,7 +217,9 @@ const SuccessMessage = ({ onGoBack }) => {
         <>
         <div className=" pt-6 pl-4 text-indigo-800">
                 <button
-                    onClick={onGoBack}
+                    // onClick={onGoBack}
+                                              onClick={openModal}
+
                     className="p-2 mr-4 rounded-full cursor-pointer hover:bg-indigo-50 transition duration-150"
                 >
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -222,7 +230,7 @@ const SuccessMessage = ({ onGoBack }) => {
         <div className="flex justify-center">
         <div className="max-w-xl text-center">
 
-            <h2 className=" text-2xl font-semibold text-[#6955A5] mb-6">
+            <h2 className=" text-2xl font-semibold font-[Poppins] text-[#6955A5] mb-6">
                 Your Card is on its way!
             </h2>
 
@@ -237,19 +245,64 @@ const SuccessMessage = ({ onGoBack }) => {
             </h3>
 
             <button
-            // type='submit'
-                onClick={()=> navigate("/student-dashboard")}
+                // onClick={()=> navigate("/student-dashboard")}
+                          onClick={openModal}
                 className="w-48 h-12 bg-[#E9B243] text-white font-bold text-lg border-3 border-white cursor-pointer rounded-full shadow-lg hover:bg-yellow-600 transition duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
             >
                 Let's go!
             </button>
         </div>
         </div>
+              <Modal isOpen={isModalOpen} onClose={closeModal} />
         </>
     );
 };
 
+const Modal = ({ isOpen, onClose }) => {
 
+  if (!isOpen) return null;
+
+  return (
+    <div 
+      className="fixed inset-0 z-50 flex font-[Poppins] items-center justify-center bg-black/80"
+    >
+      
+      <div 
+        className="w-11/12 max-w-sm overflow-hidden rounded-xl bg-white px-6 py-10 shadow-2xl transition-all duration-300 transform scale-100"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+      >
+        <div className="text-center">
+          
+          {/* Title */}
+          <h2 id="modal-title" className="text-xl font-bold tracking-tight text-black mb-6">
+            You're on a break!
+          </h2>
+          
+    
+          <p className="text-lg italic tracking-tight font-medium text-black mb-12">
+                        <p>Thanks for sending last card.</p>
+            You can send another card from 
+            <span className="text-[#E8BD93] ml-1">
+              next week
+            </span>
+          </p>
+          
+          {/* Action Button */}
+          <button
+                // onClick={()=> navigate("/student-dashboard")}
+                          onClick={onClose}
+                className="w-full h-12 bg-[#E9B243] text-white font-normal text-lg border-3 border-white cursor-pointer rounded-full shadow-lg hover:bg-yellow-600 transition duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+                Let's go!
+            </button>
+          
+        </div>
+      </div>
+    </div>
+  );
+};
 
 
 const WriteCard = () => {
