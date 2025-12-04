@@ -13,6 +13,7 @@ import {
   fetchProfile,
   updateStudentProfile,
 } from "../../features/studentDataSlice";
+import { useNavigate } from "react-router-dom";
 
 const ProfileSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
@@ -47,6 +48,7 @@ const ProfileSettings = () => {
 
   const [profileImage, setProfileImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const navigate = useNavigate();
 
   const [formErrors, setFormErrors] = useState({
     fullName: "",
@@ -305,7 +307,7 @@ const ProfileSettings = () => {
       return;
     }
 
-    // 🔥 New password must be at least 6 characters
+    // New password must be at least 6 characters
     if (newPassword.length < 6) {
       showToast("New password must be at least 6 characters long!", "error");
       setPasswordErrors((prev) => ({ ...prev, newPassword: true }));
@@ -374,11 +376,21 @@ const ProfileSettings = () => {
       <div className="w-full bg-white max-w-4xl rounded-2xl shadow-sm p-6">
         {/* --- Section 1: Tabs --- */}
         <div className="flex border-b border-gray-200 mb-6">
+          <div className=" text-indigo-800">
+                        <button
+                            onClick={()=> navigate(-1)}
+                            className="px-2 rounded-full cursor-pointer hover:bg-indigo-50 transition transform hover:scale-[1.10] duration-150"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                            </svg>
+                        </button>
+                    </div>
           <button
             onClick={() => setActiveTab("profile")}
             className={`pb-2 px-4 text-sm cursor-pointer font-medium transition ${activeTab === "profile"
-              ? "text-[#3565E3] border-b-2 border-blue-600"
-              : "text-[#718EBF]"
+              ? "text-[#5D3F87] border-b-2 border-[#5D3F87]"
+              : "text-[#718EBF] hover:scale-[1.08]"
               }`}
           >
             Edit Profile
@@ -387,8 +399,8 @@ const ProfileSettings = () => {
           <button
             onClick={() => setActiveTab("security")}
             className={`pb-2 px-4 text-sm font-medium cursor-pointer transition ${activeTab === "security"
-              ? "text-blue-600 border-b-2 border-blue-600"
-              : "text-[#718EBF]"
+              ? "text-[#5D3F87] border-b-2 border-[#5D3F87]"
+              : "text-[#718EBF] hover:scale-[1.08]"
               }`}
           >
             Security
@@ -434,7 +446,7 @@ const ProfileSettings = () => {
 
                   <label
                     htmlFor="imageUpload"
-                    className="absolute bottom-1 right-1 bg-blue-600 hover:bg-blue-700 cursor-pointer text-white p-2 rounded-full shadow-md text-xs"
+                    className="absolute bottom-1 right-1 bg-[#6558A1] hover:bg-[#7A6CCF] cursor-pointer transition transform hover:scale-[1.05] duration-150 text-white p-2 rounded-full shadow-md text-xs"
                   >
                     ✎
                   </label>
@@ -542,8 +554,8 @@ const ProfileSettings = () => {
                     disabled={Loading}
                     className={`${Loading
                         ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-[#3565E3] cursor-pointer hover:bg-blue-700"
-                      } text-white text-xs rounded-xl px-16 py-2.5 transition`}
+                        : "bg-[#6558A1] hover:bg-[#7A6CCF] cursor-pointer transition transform hover:scale-[1.05] duration-150"
+                      } text-white text-xs font-semibold rounded-xl px-16 py-2.5 transition`}
                   >
                     {loading ? "Saving..." : "Save"}
                   </button>
@@ -648,7 +660,7 @@ const ProfileSettings = () => {
               <div className="flex justify-end mt-12">
                 <button
                   onClick={handlePassChange}
-                  className="bg-[#3565E3] text-white text-xs rounded-xl px-16 py-2.5 cursor-pointer hover:bg-blue-700 transition"
+                  className=" text-white text-xs rounded-xl px-16 py-2.5 bg-[#6558A1] hover:bg-[#7A6CCF] cursor-pointer transition transform hover:scale-[1.03] duration-150"
                 >
                   {loading ? "Updating..." : "Change Password"}
                 </button>

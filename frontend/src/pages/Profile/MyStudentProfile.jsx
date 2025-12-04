@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout, reset } from "../../features/studentSlice";
 import { resetStudentState } from "../../features/studentDataSlice";
 import { clearProfile } from "../../features/superadminProfileSlice";
+import { fetchProfile } from '../../features/studentDataSlice';
 
 
 
@@ -14,6 +15,14 @@ const MyStudentProfile = () => {
     const [showProfileInfo, setShowProfileInfo] = useState(false);
     const [showDeleteAccount, setShowDeleteAccount] = useState(false);
     const [selectedReason, setSelectedReason] = useState('');
+    const { studentProfile } = useSelector((state) => state.studentData);
+
+    useEffect(()=>{
+        if(!showDeleteAccount){
+            dispatch(fetchProfile());
+        }
+    },[])
+
 
     const deleteReasons = [
         "I'm not using the app anymore",
@@ -74,8 +83,8 @@ const MyStudentProfile = () => {
     // Delete Account Screen
     if (showDeleteAccount) {
         return (
-            <div className="min-h-screen mt-14 bg-gray-50 p-8">
-                <div className="w-full max-w-4xl mx-auto">
+            <div className="min-h-screen ml-60 mt-14 bg-gray-50 p-8">
+                <div className="w-full max-w-4xl">
 
                     {/* Back Button */}
                     <div className="mb-5 text-indigo-800">
@@ -154,8 +163,8 @@ const MyStudentProfile = () => {
     // Profile Info Screen
     if (showProfileInfo) {
         return (
-            <div className="min-h-screen mt-14 bg-gray-50 p-8">
-                <div className="w-full max-w-4xl mx-auto">
+            <div className="min-h-screen ml-60 mt-14 bg-gray-50 p-8">
+                <div className="w-full max-w-4xl">
 
                     {/* Back Button */}
                     <div className="mb-5 text-indigo-800">
@@ -170,40 +179,47 @@ const MyStudentProfile = () => {
                     </div>
 
 
-                    {/* Profile Avatar */}
-                    <div className="flex justify-center mb-8">
-                        <div className="w-32 h-32 bg-[#6558A1] rounded-full flex items-center justify-center shadow-lg">
+                    <div className='flex justify-center mb-8'>
+            {studentProfile?.profileImage ? (
+              <img
+                src={studentProfile.profileImage}
+                alt="User"
+                className="w-32 h-32 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-32 h-32 bg-[#6558A1] rounded-full flex items-center justify-center shadow-lg">
                             <svg className="w-20 h-20 text-white" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                             </svg>
                         </div>
-                    </div>
+            )}
+          </div>
 
                     {/* Profile Information */}
                     <div className="max-w-md mx-auto">
                         <div className="space-y-6 text-center">
                             <div>
-                                <p className="text-gray-500 text-sm mb-1">Name: <span className="text-gray-700 font-medium">Annie Phillips</span></p>
+                                <p className="text-gray-500 text-sm mb-1">Name: <span className="text-gray-700 font-medium">{studentProfile?.name || "Annie Phillips"}</span></p>
                             </div>
 
                             <div>
-                                <p className="text-gray-500 text-sm mb-1">Mobile: <span className="text-gray-700 font-medium">0478040086</span></p>
+                                <p className="text-gray-500 text-sm mb-1">Mobile: <span className="text-gray-700 font-medium">{studentProfile?.phoneNumber || "1234 567 890"}</span></p>
                             </div>
 
                             <div>
-                                <p className="text-gray-500 text-sm mb-1">Email: <span className="text-gray-700 font-medium">annie.phillips93@gmail.com</span></p>
+                                <p className="text-gray-500 text-sm mb-1">Email: <span className="text-gray-700 font-medium">{studentProfile?.email || "annie.phillips93@gmail.com"}</span></p>
                             </div>
 
                             <div>
-                                <p className="text-gray-500 text-sm mb-1">University: <span className="text-gray-700 font-medium">University of Queensland</span></p>
+                                <p className="text-gray-500 text-sm mb-1">University: <span className="text-gray-700 font-medium">{studentProfile?.university?.name || "University of Queensland"}</span></p>
                             </div>
 
                             <div>
-                                <p className="text-gray-500 text-sm mb-1">College: <span className="text-gray-700 font-medium">Pitt Hall</span></p>
+                                <p className="text-gray-500 text-sm mb-1">College: <span className="text-gray-700 font-medium">{studentProfile?.college?.name || "Pitt Hall"}</span></p>
                             </div>
 
                             <div>
-                                <p className="text-gray-500 text-sm mb-1">USI: <span className="text-gray-700 font-medium">321</span></p>
+                                <p className="text-gray-500 text-sm mb-1">USI: <span className="text-gray-700 font-medium">{studentProfile?.studentUniId || "USI-123ABC"}</span></p>
                             </div>
 
                             <div className="flex flex-col gap-4 pt-5">
@@ -233,8 +249,8 @@ const MyStudentProfile = () => {
 
     // Main Profile Screen
     return (
-        <div className="min-h-screen mt-14 bg-gray-50 p-8">
-            <div className="w-full max-w-4xl mx-auto">
+        <div className="min-h-screen ml-60 mt-14 bg-gray-50 p-8">
+            <div className="w-full max-w-4xl">
 
                 {/* Back Button */}
                 <div className="mb-8 text-indigo-800">
@@ -250,17 +266,28 @@ const MyStudentProfile = () => {
 
                 {/* Profile Content */}
                 <div className="flex flex-col items-center justify-center text-center">
-
-                    {/* Profile Avatar */}
-                    <div className="w-32 h-32 bg-[#E9B243] rounded-full flex items-center justify-center mb-6 shadow-lg">
+                    <div>
+            {studentProfile?.profileImage ? (
+              <img
+                src={studentProfile.profileImage}
+                alt="User"
+                className="w-32 h-32 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-32 h-32 bg-[#E9B243] rounded-full flex items-center justify-center mb-6 shadow-lg">
                         <svg className="w-20 h-20 text-white" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                         </svg>
                     </div>
+            )}
+          </div>
+
+                    {/* Profile Avatar */}
+                    
 
                     {/* Greeting */}
                     <h1 className="text-3xl font-semibold mb-8">
-                        Hey, <span className="text-[#E9B243]">Annie</span>!
+                        Hey, <span className="text-[#E9B243]">{studentProfile?.name}</span>!
                     </h1>
 
                     {/* Menu Buttons */}
