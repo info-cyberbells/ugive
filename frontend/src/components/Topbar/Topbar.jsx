@@ -110,10 +110,10 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                 className="w-12 h-12 rounded-md object-cover"
               />
             ) : (
-              <div className="w-12 h-12 rounded-md bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                <span className="text-white font-semibold text-lg">
-                  {userData?.name?.charAt(0)?.toUpperCase() || "S"}
-                </span>
+              <div className="w-12 h-12 rounded-md bg-[#E9B243] flex items-center justify-center">
+                <svg className="w-20 h-20 text-white" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                        </svg>
               </div>
             )}
           </div>
