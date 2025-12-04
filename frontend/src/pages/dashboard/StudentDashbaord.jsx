@@ -42,43 +42,82 @@ const MetricCard = ({ icon: Icon, title, value, color }) => (
 );
 
 const CircularProgress = ({ percent }) => {
-  const radius = 60;
+  const radius = 80;
+
+  const trackStrokeWidth = 8; 
+  const borderStrokeWidth = 2;
+  
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (percent / 100) * circumference;
+  const strokeDashoffset = circumference - (percent / 100) * circumference;
+
+
+  const trackColor = '#ffffff'; 
+  const progressStrokeColor = '#EBB142'; 
+  const borderStrokeColor = '#EBB142'; 
+  
+  const innerBorderRadius = radius - (trackStrokeWidth / 2) - (borderStrokeWidth / 2);
+  const outerBorderRadius = radius + (trackStrokeWidth / 2) + (borderStrokeWidth / 2);
 
   return (
-    <svg className="w-40 h-40 transform -rotate-90" viewBox="0 0 140 140">
-      <circle
-        className="text-gray-200"
-        strokeWidth="10"
-        stroke="currentColor"
-        fill="transparent"
-        r={radius}
-        cx="70"
-        cy="70"
-      />
-      <circle
-        className="text-orange-400 transition-all duration-700 ease-out"
-        strokeWidth="10"
-        strokeDasharray={circumference}
-        strokeDashoffset={offset}
-        strokeLinecap="round"
-        stroke="currentColor"
-        fill="transparent"
-        r={radius}
-        cx="70"
-        cy="70"
-      />
-      <text
-        x="70"
-        y="70"
-        className="text-3xl font-extrabold text-gray-800 transform rotate-90"
-        dominantBaseline="middle"
-        textAnchor="middle"
-      >
-        {`${percent}%`}
-      </text>
-    </svg>
+    <div className="relative w-60 h-60 mx-auto">
+      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 200 200">
+        
+        <circle
+          cx="100"
+          cy="100"
+          r={radius - (trackStrokeWidth / 8) - borderStrokeWidth - 5} 
+          fill="#ffffff"
+          stroke="none"
+        />
+        
+        <circle
+          cx="100"
+          cy="100"
+          r={innerBorderRadius} 
+          fill="none"
+          stroke={borderStrokeColor} 
+          strokeWidth={borderStrokeWidth}
+        />
+        
+        <circle
+          cx="100"
+          cy="100"
+          r={outerBorderRadius} 
+          fill="none"
+          stroke={borderStrokeColor} 
+          strokeWidth={borderStrokeWidth}
+        />
+        
+        <circle
+          cx="100"
+          cy="100"
+          r={radius}
+          fill="none"
+          stroke={trackColor} 
+          strokeWidth={trackStrokeWidth}
+          strokeLinecap="round"
+        />
+
+        <circle
+          cx="100"
+          cy="100"
+          r={radius}
+          fill="none"
+          stroke={progressStrokeColor}
+          strokeWidth="12"
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          style={{ transition: 'stroke-dashoffset 0.5s ease-out' }}
+        />
+      </svg>
+      
+      <div className={`absolute top-0 left-0 flex items-center justify-center w-full h-full text-[#EBB142]`}>
+        <span className="text-5xl font-bold font-inter ">
+          {percent}%
+        </span>
+      </div>
+    </div>
   );
 };
 
@@ -188,7 +227,7 @@ const StudentDashboard = () => {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    const timer = setTimeout(() => setRewardPercent(35), 500);
+    const timer = setTimeout(() => setRewardPercent(20), 500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -260,7 +299,9 @@ const StudentDashboard = () => {
                   <span className="font-semibold text-blue-300"> coffee.</span>
                 </p>
 
-                <button className="px-8 py-1.5 cursor-pointer mt-4 bg-[#E9B243] text-white border-2 border-white rounded-4xl hover:bg-amber-500 transition shadow-md">
+                <button 
+                onClick={()=>navigate("/lets-go")}
+                className="px-8 py-1.5 cursor-pointer mt-4 bg-[#E9B243] hover:bg-[#daa232] text-white border-2 border-white rounded-4xl  transition shadow-md">
                   Let's go!
                 </button>
               </div>

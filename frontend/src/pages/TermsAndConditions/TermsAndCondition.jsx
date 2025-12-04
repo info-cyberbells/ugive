@@ -27,7 +27,7 @@ const TermsAndCondition = () => {
         <div className="space-y-6 text-gray-700">
 
           <div>
-            <h1 className="text-3xl font-semibold text-purple-700 mb-4">UGive — Terms & Conditions</h1>
+            <h1 className="text-3xl font-semibold text-[#6955A5] mb-4">UGive — Terms & Conditions</h1>
             <p className="font-semibold">Effective Date: 2 December 2025</p>
           </div>
 
@@ -36,14 +36,14 @@ const TermsAndCondition = () => {
           </p>
 
           <div className="mt-8">
-            <h2 className="text-2xl font-medium text-purple-700 mb-4">1. Purpose of the App</h2>
+            <h2 className="text-2xl font-medium text-[#6955A5] mb-4">1. Purpose of the App</h2>
             <p>
               UGive is a platform designed to enable positive communication, expressions of appreciation, and generosity through the sharing and delivery of physical and/or digital cards, messages and gifts.
             </p>
           </div>
 
           <div className="mt-8">
-            <h2 className="text-2xl font-medium text-purple-700 mb-4">2. User Eligibility</h2>
+            <h2 className="text-2xl font-medium text-[#6955A5] mb-4">2. User Eligibility</h2>
             <p className="mb-2">By using the App, you confirm that:</p>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>You are at least 16 years of age (or older if required by local law), and</li>
@@ -52,7 +52,7 @@ const TermsAndCondition = () => {
           </div>
 
           <div className="mt-8">
-            <h2 className="text-2xl font-medium text-purple-700 mb-4">3. Use of Contact Details</h2>
+            <h2 className="text-2xl font-medium text-[#6955A5] mb-4">3. Use of Contact Details</h2>
             <p className="mb-2">
               By using UGive, you consent to the collection and use of your contact information (including name, email address, phone number and/or delivery details) for the purposes of:
             </p>
@@ -67,7 +67,7 @@ const TermsAndCondition = () => {
           </div>
 
           <div className="mt-8">
-            <h2 className="text-2xl font-medium text-purple-700 mb-4">4. Acceptable Use</h2>
+            <h2 className="text-2xl font-medium text-[#6955A5] mb-4">4. Acceptable Use</h2>
             <p className="mb-2">
               You agree to use UGive in a manner that is respectful, constructive, and lawful. You must not use the App to:
             </p>
@@ -81,7 +81,7 @@ const TermsAndCondition = () => {
           </div>
 
           <div className="mt-8">
-            <h2 className="text-2xl font-medium text-purple-700 mb-4">5. Right to Remove Users</h2>
+            <h2 className="text-2xl font-medium text-[#6955A5] mb-4">5. Right to Remove Users</h2>
             <p className="mb-2">
               UGive reserves the right to <strong>suspend or permanently remove any user</strong> from the App, at our sole discretion, without notice, if:
             </p>
@@ -94,21 +94,21 @@ const TermsAndCondition = () => {
           </div>
 
           <div className="mt-8">
-            <h2 className="text-2xl font-medium text-purple-700 mb-4">6. Content Responsibility</h2>
+            <h2 className="text-2xl font-medium text-[#6955A5] mb-4">6. Content Responsibility</h2>
             <p>
               All content shared within UGive remains the responsibility of the user who creates it. UGive does not endorse or verify messages sent between users and accepts no liability for the content of user communications.
             </p>
           </div>
 
           <div className="mt-8">
-            <h2 className="text-2xl font-medium text-purple-700 mb-4">7. App Availability</h2>
+            <h2 className="text-2xl font-medium text-[#6955A5] mb-4">7. App Availability</h2>
             <p>
               UGive aims to maintain reliable service but does not guarantee uninterrupted or error-free operation. We may suspend, update or discontinue the App at any time without notice.
             </p>
           </div>
 
           <div className="mt-8">
-            <h2 className="text-2xl font-medium text-purple-700 mb-4">8. Limitation of Liability</h2>
+            <h2 className="text-2xl font-medium text-[#6955A5] mb-4">8. Limitation of Liability</h2>
             <p className="mb-2">To the maximum extent permitted by law:</p>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>UGive is not liable for any indirect, incidental or consequential loss arising from your use of the App.</li>
@@ -117,7 +117,7 @@ const TermsAndCondition = () => {
           </div>
 
           <div className="mt-8">
-            <h2 className="text-2xl font-medium text-purple-700 mb-4">9. Intellectual Property & Responsible Use</h2>
+            <h2 className="text-2xl font-medium text-[#6955A5] mb-4">9. Intellectual Property & Responsible Use</h2>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li>All intellectual property in the UGive App — including our software, branding, designs and content formats — belongs to UGive. Using the App doesn't give you ownership of any of this — it simply gives you permission to use it as intended.</li>
               <li>We grant you a personal, non-exclusive licence to use the App in line with these Terms. Please don't copy, modify, distribute, reverse engineer, scrape data from, or misuse any part of the App or our intellectual property without written permission.</li>
@@ -126,20 +126,20 @@ const TermsAndCondition = () => {
           </div>
 
           <div className="mt-8">
-            <h2 className="text-2xl font-medium text-purple-700 mb-4">10. Changes to these Terms</h2>
+            <h2 className="text-2xl font-medium text-[#6955A5] mb-4">10. Changes to these Terms</h2>
             <p>
               We may update these Terms from time to time. Continued use of the App after changes are published constitutes acceptance of the updated Terms.
             </p>
           </div>
 
           <div className="mt-8">
-            <h2 className="text-2xl font-medium text-purple-700 mb-4">11. Contact</h2>
+            <h2 className="text-2xl font-medium text-[#6955A5] mb-4">11. Contact</h2>
             <p className="mb-2">For questions about these Terms or the operation of the App, please contact:</p>
             <p className="font-semibold">UGive Support</p>
             <p>hello@ugive.com.au</p>
           </div>
 
-          <div className="mt-8 p-4 bg-purple-50 border-l-4 border-purple-700 rounded">
+          <div className="mt-8 p-4 bg-purple-50 border-l-4 border-[#6955A5] rounded">
             <p className="italic text-gray-700">
               By using UGive, you confirm that you have read, understood, and agree to these Terms & Conditions.
             </p>
