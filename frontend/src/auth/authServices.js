@@ -356,3 +356,14 @@ export const getStudentRewardsService = async () => {
     );
     return response.data;
 };
+
+// send a card student
+
+export const sendCardService = async (card) =>{
+    const response = await axios.post(
+        USER_ENDPOINTS.STUDENT_SEND_CARD,
+        card,
+        getAuthHeader(),
+    )
+    return response.data;
+}
