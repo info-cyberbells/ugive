@@ -28,10 +28,16 @@ const rewardSchema = new mongoose.Schema(
             type: String,
             default: null
         },
-        points: {
+        totalPoints: {
             type: Number,
             required: true,
             min: 0,
+        },
+
+        completedPoints: {
+            type: Number,
+            default: 0,
+            min: 0
         },
 
         createdBy: {

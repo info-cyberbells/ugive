@@ -5,6 +5,8 @@ import { authorizeRoles } from "../middleware/role.middleware.js";
 import { getProfile, updateProfile, changePassword } from "../controllers/profile.controller.js";
 import { createCard, getCardsByCollege, getCardProgress, checkCardEligibility, getSentCards } from "../controllers/card.controller.js";
 import { sendFriendRequest, acceptFriendRequest, deleteFriendRequest, unfriendUser, getSentRequests, getReceivedRequests, getMyFriends } from "../controllers/manageFriends.controller.js";
+import { getStudentRewards } from "../controllers/reward.controller.js";
+
 
 const router = express.Router();
 
@@ -38,5 +40,11 @@ router.post("/friend/unfriend", unfriendUser);
 router.get("/friend/sent", getSentRequests);
 router.get("/friend/received", getReceivedRequests);
 router.get("/friends", getMyFriends);
+
+
+
+//rewards 
+router.get("/college-rewards", getStudentRewards);
+
 
 export default router;

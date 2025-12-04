@@ -12,7 +12,7 @@ import { getAllRewards, createReward, deleteReward, updateReward, getSingleRewar
 const ManageRewards = () => {
     const dispatch = useDispatch();
     const { showToast } = useToast();
-    const { rewards, tableLoading,isLoading, isError, page, limit, totalPages, totalRewards } = useSelector((state) => state.reward);
+    const { rewards, tableLoading, isLoading, isError, page, limit, totalPages, totalRewards } = useSelector((state) => state.reward);
 
     const [selectedRewardIds, setSelectedRewardIds] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -29,21 +29,21 @@ const ManageRewards = () => {
 
 
 
-   useEffect(() => {
-    dispatch(getAllRewards({ page: currentPage, limit: currentLimit }));
-}, [dispatch, currentPage, currentLimit]);
+    useEffect(() => {
+        dispatch(getAllRewards({ page: currentPage, limit: currentLimit }));
+    }, [dispatch, currentPage, currentLimit]);
 
 
 
-   const handlePageChange = (newPage) => {
-    if (newPage < 1 || newPage > totalPages) return;
-    setCurrentPage(newPage);
-};
+    const handlePageChange = (newPage) => {
+        if (newPage < 1 || newPage > totalPages) return;
+        setCurrentPage(newPage);
+    };
 
-   const handleLimitChange = (value) => {
-    setCurrentLimit(Number(value));
-    setCurrentPage(1); // reset to page 1
-};
+    const handleLimitChange = (value) => {
+        setCurrentLimit(Number(value));
+        setCurrentPage(1); // reset to page 1
+    };
 
 
 
@@ -60,8 +60,8 @@ const ManageRewards = () => {
     const handleSelectReward = (id) => {
         setSelectedRewardIds((prev) =>
             prev.includes(id)
-                ? prev.filter((rid) => rid !== id)  
-                : [...prev, id]        
+                ? prev.filter((rid) => rid !== id)
+                : [...prev, id]
         );
     };
 
@@ -90,7 +90,7 @@ const ManageRewards = () => {
     //     setIsModalOpen(true);
     // };
 
-     const openModalForEdit = (reward) => {
+    const openModalForEdit = (reward) => {
         dispatch(getSingleReward(reward._id)).then(() => {
             setCurrentReward({ ...reward, mode: "edit" });
             setIsModalOpen(true);
@@ -119,7 +119,7 @@ const ManageRewards = () => {
         formData.append("college", data.college);
         formData.append("rewardDescription", data.rewardDescription);
 
-        formData.append("points", data.rewardPoints);
+        formData.append("totalPoints", data.totalPoints);
 
         if (data.rewardImage) {
             formData.append("rewardImage", data.rewardImage);
@@ -207,7 +207,7 @@ const ManageRewards = () => {
 
         const rows = selected.map(reward => [
             reward.name,
-            reward.points,
+            reward.totalPoints,
             reward.rewardDescription,
             reward.university?.name,
             reward.college?.name
@@ -333,7 +333,7 @@ const ManageRewards = () => {
 
                 {/* Table/List Container */}
                 <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-                    {tableLoading || rewards.length === 0 && !isError ? (
+                    {tableLoading ? (
                         <SkeletonTable />
                     ) : rewards.length > 0 ? (
                         <>
@@ -442,7 +442,7 @@ const ManageRewards = () => {
                                                             </p>
 
                                                             <p className="text-gray-500 text-xs mt-1">
-                                                                {reward.points} Points
+                                                                {reward.totalPoints} Points
                                                             </p>
                                                         </div>
                                                     </div>
@@ -533,7 +533,7 @@ const ManageRewards = () => {
                                     </select>
                                 </div>
 
-                             
+
                                 <div className="flex items-center gap-2">
                                     <button
                                         onClick={() => handlePageChange(page - 1)}

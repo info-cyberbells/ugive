@@ -1,11 +1,15 @@
+
+import jwt from "jsonwebtoken";
 import { Reward } from "../models/reward.model.js";
+import User from "../models/user.model.js";
+
 
 // Create Reward
 export const createReward = async (req, res) => {
     try {
-        const { name, university, college, rewardDescription, points } = req.body;
+        const { name, university, college, rewardDescription, totalPoints } = req.body;
 
-        if (!name || !university || !college || !rewardDescription || !points) {
+        if (!name || !university || !college || !rewardDescription || !totalPoints) {
             return res.status(400).json({ message: "All fields are required." });
         }
 
@@ -16,7 +20,8 @@ export const createReward = async (req, res) => {
             university,
             college,
             rewardDescription,
-            points,
+            totalPoints,
+            completedPoints: 0,
             rewardImage,
             createdBy: req.user?._id,
         });
@@ -72,7 +77,8 @@ export const getRewards = async (req, res) => {
                 college: reward.college,
                 rewardDescription: reward.rewardDescription,
                 rewardImage: imageUrl,
-                points: reward.points,
+                totalPoints: reward.totalPoints,
+                completedPoints: reward.completedPoints ?? 0,
                 createdBy: reward.createdBy,
                 createdAt: reward.createdAt,
                 updatedAt: reward.updatedAt
@@ -129,7 +135,8 @@ export const getSingleReward = async (req, res) => {
                 rewardImage: imageUrl,
                 university: reward.university,
                 college: reward.college,
-                points: reward.points,
+                totalPoints: reward.totalPoints,
+                completedPoints: reward.completedPoints ?? 0,
                 createdBy: reward.createdBy,
                 createdAt: reward.createdAt,
                 updatedAt: reward.updatedAt
@@ -154,14 +161,14 @@ export const updateReward = async (req, res) => {
             return res.status(404).json({ message: "Reward not found" });
         }
 
-        const { name, university, college, rewardDescription, points } = req.body;
+        const { name, university, college, rewardDescription, totalPoints } = req.body;
 
         let updatedData = {
             name,
             university,
             college,
             rewardDescription,
-            points,
+            totalPoints,
         };
 
         // If new image uploaded, fix path before saving
@@ -204,7 +211,8 @@ export const updateReward = async (req, res) => {
                 rewardImage: imageUrl,
                 university: updatedReward.university,
                 college: updatedReward.college,
-                points: updatedReward.points,
+                totalPoints: updatedReward.totalPoints,
+                completedPoints: updatedReward.completedPoints ?? 0,
                 createdBy: updatedReward.createdBy,
                 createdAt: updatedReward.createdAt,
                 updatedAt: updatedReward.updatedAt,
@@ -230,6 +238,59 @@ export const deleteReward = async (req, res) => {
 
         res.json({ message: "Reward deleted successfully" });
     } catch (error) {
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+
+
+//get all rewards to the students for their college only
+export const getStudentRewards = async (req, res) => {
+    try {
+        const authHeader = req.headers.authorization;
+
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res.status(401).json({ message: "No token provided" });
+        }
+
+        const token = authHeader.split(" ")[1];
+
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (err) {
+            return res.status(401).json({ message: "Invalid or expired token" });
+        }
+
+        const studentId = decoded.id;
+
+        const student = await User.findById(studentId);
+
+        if (!student) {
+            return res.status(404).json({ message: "Student not found" });
+        }
+
+        const { university, college } = student;
+
+        const rewards = await Reward.find({ university, college }).sort({
+            createdAt: -1,
+        });
+
+        const baseURL = `${req.protocol}://${req.get("host")}`;
+
+        const formattedRewards = rewards.map((r) => ({
+            ...r._doc,
+            totalPoints: r.totalPoints,
+            completedPoints: r.completedPoints ?? 0,
+            rewardImage: r.rewardImage ? `${baseURL}${r.rewardImage}` : null
+        }));
+
+        res.status(200).json({
+            message: "Rewards fetched successfully",
+            data: formattedRewards,
+        });
+    } catch (error) {
+        console.error("Error fetching student rewards:", error);
         res.status(500).json({ message: "Server error" });
     }
 };

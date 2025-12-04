@@ -52,6 +52,10 @@ export const USER_ENDPOINTS = {
     STUDENT_UPDATE_PROFILE: `${API_BASE_URL}/student/profile`,
     STUDENT_CHANGE_PASSWORD: `${API_BASE_URL}/student/change-password`,
 
+
+    //get rewards for student college
+    GET_ALL_REWARDS: `${API_BASE_URL}/student/college-rewards`
+
 };
 
 

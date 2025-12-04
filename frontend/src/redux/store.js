@@ -5,6 +5,8 @@ import superadminReducer from "../features/superadminProfileSlice"
 import collegeReducer from "../features/collegesSlice"
 import studentDataReducer from "../features/studentDataSlice"
 import rewardReducer from "../features/rewardSlice"
+import studentRewardReducer from "../features/studentRewardsSlice";
+
 
 export const store = configureStore({
     reducer: {
@@ -13,7 +15,8 @@ export const store = configureStore({
         superadmin: superadminReducer,
         college: collegeReducer,
         studentData: studentDataReducer,
-        reward : rewardReducer,
+        reward: rewardReducer,
+        studentReward: studentRewardReducer,
     }
 })
 

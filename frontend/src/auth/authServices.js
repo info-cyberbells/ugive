@@ -348,3 +348,11 @@ export const changeStudentPasswordService = async (data) => {
     return response.data;
 };
 
+//get a rewards for student college
+export const getStudentRewardsService = async () => {
+    const response = await axios.get(
+        USER_ENDPOINTS.GET_ALL_REWARDS,
+        getAuthHeader()
+    );
+    return response.data;
+};

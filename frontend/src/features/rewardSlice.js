@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getAllRewardsService, createRewardService, deleteRewardService, getSingleRewardService, updateRewardService } from "../auth/authServices";
- 
- 
+
+
 const initialState = {
     rewards: [],
     selectedReward: null,
@@ -14,9 +14,9 @@ const initialState = {
     isError: false,
     isSuccess: false,
     message: "",
- 
+
 }
- 
+
 // Get All rewards
 export const getAllRewards = createAsyncThunk(
     "rewards/getAllRewards",
@@ -28,8 +28,8 @@ export const getAllRewards = createAsyncThunk(
         }
     }
 );
- 
- 
+
+
 //create  a reward
 export const createReward = createAsyncThunk(
     "reward/create",
@@ -41,7 +41,7 @@ export const createReward = createAsyncThunk(
         }
     }
 );
- 
+
 //get single reward
 export const getSingleReward = createAsyncThunk(
     "reward/getSingle",
@@ -55,7 +55,7 @@ export const getSingleReward = createAsyncThunk(
         }
     }
 );
- 
+
 //update reward
 export const updateReward = createAsyncThunk(
     "reward/update",
@@ -69,12 +69,12 @@ export const updateReward = createAsyncThunk(
         }
     }
 );
- 
+
 //delete reward thunk
 
 export const deleteReward = createAsyncThunk(
     'reward/deleteReward',
-    async(id, thunkAPI) => {
+    async (id, thunkAPI) => {
         try {
             return await deleteRewardService(id);
         } catch (error) {
@@ -82,10 +82,10 @@ export const deleteReward = createAsyncThunk(
         }
     }
 )
- 
- 
- 
- 
+
+
+
+
 const rewardSlice = createSlice({
     name: "reward",
     initialState,
@@ -95,31 +95,31 @@ const rewardSlice = createSlice({
             state.isSuccess = false;
             state.isError = false;
             state.message = "";
- 
+
         },
     },
     extraReducers: (builder) => {
         builder
- 
+
             //get all rewards
             .addCase(getAllRewards.pending, (state) => {
                 state.tableLoading = true;
             })
             .addCase(getAllRewards.fulfilled, (state, action) => {
                 state.tableLoading = false;
-                state.rewards = action.payload.rewards;  
+                state.rewards = action.payload.rewards;
                 state.page = action.payload.page;
                 state.limit = action.payload.limit;
                 state.totalPages = action.payload.totalPages;
-                state.totalRewards = action.payload.totalRewards;           
+                state.totalRewards = action.payload.totalRewards;
             })
             .addCase(getAllRewards.rejected, (state, action) => {
                 state.tableLoading = false;
                 state.isError = true;
                 state.message = action.payload;
             })
- 
- 
+
+
             // CREATE
             .addCase(createReward.pending, (state) => {
                 state.isLoading = true;
@@ -134,7 +134,7 @@ const rewardSlice = createSlice({
                 state.isError = true;
                 state.message = action.payload;
             })
-            
+
             // get Single reward builder
             .addCase(getSingleReward.pending, (state) => {
                 state.isLoading = true;
@@ -148,7 +148,7 @@ const rewardSlice = createSlice({
                 state.isError = true;
                 state.message = action.payload;
             })
-            
+
             // update reward
             .addCase(updateReward.pending, (state) => {
                 state.isLoading = true;
@@ -164,12 +164,12 @@ const rewardSlice = createSlice({
                 state.message = action.payload;
             })
 
-             // delete reward builder
+            // delete reward builder
             .addCase(deleteReward.pending, (state) => {
                 state.isLoading = true;
                 state.isError = false;
             })
-            .addCase(deleteReward.fulfilled, (state, action)=> {
+            .addCase(deleteReward.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isSuccess = true;
                 state.rewards = state.rewards.filter(
@@ -184,6 +184,6 @@ const rewardSlice = createSlice({
             })
     }
 })
- 
+
 export const { reset } = rewardSlice.actions;
 export default rewardSlice.reducer;
