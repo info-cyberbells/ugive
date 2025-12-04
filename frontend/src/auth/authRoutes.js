@@ -51,6 +51,7 @@ export const USER_ENDPOINTS = {
     STUDENT_GET_PROFILE: `${API_BASE_URL}/student/profile`,
     STUDENT_UPDATE_PROFILE: `${API_BASE_URL}/student/profile`,
     STUDENT_CHANGE_PASSWORD: `${API_BASE_URL}/student/change-password`,
+    STUDENT_SEND_CARD: `${API_BASE_URL}/student/cards`,
 
 
     //get rewards for student college
