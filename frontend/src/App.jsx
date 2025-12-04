@@ -14,6 +14,9 @@ import ManageColleges from './pages/SuperAdmin/ManageColleges/ManageColleges';
 import Social from './pages/SuperAdmin/Social/Social';
 import StuDashboard from './pages/dashboard/stuDashboard';
 import ManageRewards from './pages/SuperAdmin/ManageRewards/ManageRewards';
+import PrivacyPolicy from './pages/PrivacyPolicy/PrivacyPolicy';
+import TermsAndCondition from './pages/TermsAndConditions/TermsAndCondition';
+import RewardCatalogs from './pages/RewardCatalogs/RewardCatalogs';
 
 
 
@@ -131,10 +134,16 @@ function App() {
         <Route path="/manage-rewards" element={isAuthenticated ? <ManageRewards /> : <Navigate to='/' replace />}
         />
 
-        <Route
+        <Route path="/privacy-policy" element={isAuthenticated ? <PrivacyPolicy /> : <Navigate to='/' replace />}
+        />
+
+        <Route path="/terms-and-conditions" element={isAuthenticated ? <TermsAndCondition /> : <Navigate to='/' replace />}
+        />
+        <Route path='/rewards-catalog' element={isAuthenticated ? <RewardCatalogs /> : <Navigate to="/" replace />} />
+        {/* <Route
           path='/social'
           element={isAuthenticated ? <Social /> : <Navigate to="/" replace />}
-        />
+        /> */}
 
         <Route
           path='*'

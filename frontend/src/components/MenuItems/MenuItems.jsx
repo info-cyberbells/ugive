@@ -2,6 +2,8 @@ import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout, reset } from "../../features/studentSlice";
+import { ChevronDown, ChevronUp } from "lucide-react";
+
 
 import {
   LayoutDashboard,
@@ -11,7 +13,7 @@ import {
   BookOpen,
   Share2,
   LogOut,
-   Gift,
+  Gift,
   Flame,
   Activity,
   Users,
@@ -36,17 +38,25 @@ const ROLE_BASED_MENUS = {
     { id: "profile", title: "User Profile", icon: UserCircle },
     { id: "manage-students", title: "Manage Students", icon: BookOpen },
   ],
- student : [
-  { id: "profile", title: "User Profile", icon: UserCircle },
-  { id: "rewards-catalogs", title: "Rewards Catalog", icon: Gift },
-  { id: "streaks", title: "Streaks", icon: Flame },
-  { id: "activities", title: "Activities", icon: Activity },
-  { id: "friends", title: "Friends", icon: Users },
-  { id: "notifications", title: "Notifications", icon: Bell },
-  { id: "settings", title: "Settings", icon: Settings },
-  { id: "support", title: "Support", icon: HelpCircle },
-  { id: "social", title: "Social", icon: Share2 },
-],
+  student: [
+    { id: "profile", title: "User Profile", icon: UserCircle },
+    { id: "rewards-catalog", title: "Rewards Catalog", icon: Gift },
+    { id: "streaks", title: "Streaks", icon: Flame },
+    { id: "activities", title: "Activities", icon: Activity },
+    { id: "friends", title: "Friends", icon: Users },
+    { id: "notifications", title: "Notifications", icon: Bell },
+    { id: "settings", title: "Settings", icon: Settings },
+    {
+      id: "support",
+      title: "Support",
+      icon: HelpCircle,
+      children: [
+        { id: "privacy-policy", title: "Privacy Policy" },
+        { id: "terms-and-conditions", title: "Terms & Conditions" }
+      ]
+    },
+    // { id: "social", title: "Social", icon: Share2 },
+  ],
 };
 
 const ROLE_BASED_BG_COLOR = {
@@ -59,6 +69,7 @@ const ROLE_BASED_BG_COLOR = {
 const MenuItems = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [openDropdown, setOpenDropdown] = React.useState(null);
 
   const user = JSON.parse(localStorage.getItem("user"));
   const role = user?.role?.toLowerCase();
@@ -101,21 +112,53 @@ const MenuItems = () => {
       <div className="mt-6 flex flex-col gap-1">
         <h2 className="text-[#00000066] text-base">Pages</h2>
 
-        {/* MAIN MENU ITEMS */}
         {sections.map((section) => (
-          <NavLink
-            key={section.id}
-            to={"/" + section.id}
-            className={({ isActive }) =>
-              `w-full flex items-center gap-3 py-2 px-2 rounded-lg cursor-pointer
-     ${isActive ? "bg-[#0000000A] font-semibold text-black" : "hover:bg-[#0000000A]"}`
-            }
-          >
-            <section.icon className="w-5 h-5" />
-            <p className="text-sm">{section.title}</p>
-          </NavLink>
+          <div key={section.id}>
+            <div
+              onClick={() => {
+                if (section.children) {
+                  setOpenDropdown(openDropdown === section.id ? null : section.id);
+                } else {
+                  navigate("/" + section.id);
+                }
+              }}
+              className={`w-full flex items-center gap-3 py-2 px-2 rounded-lg cursor-pointer
+        hover:bg-[#0000000A] ${openDropdown === section.id ? "bg-[#0000000A] font-semibold text-black" : ""
+                }`}
+            >
+              <section.icon className="w-5 h-5" />
+              <p className="text-sm flex-1">{section.title}</p>
 
+              {section.children && (
+                openDropdown === section.id ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )
+              )}
+
+            </div>
+
+            {section.children && openDropdown === section.id && (
+              <div className="ml-8 mt-1 flex flex-col gap-1">
+                {section.children.map((child) => (
+                  <NavLink
+                    key={child.id}
+                    to={"/" + child.id}
+                    className={({ isActive }) =>
+                      `w-full text-sm py-1 px-2 rounded-md 
+              ${isActive ? "font-semibold text-black" : "hover:bg-[#0000000A]"}`
+                    }
+                  >
+                    {child.title}
+                  </NavLink>
+                ))}
+              </div>
+            )}
+          </div>
         ))}
+
+
 
         {/* LOGOUT */}
         <button
