@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { X, Eye, EyeOff } from "lucide-react";
 
-
 const ForgotPasswordModal = ({ isOpen, onClose }) => {
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
@@ -9,7 +8,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -24,15 +23,25 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     e.preventDefault();
     resetMessages();
 
-    if (!email) {
+    if (!email.trim()) {
       setError("Please enter your email.");
+      return;
+    }
+
+    // 🔥 Allowed domain validation
+    const emailRegex = /^[^\s@]+@usq\.edu\.au$/;
+
+    if (!emailRegex.test(email)) {
+      setError("Only @usq.edu.au email is allowed.");
       return;
     }
 
     try {
       setLoading(true);
-      // TODO: Call your API to send reset code to email
+
+      // TODO: Call your API to send code
       // await api.sendResetCode(email);
+
       setSuccessMsg("Verification code sent to your email.");
       setStep(2);
     } catch (err) {
@@ -123,9 +132,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
         <h2 className="mb-1 text-xl font-semibold text-gray-900">
           Forgot Password
         </h2>
-        <p className="mb-4 text-sm text-gray-500">
-          Step {step} of 3
-        </p>
+        <p className="mb-4 text-sm text-gray-500">Step {step} of 3</p>
 
         {/* Progress bar */}
         <div className="mb-4 flex gap-2">
@@ -133,7 +140,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
             <div
               key={s}
               className={`h-1 flex-1 rounded-full ${
-                step >= s ? "bg-indigo-500" : "bg-gray-200"
+                step >= s ? "bg-purple-500" : "bg-gray-200"
               }`}
             />
           ))}
@@ -159,9 +166,9 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
                 Email address
               </label>
               <input
-                type="email"
+                type="text"
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                placeholder="you@example.com"
+                placeholder="stansmith@usq.edu.au"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -170,7 +177,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
             <button
               type="submit"
               disabled={loading}
-              className="w-full cursor-pointer rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
+              className="w-full cursor-pointer rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {loading ? "Sending..." : "Send Verification Code"}
             </button>
@@ -184,17 +191,47 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
               We have sent a verification code to{" "}
               <span className="font-semibold text-gray-700">{email}</span>
             </div>
+            {/* OTP 6 Boxes */}
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">
                 Verification Code
               </label>
-              <input
-                type="text"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 tracking-[0.3em]"
-                placeholder="Enter code"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-              />
+
+              <div className="flex justify-between gap-2">
+                {[...Array(6)].map((_, index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    maxLength={1}
+                    className="w-10 h-12 text-center text-lg rounded-lg border border-gray-300 
+                   focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                    value={code[index] || ""}
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/\D/g, ""); // allow digits only
+                      let codeArr = code.split("");
+
+                      // update digit
+                      codeArr[index] = val;
+                      const newCode = codeArr.join("");
+                      setCode(newCode);
+
+                      // focus next box
+                      if (val && index < 5) {
+                        document.getElementById(`otp-${index + 1}`).focus();
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      // backspace handling
+                      if (e.key === "Backspace") {
+                        if (!code[index] && index > 0) {
+                          document.getElementById(`otp-${index - 1}`).focus();
+                        }
+                      }
+                    }}
+                    id={`otp-${index}`}
+                  />
+                ))}
+              </div>
             </div>
 
             <div className="flex items-center justify-between space-x-2">
@@ -209,7 +246,7 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 cursor-pointer rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
+                className="flex-1 cursor-pointer rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {loading ? "Verifying..." : "Verify Code"}
               </button>
@@ -219,76 +256,70 @@ const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
         {step === 3 && (
           <form onSubmit={handleResetPassword} className="space-y-4 mt-2">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                New Password
+              </label>
 
-  <div>
-    <label className="mb-1 block text-sm font-medium text-gray-700">
-      New Password
-    </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  placeholder="Enter new password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
 
-    <div className="relative">
-      <input
-        type={showPassword ? "text" : "password"}
-        className="w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-        placeholder="Enter new password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                </button>
+              </div>
+            </div>
 
-      <button
-        type="button"
-        onClick={() => setShowPassword(!showPassword)}
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-      >
-        {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
-      </button>
-    </div>
-  </div>
+            {/* Confirm Password */}
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Confirm New Password
+              </label>
 
-  {/* Confirm Password */}
-  <div>
-    <label className="mb-1 block text-sm font-medium text-gray-700">
-      Confirm New Password
-    </label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  placeholder="Re-enter new password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
 
-    <div className="relative">
-      <input
-        type={showConfirmPassword ? "text" : "password"}
-        className="w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-        placeholder="Re-enter new password"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-      />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showConfirmPassword ? (
+                    <Eye size={18} />
+                  ) : (
+                    <EyeOff size={18} />
+                  )}
+                </button>
+              </div>
+            </div>
 
-      <button
-        type="button"
-        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-      >
-        {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
-      </button>
-    </div>
-  </div>
-
-  {/* Buttons */}
-  <div className="flex items-center justify-between space-x-2">
-    <button
-      type="button"
-      onClick={() => setStep(2)}
-      className="rounded-lg cursor-pointer border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-    >
-      Back
-    </button>
-
-    <button
-      type="submit"
-      disabled={loading}
-      className="flex-1 cursor-pointer rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-70"
-    >
-      {loading ? "Saving..." : "Reset Password"}
-    </button>
-  </div>
-</form>
-
+            {/* Buttons */}
+            <div className="flex items-center justify-between space-x-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 cursor-pointer rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {loading ? "Saving..." : "Reset Password"}
+              </button>
+            </div>
+          </form>
         )}
       </div>
     </div>
