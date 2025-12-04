@@ -199,15 +199,21 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
                                 name="universityId"
                                 value={formData.universityId}
                                 onChange={handleChange}
-                                disabled={isViewMode}
+                                disabled={isViewMode || universities?.length === 0}
                                 className={`${inputClasses("universityId")} appearance-none pr-10`}
                             >
-                                <option value="">Select your university</option>
-                                {universities?.map((uni) => (
-                                    <option key={uni._id} value={uni._id}>
-                                        {uni.name}
-                                    </option>
-                                ))}
+                                {universities?.length === 0 ? (
+                                    <option value="">No universities found</option>
+                                ) : (
+                                    <>
+                                        <option value="">Select your university</option>
+                                        {universities?.map((uni) => (
+                                            <option key={uni._id} value={uni._id}>
+                                                {uni.name}
+                                            </option>
+                                        ))}
+                                    </>
+                                )}
                             </select>
 
                             <svg
@@ -317,7 +323,7 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
                                 onChange={(e) => {
                                     const numericValue = e.target.value.replace(/\D/g, "");
                                     setFormData((prev) => ({ ...prev, postcode: numericValue }));
-                                }} 
+                                }}
                                 className={inputClasses("postcode")}
                             />
                         </div>

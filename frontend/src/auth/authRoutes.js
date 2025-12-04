@@ -55,7 +55,9 @@ export const USER_ENDPOINTS = {
 
 
     //get rewards for student college
-    GET_ALL_REWARDS: `${API_BASE_URL}/student/college-rewards`
+    GET_ALL_REWARDS: `${API_BASE_URL}/student/college-rewards`,
+        CHECK_CARD_ELIGIBILITY: `${API_BASE_URL}/student/check-card-eligibility`,
+
 
 };
 

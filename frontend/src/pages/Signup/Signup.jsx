@@ -223,17 +223,20 @@ const Signup = () => {
                     <select
                       id="university"
                       name="university"
-                      className={`signup-input appearance-none pr-10 ${errors.university ? "input-error" : ""
-                        }`}
+                      className={`signup-input appearance-none pr-10 ${errors.university ? "input-error" : ""}`}
                       value={formData.university}
                       onChange={handleChange}
                     >
                       <option value="">Select your university</option>
-                      {universities?.map((uni) => (
-                        <option key={uni._id} value={uni._id}>
-                          {uni.name}
-                        </option>
-                      ))}
+                      {universities && universities.length > 0 ? (
+                        universities.map((uni) => (
+                          <option key={uni._id} value={uni._id}>
+                            {uni.name}
+                          </option>
+                        ))
+                      ) : (
+                        <option disabled>No universities available</option>
+                      )}
                     </select>
 
                     <svg
@@ -252,24 +255,31 @@ const Signup = () => {
 
 
                 <div className="signup-form-group">
-                  <label htmlFor="university">Your College</label>
+                  <label htmlFor="college">Your College</label>
 
                   <div className="relative">
                     <select
                       id="college"
                       name="college"
-                      className={`signup-input appearance-none pr-10 ${errors.college ? "input-error" : ""
-                        }`}
+                      className={`signup-input appearance-none pr-10 ${errors.college ? "input-error" : ""}`}
                       value={formData.college}
                       onChange={handleChange}
                       disabled={!formData.university}
                     >
                       <option value="">Select your college</option>
-                      {colleges?.map((col) => (
-                        <option key={col._id} value={col._id}>
-                          {col.name}
+                      {colleges && colleges.length > 0 ? (
+                        colleges.map((col) => (
+                          <option key={col._id} value={col._id}>
+                            {col.name}
+                          </option>
+                        ))
+                      ) : (
+                        <option disabled>
+                          {!formData.university
+                            ? "Please select a university first"
+                            : "No colleges available"}
                         </option>
-                      ))}
+                      )}
                     </select>
 
                     <svg

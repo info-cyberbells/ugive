@@ -358,7 +358,6 @@ export const getStudentRewardsService = async () => {
 };
 
 // send a card student
-
 export const sendCardService = async (card) =>{
     const response = await axios.post(
         USER_ENDPOINTS.STUDENT_SEND_CARD,
@@ -367,3 +366,13 @@ export const sendCardService = async (card) =>{
     )
     return response.data;
 }
+
+
+//check card eligibility
+export const checkCardEligibilityService = async () => {
+    const response = await axios.get(
+        USER_ENDPOINTS.CHECK_CARD_ELIGIBILITY,
+        getAuthHeader()
+    );
+    return response.data;
+};

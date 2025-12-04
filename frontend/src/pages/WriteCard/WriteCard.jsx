@@ -6,7 +6,9 @@ import coffeeCup from "/coffeeCup.svg";
 import pizzaSlice from "/pizzaSlice.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { getUniversities, getColleges } from "../../features/studentSlice";
-import { sendStudentCard } from "../../features/studentCardSlice";
+import { sendStudentCard, checkCardEligibility } from "../../features/studentCardSlice";
+
+
 
 const CardForm = ({ onSubmit }) => {
   const [errors, setErrors] = useState({});
@@ -158,9 +160,8 @@ const CardForm = ({ onSubmit }) => {
                     name="university"
                     value={formData.university || ""}
                     onChange={handleUniversityChange}
-                    className={`${inputClass} appearance-none pr-10 ${
-                      errors.university ? "border-red-500" : ""
-                    }`}
+                    className={`${inputClass} appearance-none pr-10 ${errors.university ? "border-red-500" : ""
+                      }`}
                   >
                     <option value="">Select University</option>
                     {universities.map((u) => (
@@ -198,9 +199,8 @@ const CardForm = ({ onSubmit }) => {
                     name="college"
                     value={formData.college || ""}
                     onChange={handleChange}
-                    className={`${inputClass} appearance-none pr-10 ${
-                      errors.college ? "border-red-500" : ""
-                    }`}
+                    className={`${inputClass} appearance-none pr-10 ${errors.college ? "border-red-500" : ""
+                      }`}
                     disabled={!formData.university}
                   >
                     {!formData.university && (
@@ -251,9 +251,8 @@ const CardForm = ({ onSubmit }) => {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Enter your Name"
-                  className={`${inputClass} ${
-                    errors.name ? "border-red-500" : ""
-                  }`}
+                  className={`${inputClass} ${errors.name ? "border-red-500" : ""
+                    }`}
                 />
               </div>
 
@@ -268,9 +267,8 @@ const CardForm = ({ onSubmit }) => {
                   value={formData.recipientName}
                   onChange={handleChange}
                   placeholder="Enter Recipient's Name"
-                  className={`${inputClass} ${
-                    errors.recipientName ? "border-red-500" : ""
-                  }`}
+                  className={`${inputClass} ${errors.recipientName ? "border-red-500" : ""
+                    }`}
                 />
               </div>
 
@@ -298,9 +296,8 @@ const CardForm = ({ onSubmit }) => {
                   value={formData.recipientEmail}
                   onChange={handleChange}
                   placeholder="Enter Recipient's Email"
-                  className={`${inputClass} ${
-                    errors.recipientEmail ? "border-red-500" : ""
-                  }`}
+                  className={`${inputClass} ${errors.recipientEmail ? "border-red-500" : ""
+                    }`}
                 />
               </div>
 
@@ -315,9 +312,8 @@ const CardForm = ({ onSubmit }) => {
                   value={formData.collegeHouse}
                   onChange={handleChange}
                   placeholder="Type to search"
-                  className={`${inputClass} ${
-                    errors.collegeHouse ? "border-red-500" : ""
-                  }`}
+                  className={`${inputClass} ${errors.collegeHouse ? "border-red-500" : ""
+                    }`}
                 />
               </div>
             </div>
@@ -333,9 +329,8 @@ const CardForm = ({ onSubmit }) => {
                 value={formData.message}
                 onChange={handleChange}
                 placeholder="Enter Your Message"
-                className={`${inputClass} ${
-                  errors.message ? "border-red-500" : ""
-                }`}
+                className={`${inputClass} ${errors.message ? "border-red-500" : ""
+                  }`}
               />
             </div>
 
@@ -421,7 +416,8 @@ const SuccessMessage = ({ onGoBack }) => {
   );
 };
 
-const Modal = ({ isOpen, onClose }) => {
+const Modal = ({ isOpen, onClose, message, nextDate }) => {
+  const navigate = useNavigate();
   if (!isOpen) return null;
 
   return (
@@ -433,7 +429,6 @@ const Modal = ({ isOpen, onClose }) => {
         aria-labelledby="modal-title"
       >
         <div className="text-center">
-          {/* Title */}
           <h2
             id="modal-title"
             className="text-xl font-bold tracking-tight text-black mb-6"
@@ -441,19 +436,22 @@ const Modal = ({ isOpen, onClose }) => {
             You're on a break!
           </h2>
 
-          <p className="text-lg italic tracking-tight font-medium text-black mb-12">
-            <p>Thanks for sending last card.</p>
-            You can send another card from
-            <span className="text-[#E8BD93] ml-1">next week</span>
+          <p className="text-lg italic tracking-tight font-medium text-black mb-0">
+            {"Thanks for sending last card."}
           </p>
 
-          {/* Action Button */}
+          {nextDate && (
+            <p className="text-lg italic tracking-tight font-medium text-black mb-5">
+              You can send another card from
+              <span className="text-[#E8BD93] ml-1"> {nextDate}</span>
+            </p>
+          )}
+
           <button
-            // onClick={()=> navigate("/student-dashboard")}
-            onClick={onClose}
-            className="w-full h-12 bg-[#E9B243] text-white font-normal text-lg border-3 border-white cursor-pointer rounded-full shadow-lg hover:bg-yellow-600 transition duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
+            onClick={() => navigate("/student-dashboard")}
+            className="w-full h-12 bg-[#E9B243] text-white font-normal text-lg border-3 mt-3 border-white cursor-pointer rounded-full shadow-lg hover:bg-yellow-600 transition duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
           >
-            Let's go!
+            Got it
           </button>
         </div>
       </div>
@@ -461,8 +459,28 @@ const Modal = ({ isOpen, onClose }) => {
   );
 };
 
+
 const WriteCard = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { eligibility, isLoading } = useSelector((state) => state.studentCard);
+
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showEligibilityModal, setShowEligibilityModal] = useState(false);
+
+  // Check eligibility on mount
+  useEffect(() => {
+    dispatch(checkCardEligibility())
+      .unwrap()
+      .then((data) => {
+        if (!data.eligible) {
+          setShowEligibilityModal(true);
+        }
+      })
+      .catch(() => {
+        setShowEligibilityModal(true);
+      });
+  }, [dispatch]);
 
   const handleSubmission = () => {
     setIsSubmitted(true);
@@ -472,15 +490,41 @@ const WriteCard = () => {
     setIsSubmitted(false);
   };
 
+  const handleCloseEligibilityModal = () => {
+    setShowEligibilityModal(false);
+    navigate('/student-dashboard');
+  };
+
+  // Show loading
+  if (isLoading) {
+    return (
+      <div className="min-h-screen ml-60 mt-14 bg-gray-50 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-2xl shadow-lg text-center">
+          <div className="inline-block w-16 h-16 border-4 border-[#E9B243] border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-lg font-semibold text-gray-700">Checking eligibility...</p>
+          <p className="text-sm text-gray-500 mt-2">Please wait a moment</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen ml-60 mt-14 bg-gray-50 flex items-start justify-center pb-20 font-sans">
       <div className="w-full max-w-7xl">
         {isSubmitted ? (
           <SuccessMessage onGoBack={handleGoBack} />
-        ) : (
+        ) : eligibility?.eligible ? (
           <CardForm onSubmit={handleSubmission} />
-        )}
+        ) : null}
       </div>
+
+      {/* Show eligibility modal */}
+      <Modal
+        isOpen={showEligibilityModal}
+        onClose={handleCloseEligibilityModal}
+        message={eligibility?.message}
+        nextDate={eligibility?.next_available_date}
+      />
     </div>
   );
 };

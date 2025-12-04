@@ -149,10 +149,11 @@ function App() {
 
         <Route path="/my-cards" element={isAuthenticated ? <MyCardReading /> : <Navigate to='/' replace />}
         />
-        {/* <Route
+        
+        <Route
           path='/social'
           element={isAuthenticated ? <Social /> : <Navigate to="/" replace />}
-        /> */}
+        />
 
         <Route path='/write-card' element={isAuthenticated ? <WriteCard /> : <Navigate to="/" replace />} />
         <Route path='/lets-go' element={isAuthenticated ? <LetsGo /> : <Navigate to="/" replace />} />

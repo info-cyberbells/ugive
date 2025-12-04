@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { sendCardService } from "../auth/authServices";
+import { sendCardService, checkCardEligibilityService } from "../auth/authServices";
 
 
 // send card thunk
@@ -16,6 +16,20 @@ export const sendStudentCard = createAsyncThunk(
     }
 );
 
+// check card eligibility thunk
+export const checkCardEligibility = createAsyncThunk(
+    "card/checkCardEligibility",
+    async (_, thunkAPI) => {
+        try {
+            return await checkCardEligibilityService();
+        } catch (error) {
+            return thunkAPI.rejectWithValue(
+                error.response?.data || { eligible: false, message: "Failed to check eligibility" }
+            );
+        }
+    }
+);
+
 const studentCardSlice = createSlice({
     name: "studentCard",
     initialState: {
@@ -24,6 +38,7 @@ const studentCardSlice = createSlice({
         isLoading: false,
         isError: false,
         message: "",
+        eligibility: null,
     },
     reducers: {
         resetCardState: (state) => {
@@ -48,6 +63,18 @@ const studentCardSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
+            })
+            .addCase(checkCardEligibility.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(checkCardEligibility.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.eligibility = action.payload;
+            })
+            .addCase(checkCardEligibility.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.eligibility = action.payload;
             });
     }
 });
