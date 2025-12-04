@@ -36,6 +36,18 @@ export const getCollegesService = async (universityId) => {
     return response.data;
 };
 
+// Send reset code to email
+export const forgotPasswordService = async (email) => {
+    const response = await axios.post(USER_ENDPOINTS.FORGOT_PASSWORD, { email });
+    return response.data;
+};
+
+// Verify code + update password
+export const resetPasswordService = async (payload) => {
+    const response = await axios.post(USER_ENDPOINTS.RESET_PASSWORD, payload);
+    return response.data;
+};
+
 
 
 //get superadmin profile
@@ -257,9 +269,8 @@ export const createRewardService = async (rewardData) => {
 };
 
 // delete reward super admin
-
 export const deleteRewardService = async (id) => {
-    const response  = await axios.delete(
+    const response = await axios.delete(
         `${USER_ENDPOINTS.SUPERADMIN_DELETE_REWARD}/${id}`,
         getAuthHeader(),
     )
@@ -274,7 +285,7 @@ export const getSingleRewardService = async (id) => {
     );
     return response.data;
 };
- 
+
 //update reward data
 export const updateRewardService = async (id, rewardData) => {
     const response = await axios.put(
@@ -284,7 +295,7 @@ export const updateRewardService = async (id, rewardData) => {
     );
     return response.data;
 };
- 
+
 
 
 

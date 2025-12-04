@@ -5,6 +5,9 @@ export const USER_ENDPOINTS = {
     LOGIN_USER: `${API_BASE_URL}/auth/login`,
     REGISTER_USER: `${API_BASE_URL}/auth/register`,
     PUBLIC_UNIVERSITIES: `${API_BASE_URL}/public/universities`,
+    FORGOT_PASSWORD: `${API_BASE_URL}/public/request-reset-password`,
+    RESET_PASSWORD: `${API_BASE_URL}/public/verify-reset-password`,
+
 
 
     SUPERADMIN_GET_PROFILE: `${API_BASE_URL}/super_admin/profile`,
@@ -31,8 +34,8 @@ export const USER_ENDPOINTS = {
     SUPERADMIN_ADD_STUDENT: `${API_BASE_URL}/super_admin/create-student`,
     SUPERADMIN_UPDATE_STUDENT: `${API_BASE_URL}/super_admin/update-students`,
     SUPERADMIN_DELETE_STUDENT: `${API_BASE_URL}/super_admin/delete-students`,
-    
-    
+
+
     SUPERADMIN_GET_ALL_REWARDS: `${API_BASE_URL}/super_admin/get-all-rewards`,
     SUPERADMIN_ADD_REWARD: `${API_BASE_URL}/super_admin/create-reward`,
     SUPERADMIN_DELETE_REWARD: `${API_BASE_URL}/super_admin/delete-reward`,

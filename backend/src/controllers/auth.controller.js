@@ -137,38 +137,86 @@ const sendResetEmail = async (email, resetCode) => {
   });
 
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: `"UGIVE Support" <${process.env.EMAIL_USER}>`,
     to: email,
-    subject: "Your Password Reset Code",
+    subject: "UGIVE - Your Password Reset Code",
     html: `
-      <div style="font-family: Arial; max-width: 600px; margin: auto;">
-        <h2 style="background:#231f20; color:white; padding:15px; text-align:center">
-          Password Reset Request
-        </h2>
+      <div style="background:#f5f5f7; padding:30px 0; font-family: Arial, sans-serif;">
+        <div style="
+          max-width:600px; 
+          margin:auto; 
+          background:white; 
+          border-radius:12px; 
+          box-shadow:0 4px 15px rgba(0,0,0,0.08); 
+          overflow:hidden;
+        ">
 
-        <p style="font-size:16px; text-align:center">
-          Use the 6-digit code below to reset your password:
-        </p>
+          <!-- HEADER -->
+          <div style="background:#4A3AFF; padding:20px; text-align:center;">
+            <h2 style="color:white; margin:0; font-size:24px; letter-spacing:1px;">
+              UGIVE Password Reset
+            </h2>
+          </div>
 
-        <div style="padding:15px; background:#f8f8f8; border:2px dashed #231f20; text-align:center; margin:20px 0;">
-          <span style="font-size:32px; font-weight:bold; letter-spacing:10px; color:#231f20;">
-            ${resetCode}
-          </span>
+          <!-- BODY -->
+          <div style="padding:30px;">
+            <p style="font-size:16px; color:#333; text-align:center;">
+              Hello Student,<br><br>
+              You requested to reset your UGIVE account password.
+            </p>
+
+            <p style="font-size:15px; color:#666; text-align:center;">
+              Enter the 6-digit verification code below:
+            </p>
+
+            <!-- RESET CODE BOX -->
+            <div style="
+              background:#f0f0ff; 
+              padding:20px; 
+              text-align:center; 
+              margin:20px 0; 
+              border-radius:10px; 
+              border:2px dashed #4A3AFF;
+            ">
+              <span style="
+                font-size:36px; 
+                font-weight:bold; 
+                letter-spacing:10px; 
+                color:#4A3AFF;
+              ">
+                ${resetCode}
+              </span>
+            </div>
+
+            <p style="font-size:14px; color:#555; text-align:center;">
+              This code is valid for <strong>1 hour</strong>.  
+              Do not share it with anyone.
+            </p>
+
+            <p style="font-size:13px; color:#999; text-align:center; margin-top:25px;">
+              If you didn’t request this, you can safely ignore this email.
+            </p>
+          </div>
+
+          <!-- FOOTER -->
+          <div style="
+            background:#fafafa; 
+            padding:15px; 
+            text-align:center; 
+            font-size:12px; 
+            color:#999;
+          ">
+            © ${new Date().getFullYear()} UGIVE · Empowering Students
+          </div>
+
         </div>
-
-        <p style="font-size:16px; text-align:center;">
-          This code is valid for <strong>1 hour</strong>.
-        </p>
-
-        <p style="font-size:13px; color:gray; text-align:center; margin-top:20px;">
-          If you did not request this, just ignore this email.
-        </p>
       </div>
     `
   };
 
   await transporter.sendMail(mailOptions);
 };
+
 
 
 

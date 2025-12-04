@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { loginService, registerService, getPublicUniversitiesService, getCollegesService } from "../auth/authServices";
+import { loginService, registerService, getPublicUniversitiesService, getCollegesService, forgotPasswordService, resetPasswordService } from "../auth/authServices";
 
 const user = JSON.parse(localStorage.getItem("User"));
 
@@ -62,6 +62,31 @@ export const getColleges = createAsyncThunk(
     }
 );
 
+//send reset code
+export const sendResetCode = createAsyncThunk(
+    "auth/sendResetCode",
+    async (email, thunkAPI) => {
+        try {
+            return await forgotPasswordService(email);
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+
+//reset password
+export const verifyAndReset = createAsyncThunk(
+    "auth/verifyAndReset",
+    async (data, thunkAPI) => {
+        try {
+            return await resetPasswordService(data);
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+
+
 
 
 const authSlice = createSlice({
@@ -74,15 +99,15 @@ const authSlice = createSlice({
             state.isError = false;
             state.message = "";
         },
-         logout: (state) => {
-        state.user = null;
-        state.isLoading = false;
-        state.isSuccess = false;
-        state.isError = false;
-        state.message = "";
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
-    },
+        logout: (state) => {
+            state.user = null;
+            state.isLoading = false;
+            state.isSuccess = false;
+            state.isError = false;
+            state.message = "";
+            localStorage.removeItem("user");
+            localStorage.removeItem("token");
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -165,6 +190,36 @@ const authSlice = createSlice({
                 state.isError = true;
                 state.message = action.payload;
             })
+
+            // Send code
+            .addCase(sendResetCode.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(sendResetCode.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.message = action.payload.message;
+            })
+            .addCase(sendResetCode.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+
+            // Verify & reset
+            .addCase(verifyAndReset.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(verifyAndReset.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.message = action.payload.message;
+            })
+            .addCase(verifyAndReset.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            });
 
 
     }

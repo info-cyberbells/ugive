@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { X, Eye, EyeOff } from "lucide-react";
+import { sendResetCode, verifyAndReset } from "../../features/studentSlice";
+import { useDispatch } from "react-redux";
+
 
 const ForgotPasswordModal = ({ isOpen, onClose }) => {
+  const dispatch = useDispatch();
   const [step, setStep] = useState(1);
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -28,7 +32,6 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
       return;
     }
 
-    // 🔥 Allowed domain validation
     const emailRegex = /^[^\s@]+@usq\.edu\.au$/;
 
     if (!emailRegex.test(email)) {
@@ -39,8 +42,10 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
     try {
       setLoading(true);
 
-      // TODO: Call your API to send code
-      // await api.sendResetCode(email);
+      const res = await dispatch(sendResetCode(email)).unwrap();
+      setSuccessMsg(res.message);
+      setStep(2);
+
 
       setSuccessMsg("Verification code sent to your email.");
       setStep(2);
@@ -62,9 +67,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
 
     try {
       setLoading(true);
-      // TODO: Call your API to verify code
-      // await api.verifyCode({ email, code });
-      setSuccessMsg("Code verified. Now set a new password.");
+      setSuccessMsg("Code verified. Set your new password.");
       setStep(3);
     } catch (err) {
       setError("Invalid verification code.");
@@ -94,11 +97,17 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
 
     try {
       setLoading(true);
-      // TODO: Call your API to reset password
-      // await api.resetPassword({ email, code, password });
+      const res = await dispatch(
+        verifyAndReset({
+          email,
+          code,
+          newPassword: password
+        })
+      ).unwrap();
       setSuccessMsg("Password reset successfully. You can now log in.");
-      // Optionally close after a short delay
-      // setTimeout(onClose, 1500);
+      setTimeout(() => {
+        handleClose();
+      }, 1200);
     } catch (err) {
       setError("Failed to reset password. Try again.");
     } finally {
@@ -139,9 +148,8 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
           {[1, 2, 3].map((s) => (
             <div
               key={s}
-              className={`h-1 flex-1 rounded-full ${
-                step >= s ? "bg-purple-500" : "bg-gray-200"
-              }`}
+              className={`h-1 flex-1 rounded-full ${step >= s ? "bg-purple-500" : "bg-gray-200"
+                }`}
             />
           ))}
         </div>
@@ -275,7 +283,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
-                  {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                  {showPassword ? <Eye className="cursor-pointer" size={18} /> : <EyeOff className="cursor-pointer" size={18} />}
                 </button>
               </div>
             </div>
@@ -301,9 +309,9 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
                 >
                   {showConfirmPassword ? (
-                    <Eye size={18} />
+                    <Eye className="cursor-pointer" size={18} />
                   ) : (
-                    <EyeOff size={18} />
+                    <EyeOff className="cursor-pointer" size={18} />
                   )}
                 </button>
               </div>
