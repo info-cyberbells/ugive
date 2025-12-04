@@ -19,6 +19,7 @@ import WriteCard from './pages/WriteCard/WriteCard';
 import StudentDashboard from './pages/dashboard/StudentDashbaord';
 import LetsGo from './pages/LetsGo/LetsGo';
 import MyStudentProfile from './pages/Profile/MyStudentProfile';
+import MyCardReading from './pages/MyCardReading/MyCardReading';
 
 
 
@@ -144,6 +145,9 @@ function App() {
         <Route path='/rewards-catalog' element={isAuthenticated ? <RewardCatalogs /> : <Navigate to="/" replace />} />
 
         <Route path="/my-profile" element={isAuthenticated ? <MyStudentProfile /> : <Navigate to='/' replace />}
+        />
+
+        <Route path="/my-cards" element={isAuthenticated ? <MyCardReading /> : <Navigate to='/' replace />}
         />
         {/* <Route
           path='/social'
