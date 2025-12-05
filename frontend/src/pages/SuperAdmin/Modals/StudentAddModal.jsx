@@ -175,7 +175,6 @@ const StudentModal = ({
       "email",
       "phoneNumber",
       "university",
-      "college",
       "studentUniId",
     ];
     if (isAddMode) {

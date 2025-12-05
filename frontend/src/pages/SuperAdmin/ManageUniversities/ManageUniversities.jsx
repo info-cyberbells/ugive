@@ -281,7 +281,7 @@ const ManageUniversities = () => {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
-                          Address Line 1
+                          Address Line
                         </div>
                       </th>
                       {/* <th

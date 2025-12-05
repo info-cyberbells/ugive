@@ -12,7 +12,7 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
     const [formData, setFormData] = useState({
         name: '',
         address_line_1: '',
-        address_line_2: '',
+        phoneNumber: '',
         city: '',
         state: '',
         postcode: '',
@@ -31,7 +31,7 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
         const data = {
             name: university?.name || "",
             address_line_1: university?.address_line_1 || "",
-            address_line_2: university?.address_line_2 || "",
+            phoneNumber: university?.phoneNumber || "",
             city: university?.city || "",
             state: university?.state || "",
             postcode: university?.postcode || ""
@@ -45,7 +45,7 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
         setFormData({
             name: university?.name || '',
             address_line_1: university?.address_line_1 || '',
-            address_line_2: university?.address_line_2 || '',
+            phoneNumber: university?.phoneNumber || '',
             city: university?.city || '',
             state: university?.state || '',
             postcode: university?.postcode || '',
@@ -77,6 +77,37 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
         return JSON.stringify(formData) !== JSON.stringify(initialData);
     };
 
+     const handlePhoneFormat = (e) => {
+    let value = e.target.value;
+
+    value = value.replace(/\D/g, "");
+
+    if (value.startsWith("04")) {
+      value = value.slice(2);
+    }
+
+    value = value.slice(0, 8);
+
+    let formatted = "04";
+    if (value.length > 0) {
+      if (value.length <= 2) {
+        formatted += value;
+      } else if (value.length <= 5) {
+        formatted += value.slice(0, 2) + " " + value.slice(2);
+      } else {
+        formatted += value.slice(0, 2) + " " + value.slice(2, 5) + " " + value.slice(5);
+      }
+    }
+
+    setFormData((prev) => ({ ...prev, phoneNumber: formatted }));
+
+    setErrors((prev) => {
+      const { phoneNumber, ...rest } = prev;
+      return rest;
+    });
+  };
+
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -87,7 +118,7 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
             "name",
             "address_line_1",
             "city",
-            "address_line_2",
+            'phoneNumber',
             "state",
             "postcode",
         ];
@@ -173,7 +204,7 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
 
                     {/* Address Line 1 */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Address Line 1</label>
+                        <label className="block text-sm font-medium text-gray-700">Address Line</label>
                         <input
                             disabled={isViewMode}
                             type="text"
@@ -186,23 +217,25 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
                         />
                     </div>
 
-                    {/* Address Line 2 */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Address Line 2 </label>
-                        <input
-                            disabled={isViewMode}
-                            type="text"
-                            name="address_line_2"
-                            placeholder="Cambridge Campus"
-                            autoComplete="off"
-                            value={formData.address_line_2}
-                            onChange={handleChange}
-                            className={inputClasses("address_line_2")}
-                        />
-                    </div>
-
                     {/* City / State / Postcode */}
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
+
+                           <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Phone Number
+              </label>
+              <input
+                type="text"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handlePhoneFormat}
+                disabled={isViewMode}
+                placeholder="0405 150 817"
+                autoComplete="off"
+                className={inputClasses("phoneNumber")}
+              />
+            </div>
+
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700">City</label>
