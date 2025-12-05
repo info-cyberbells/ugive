@@ -8,6 +8,11 @@ export const USER_ENDPOINTS = {
     FORGOT_PASSWORD: `${API_BASE_URL}/public/request-reset-password`,
     RESET_PASSWORD: `${API_BASE_URL}/public/verify-reset-password`,
 
+    GET_SOCIAL_LINKS: `${API_BASE_URL}/public/get-all-social-links`,
+    ADD_SOCIAL_LINKS: `${API_BASE_URL}/public/create-social-link`,
+    UPDATE_SOCIAL_LINKS: `${API_BASE_URL}/public/update-link`,
+    DELETE_SOCIAL_LINKS: `${API_BASE_URL}/public/delete-link`,
+
 
 
     SUPERADMIN_GET_PROFILE: `${API_BASE_URL}/super_admin/profile`,
