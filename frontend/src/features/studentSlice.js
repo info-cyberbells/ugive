@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { loginService, registerService, getPublicUniversitiesService, getCollegesService, forgotPasswordService, resetPasswordService } from "../auth/authServices";
+import { loginService, registerService, getPublicUniversitiesService, getCollegesService, forgotPasswordService, resetPasswordService, getSocialLinksService, addSocialLinkService, updateSocialLinkService, deleteSocialLinkService } from "../auth/authServices";
 
 const user = JSON.parse(localStorage.getItem("User"));
 
@@ -11,6 +11,7 @@ const initialState = {
     message: "",
     universities: [],
     colleges: [],
+    social: [],
 }
 
 //Login Thunk
@@ -82,6 +83,63 @@ export const verifyAndReset = createAsyncThunk(
             return await resetPasswordService(data);
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+
+//get socail link service
+
+export const getSocialLinks = createAsyncThunk(
+    'auth/getSocialLinks',
+    async (_, thunkAPI) => {
+        try {
+            const response = await getSocialLinksService();
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+
+
+export const addSocialLink = createAsyncThunk(
+    "auth/addSocialLink",
+    async (formData, thunkAPI) => {
+        try {
+            const response = await addSocialLinkService(formData);
+            return response.data; 
+        } catch (error) {
+            return thunkAPI.rejectWithValue(
+                error.response?.data?.message || error.message
+            );
+        }
+    }
+);
+
+export const updateSocialLink = createAsyncThunk(
+    "auth/updateSocialLink",
+    async ({ id, formData }, thunkAPI) => {
+        try {
+            const response = await updateSocialLinkService(id, formData);
+            return response.data; 
+        } catch (error) {
+            return thunkAPI.rejectWithValue(
+                error.response?.data?.message || error.message
+            );
+        }
+    }
+);
+
+export const deleteSocialLink = createAsyncThunk(
+    "auth/deleteSocialLink",
+    async (id, thunkAPI) => {
+        try {
+            await deleteSocialLinkService(id);
+            return id; 
+        } catch (error) {
+            return thunkAPI.rejectWithValue(
+                error.response?.data?.message || error.message
+            );
         }
     }
 );
@@ -219,7 +277,72 @@ const authSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
+            })
+
+            //get social links 
+            .addCase(getSocialLinks.pending, (state)=>{
+                state.isLoading = true;
+                state.isError = false;
+            })
+            .addCase(getSocialLinks.fulfilled, (state, action)=>{
+                state.isLoading = false;
+                state.isError = false;
+                state.social = action.payload;
+            })
+            .addCase(getSocialLinks.rejected, (state)=>{
+                state.isLoading = false;
+                state.isError = true;
+            })
+
+            // ADD SOCIAL LINK
+            .addCase(addSocialLink.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(addSocialLink.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isError = false;
+                state.social.unshift(action.payload);
+            })
+            .addCase(addSocialLink.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+
+            // UPDATE SOCIAL LINK
+            .addCase(updateSocialLink.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(updateSocialLink.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isError = false;
+
+                const updated = action.payload;
+                state.social = state.social.map(item =>
+                    item._id === updated._id ? updated : item
+                );
+            })
+            .addCase(updateSocialLink.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+
+            // DELETE SOCIAL LINK
+            .addCase(deleteSocialLink.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(deleteSocialLink.fulfilled, (state, action) => {
+            const deletedId = action.payload;
+            state.social = state.social.filter((item) => item._id !== deletedId);
+            })
+
+            .addCase(deleteSocialLink.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
             });
+
 
 
     }

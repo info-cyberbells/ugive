@@ -48,6 +48,53 @@ export const resetPasswordService = async (payload) => {
     return response.data;
 };
 
+//get social media link service
+
+export const getSocialLinksService = async ()=>{
+    const response = await axios.get(
+        USER_ENDPOINTS.GET_SOCIAL_LINKS
+    );
+    return response.data;
+}
+
+// add social links
+export const addSocialLinkService = async (formData) => {
+    const response = await axios.post(
+        USER_ENDPOINTS.ADD_SOCIAL_LINKS,
+        formData,
+        {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        }
+    );
+    return response;
+};
+
+// update social link service
+export const updateSocialLinkService = async (id, data) => {
+    const response = await axios.put(
+        `${USER_ENDPOINTS.UPDATE_SOCIAL_LINKS}/${id}`,
+        data,
+        {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        }
+    );
+    return response.data; 
+};
+
+
+// delete social link
+export const deleteSocialLinkService = async (id) => {
+    const response = await axios.delete(
+        `${USER_ENDPOINTS.DELETE_SOCIAL_LINKS}/${id}`
+    );
+    return response.data;   
+};
+
+
 
 
 //get superadmin profile

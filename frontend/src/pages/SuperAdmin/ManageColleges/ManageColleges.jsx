@@ -362,7 +362,7 @@ const manageColleges = () => {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
-                          State
+                          Phone Number
                         </div>
                       </th>
                       {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150">
@@ -409,7 +409,7 @@ const manageColleges = () => {
                         </td>
 
                         {/* University ID Column */}
-                        <td className="px-6 py-4 whitespace-nowrap text-xs text-gray-500 font-mono">
+                        <td className="px-6 py-4 whitespace-nowrap text-xs tracking-tighter text-gray-500 font-mono">
                           {college.university.name || "N/A"}
                         </td>
 
@@ -425,7 +425,7 @@ const manageColleges = () => {
 
                         {/* State Column */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                          {college.state || "N/A"}
+                          {college.phoneNumber || "N/A"}
                         </td>
 
                         {/* Postcode Column */}

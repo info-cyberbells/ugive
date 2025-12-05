@@ -281,6 +281,14 @@ const ManageUniversities = () => {
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
+                          Phone Number
+                        </div>
+                      </th>
+                      <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                      >
+                        <div className="flex items-center gap-1">
                           Address Line
                         </div>
                       </th>
@@ -308,14 +316,7 @@ const ManageUniversities = () => {
                           State
                         </div>
                       </th>
-                      <th
-                        scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
-                      >
-                        <div className="flex items-center gap-1">
-                          Postcode
-                        </div>
-                      </th>
+                      
                       {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150">
                                             <div className="flex items-center gap-1">
                                                 Status <ArrowUpDown size={14} />
@@ -353,6 +354,9 @@ const ManageUniversities = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {uni.name || "N/A"}
                         </td>
+                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                          {uni.phoneNumber || "N/A"}
+                        </td>
 
                         {/* Address Line 1 Column */}
                         <td className="px-6 py-4 text-sm text-gray-600 max-w-[200px] whitespace-normal break-words">
@@ -372,11 +376,6 @@ const ManageUniversities = () => {
                         {/* State Column */}
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                           {uni.state || "N/A"}
-                        </td>
-
-                        {/* Postcode Column */}
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                          {uni.postcode || "N/A"}
                         </td>
 
                         {/* Status Column (Badge) */}
