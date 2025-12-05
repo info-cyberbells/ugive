@@ -16,6 +16,46 @@ import {
 import { useNavigate } from "react-router-dom";
 import { getColleges } from "../../features/studentSlice";
 
+const ProfileSkeleton = () => {
+  return (
+    <div className="bg-[#F5F5F5] lg:mt-14 lg:ml-58 p-6 min-h-screen mx-auto font-[Inter]">
+      <div className="w-full bg-white max-w-4xl rounded-2xl shadow-sm p-6 animate-pulse">
+        {/* Tabs Skeleton */}
+        <div className="flex border-b border-gray-200 mb-6 gap-4">
+          <div className="h-8 w-8 bg-gray-200 rounded-full"></div>
+          <div className="h-8 w-24 bg-gray-200 rounded"></div>
+          <div className="h-8 w-24 bg-gray-200 rounded"></div>
+        </div>
+
+        {/* Content Skeleton */}
+        <div className="grid grid-cols-[160px_1fr] gap-8 items-start">
+          {/* Image Skeleton */}
+          <div className="flex flex-col items-center w-40">
+            <div className="w-32 h-32 bg-gray-200 rounded-full"></div>
+            <div className="h-4 w-24 bg-gray-200 rounded mt-3"></div>
+            <div className="h-3 w-20 bg-gray-200 rounded mt-2"></div>
+          </div>
+
+          {/* Form Fields Skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+            {[...Array(6)].map((_, i) => (
+              <div key={i}>
+                <div className="h-4 w-20 bg-gray-200 rounded mb-2"></div>
+                <div className="h-10 w-full bg-gray-200 rounded-xl"></div>
+              </div>
+            ))}
+
+            {/* Button Skeleton */}
+            <div className="flex justify-end mt-6 md:col-span-2">
+              <div className="h-10 w-32 bg-gray-200 rounded-xl"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ProfileSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
   const dispatch = useDispatch();
@@ -391,347 +431,353 @@ const ProfileSettings = () => {
   };
 
   return (
-    <div className="bg-[#F5F5F5] lg:mt-14 lg:ml-58 p-6 min-h-screen mx-auto font-[Inter]">
-      <div className="w-full bg-white max-w-4xl rounded-2xl shadow-sm p-6">
-        {/* --- Section 1: Tabs --- */}
-        <div className="flex border-b border-gray-200 mb-6">
-          <div className=" text-indigo-800">
-            <button
-              onClick={() => navigate(-1)}
-              className="px-2 rounded-full cursor-pointer hover:bg-indigo-50 transition transform hover:scale-[1.10] duration-150"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-              </svg>
-            </button>
-          </div>
-          <button
-            onClick={() => setActiveTab("profile")}
-            className={`pb-2 px-4 text-sm cursor-pointer font-medium transition ${activeTab === "profile"
-              ? "text-[#5D3F87] border-b-2 border-[#5D3F87]"
-              : "text-[#718EBF] hover:scale-[1.08]"
-              }`}
-          >
-            Edit Profile
-          </button>
-
-          <button
-            onClick={() => setActiveTab("security")}
-            className={`pb-2 px-4 text-sm font-medium cursor-pointer transition ${activeTab === "security"
-              ? "text-[#5D3F87] border-b-2 border-[#5D3F87]"
-              : "text-[#718EBF] hover:scale-[1.08]"
-              }`}
-          >
-            Security
-          </button>
-        </div>
-
-        {/*Section 2:*/}
-        <div>
-          {activeTab === "profile" ? (
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSave();
-              }}
-              className="grid grid-cols-[160px_1fr] gap-8 items-start"
-              autoComplete="off"
-            >
-              <input
-                type="text"
-                name="fakeuser"
-                autoComplete="username"
-                className="hidden"
-              />
-              <input
-                type="password"
-                name="fakepass"
-                autoComplete="new-password"
-                className="hidden"
-              />
-
-              {/*  Image Upload Section */}
-              <div className="flex flex-col items-center w-40">
-                <div className="relative">
-                  <img
-                    src={
-                      imagePreview ||
-                      "https://cdn-icons-png.flaticon.com/512/149/149071.png"
-                    }
-                    // alt={profile?.firstName || "Profile"}
-                    className="w-32 h-32 rounded-full object-cover border border-gray-200 shadow-sm"
-                  />
-
-                  <label
-                    htmlFor="imageUpload"
-                    className="absolute bottom-1 right-1 bg-[#6558A1] hover:bg-[#7A6CCF] cursor-pointer transition transform hover:scale-[1.05] duration-150 text-white p-2 rounded-full shadow-md text-xs"
-                  >
-                    ✎
-                  </label>
-                  <input
-                    type="file"
-                    id="imageUpload"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageChange}
-                  />
-                </div>
-                <p className="text-sm text-gray-500 mt-3">Change Photo</p>
-                <p className="text-[11px] text-gray-400 text-center mt-1 leading-tight">
-                  Only <span className="text-[#6558A1] font-medium">JPG / PNG</span> files
-                  <br />
-                  Max size: <span className="text-[#6558A1] font-medium">5MB</span>
-                </p>
-
-              </div>
-
-              {/* Form Section */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-                {/* Full Name */}
-                <div>
-                  <label className="text-sm">Full Name</label>
-                  <input
-                    type="text"
-                    name="fullName"
-                    value={formData.fullName}
-                    onChange={handleProfileChange}
-                    placeholder="Full Name"
-                    className="w-full border text-[#718EBF] border-gray-200 rounded-xl px-3 py-2.5 mt-1 text-sm focus:ring-1 focus:ring-[#DFEAF2] outline-none"
-                  />
-                </div>
-
-                {/* Email */}
-                <div>
-                  <label className="text-sm">Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    disabled
-                    autoComplete="off"
-                    placeholder="Enter email"
-                    className="w-full border border-gray-200 bg-gray-100  text-gray-500 rounded-xl focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
-                  />
-                </div>
-
-                {/* Phone Number */}
-                <div>
-                  <label className="text-sm">Phone Number</label>
-                  <input
-                    type="text"
-                    name="phoneNumber"
-                    maxLength={15}
-                    value={formData.phoneNumber}
-                    onChange={handlePhoneFormat}
-                    placeholder="0405 150 817"
-                    className="w-full border border-gray-200 rounded-xl text-[#718EBF] focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
-                  />
-                </div>
-
-                {/* University */}
-
-                {role == "student" && (
-                  <div>
-                    <label className="text-sm">University</label>
-                    <input
-                      type="text"
-                      name="university"
-                      value={formData.universityName}
-                      disabled
-                      className="w-full border border-gray-200 rounded-xl bg-gray-100  text-gray-500 focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
-                    />
-                  </div>
-                )}
-
-
-                {role == "student" && (
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      College
-                    </label>
-
-                    <div className="relative">
-                      <select
-                        name="collegeId"
-                        value={formData.collegeId || ""}
-                        onChange={(e) =>
-                          setFormData((prev) => ({ ...prev, collegeId: e.target.value }))
-                        }
-                        className="w-full border border-gray-200 rounded-xl text-[#718EBF] appearance-none focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
-                      >
-
-                        {formData.universityId && colleges.length === 0 && (
-                          <option value="">No colleges found for this university</option>
-                        )}
-
-                        {formData.universityId && colleges.length > 0 && (
-                          <>
-                            <option value="">Select your college</option>
-                            {colleges.map((c) => (
-                              <option key={c._id} value={c._id}>{c.name}</option>
-                            ))}
-                          </>
-                        )}
-                      </select>
-
-
-                      {/* Custom Dropdown Arrow */}
-                      <svg
-                        className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                )}
-
-                {role == "student" && (
-                  <div>
-                    <label className="text-sm">Student Id</label>
-                    <input
-                      type="text"
-                      name="studentId"
-                      disabled
-                      value={formData.studentId}
-                      placeholder="Student ID"
-                      className="w-full border border-gray-200 rounded-xl bg-gray-100  text-gray-500 focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
-                    />
-                  </div>
-                )}
-
-                {/* Save Button */}
-                <div className="flex justify-end mt-6 md:col-span-2">
-                  <button
-                    onClick={handleSave}
-                    type="button"
-                    disabled={Loading}
-                    className={`${Loading
-                      ? "bg-gray-400 cursor-not-allowed"
-                      : "bg-[#6558A1] hover:bg-[#7A6CCF] cursor-pointer transition transform hover:scale-[1.05] duration-150"
-                      } text-white text-xs font-semibold rounded-xl px-16 py-2.5 transition`}
-                  >
-                    {loading ? "Saving..." : "Save"}
-                  </button>
-                </div>
-              </div>
-            </form>
-          ) : (
-            // Security Tab
-            <div className="max-w-md">
-              <h4 className="font-semibold text-gray-700 mb-4">
-                Change Password
-              </h4>
-              <div className="space-y-4">
-                {/* Current Password */}
-                <div>
-                  <label className="text-sm">Current Password</label>
-                  <div className="relative">
-                    <input
-                      type={showCurrentPass ? "text" : "password"}
-                      name="currentPassword"
-                      value={securityData.currentPassword}
-                      onChange={handleSecurityChange}
-                      placeholder="Enter current password"
-                      autoComplete="new-password"
-                      className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${passwordErrors.currentPassword
-                        ? "border-red-500 bg-red-50 focus:ring-red-300"
-                        : "border-gray-200 focus:ring-[#DFEAF2]"
-                        } text-[#718EBF]`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowCurrentPass((prev) => !prev)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                    >
-                      {showCurrentPass ? (
-                        <Eye className="w-5 h-5" />
-                      ) : (
-                        <EyeOff className="w-5 h-5" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                {/* New Password */}
-                <div>
-                  <label className="text-sm">New Password</label>
-                  <div className="relative">
-                    <input
-                      type={showNewPass ? "text" : "password"}
-                      name="newPassword"
-                      value={securityData.newPassword}
-                      onChange={handleSecurityChange}
-                      placeholder="Enter new password"
-                      className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${passwordErrors.newPassword
-                        ? "border-red-500 bg-red-50 focus:ring-red-300"
-                        : "border-gray-200 focus:ring-[#DFEAF2]"
-                        } text-[#718EBF]`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowNewPass((prev) => !prev)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                    >
-                      {showNewPass ? (
-                        <Eye className="w-5 h-5" />
-                      ) : (
-                        <EyeOff className="w-5 h-5" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-sm">Confirm New Password</label>
-                  <div className="relative">
-                    <input
-                      type={showConfirmPass ? "text" : "password"}
-                      name="confirmPassword"
-                      value={securityData.confirmPassword}
-                      onChange={handleSecurityChange}
-                      placeholder="Re-enter new password"
-                      className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${passwordErrors.confirmPassword
-                        ? "border-red-500 bg-red-50 focus:ring-red-300"
-                        : "border-gray-200 focus:ring-[#DFEAF2]"
-                        } text-[#718EBF]`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPass((prev) => !prev)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                    >
-                      {showConfirmPass ? (
-                        <Eye className="w-5 h-5" />
-                      ) : (
-                        <EyeOff className="w-5 h-5" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end mt-12">
+    <>
+      {Loading ? (
+        <ProfileSkeleton />
+      ) : (
+        <div className="bg-[#F5F5F5] lg:mt-14 lg:ml-58 p-6 min-h-screen mx-auto font-[Inter]">
+          <div className="w-full bg-white max-w-4xl rounded-2xl shadow-sm p-6">
+            {/* --- Section 1: Tabs --- */}
+            <div className="flex border-b border-gray-200 mb-6">
+              <div className=" text-indigo-800">
                 <button
-                  onClick={handlePassChange}
-                  className=" text-white text-xs rounded-xl px-16 py-2.5 bg-[#6558A1] hover:bg-[#7A6CCF] cursor-pointer transition transform hover:scale-[1.03] duration-150"
+                  onClick={() => navigate(-1)}
+                  className="px-2 rounded-full cursor-pointer hover:bg-indigo-50 transition transform hover:scale-[1.10] duration-150"
                 >
-                  {loading ? "Updating..." : "Change Password"}
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                  </svg>
                 </button>
               </div>
+              <button
+                onClick={() => setActiveTab("profile")}
+                className={`pb-2 px-4 text-sm cursor-pointer font-medium transition ${activeTab === "profile"
+                  ? "text-[#5D3F87] border-b-2 border-[#5D3F87]"
+                  : "text-[#718EBF] hover:scale-[1.08]"
+                  }`}
+              >
+                Edit Profile
+              </button>
+
+              <button
+                onClick={() => setActiveTab("security")}
+                className={`pb-2 px-4 text-sm font-medium cursor-pointer transition ${activeTab === "security"
+                  ? "text-[#5D3F87] border-b-2 border-[#5D3F87]"
+                  : "text-[#718EBF] hover:scale-[1.08]"
+                  }`}
+              >
+                Security
+              </button>
             </div>
-          )}
+
+            {/*Section 2:*/}
+            <div>
+              {activeTab === "profile" ? (
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSave();
+                  }}
+                  className="grid grid-cols-[160px_1fr] gap-8 items-start"
+                  autoComplete="off"
+                >
+                  <input
+                    type="text"
+                    name="fakeuser"
+                    autoComplete="username"
+                    className="hidden"
+                  />
+                  <input
+                    type="password"
+                    name="fakepass"
+                    autoComplete="new-password"
+                    className="hidden"
+                  />
+
+                  {/*  Image Upload Section */}
+                  <div className="flex flex-col items-center w-40">
+                    <div className="relative">
+                      <img
+                        src={
+                          imagePreview ||
+                          "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                        }
+                        // alt={profile?.firstName || "Profile"}
+                        className="w-32 h-32 rounded-full object-cover border border-gray-200 shadow-sm"
+                      />
+
+                      <label
+                        htmlFor="imageUpload"
+                        className="absolute bottom-1 right-1 bg-[#6558A1] hover:bg-[#7A6CCF] cursor-pointer transition transform hover:scale-[1.05] duration-150 text-white p-2 rounded-full shadow-md text-xs"
+                      >
+                        ✎
+                      </label>
+                      <input
+                        type="file"
+                        id="imageUpload"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageChange}
+                      />
+                    </div>
+                    <p className="text-sm text-gray-500 mt-3">Change Photo</p>
+                    <p className="text-[11px] text-gray-400 text-center mt-1 leading-tight">
+                      Only <span className="text-[#6558A1] font-medium">JPG / PNG</span> files
+                      <br />
+                      Max size: <span className="text-[#6558A1] font-medium">5MB</span>
+                    </p>
+
+                  </div>
+
+                  {/* Form Section */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                    {/* Full Name */}
+                    <div>
+                      <label className="text-sm">Full Name</label>
+                      <input
+                        type="text"
+                        name="fullName"
+                        value={formData.fullName}
+                        onChange={handleProfileChange}
+                        placeholder="Full Name"
+                        className="w-full border text-[#718EBF] border-gray-200 rounded-xl px-3 py-2.5 mt-1 text-sm focus:ring-1 focus:ring-[#DFEAF2] outline-none"
+                      />
+                    </div>
+
+                    {/* Email */}
+                    <div>
+                      <label className="text-sm">Email</label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        disabled
+                        autoComplete="off"
+                        placeholder="Enter email"
+                        className="w-full border border-gray-200 bg-gray-100  text-gray-500 rounded-xl focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
+                      />
+                    </div>
+
+                    {/* Phone Number */}
+                    <div>
+                      <label className="text-sm">Phone Number</label>
+                      <input
+                        type="text"
+                        name="phoneNumber"
+                        maxLength={15}
+                        value={formData.phoneNumber}
+                        onChange={handlePhoneFormat}
+                        placeholder="0405 150 817"
+                        className="w-full border border-gray-200 rounded-xl text-[#718EBF] focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
+                      />
+                    </div>
+
+                    {/* University */}
+
+                    {role == "student" && (
+                      <div>
+                        <label className="text-sm">University</label>
+                        <input
+                          type="text"
+                          name="university"
+                          value={formData.universityName}
+                          disabled
+                          className="w-full border border-gray-200 rounded-xl bg-gray-100  text-gray-500 focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
+                        />
+                      </div>
+                    )}
+
+
+                    {role == "student" && (
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">
+                          College
+                        </label>
+
+                        <div className="relative">
+                          <select
+                            name="collegeId"
+                            value={formData.collegeId || ""}
+                            onChange={(e) =>
+                              setFormData((prev) => ({ ...prev, collegeId: e.target.value }))
+                            }
+                            className="w-full border border-gray-200 rounded-xl text-[#718EBF] appearance-none focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
+                          >
+
+                            {formData.universityId && colleges.length === 0 && (
+                              <option value="">No colleges found for this university</option>
+                            )}
+
+                            {formData.universityId && colleges.length > 0 && (
+                              <>
+                                <option value="">Select your college</option>
+                                {colleges.map((c) => (
+                                  <option key={c._id} value={c._id}>{c.name}</option>
+                                ))}
+                              </>
+                            )}
+                          </select>
+
+
+                          {/* Custom Dropdown Arrow */}
+                          <svg
+                            className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
+                          </svg>
+                        </div>
+                      </div>
+                    )}
+
+                    {role == "student" && (
+                      <div>
+                        <label className="text-sm">Student Id</label>
+                        <input
+                          type="text"
+                          name="studentId"
+                          disabled
+                          value={formData.studentId}
+                          placeholder="Student ID"
+                          className="w-full border border-gray-200 rounded-xl bg-gray-100  text-gray-500 focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
+                        />
+                      </div>
+                    )}
+
+                    {/* Save Button */}
+                    <div className="flex justify-end mt-6 md:col-span-2">
+                      <button
+                        onClick={handleSave}
+                        type="button"
+                        disabled={Loading}
+                        className={`${Loading
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-[#6558A1] hover:bg-[#7A6CCF] cursor-pointer transition transform hover:scale-[1.05] duration-150"
+                          } text-white text-xs font-semibold rounded-xl px-16 py-2.5 transition`}
+                      >
+                        {loading ? "Saving..." : "Save"}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              ) : (
+                // Security Tab
+                <div className="max-w-md">
+                  <h4 className="font-semibold text-gray-700 mb-4">
+                    Change Password
+                  </h4>
+                  <div className="space-y-4">
+                    {/* Current Password */}
+                    <div>
+                      <label className="text-sm">Current Password</label>
+                      <div className="relative">
+                        <input
+                          type={showCurrentPass ? "text" : "password"}
+                          name="currentPassword"
+                          value={securityData.currentPassword}
+                          onChange={handleSecurityChange}
+                          placeholder="Enter current password"
+                          autoComplete="new-password"
+                          className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${passwordErrors.currentPassword
+                            ? "border-red-500 bg-red-50 focus:ring-red-300"
+                            : "border-gray-200 focus:ring-[#DFEAF2]"
+                            } text-[#718EBF]`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowCurrentPass((prev) => !prev)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        >
+                          {showCurrentPass ? (
+                            <Eye className="w-5 h-5" />
+                          ) : (
+                            <EyeOff className="w-5 h-5" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* New Password */}
+                    <div>
+                      <label className="text-sm">New Password</label>
+                      <div className="relative">
+                        <input
+                          type={showNewPass ? "text" : "password"}
+                          name="newPassword"
+                          value={securityData.newPassword}
+                          onChange={handleSecurityChange}
+                          placeholder="Enter new password"
+                          className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${passwordErrors.newPassword
+                            ? "border-red-500 bg-red-50 focus:ring-red-300"
+                            : "border-gray-200 focus:ring-[#DFEAF2]"
+                            } text-[#718EBF]`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowNewPass((prev) => !prev)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        >
+                          {showNewPass ? (
+                            <Eye className="w-5 h-5" />
+                          ) : (
+                            <EyeOff className="w-5 h-5" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-sm">Confirm New Password</label>
+                      <div className="relative">
+                        <input
+                          type={showConfirmPass ? "text" : "password"}
+                          name="confirmPassword"
+                          value={securityData.confirmPassword}
+                          onChange={handleSecurityChange}
+                          placeholder="Re-enter new password"
+                          className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${passwordErrors.confirmPassword
+                            ? "border-red-500 bg-red-50 focus:ring-red-300"
+                            : "border-gray-200 focus:ring-[#DFEAF2]"
+                            } text-[#718EBF]`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPass((prev) => !prev)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        >
+                          {showConfirmPass ? (
+                            <Eye className="w-5 h-5" />
+                          ) : (
+                            <EyeOff className="w-5 h-5" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end mt-12">
+                    <button
+                      onClick={handlePassChange}
+                      className=" text-white text-xs rounded-xl px-16 py-2.5 bg-[#6558A1] hover:bg-[#7A6CCF] cursor-pointer transition transform hover:scale-[1.03] duration-150"
+                    >
+                      {loading ? "Updating..." : "Change Password"}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 };
 

@@ -11,7 +11,7 @@ import { useToast } from "../../../context/ToastContext";
 
 export default function SocialLinksManager() {
 
-    const {showToast} = useToast();
+  const { showToast } = useToast();
 
   const [links, setLinks] = useState([]);
   const [form, setForm] = useState({ name: "", img: "", link: "" });
@@ -42,24 +42,25 @@ export default function SocialLinksManager() {
   };
 
   const handleAdd = async () => {
-  if (!form.name || !form.file || !form.link) return;
+    if (!form.name || !form.file || !form.link) return;
 
-  try {
-    const formData = new FormData();
-    formData.append("name", form.name);
-    formData.append("link", form.link);
-    formData.append("icon", form.file);
+    try {
+      const formData = new FormData();
+      formData.append("name", form.name);
+      formData.append("link", form.link);
+      formData.append("icon", form.file);
 
-    await dispatch(addSocialLink(formData)).unwrap();
+      await dispatch(addSocialLink(formData)).unwrap();
 
-    showToast("Link Added Successfully", "success");
+      showToast("Link Added Successfully", "success");
 
-    setForm({ name: "", img: "", file: "", link: "" });
+      setForm({ name: "", img: "", file: "", link: "" });
+      await dispatch(getSocialLinks());
 
-  } catch (error) {
-    showToast(error || "Failed to add link", "error");
-  }
-};
+    } catch (error) {
+      showToast(error || "Failed to add link", "error");
+    }
+  };
 
 
   const handleEdit = (item) => {
@@ -67,46 +68,47 @@ export default function SocialLinksManager() {
     setForm({
       name: item.name,
       link: item.link,
-      img: item.icon, 
-      file: null, 
+      img: item.icon,
+      file: null,
     });
   };
 
   const handleUpdate = async () => {
-  if (!editingId) return;
+    if (!editingId) return;
 
-  try {
-    const formData = new FormData();
-    formData.append("name", form.name);
-    formData.append("link", form.link);
+    try {
+      const formData = new FormData();
+      formData.append("name", form.name);
+      formData.append("link", form.link);
 
-    // Append file only if changed
-    if (form.file) {
-      formData.append("icon", form.file);
+      // Append file only if changed
+      if (form.file) {
+        formData.append("icon", form.file);
+      }
+
+      await dispatch(updateSocialLink({ id: editingId, formData })).unwrap();
+
+      showToast("Link Updated Successfully", "success");
+
+      // Reset form
+      setForm({ name: "", img: "", file: "", link: "" });
+      setEditingId(null);
+      await dispatch(getSocialLinks());
+
+    } catch (error) {
+      showToast(error || "Failed to update link", "error");
     }
-
-    await dispatch(updateSocialLink({ id: editingId, formData })).unwrap();
-
-    showToast("Link Updated Successfully", "success");
-
-    // Reset form
-    setForm({ name: "", img: "", file: "", link: "" });
-    setEditingId(null);
-
-  } catch (error) {
-    showToast(error || "Failed to update link", "error");
-  }
-};
+  };
 
 
   const handleDelete = async (id) => {
-  try {
-    await dispatch(deleteSocialLink(id)).unwrap();
-    showToast("Link Deleted Successfully", "success");
-  } catch (error) {
-    showToast(error || "Failed to delete link", "error");
-  }
-};
+    try {
+      await dispatch(deleteSocialLink(id)).unwrap();
+      showToast("Link Deleted Successfully", "success");
+    } catch (error) {
+      showToast(error || "Failed to delete link", "error");
+    }
+  };
 
 
   return (
@@ -119,9 +121,15 @@ export default function SocialLinksManager() {
 
       <div className="bg-white p-6 rounded-xl border border-gray-100/50 shadow-sm">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">
-          {" "}
-          {editingId ? "Update Link" : "Add New Link"}
+          {isLoading ? (
+            <div className="h-6 w-40 bg-gray-200 animate-pulse rounded"></div>
+          ) : editingId ? (
+            "Update Link"
+          ) : (
+            "Add New Link"
+          )}
         </h2>
+
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
           {/* Platform Name Input */}
@@ -138,7 +146,7 @@ export default function SocialLinksManager() {
               value={form.name}
               onChange={handleChange}
               placeholder="e.g. LinkedIn, Instagram"
-              className="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 text-sm shadow-sm 
+              className="w-full border border-gray-300 bg-white rounded-lg px-4 py-2 text-sm shadow-sm
                   focus:ring-indigo-500 focus:border-indigo-500 transition"
             />
           </div>
@@ -163,8 +171,8 @@ export default function SocialLinksManager() {
 
               <label
                 htmlFor="img-upload"
-                className="cursor-pointer flex-grow border border-gray-300 bg-gray-50 text-gray-700 
-                     rounded-lg px-3 py-2 text-sm shadow-sm hover:bg-gray-100 transition flex items-center 
+                className="cursor-pointer flex-grow border border-gray-300 bg-gray-50 text-gray-700
+                     rounded-lg px-3 py-2 text-sm shadow-sm hover:bg-gray-100 transition flex items-center
                      justify-center h-[40px]"
                 title={form.img ? "Image Selected" : "Click to select file"}
               >
@@ -204,7 +212,7 @@ export default function SocialLinksManager() {
               value={form.link}
               onChange={handleChange}
               placeholder="e.g., https://linkedin.com/in/my-profile"
-              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm shadow-sm 
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm shadow-sm
                   focus:ring-indigo-500 focus:border-indigo-500 transition"
             />
           </div>
@@ -213,7 +221,7 @@ export default function SocialLinksManager() {
             <div className="flex flex-col md:flex-row gap-3 md:col-span-1">
               <button
                 onClick={handleUpdate}
-                className="w-full cursor-pointer px-6 py-2.5 text-xs font-medium bg-yellow-600 text-white 
+                className="w-full cursor-pointer px-6 py-2.5 text-xs font-medium bg-yellow-600 text-white
                  rounded-lg shadow-md hover:bg-yellow-700 transition"
               >
                 Update
@@ -224,7 +232,7 @@ export default function SocialLinksManager() {
                   setEditingId(null);
                   setForm({ name: "", img: "", file: "", link: "" });
                 }}
-                className="cursor-pointer px-6 py-2.5 text-xs font-semibold bg-gray-400 text-white 
+                className="cursor-pointer px-6 py-2.5 text-xs font-semibold bg-gray-400 text-white
                  rounded-lg shadow-md hover:bg-gray-500 transition"
               >
                 Cancel
@@ -232,17 +240,17 @@ export default function SocialLinksManager() {
             </div>
           ) : (
             <button
-  onClick={handleAdd}
-  disabled={!form.name || !form.file || !form.link}
-  className={`w-full md:col-span-1 px-6 py-2.5 text-sm font-semibold rounded-lg shadow-md transition 
+              onClick={handleAdd}
+              disabled={!form.name || !form.file || !form.link}
+              className={`w-full md:col-span-1 px-6 py-2.5 text-sm font-semibold rounded-lg shadow-md transition
     ${!form.name || !form.file || !form.link
-      ? "bg-indigo-300 text-white cursor-not-allowed" 
-      : "bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer"
-    }`
-  }
->
-  Add Link
-</button>
+                  ? "bg-indigo-300 text-white cursor-not-allowed"
+                  : "bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer"
+                }`
+              }
+            >
+              Add Link
+            </button>
 
           )}
         </div>
@@ -273,55 +281,79 @@ export default function SocialLinksManager() {
             </thead>
 
             <tbody className="bg-white">
-              {social?.map((item) => (
-                <tr
-                  key={item._id}
-                  className="bg-white border-b border-gray-100 hover:bg-gray-50"
-                >
-                  <td className="px-6 py-4 font-semibold text-gray-900">
-                    {item.name}
-                  </td>
 
-                  <td className="px-6 py-4">
-                    <img
-                      src={item.icon}
-                      alt={item.name}
-                      className="h-10 w-10 object-cover rounded-md hover:scale-[1.05]"
-                    />
-                  </td>
+              {/* ✅ Skeleton when loading */}
+              {isLoading &&
+                Array.from({ length: 4 }).map((_, i) => (
+                  <tr key={i} className="animate-pulse border-b border-gray-100">
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-10 w-10 bg-gray-200 rounded-md"></div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-48 bg-gray-200 rounded"></div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="h-4 w-20 bg-gray-200 rounded mx-auto"></div>
+                    </td>
+                  </tr>
+                ))}
 
-                  <td className="px-6 py-4">
-                    <a href={item.link} className="text-blue-600">
-                      {item.link}
-                    </a>
-                  </td>
+              {/* ✅ Actual Data */}
+              {!isLoading &&
+                social?.map((item) => (
+                  <tr
+                    key={item._id}
+                    className="bg-white border-b border-gray-100 hover:bg-gray-50"
+                  >
+                    <td className="px-6 py-4 font-semibold text-gray-900">
+                      {item.name}
+                    </td>
 
-                  <td className="px-6 py-4 text-center">
-                    <button
-                      onClick={() => handleEdit(item)}
-                      className="p-2 cursor-pointer text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 transition"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </button>
+                    <td className="px-6 py-4">
+                      <img
+                        src={item.icon}
+                        alt={item.name}
+                        className="h-10 w-10 object-cover rounded-md hover:scale-[1.05]"
+                      />
+                    </td>
 
-                    <button
-                      onClick={() => handleDelete(item._id)}
-                      className="p-2 cursor-pointer text-gray-500 hover:text-red-600 hover:bg-red-50 transition"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                    <td className="px-6 py-4">
+                      <a href={item.link} className="text-blue-600">
+                        {item.link}
+                      </a>
+                    </td>
 
-              {social?.length === 0 && (
+                    <td className="px-6 py-4 text-center">
+                      <button
+                        onClick={() => handleEdit(item)}
+                        className="p-2 cursor-pointer text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 transition"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </button>
+
+                      <button
+                        onClick={() => handleDelete(item._id)}
+                        className="p-2 cursor-pointer text-gray-500 hover:text-red-600 hover:bg-red-50 transition"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+
+              {!isLoading && social?.length === 0 && (
                 <tr key="no-data">
                   <td colSpan="4" className="text-center py-10 text-gray-500">
                     No social links found.
                   </td>
                 </tr>
               )}
+
             </tbody>
+
           </table>
         </div>
       </div>
