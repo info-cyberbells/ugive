@@ -19,7 +19,7 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
         name: '',
         universityId: '',
         address_line_1: '',
-        address_line_2: '',
+        phoneNumber: '',
         city: '',
         state: '',
         postcode: '',
@@ -43,7 +43,7 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
                 name: college?.name || "",
                 universityId: college?.university?._id || "",
                 address_line_1: college?.address_line_1 || "",
-                address_line_2: college?.address_line_2 || "",
+                phoneNumber: college?.phoneNumber || "",
                 city: college?.city || "",
                 state: college?.state || "",
                 postcode: college?.postcode || "",
@@ -56,7 +56,7 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
                 name: "",
                 universityId: "",
                 address_line_1: "",
-                address_line_2: "",
+                phoneNumber: "",
                 city: "",
                 state: "",
                 postcode: "",
@@ -94,13 +94,43 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
         return JSON.stringify(formData) !== JSON.stringify(initialData);
     };
 
+    const handlePhoneFormat = (e) => {
+    let value = e.target.value;
+
+    value = value.replace(/\D/g, "");
+
+    if (value.startsWith("04")) {
+      value = value.slice(2);
+    }
+
+    value = value.slice(0, 8);
+
+    let formatted = "04";
+    if (value.length > 0) {
+      if (value.length <= 2) {
+        formatted += value;
+      } else if (value.length <= 5) {
+        formatted += value.slice(0, 2) + " " + value.slice(2);
+      } else {
+        formatted += value.slice(0, 2) + " " + value.slice(2, 5) + " " + value.slice(5);
+      }
+    }
+
+    setFormData((prev) => ({ ...prev, phoneNumber: formatted }));
+
+    setErrors((prev) => {
+      const { phoneNumber, ...rest } = prev;
+      return rest;
+    });
+  };
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
         const newErrors = {};
 
-        const requiredFields = ['name', 'universityId', 'address_line_1', 'city', 'state', 'postcode'];
+        const requiredFields = ['name', 'universityId', 'address_line_1','phoneNumber' ,'city', 'state', 'postcode'];
 
         requiredFields.forEach((key) => {
             if (!formData[key] || String(formData[key]).trim() === '') {
@@ -137,7 +167,7 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
                         name: "",
                         universityId: "",
                         address_line_1: "",
-                        // address_line_2: "",
+                        phoneNumber: "",
                         city: "",
                         state: "",
                         postcode: "",
@@ -159,7 +189,7 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
                     name: "",
                     universityId: "",
                     address_line_1: "",
-                    // address_line_2: "",
+                    phoneNumber:"",
                     city: "",
                     state: "",
                     postcode: "",
@@ -243,21 +273,9 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
                     </div>
 
 
-                    {/* University ID */}
-                    {/* <div>
-                        <label className="block text-sm font-medium text-gray-700">University ID</label>
-                        <input
-                            type="text"
-                            name="universityId"
-                            value={formData.universityId}
-                            onChange={handleChange}
-                            className={inputClasses("universityId")}
-                        />
-                    </div> */}
-
                     {/* Address Line 1 */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Address Line 1</label>
+                        <label className="block text-sm font-medium text-gray-700">Address Line </label>
                         <input
                             type="text"
                             name="address_line_1"
@@ -269,22 +287,26 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
                         />
                     </div>
 
-                    {/* Address Line 2 */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Address Line 2 (Optional)</label>
-                        <input
-                            type="text"
-                            name="address_line_2"
-                            disabled={isViewMode}
-                            value={formData.address_line_2}
-                            placeholder='LA Down Town, LA, California 02138, United States'
-                            onChange={handleChange}
-                            className={inputClasses("address_line_2")}
-                        />
-                    </div>
+                
 
                     {/* City / State / Postcode */}
-                    <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
+
+                            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Phone Number
+              </label>
+              <input
+                type="text"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handlePhoneFormat}
+                disabled={isViewMode}
+                placeholder="0405 150 817"
+                autoComplete="off"
+                className={inputClasses("phoneNumber")}
+              />
+            </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700">City</label>

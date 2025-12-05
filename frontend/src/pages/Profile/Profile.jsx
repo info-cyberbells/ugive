@@ -14,6 +14,7 @@ import {
   updateStudentProfile,
 } from "../../features/studentDataSlice";
 import { useNavigate } from "react-router-dom";
+import { getColleges } from "../../features/studentSlice";
 
 const ProfileSettings = () => {
   const [activeTab, setActiveTab] = useState("profile");
@@ -23,6 +24,7 @@ const ProfileSettings = () => {
   const { studentProfile, isLoading } = useSelector(
     (state) => state.studentData
   );
+    const {colleges } = useSelector((state) => state.auth);
   const [showCurrentPass, setShowCurrentPass] = useState(false);
   const [showNewPass, setShowNewPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
@@ -96,27 +98,35 @@ const ProfileSettings = () => {
         fullName: studentProfile.name || "",
         email: studentProfile.email || "",
         phoneNumber: studentProfile.phoneNumber || "",
-
+          universityId: studentProfile.university?._id || "",
         universityName:
           studentProfile.university?.name ||
           studentProfile.university_name ||
           "",
+            collegeId: studentProfile.college?._id || "",
+
         collegeName:
           studentProfile.college?.name || studentProfile.college_name || "",
 
         studentId: studentProfile.studentUniId || "",
       };
-
       setFormData((prev) => ({ ...prev, ...loaded }));
       setInitialProfile(loaded);
       setImagePreview(studentProfile.profileImage || null);
     }
   }, [role, profile, studentProfile]);
 
+  useEffect(() => {
+  if (role === "student" && studentProfile?.university?._id) {
+    dispatch(getColleges(studentProfile.university._id));
+  }
+}, [studentProfile?.university?._id]);
+
+
   const hasChanges = () => {
     if (!initialProfile) return true;
 
-    let fieldsToCheck = ["fullName", "phoneNumber"];
+    let fieldsToCheck = ["fullName", "phoneNumber", "collegeId"];
 
     // Check if any formData field differs from initialProfile
     const basicChanged = fieldsToCheck.some(
@@ -194,8 +204,9 @@ const ProfileSettings = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
-      showToast("Please select a valid image file", "error");
+    const allowedType = ["image/jpeg", "image/png"];
+    if(!allowedType.includes(file.type)){
+      showToast("Only PNG or JPG files are allowed", "error")
       return;
     }
 
@@ -222,7 +233,7 @@ const ProfileSettings = () => {
       setProfileImage(fileWithName);
       setImagePreview(URL.createObjectURL(compressedFile));
 
-      showToast("Image uploaded successfully", "success");
+      showToast("Image Added. Please click Save to complete the process.");
     } catch (error) {
       console.error("Error compressing image:", error);
       showToast("Error processing image. Please try another one.", "error");
@@ -247,6 +258,13 @@ const ProfileSettings = () => {
     const formDataToSend = new FormData();
     formDataToSend.append("name", formData.fullName);
     formDataToSend.append("phoneNumber", formData.phoneNumber);
+
+    if (role === "student") {
+  if (formData.collegeId) {
+    formDataToSend.append("college", formData.collegeId);
+  }
+}
+
 
     if (profileImage) {
       formDataToSend.append("profileImage", profileImage);
@@ -278,6 +296,7 @@ const ProfileSettings = () => {
           const updated = {
             fullName: updatedUser.name,
             phoneNumber: updatedUser.phoneNumber,
+              collegeId: formData.collegeId,
           };
 
           setInitialProfile(updated);
@@ -526,10 +545,60 @@ const ProfileSettings = () => {
                       type="text"
                       name="university"
                       value={formData.collegeName}
-                      disabled
-                      className="w-full border border-gray-200 rounded-xl bg-gray-100  text-gray-500 focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
+                      
+                    className="w-full border text-[#718EBF] border-gray-200 rounded-xl px-3 py-2.5 mt-1 text-sm focus:ring-1 focus:ring-[#DFEAF2] outline-none"
                     />
                   </div>
+                )}
+
+                {role == "student" && (
+                  
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              College
+            </label>
+
+            <div className="relative">
+              <select
+  name="collegeId"
+  value={formData.collegeId || ""}
+  onChange={(e) =>
+    setFormData((prev) => ({ ...prev, collegeId: e.target.value }))
+  }
+  className="w-full border border-gray-200 rounded-xl text-[#718EBF] focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
+>
+
+  {formData.universityId && colleges.length === 0 && (
+    <option value="">No colleges found for this university</option>
+  )}
+
+  {formData.universityId && colleges.length > 0 && (
+    <>
+      <option value="">Select your college</option>
+      {colleges.map((c) => (
+        <option key={c._id} value={c._id}>{c.name}</option>
+      ))}
+    </>
+  )}
+</select>
+
+
+              {/* Custom Dropdown Arrow */}
+              <svg
+                className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
                 )}
 
                 {role == "student" && (

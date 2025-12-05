@@ -62,8 +62,6 @@ const Signup = () => {
         backendErrors.phoneNumber = true;
       if (message?.toLowerCase().includes("university"))
         backendErrors.university = true;
-      if (message?.toLowerCase().includes("college"))
-        backendErrors.college = true;
       if (message?.toLowerCase().includes("student"))
         backendErrors.studentUniId = true;
       if (message?.toLowerCase().includes("password"))
@@ -99,7 +97,7 @@ const Signup = () => {
     if (!formData.phoneNumber) newErrors.phoneNumber = true;
     if (!formData.studentUniId) newErrors.studentUniId = true;
     if (!formData.university) newErrors.university = true;
-    if (!formData.college) newErrors.college = true;
+    // if (!formData.college) newErrors.college = true;
 
 
     if (Object.keys(newErrors).length > 0) {
