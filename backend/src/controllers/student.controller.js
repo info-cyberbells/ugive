@@ -32,16 +32,6 @@ export const createStudentSuperAdmin = async (req, res) => {
             });
         }
 
-        if (college) {
-            const col = await College.findById(college);
-            if (!col) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Invalid College ID",
-                });
-            }
-        }
-
 
         const student = await User.create({
             name,
@@ -49,7 +39,7 @@ export const createStudentSuperAdmin = async (req, res) => {
             password,
             role: "student",
             university,
-            college,
+            college: college || null,
             phoneNumber,
             studentUniId,
         });

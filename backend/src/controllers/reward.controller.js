@@ -9,7 +9,7 @@ export const createReward = async (req, res) => {
     try {
         const { name, university, college, rewardDescription, totalPoints } = req.body;
 
-        if (!name || !university || !college || !rewardDescription || !totalPoints) {
+        if (!name || !university || !rewardDescription || !totalPoints) {
             return res.status(400).json({ message: "All fields are required." });
         }
 

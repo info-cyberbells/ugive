@@ -43,7 +43,7 @@ export const register = async (req, res) => {
       role: "student",
       university,
       phoneNumber,
-      college,
+      college: college || null,
       studentUniId,
     });
 

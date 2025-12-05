@@ -11,16 +11,15 @@ const collegeSchema = new mongoose.Schema({
     ref: "University",
     required: [true, "University is required"],
   },
-  // address: { type: String, trim: true },
   address_line_1: {
     type: String,
     required: [true, "Address line 1 is required"],
     trim: true,
   },
-  address_line_2: {
+   phoneNumber: {
     type: String,
+    required: [true, "Phone number is required"],
     trim: true,
-    default: null,
   },
   city: {
     type: String,
@@ -30,7 +29,6 @@ const collegeSchema = new mongoose.Schema({
   state: {
     type: String,
     required: [true, "State is required"],
-    // enum: ["QLD", "NSW", "ACT", "TAS", "VIC", "SA", "WA", "NT"],
     trim: true,
   },
   postcode: {

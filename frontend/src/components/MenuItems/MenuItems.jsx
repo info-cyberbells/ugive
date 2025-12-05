@@ -114,30 +114,36 @@ const MenuItems = () => {
 
         {sections.map((section) => (
           <div key={section.id}>
-            <div
-              onClick={() => {
-                if (section.children) {
-                  setOpenDropdown(openDropdown === section.id ? null : section.id);
-                } else {
-                  navigate("/" + section.id);
+            {section.children ? (
+              // KEEP DIV IF CHILDREN EXIST
+              <div
+                onClick={() =>
+                  setOpenDropdown(openDropdown === section.id ? null : section.id)
                 }
-              }}
-              className={`w-full flex items-center gap-3 py-2 px-2 rounded-lg cursor-pointer
-        hover:bg-[#0000000A] ${openDropdown === section.id ? "bg-[#0000000A] font-semibold text-black" : ""
-                }`}
-            >
-              <section.icon className="w-5 h-5" />
-              <p className="text-sm flex-1">{section.title}</p>
+                className={`w-full flex items-center gap-3 py-2 px-2 rounded-lg cursor-pointer
+      ${openDropdown === section.id ? "bg-[#0000000A] font-semibold text-black" : "hover:bg-[#0000000A]"}`}
+              >
+                <section.icon className="w-5 h-5" />
+                <p className="text-sm flex-1">{section.title}</p>
 
-              {section.children && (
-                openDropdown === section.id ? (
+                {openDropdown === section.id ? (
                   <ChevronUp className="w-4 h-4" />
                 ) : (
                   <ChevronDown className="w-4 h-4" />
-                )
-              )}
-
-            </div>
+                )}
+              </div>
+            ) : (
+              // USE NAVLINK IF NO CHILDREN → FIXES HIGHLIGHT
+              <NavLink
+                to={"/" + section.id}
+                className={({ isActive }) =>
+                  `w-full flex items-center gap-3 py-2 px-2 rounded-lg cursor-pointer
+        ${isActive ? "bg-[#0000000A] font-semibold text-black" : "hover:bg-[#0000000A]"}`}
+              >
+                <section.icon className="w-5 h-5" />
+                <p className="text-sm flex-1">{section.title}</p>
+              </NavLink>
+            )}
 
             {section.children && openDropdown === section.id && (
               <div className="ml-8 mt-1 flex flex-col gap-1">
