@@ -52,9 +52,8 @@ const StudentModal = ({
   useEffect(() => {
     if (!isOpen) return;
 
-    if (!isViewMode) {
-      dispatch(getUniversities());
-    }
+    dispatch(getUniversities());
+
   }, [isOpen]);
 
   const handleUniversityChange = (e) => {
@@ -140,9 +139,10 @@ const StudentModal = ({
           college: s.college?._id || "",
           studentUniId: s.studentUniId || "",
         });
-        if ((mode === "add" || mode === "edit") && s.university?._id) {
+        if (s.university?._id) {
           dispatch(getColleges(s.university._id));
         }
+
       });
   }, [isOpen, studentId]);
 

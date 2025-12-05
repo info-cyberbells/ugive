@@ -24,7 +24,7 @@ const ProfileSettings = () => {
   const { studentProfile, isLoading } = useSelector(
     (state) => state.studentData
   );
-    const {colleges } = useSelector((state) => state.auth);
+  const { colleges } = useSelector((state) => state.auth);
   const [showCurrentPass, setShowCurrentPass] = useState(false);
   const [showNewPass, setShowNewPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
@@ -93,17 +93,18 @@ const ProfileSettings = () => {
     }
 
     // STUDENT PROFILE
+    // STUDENT PROFILE
     if (role === "student" && studentProfile) {
       const loaded = {
         fullName: studentProfile.name || "",
         email: studentProfile.email || "",
         phoneNumber: studentProfile.phoneNumber || "",
-          universityId: studentProfile.university?._id || "",
+        universityId: studentProfile.university?._id || studentProfile.university || "",
         universityName:
           studentProfile.university?.name ||
           studentProfile.university_name ||
           "",
-            collegeId: studentProfile.college?._id || "",
+        collegeId: studentProfile.college?._id || studentProfile.college || "",
 
         collegeName:
           studentProfile.college?.name || studentProfile.college_name || "",
@@ -117,10 +118,10 @@ const ProfileSettings = () => {
   }, [role, profile, studentProfile]);
 
   useEffect(() => {
-  if (role === "student" && studentProfile?.university?._id) {
-    dispatch(getColleges(studentProfile.university._id));
-  }
-}, [studentProfile?.university?._id]);
+    if (role === "student" && studentProfile?.university?._id) {
+      dispatch(getColleges(studentProfile.university._id));
+    }
+  }, [studentProfile?.university?._id]);
 
 
   const hasChanges = () => {
@@ -142,7 +143,6 @@ const ProfileSettings = () => {
   const handlePhoneFormat = (e) => {
     let value = e.target.value;
 
-    // Remove non-numeric characters and "04" prefix if present
     value = value.replace(/\D/g, "");
 
     // Remove "04" if user typed it
@@ -205,7 +205,7 @@ const ProfileSettings = () => {
     if (!file) return;
 
     const allowedType = ["image/jpeg", "image/png"];
-    if(!allowedType.includes(file.type)){
+    if (!allowedType.includes(file.type)) {
       showToast("Only PNG or JPG files are allowed", "error")
       return;
     }
@@ -260,10 +260,10 @@ const ProfileSettings = () => {
     formDataToSend.append("phoneNumber", formData.phoneNumber);
 
     if (role === "student") {
-  if (formData.collegeId) {
-    formDataToSend.append("college", formData.collegeId);
-  }
-}
+      if (formData.collegeId) {
+        formDataToSend.append("college", formData.collegeId);
+      }
+    }
 
 
     if (profileImage) {
@@ -296,7 +296,7 @@ const ProfileSettings = () => {
           const updated = {
             fullName: updatedUser.name,
             phoneNumber: updatedUser.phoneNumber,
-              collegeId: formData.collegeId,
+            collegeId: updatedUser.college,
           };
 
           setInitialProfile(updated);
@@ -396,15 +396,15 @@ const ProfileSettings = () => {
         {/* --- Section 1: Tabs --- */}
         <div className="flex border-b border-gray-200 mb-6">
           <div className=" text-indigo-800">
-                        <button
-                            onClick={()=> navigate(-1)}
-                            className="px-2 rounded-full cursor-pointer hover:bg-indigo-50 transition transform hover:scale-[1.10] duration-150"
-                        >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                            </svg>
-                        </button>
-                    </div>
+            <button
+              onClick={() => navigate(-1)}
+              className="px-2 rounded-full cursor-pointer hover:bg-indigo-50 transition transform hover:scale-[1.10] duration-150"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+              </svg>
+            </button>
+          </div>
           <button
             onClick={() => setActiveTab("profile")}
             className={`pb-2 px-4 text-sm cursor-pointer font-medium transition ${activeTab === "profile"
@@ -456,7 +456,6 @@ const ProfileSettings = () => {
                   <img
                     src={
                       imagePreview ||
-                      //   profile?.avatar ||
                       "https://cdn-icons-png.flaticon.com/512/149/149071.png"
                     }
                     // alt={profile?.firstName || "Profile"}
@@ -478,6 +477,12 @@ const ProfileSettings = () => {
                   />
                 </div>
                 <p className="text-sm text-gray-500 mt-3">Change Photo</p>
+                <p className="text-[11px] text-gray-400 text-center mt-1 leading-tight">
+                  Only <span className="text-[#6558A1] font-medium">JPG / PNG</span> files
+                  <br />
+                  Max size: <span className="text-[#6558A1] font-medium">5MB</span>
+                </p>
+
               </div>
 
               {/* Form Section */}
@@ -538,67 +543,55 @@ const ProfileSettings = () => {
                   </div>
                 )}
 
+
                 {role == "student" && (
+
                   <div>
-                    <label className="text-sm">College</label>
-                    <input
-                      type="text"
-                      name="university"
-                      value={formData.collegeName}
-                      
-                    className="w-full border text-[#718EBF] border-gray-200 rounded-xl px-3 py-2.5 mt-1 text-sm focus:ring-1 focus:ring-[#DFEAF2] outline-none"
-                    />
+                    <label className="block text-sm font-medium text-gray-700">
+                      College
+                    </label>
+
+                    <div className="relative">
+                      <select
+                        name="collegeId"
+                        value={formData.collegeId || ""}
+                        onChange={(e) =>
+                          setFormData((prev) => ({ ...prev, collegeId: e.target.value }))
+                        }
+                        className="w-full border border-gray-200 rounded-xl text-[#718EBF] appearance-none focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
+                      >
+
+                        {formData.universityId && colleges.length === 0 && (
+                          <option value="">No colleges found for this university</option>
+                        )}
+
+                        {formData.universityId && colleges.length > 0 && (
+                          <>
+                            <option value="">Select your college</option>
+                            {colleges.map((c) => (
+                              <option key={c._id} value={c._id}>{c.name}</option>
+                            ))}
+                          </>
+                        )}
+                      </select>
+
+
+                      {/* Custom Dropdown Arrow */}
+                      <svg
+                        className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
                   </div>
-                )}
-
-                {role == "student" && (
-                  
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              College
-            </label>
-
-            <div className="relative">
-              <select
-  name="collegeId"
-  value={formData.collegeId || ""}
-  onChange={(e) =>
-    setFormData((prev) => ({ ...prev, collegeId: e.target.value }))
-  }
-  className="w-full border border-gray-200 rounded-xl text-[#718EBF] focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
->
-
-  {formData.universityId && colleges.length === 0 && (
-    <option value="">No colleges found for this university</option>
-  )}
-
-  {formData.universityId && colleges.length > 0 && (
-    <>
-      <option value="">Select your college</option>
-      {colleges.map((c) => (
-        <option key={c._id} value={c._id}>{c.name}</option>
-      ))}
-    </>
-  )}
-</select>
-
-
-              {/* Custom Dropdown Arrow */}
-              <svg
-                className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
-          </div>
                 )}
 
                 {role == "student" && (
@@ -622,8 +615,8 @@ const ProfileSettings = () => {
                     type="button"
                     disabled={Loading}
                     className={`${Loading
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-[#6558A1] hover:bg-[#7A6CCF] cursor-pointer transition transform hover:scale-[1.05] duration-150"
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-[#6558A1] hover:bg-[#7A6CCF] cursor-pointer transition transform hover:scale-[1.05] duration-150"
                       } text-white text-xs font-semibold rounded-xl px-16 py-2.5 transition`}
                   >
                     {loading ? "Saving..." : "Save"}

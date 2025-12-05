@@ -301,21 +301,6 @@ const CardForm = ({ onSubmit }) => {
                 />
               </div>
 
-              <div className="md:col-span-2">
-                <label htmlFor="collegeHouse" className={labelClass}>
-                  Recipient's College House
-                </label>
-                <input
-                  type="text"
-                  id="collegeHouse"
-                  name="collegeHouse"
-                  value={formData.collegeHouse}
-                  onChange={handleChange}
-                  placeholder="Type to search"
-                  className={`${inputClass} ${errors.collegeHouse ? "border-red-500" : ""
-                    }`}
-                />
-              </div>
             </div>
 
             <div className="">
