@@ -20,7 +20,7 @@ import {
   Bell,
   Settings,
   HelpCircle,
-} from "lucide-react";
+ Ticket} from "lucide-react";
 import { resetStudentState } from "../../features/studentDataSlice";
 import { clearProfile } from "../../features/superadminProfileSlice";
 
@@ -42,17 +42,17 @@ const ROLE_BASED_MENUS = {
     // { id: "profile", title: "User Profile", icon: UserCircle },
     { id: "rewards-catalog", title: "Rewards Catalog", icon: Gift },
     { id: "streaks", title: "Streaks", icon: Flame },
-    { id: "activities", title: "Activities", icon: Activity },
+    { id: "my-cards", title: "Sent Cards", icon:  Ticket },
     { id: "friends", title: "Friends", icon: Users },
-    { id: "notifications", title: "Notifications", icon: Bell },
-    { id: "settings", title: "Settings", icon: Settings },
+    // { id: "settings", title: "Settings", icon: Settings },
     {
       id: "support",
       title: "Support",
       icon: HelpCircle,
       children: [
         { id: "privacy-policy", title: "Privacy Policy" },
-        { id: "terms-and-conditions", title: "Terms & Conditions" }
+        { id: "terms-and-conditions", title: "Terms & Conditions" },
+        { id: "contactus", title: "Contact Us" }
       ]
     },
     // { id: "social", title: "Social", icon: Share2 },

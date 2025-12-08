@@ -30,8 +30,9 @@ const CardReadingPage = () => {
 
   return (
     <div className="min-h-screen ml-60 mt-14 font-[Poppins] bg-gray-50 p-8">
-      <div className="w-full max-w-4xl">
-        <div className="flex items-center mb-4 text-indigo-800">
+      <div className=" w-full max-w-6xl">
+        <div className="flex justify-between mb-4 text-indigo-800">
+          <div className="flex items-center">
           <button
             onClick={() => navigate(-1)}
             className="p-2 mr-4 rounded-full cursor-pointer hover:bg-indigo-50 transition hover:scale-[1.10] duration-150"
@@ -51,25 +52,37 @@ const CardReadingPage = () => {
             </svg>
           </button>
           <h1 className="text-2xl font-medium text-[#5D3F87]">
-            Sent Cards History
+            Sent Cards
           </h1>
+          </div>
+          <div>
+            <button
+          onClick={()=>navigate('/write-card')}
+              className="mt-4 px-6 py-2 bg-[#7f63e6]  cursor-pointer text-white text-sm font-medium rounded-4xl hover:bg-violet-700 transition duration-150 shadow-lg ">
+               Write Card
+            </button>
+          </div>
         </div>
 
-        <div className="flex flex-col items-center max-w-2xl space-y-4">
-          {isLoading && (
-            <div className="w-full max-w-2xl space-y-4 animate-pulse">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className="bg-white rounded-xl shadow-sm p-6 border border-gray-100"
-                >
-                  <div className="h-5 w-40 bg-gray-200 rounded mb-3"></div>
-                  {/* <div className="h-4 w-32 bg-gray-200 rounded mb-3"></div> */}
-                  <div className="h-10 w-full bg-gray-200 rounded"></div>
-                </div>
-              ))}
-            </div>
-          )}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-6xl">
+          {isLoading &&
+  [1, 2, 3, 4,5,6,7,8].map((i) => (
+    <div
+      key={i}
+      className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 w-full animate-pulse"
+    >
+      {/* Title skeleton */}
+      <div className="h-5 w-40 bg-gray-200 rounded mb-4"></div>
+
+      {/* Date skeleton */}
+      <div className="h-4 w-28 bg-gray-200 rounded mb-4"></div>
+
+      {/* Button skeleton */}
+      <div className="h-10 w-full bg-gray-200 rounded"></div>
+    </div>
+  ))}
+
+
           {!isLoading &&
             sentCards.map((card) => (
               <div
