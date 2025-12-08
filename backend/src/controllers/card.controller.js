@@ -187,7 +187,6 @@ export const getCardProgress = async (req, res) => {
     const studentId = req.user.id;
     const universityId = req.user.university;
 
-    // Get all rewards for the student's university
     const rewards = await Reward.find({ university: universityId })
       .sort({ totalPoints: 1 });
 
@@ -195,22 +194,23 @@ export const getCardProgress = async (req, res) => {
       return res.status(200).json({
         success: true,
         message: "No rewards found",
-        data: null
+        currentReward: null,
+        nextRewards: []
       });
     }
 
-    let finalData = [];
+    let progressList = [];
 
     for (let R of rewards) {
-      let progress = await StudentRewardProgress.findOne({
+      const progress = await StudentRewardProgress.findOne({
         student: studentId,
         reward: R._id
       });
 
       const completed = progress ? progress.completedPoints : 0;
 
-      finalData.push({
-        rewardId: R._id,
+      progressList.push({
+        rewardId: R._id.toString(),
         rewardName: R.name,
         rewardDescription: R.rewardDescription,
         totalPoints: R.totalPoints,
@@ -220,9 +220,31 @@ export const getCardProgress = async (req, res) => {
       });
     }
 
+
+    let inProgress = progressList
+      .filter(r => r.completedPoints > 0 && r.completedPoints < r.totalPoints)
+      .sort((a, b) => b.completedPoints - a.completedPoints);
+
+    let currentReward = null;
+
+    if (inProgress.length > 0) {
+      currentReward = inProgress[0];
+    } else {
+      currentReward = progressList[0];
+    }
+
+    const currentIndex = progressList.findIndex(
+      r => r.rewardId === currentReward.rewardId
+    );
+
+    const nextRewards = progressList.filter(
+      r => r.rewardId !== currentReward.rewardId
+    );
+
     return res.status(200).json({
       success: true,
-      rewards: finalData
+      currentReward,
+      nextRewards
     });
 
   } catch (error) {
