@@ -262,19 +262,19 @@ export const getSentCards = async (req, res) => {
   try {
     const studentId = req.user.id;
 
-    // Fetch all cards
     const cards = await Card.find({ sender: studentId })
       .populate("university", "name")
       .populate("reward", "name")
       .populate("college", "name")
       .sort({ createdAt: -1 });
+
     const formatted = cards.map(card => ({
-      id: card._id,
-      recipient_name: card.recipient_name,
-      message: card.message,
-      college: card.college?.name || null,
-      reward: card.reward?.name || null,
-      university: card.university?.name || null,
+      ...card.toObject(),
+
+      university: card.university ? card.university.name : null,
+      college: card.college ? card.college.name : null,
+      reward: card.reward ? card.reward.name : null,
+
       date: formatDate(card.createdAt)
     }));
 
@@ -292,6 +292,7 @@ export const getSentCards = async (req, res) => {
     });
   }
 };
+
 
 function formatDate(date) {
   return date.toLocaleDateString("en-US", {
