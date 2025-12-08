@@ -64,7 +64,17 @@ export const USER_ENDPOINTS = {
     //get rewards for student college
     GET_ALL_REWARDS: `${API_BASE_URL}/student/college-rewards`,
     CHECK_CARD_ELIGIBILITY: `${API_BASE_URL}/student/check-card-eligibility`,
-    GET_SENT_CARDS_LISTING: `${API_BASE_URL}/student/sent-card-listing`
+    GET_SENT_CARDS_LISTING: `${API_BASE_URL}/student/sent-card-listing`,
+
+
+    SEARCH_USERS: `${API_BASE_URL}/search`,
+    GET_FRIENDS_LIST: `${API_BASE_URL}/student/friends`,
+    SEND_FRIEND_REQUEST: `${API_BASE_URL}/student/friend/send`,
+    ACCEPT_FRIEND_REQUEST: `${API_BASE_URL}/student/friend/accept`,
+    DELETE_FRIEND_REQUEST: `${API_BASE_URL}/student/friend/delete`,
+    UNFRIEND: `${API_BASE_URL}/student/friend/unfriend`,
+    GET_SENT_REQUESTS: `${API_BASE_URL}/student/friend/sent`,
+    GET_RECEIVED_REQUESTS: `${API_BASE_URL}/student/friend/received`,
 
 
 };

@@ -164,7 +164,7 @@ export const getSentRequests = async (req, res) => {
     const list = await FriendRequest.find({
       sender: userId,
       status: "pending"
-    }).populate("receiver", "name profileImage");
+    }).populate("receiver", "name profileImage email");
 
     return res.status(200).json({ success: true, results: list });
 
@@ -182,7 +182,7 @@ export const getReceivedRequests = async (req, res) => {
     const list = await FriendRequest.find({
       receiver: userId,
       status: "pending"
-    }).populate("sender", "name profileImage");
+    }).populate("sender", "name profileImage email");
 
     return res.status(200).json({ success: true, results: list });
 
@@ -208,8 +208,22 @@ export const getMyFriends = async (req, res) => {
         { receiver: userId }
       ]
     })
-      .populate("sender", "name profileImage university college")
-      .populate("receiver", "name profileImage university college")
+      .populate({
+        path: "sender",
+        select: "name profileImage university college email",
+        populate: [
+          { path: "university", select: "name" },
+          { path: "college", select: "name" }
+        ]
+      })
+      .populate({
+        path: "receiver",
+        select: "name profileImage university college email",
+        populate: [
+          { path: "university", select: "name" },
+          { path: "college", select: "name" }
+        ]
+      })
       .lean();
 
     if (!connections.length) {
@@ -236,6 +250,7 @@ export const getMyFriends = async (req, res) => {
           : null,
         university: friendDoc.university,
         college: friendDoc.college,
+        email: friendDoc.email,
         connectedAt: relation.updatedAt,
       };
     });

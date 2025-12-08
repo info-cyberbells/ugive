@@ -50,7 +50,7 @@ export const resetPasswordService = async (payload) => {
 
 //get social media link service
 
-export const getSocialLinksService = async ()=>{
+export const getSocialLinksService = async () => {
     const response = await axios.get(
         USER_ENDPOINTS.GET_SOCIAL_LINKS
     );
@@ -82,7 +82,7 @@ export const updateSocialLinkService = async (id, data) => {
             },
         }
     );
-    return response.data; 
+    return response.data;
 };
 
 
@@ -91,7 +91,7 @@ export const deleteSocialLinkService = async (id) => {
     const response = await axios.delete(
         `${USER_ENDPOINTS.DELETE_SOCIAL_LINKS}/${id}`
     );
-    return response.data;   
+    return response.data;
 };
 
 
@@ -405,7 +405,7 @@ export const getStudentRewardsService = async () => {
 };
 
 // send a card student
-export const sendCardService = async (card) =>{
+export const sendCardService = async (card) => {
     const response = await axios.post(
         USER_ENDPOINTS.STUDENT_SEND_CARD,
         card,
@@ -442,3 +442,84 @@ export const deleteStudentAccountService = async () => {
     );
     return response.data;
 }
+
+// Search users
+export const searchUsersService = async (name, email) => {
+    const params = new URLSearchParams();
+    if (name) params.append('name', name);
+    if (email) params.append('email', email);
+
+    const response = await axios.get(
+        `${USER_ENDPOINTS.SEARCH_USERS}?${params.toString()}`,
+        getAuthHeader()
+    );
+    return response.data;
+};
+
+// Get friends list
+export const getFriendsListService = async () => {
+    const response = await axios.get(
+        USER_ENDPOINTS.GET_FRIENDS_LIST,
+        getAuthHeader()
+    );
+    return response.data;
+};
+
+// Send friend request
+export const sendFriendRequestService = async (receiverId) => {
+    const response = await axios.post(
+        USER_ENDPOINTS.SEND_FRIEND_REQUEST,
+        { receiverId },
+        getAuthHeader()
+    );
+    return response.data;
+};
+
+// Accept friend request
+export const acceptFriendRequestService = async (requestId) => {
+    const response = await axios.post(
+        USER_ENDPOINTS.ACCEPT_FRIEND_REQUEST,
+        { requestId },
+        getAuthHeader()
+    );
+    return response.data;
+};
+
+// Delete/reject friend request
+export const deleteFriendRequestService = async (requestId) => {
+    const response = await axios.post(
+        USER_ENDPOINTS.DELETE_FRIEND_REQUEST,
+        { requestId },
+        getAuthHeader()
+    );
+    return response.data;
+};
+
+// Unfriend a friend
+export const unfriendService = async (friendId) => {
+    const response = await axios.post(
+        USER_ENDPOINTS.UNFRIEND,
+        { friendId },
+        getAuthHeader()
+    );
+    return response.data;
+};
+
+// Get sent friend requests
+export const getSentRequestsService = async () => {
+    const response = await axios.get(
+        USER_ENDPOINTS.GET_SENT_REQUESTS,
+        getAuthHeader()
+    );
+    return response.data;
+};
+
+// Get received friend requests
+export const getReceivedRequestsService = async () => {
+    const response = await axios.get(
+        USER_ENDPOINTS.GET_RECEIVED_REQUESTS,
+        getAuthHeader()
+    );
+    return response.data;
+};
+
