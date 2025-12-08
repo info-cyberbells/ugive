@@ -21,6 +21,7 @@ import LetsGo from './pages/LetsGo/LetsGo';
 import MyStudentProfile from './pages/Profile/MyStudentProfile';
 import MyCardReading from './pages/MyCardReading/MyCardReading';
 import Friends from './pages/Friends/Friends';
+import Contactus from './pages/Contactus.jsx/Contactus';
 
 
 
@@ -144,6 +145,10 @@ function App() {
         <Route
           path="/terms-and-conditions"
           element={<TermsAndCondition />}
+        />
+        <Route
+          path="/contactus"
+          element={<Contactus />}
         />
 
 
