@@ -21,7 +21,6 @@ export const createReward = async (req, res) => {
             college,
             rewardDescription,
             totalPoints,
-            completedPoints: 0,
             rewardImage,
             createdBy: req.user?._id,
         });
@@ -78,7 +77,6 @@ export const getRewards = async (req, res) => {
                 rewardDescription: reward.rewardDescription,
                 rewardImage: imageUrl,
                 totalPoints: reward.totalPoints,
-                completedPoints: reward.completedPoints ?? 0,
                 createdBy: reward.createdBy,
                 createdAt: reward.createdAt,
                 updatedAt: reward.updatedAt
@@ -136,7 +134,6 @@ export const getSingleReward = async (req, res) => {
                 university: reward.university,
                 college: reward.college,
                 totalPoints: reward.totalPoints,
-                completedPoints: reward.completedPoints ?? 0,
                 createdBy: reward.createdBy,
                 createdAt: reward.createdAt,
                 updatedAt: reward.updatedAt
@@ -212,7 +209,6 @@ export const updateReward = async (req, res) => {
                 university: updatedReward.university,
                 college: updatedReward.college,
                 totalPoints: updatedReward.totalPoints,
-                completedPoints: updatedReward.completedPoints ?? 0,
                 createdBy: updatedReward.createdBy,
                 createdAt: updatedReward.createdAt,
                 updatedAt: updatedReward.updatedAt,
@@ -270,9 +266,9 @@ export const getStudentRewards = async (req, res) => {
             return res.status(404).json({ message: "Student not found" });
         }
 
-        const { university, college } = student;
+        const { university } = student;
 
-        const rewards = await Reward.find({ university, college }).sort({
+        const rewards = await Reward.find({ university }).sort({
             createdAt: -1,
         });
 
@@ -281,7 +277,6 @@ export const getStudentRewards = async (req, res) => {
         const formattedRewards = rewards.map((r) => ({
             ...r._doc,
             totalPoints: r.totalPoints,
-            completedPoints: r.completedPoints ?? 0,
             rewardImage: r.rewardImage ? `${baseURL}${r.rewardImage}` : null
         }));
 

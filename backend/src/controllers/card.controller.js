@@ -1,6 +1,7 @@
 import Card from "../models/card.model.js";
 import User from "../models/user.model.js";
 import { Reward } from "../models/reward.model.js";
+import { StudentRewardProgress } from "../models/studentRewardProgress.model.js";
 
 export const getCurrentWeekRange = () => {
   const now = new Date();
@@ -72,7 +73,7 @@ export const createCard = async (req, res) => {
     const nextDate = new Date(weekStart);
     nextDate.setDate(nextDate.getDate() + 7);
 
-    if (sentThisWeek >= 1) {
+    if (sentThisWeek >= 2) {
       return res.status(429).json({
         success: false,
         message: `You're on a break! You can send your next card on ${formatDateToMonthDay(nextDate)}.`,
@@ -107,11 +108,26 @@ export const createCard = async (req, res) => {
       message
     });
 
+    let progress = await StudentRewardProgress.findOne({
+      student: studentId,
+      reward: reward
+    });
 
-    const totalSent = await Card.countDocuments({ sender: studentId });
-    const remaining = Math.max(5 - totalSent, 0);
-    let percentage = totalSent * 20;
-    if (percentage > 100) percentage = 100;
+    if (!progress) {
+      progress = await StudentRewardProgress.create({
+        student: studentId,
+        reward: reward,
+        completedPoints: 1
+      });
+    } else {
+      progress.completedPoints += 1;
+      if (progress.completedPoints > rewardData.totalPoints) {
+        progress.completedPoints = rewardData.totalPoints;
+      }
+      await progress.save();
+    }
+
+
     const populatedCard = await Card.findById(card._id)
       .populate("university", "name")
       .populate("reward", "name totalPoints completedPoints")
@@ -126,12 +142,6 @@ export const createCard = async (req, res) => {
       message: "Card sent successfully!",
       note: `Note: Cards are delivered each ${formatDateToMonthDay(nextDate)} with an evening cutoff on ${formatDateToMonthDay(nextDate)} to allow time for printing.`,
       card: populatedCard,
-      cardsData: {
-        totalSent,
-        remaining,
-        percentage,
-        maxCards: 5,
-      },
     });
 
   } catch (error) {
@@ -171,43 +181,60 @@ export const getCardsByCollege = async (req, res) => {
   }
 };
 
+
 export const getCardProgress = async (req, res) => {
   try {
-    const authUser = req.user;
-    // Only student can check this
-    if (authUser.role !== "student") {
-      return res.status(403).json({
-        success: false,
-        message: "Only students can access card progress.",
+    const studentId = req.user.id;
+    const universityId = req.user.university;
+
+    // Get all rewards for the student's university
+    const rewards = await Reward.find({ university: universityId })
+      .sort({ totalPoints: 1 });
+
+    if (!rewards.length) {
+      return res.status(200).json({
+        success: true,
+        message: "No rewards found",
+        data: null
       });
     }
 
-    const studentId = authUser.id;
-    const totalSent = await Card.countDocuments({ sender: studentId });
-    const remaining = Math.max(5 - totalSent, 0);
+    let finalData = [];
 
-    // Progress percentage (each card = 20%)
-    let percentage = totalSent * 20;
-    if (percentage > 100) percentage = 100;
+    for (let R of rewards) {
+      let progress = await StudentRewardProgress.findOne({
+        student: studentId,
+        reward: R._id
+      });
+
+      const completed = progress ? progress.completedPoints : 0;
+
+      finalData.push({
+        rewardId: R._id,
+        rewardName: R.name,
+        rewardDescription: R.rewardDescription,
+        totalPoints: R.totalPoints,
+        completedPoints: completed,
+        percentage: Math.round((completed / R.totalPoints) * 100),
+        unlocked: completed >= R.totalPoints
+      });
+    }
 
     return res.status(200).json({
       success: true,
-      message: "Card progress fetched successfully.",
-      data: {
-        totalSent,
-        remaining,
-        percentage,
-        maxCards: 5,
-      },
+      rewards: finalData
     });
+
   } catch (error) {
-    console.error("Error getting card progress:", error);
+    console.error("Error fetching reward progress:", error);
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: error.message
     });
   }
 };
+
+
 
 export const checkCardEligibility = async (req, res) => {
   try {
@@ -230,7 +257,7 @@ export const checkCardEligibility = async (req, res) => {
     });
 
     // Not eligible
-    if (sentThisWeek >= 1) {
+    if (sentThisWeek >= 2) {
       const nextDate = new Date(weekEnd);
       nextDate.setHours(0, 0, 0, 0);
 

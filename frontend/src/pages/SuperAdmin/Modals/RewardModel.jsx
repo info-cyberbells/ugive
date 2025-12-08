@@ -195,6 +195,7 @@ const RewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) =
       rewardImage,
       totalPoints: formData.totalPoints
     });
+    resetForm();
     onClose();
   };
 

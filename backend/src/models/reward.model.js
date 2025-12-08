@@ -34,12 +34,6 @@ const rewardSchema = new mongoose.Schema(
             min: 0,
         },
 
-        completedPoints: {
-            type: Number,
-            default: 0,
-            min: 0
-        },
-
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
