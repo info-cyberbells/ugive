@@ -8,6 +8,7 @@ import {
   getStudentProfileService,
   updateStudentProfileService,
   changeStudentPasswordService,
+  deleteStudentAccountService,
 } from "../auth/authServices";
 
 const initialState = {
@@ -128,6 +129,22 @@ export const changeStudentPassword = createAsyncThunk(
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Password update failed"
       );
+    }
+  }
+);
+
+// DELETE STUDENT ACCOUNT
+
+export const deleteStudentAccount = createAsyncThunk (
+  'student/deleteAccount',
+  async(_, thunkAPI) => {
+    try {
+      const response = await deleteStudentAccountService();
+      return response;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.message || 'Failed To delete the Account'
+      )
     }
   }
 );
@@ -284,7 +301,28 @@ const studentDataSlice = createSlice({
                   .addCase(changeStudentPassword.rejected, (state, action) => {
                     state.isLoading = false;
                     state.isError = action.payload;
-                  });
+                  })
+
+            // delete student account
+
+            .addCase(deleteStudentAccount.pending, (state)=>{
+              state.isLoading = true;
+              state.isError = false;
+
+            })
+            .addCase(deleteStudentAccount.fulfilled, (state, action)=>{
+              state.isLoading = false;
+              state.message = "Account deleted successfully";
+              state.studentProfile = null;
+              state.singleStudent = null;
+              state.studentData = [];
+              state.user = null;
+            })
+            .addCase(deleteStudentAccount.rejected, (state , action)=>{
+            state.isLoading = false;
+            state.isError = true;
+            state.message = action.payload;
+            })
   },
 });
 

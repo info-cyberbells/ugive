@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { sendCardService, checkCardEligibilityService } from "../auth/authServices";
+import { sendCardService, checkCardEligibilityService, getCardListingService } from "../auth/authServices";
 
 
 // send card thunk
@@ -30,11 +30,25 @@ export const checkCardEligibility = createAsyncThunk(
     }
 );
 
+//  GET SENTS CARDS THUNK
+export const getSentCards = createAsyncThunk(
+    'card/getSentCards',
+    async(_, thunkAPI) => {
+        try {
+            const response = await getCardListingService();
+            return response.cards;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to fetch information");
+        }
+    }
+)
+
 const studentCardSlice = createSlice({
     name: "studentCard",
     initialState: {
         studentCard: null,
         cardsData: null,
+        sentCards: [],
         isLoading: false,
         isError: false,
         message: "",
@@ -75,7 +89,23 @@ const studentCardSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.eligibility = action.payload;
-            });
+            })
+
+            // get sents cards
+
+            .addCase(getSentCards.pending, (state)=>{
+                state.isLoading = true;
+                state.isError = false;
+            })
+            .addCase(getSentCards.fulfilled, (state, action)=>{
+                state.isLoading = false;
+                state.sentCards = action.payload; 
+            })
+            .addCase(getSentCards.rejected, (state, action) =>{
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
     }
 });
 

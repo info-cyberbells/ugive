@@ -1,73 +1,158 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { getSentCards } from "../../features/studentCardSlice";
+import { ChevronDown, Mail, Award, Landmark, Calendar } from "lucide-react";
 
 const CardReadingPage = () => {
-    const navigate = useNavigate();
-    const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(null);
+  const { sentCards, isLoading } = useSelector((state) => state.studentCard);
 
-    return (
-        <div className="min-h-screen ml-60 mt-14 bg-gray-50 p-8">
-            <div className="w-full max-w-4xl">
+  const dispatch = useDispatch();
 
-                {/* Back Button */}
-                <div className="mb-8">
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="p-2 text-gray-600 rounded-full cursor-pointer hover:bg-gray-200 transition transform hover:scale-[1.10] duration-150"
-                    >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                        </svg>
-                    </button>
+  useEffect(() => {
+    dispatch(getSentCards());
+  }, [dispatch]);
+
+  const toggleCard = (cardId) => {
+    setIsOpen(isOpen === cardId ? null : cardId);
+  };
+
+  const CardDetailRow = ({ icon: Icon, label, value }) => (
+    <div className="flex items-start text-sm md:text-base text-gray-700">
+      <Icon className="w-5 h-5 text-indigo-500 mr-3 mt-1 flex-shrink-0" />
+      <div>
+        <span className="font-semibold">{label}:</span> {value}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen ml-60 mt-14 font-[Poppins] bg-gray-50 p-8">
+      <div className="w-full max-w-4xl">
+        <div className="flex items-center mb-4 text-indigo-800">
+          <button
+            onClick={() => navigate(-1)}
+            className="p-2 mr-4 rounded-full cursor-pointer hover:bg-indigo-50 transition hover:scale-[1.10] duration-150"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              ></path>
+            </svg>
+          </button>
+          <h1 className="text-2xl font-medium text-[#5D3F87]">
+            Sent Cards History
+          </h1>
+        </div>
+
+        <div className="flex flex-col items-center max-w-2xl space-y-4">
+          {isLoading && (
+            <div className="w-full max-w-2xl space-y-4 animate-pulse">
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className="bg-white rounded-xl shadow-sm p-6 border border-gray-100"
+                >
+                  <div className="h-5 w-40 bg-gray-200 rounded mb-3"></div>
+                  {/* <div className="h-4 w-32 bg-gray-200 rounded mb-3"></div> */}
+                  <div className="h-10 w-full bg-gray-200 rounded"></div>
                 </div>
-
-                {/* Card Content */}
-                <div className="flex flex-col items-center justify-center text-center mt-16">
-
-                    <h1 className="text-xl font-medium mb-6 text-gray-800">
-                        Card To Andre - 07/07/2025
+              ))}
+            </div>
+          )}
+          {!isLoading &&
+            sentCards.map((card) => (
+              <div
+                key={card._id}
+                className="w-full bg-white rounded-xl shadow-sm hover:shadow-xl hover:scale-[1.0001] transition duration-300 border border-gray-100 overflow-hidden"
+              >
+                <button
+                  onClick={() => toggleCard(card._id)}
+                  className="flex cursor-pointer flex-col sm:flex-row items-center justify-between w-full p-6 text-left focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                >
+                  <div className="flex flex-col items-center sm:items-start mb-3 sm:mb-0">
+                    <h1 className="text-xl text-[#7B5EA6] font-medium">
+                      Card To{" "}
+                      <span className="text-[#7B5EA6] font-semibold">
+                        {card.recipient_name}{" "}
+                      </span>
                     </h1>
+                    <p className="text-sm font-medium text-gray-500 flex items-center mt-1">
+                      <Calendar className="w-4 h-4 mr-1 text-[#7B5EA6] " />
+                      Sent on {card.date}
+                    </p>
+                  </div>
 
-                    {/* Read Card Dropdown Button */}
-                    <div className="relative">
-                        <button
-                            onClick={() => setIsOpen(!isOpen)}
-                            className="flex items-center justify-between w-64 px-4 py-3 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50 transition"
-                        >
-                            <div className="flex items-center gap-3">
-                                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7h18M3 12h18M3 17h18"></path>
-                                </svg>
-                                <span className="text-gray-400">Read Card</span>
-                            </div>
-                            <svg
-                                className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
+                  <div className="flex items-center space-x-2">
+                    <span className="font-semibold text-sm mr-2 text-[#7B5EA6]">
+                      {isOpen === card._id ? "Hide Details" : "View Details"}
+                    </span>
+                    <ChevronDown
+                      className={`w-5 h-5 transition-transform duration-300 text-[#7B5EA6]`}
+                      style={{
+                        transform:
+                          isOpen === card._id
+                            ? "rotate(180deg)"
+                            : "rotate(0deg)",
+                      }}
+                    />
+                  </div>
+                </button>
 
-                        {/* Dropdown Content */}
-                        {isOpen && (
-                            <div className="absolute w-64 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg">
-                                <div className="p-4">
-                                    <p className="text-gray-600 text-sm">Your card message will appear here...</p>
-                                </div>
-                            </div>
-                        )}
+                {isOpen === card._id && (
+                  <div className="p-6 pt-0 border-t border-gray-100 bg-gray-50 transition-all duration-300">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 mb-6 mt-4 bg-white border border-gray-200 p-4 rounded-lg">
+                      <CardDetailRow
+                        icon={Landmark}
+                        label="University"
+                        value={card.university}
+                      />
+                      <CardDetailRow
+                        icon={Award}
+                        label="Reward"
+                        value={card.reward}
+                      />
+                      <div className="md:col-span-2">
+                        <CardDetailRow
+                          icon={Mail}
+                          label="Recipient Email"
+                          value={card.recipient_email}
+                        />
+                      </div>
                     </div>
 
-                    <p className="text-sm text-gray-400 mt-4">
-                        Tap on arrow to read your msg!
-                    </p>
+                    <div className="mt-4 p-4 bg-white rounded-lg border border-gray-300 border-l-5 border-l-[#7B5EA6]">
+                      <p className="text-base font-bold mb-2 text-[#7B5EA6]">
+                        Message:
+                      </p>
+                      <p className="text-gray-700 whitespace-pre-wrap leading-relaxed italic">
+                        "{card.message}"
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
 
-                </div>
+          {!isLoading && sentCards.length === 0 && (
+            <div className="text-center p-10 text-gray-500 border-2 border-dashed border-gray-300 rounded-xl w-full">
+              No cards have been sent yet.
             </div>
+          )}
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default CardReadingPage;
