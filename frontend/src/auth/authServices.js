@@ -442,3 +442,13 @@ export const deleteStudentAccountService = async () => {
     );
     return response.data;
 }
+
+// SEND FEEDBACK BY STUDENT SERVICE 
+export const sendFeedbackStudentService = async (feedback) => {
+    const response = await axios.post(
+        USER_ENDPOINTS.STUDENT_SEND_FEEDBACK,
+        {feedback},
+        getAuthHeader()
+    )
+    return response.data;
+}

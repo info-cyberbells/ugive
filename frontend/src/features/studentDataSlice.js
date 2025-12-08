@@ -9,7 +9,9 @@ import {
   updateStudentProfileService,
   changeStudentPasswordService,
   deleteStudentAccountService,
+  sendFeedbackStudentService,
 } from "../auth/authServices";
+import { Feedback } from "../../../backend/src/models/feedback.model";
 
 const initialState = {
   studentData: [],
@@ -148,6 +150,22 @@ export const deleteStudentAccount = createAsyncThunk (
     }
   }
 );
+
+// STUDENT FEEDBACK SERVICE
+
+export const sendFeedbackStudent = createAsyncThunk(
+  'student/sendfeedback',
+  async (feedback, thunkAPI) => {
+    try {
+      const response = await sendFeedbackStudentService(feedback);
+      return response;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to send feedback"
+      );
+    }
+  }
+)
 
 const studentDataSlice = createSlice({
   name: "studentData",
@@ -323,6 +341,23 @@ const studentDataSlice = createSlice({
             state.isError = true;
             state.message = action.payload;
             })
+
+            //  SENT STUDENT FEEDBACK 
+            .addCase(sendFeedbackStudent.pending, (state) => {
+      state.isLoading = true;
+      state.isError = false;
+      state.isSuccess = false;
+    })
+    .addCase(sendFeedbackStudent.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.isSuccess = true;
+      state.message = action.payload.message;
+    })
+    .addCase(sendFeedbackStudent.rejected, (state, action) => {
+      state.isLoading = false;
+      state.isError = true;
+      state.message = action.payload;
+    });
   },
 });
 

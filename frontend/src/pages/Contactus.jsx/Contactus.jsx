@@ -1,6 +1,36 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { useToast } from '../../context/ToastContext';
+import { sendFeedbackStudent } from '../../features/studentDataSlice';
 
 const Contactus = () => {
+
+    const {showToast} = useToast();
+
+    const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => state.studentData);
+
+  const [feedback, setFeedback] = useState("");
+
+  const handleSubmit = async () => {
+  try {
+    if (!feedback.trim()) {
+      showToast("Please enter feedback", "error");
+      return;
+    }
+
+    await dispatch(sendFeedbackStudent(feedback));
+
+    showToast("Feedback submitted successfully!", "success");
+    setFeedback("");
+  } catch (err) {
+    showToast(err || "Unexpected error occurred", "error");
+  }
+};
+
+      
+
+
   return (
             <div className="bg-gray-50 ml-60 mt-14 min-h-screen px-6 pt-2 mx-auto font-[Poppins]">
              <h2 
@@ -38,17 +68,23 @@ const Contactus = () => {
                     <textarea
                         rows="3"
                         placeholder="Rate your experience"
+                         value={feedback}
+            onChange={(e) => setFeedback(e.target.value)}
                         className="w-full border border-gray-200 rounded-xl p-3 text-sm text-gray-600 focus:ring-1 focus:ring-blue-100 outline-none resize-none"
                     />
                 </div>
 
                 {/* Submit Button */}
                 <div className="flex justify-center mt-6">
-                    <button
-                        className='bg-[#6955A5] text-white px-12 py-2.5 rounded-xl text-sm hover:scale-[1.02] cursor-pointer transition'
-                    >
-                    Submit
-                    </button>
+                     <button
+            onClick={handleSubmit}
+            disabled={isLoading}
+            className={`bg-[#6955A5] text-white px-12 py-2.5 rounded-xl text-sm transition ${
+              isLoading ? "opacity-60 cursor-not-allowed" : "hover:scale-[1.02]"
+            }`}
+          >
+            {isLoading ? "Submitting..." : "Submit"}
+          </button>
 
                 </div>
                 </div>
