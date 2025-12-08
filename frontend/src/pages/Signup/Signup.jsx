@@ -417,7 +417,7 @@ const Signup = () => {
         {/* Right Side */}
         <div className="signup-image-section">
           <img
-            src="/UgiveImg.png"
+            src="/UgiveImg.jpg"
             alt="A group of people collaborating over a laptop"
             onError={(e) => {
               e.target.onerror = null;

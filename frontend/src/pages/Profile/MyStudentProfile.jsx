@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, reset } from "../../features/studentSlice";
-import { resetStudentState } from "../../features/studentDataSlice";
+import { deleteStudentAccount, resetStudentState } from "../../features/studentDataSlice";
 import { clearProfile } from "../../features/superadminProfileSlice";
 import { fetchProfile } from '../../features/studentDataSlice';
+import { useToast } from '../../context/ToastContext';
 
 
 
@@ -12,6 +13,7 @@ import { fetchProfile } from '../../features/studentDataSlice';
 const MyStudentProfile = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const {showToast} = useToast();
     const [showProfileInfo, setShowProfileInfo] = useState(false);
     const [showDeleteAccount, setShowDeleteAccount] = useState(false);
     const [selectedReason, setSelectedReason] = useState('');
@@ -63,12 +65,19 @@ const MyStudentProfile = () => {
         setShowProfileInfo(false);
     };
 
-    const handleConfirmDelete = () => {
-        if (selectedReason) {
-            // Call logout function
-            handleLogout();
-        }
-    };
+    const handleConfirmDelete = async () => {
+    if (!selectedReason) return;
+    try {
+        await dispatch(deleteStudentAccount()).unwrap(); 
+        showToast("Account deleted successfully", "success");
+        
+        handleLogout();
+
+    } catch (error) {
+        showToast(error || "Failed to delete account", "error");
+    }
+};
+
 
     const handleLogout = () => {
         localStorage.clear();

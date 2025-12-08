@@ -7,6 +7,8 @@ import pizzaSlice from "/pizzaSlice.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { getUniversities, getColleges } from "../../features/studentSlice";
 import { sendStudentCard, checkCardEligibility } from "../../features/studentCardSlice";
+import { getAllRewards } from "../../features/rewardSlice";
+import { getStudentRewards } from "../../features/studentRewardsSlice";
 
 
 
@@ -14,14 +16,17 @@ const CardForm = ({ onSubmit }) => {
   const [errors, setErrors] = useState({});
   const { showToast } = useToast();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { universities, colleges } = useSelector((state) => state.auth);
+const { rewards } = useSelector((state) => state.studentReward);
+
 
   useEffect(() => {
     dispatch(getUniversities());
+    dispatch(getStudentRewards());
   }, [dispatch]);
 
-  const navigate = useNavigate();
 
   // State to hold form data
   const [formData, setFormData] = useState({
@@ -29,11 +34,16 @@ const CardForm = ({ onSubmit }) => {
     recipientName: "",
     // recipientLastName: '',
     recipientEmail: "",
-    collegeHouse: "",
+    reward : "",
     message: "",
     university: "",
     college: "",
   });
+
+  const filteredRewards = rewards.filter(
+  (r) => String(r.university) === String(formData.university)
+);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,8 +73,13 @@ const CardForm = ({ onSubmit }) => {
     e.preventDefault();
 
     const newErrors = {};
-    Object.keys(formData).forEach((key) => {
-      if (!formData[key].trim()) newErrors[key] = true;
+
+    const requiredFields = ['name', 'recipientName', 'reward','recipientEmail', 'message', 'university']
+
+    requiredFields.forEach((key)=>{
+      if(!formData[key]?.trim()){
+        newErrors[key] = true;
+      }
     });
 
     if (Object.keys(newErrors).length > 0) {
@@ -76,12 +91,6 @@ const CardForm = ({ onSubmit }) => {
     if (!formData.university) {
       setErrors((prev) => ({ ...prev, university: true }));
       showToast("Please select a university.", "error");
-      return;
-    }
-
-    if (!formData.college) {
-      setErrors((prev) => ({ ...prev, college: true }));
-      showToast("Please select a college.", "error");
       return;
     }
 
@@ -99,7 +108,10 @@ const CardForm = ({ onSubmit }) => {
     const cardData = {
       recipient_name: formData.recipientName,
       recipient_email: formData.recipientEmail,
-      college: formData.college,
+      receiver: null,
+      reward: formData.reward,
+      college: formData.college || '',
+      university: formData.university || '',
       message: formData.message,
       type: "card",
     };
@@ -272,20 +284,39 @@ const CardForm = ({ onSubmit }) => {
                 />
               </div>
 
-              {/* <div>
-                            <label htmlFor="recipientLastName" className={labelClass}>Recipient's Last Name</label>
-                            <input
-                                type="text"
-                                id="recipientLastName"
-                                name="recipientLastName"
-                                value={formData.recipientLastName}
-                                onChange={handleChange}
-                                placeholder="Enter Recipient's Last Name"
-                                className={`${inputClass} ${errors.recipientLastName ? "border-red-500" : ""}`}
-                            />
-                        </div> */}
+              <div>
+              <label htmlFor="reward" className={labelClass}>Reward</label>
+              <select
+                id="reward"
+                name="reward"
+                value={formData.reward}
+                onChange={handleChange}
+                disabled={!formData.university}
+                className={`${inputClass} ${errors.reward ? "border-red-500" : ""}`}
+              >
+                {!formData.university && <option value="">Select university first</option>}
 
-              <div className="md:col-span-2" >
+                {formData.university && (
+                  <>
+                    <option value="">Select Reward</option>
+
+                    {filteredRewards.length > 0 &&
+                      filteredRewards.map((reward) => (
+                        <option key={reward._id} value={reward._id}>
+                          {reward.name}
+                        </option>
+                      ))}
+
+                    {filteredRewards.length === 0 && (
+                      <option value="">No rewards for this university</option>
+                    )}
+                  </>
+                )}
+              </select>
+
+                        </div>
+
+              <div className="" >
                 <label htmlFor="recipientEmail" className={labelClass}>
                   Recipient's Email
                 </label>

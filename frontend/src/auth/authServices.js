@@ -423,3 +423,22 @@ export const checkCardEligibilityService = async () => {
     );
     return response.data;
 };
+
+// GET CARD LISTINGS
+
+export const getCardListingService = async () => {
+    const response = await axios.get(USER_ENDPOINTS.GET_SENT_CARDS_LISTING,
+        getAuthHeader()
+    );
+    return response.data;
+};
+
+//DELETE STUDENT ACCOUNT SERVICE
+export const deleteStudentAccountService = async () => {
+    const response = await axios.post(
+        USER_ENDPOINTS.STUDENT_DELETE_ACCOUNT,
+        {},
+        getAuthHeader()
+    );
+    return response.data;
+}

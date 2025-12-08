@@ -58,10 +58,13 @@ export const USER_ENDPOINTS = {
     STUDENT_CHANGE_PASSWORD: `${API_BASE_URL}/student/change-password`,
     STUDENT_SEND_CARD: `${API_BASE_URL}/student/cards`,
 
+    STUDENT_DELETE_ACCOUNT: `${API_BASE_URL}/student/delete-account`,
+
 
     //get rewards for student college
     GET_ALL_REWARDS: `${API_BASE_URL}/student/college-rewards`,
-        CHECK_CARD_ELIGIBILITY: `${API_BASE_URL}/student/check-card-eligibility`,
+    CHECK_CARD_ELIGIBILITY: `${API_BASE_URL}/student/check-card-eligibility`,
+    GET_SENT_CARDS_LISTING: `${API_BASE_URL}/student/sent-card-listing`
 
 
 };

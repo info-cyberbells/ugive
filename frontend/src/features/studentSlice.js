@@ -333,10 +333,10 @@ const authSlice = createSlice({
                 state.isLoading = true;
             })
             .addCase(deleteSocialLink.fulfilled, (state, action) => {
+                state.isLoading = false;
             const deletedId = action.payload;
             state.social = state.social.filter((item) => item._id !== deletedId);
             })
-
             .addCase(deleteSocialLink.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
