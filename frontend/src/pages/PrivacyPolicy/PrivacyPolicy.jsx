@@ -1,8 +1,15 @@
 import React from 'react'
 
 const PrivacyPolicy = () => {
+  const token = localStorage.getItem("token");
+  const user = localStorage.getItem("user");
+
+  const isAuthenticated = token && user;
   return (
-    <div className='lg:mt-14 lg:ml-60 min-h-screen font-[Poppins] bg-gray-50 p-8'>
+    <div
+      className={`min-h-screen font-[Poppins] bg-gray-50 p-8 
+      ${isAuthenticated ? "lg:mt-14 lg:ml-60" : ""}`}
+    >
       <div className="mb-8">
         {/* Logo Section */}
         <div className=" p-6 flex justify-center rounded-t-lg">

@@ -137,11 +137,15 @@ function App() {
         <Route path="/manage-rewards" element={isAuthenticated ? <ManageRewards /> : <Navigate to='/' replace />}
         />
 
-        <Route path="/privacy-policy" element={isAuthenticated ? <PrivacyPolicy /> : <Navigate to='/' replace />}
+        <Route path="/privacy-policy" element={<PrivacyPolicy />}
         />
 
-        <Route path="/terms-and-conditions" element={isAuthenticated ? <TermsAndCondition /> : <Navigate to='/' replace />}
+        <Route
+          path="/terms-and-conditions"
+          element={<TermsAndCondition />}
         />
+
+
         <Route path='/rewards-catalog' element={isAuthenticated ? <RewardCatalogs /> : <Navigate to="/" replace />} />
 
         <Route path="/my-profile" element={isAuthenticated ? <MyStudentProfile /> : <Navigate to='/' replace />}
@@ -149,7 +153,7 @@ function App() {
 
         <Route path="/my-cards" element={isAuthenticated ? <MyCardReading /> : <Navigate to='/' replace />}
         />
-        
+
         <Route
           path='/social'
           element={isAuthenticated ? <Social /> : <Navigate to="/" replace />}
