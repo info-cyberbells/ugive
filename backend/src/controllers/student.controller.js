@@ -217,3 +217,39 @@ export const deleteStudentSuperAdmin = async (req, res) => {
 };
 
 
+
+//delete student account by himself
+export const deleteMyAccount = async (req, res) => {
+    try {
+        const studentId = req.user.id;
+
+        const user = await User.findByIdAndUpdate(
+            studentId,
+            { isDeleted: true },
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Your account has been permanently deactivated.",
+            user
+        });
+
+    } catch (error) {
+        console.error("Delete account error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+
+
+

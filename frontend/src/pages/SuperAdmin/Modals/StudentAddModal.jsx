@@ -128,7 +128,7 @@ const StudentModal = ({
           email: s.email || "",
           phoneNumber: s.phoneNumber || "",
           university: s.university?._id || "",
-          college: s.college?._id || "",
+          college: s.college?._id || null,
           studentUniId: s.studentUniId || "",
         });
         setOriginalData({

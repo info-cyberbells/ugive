@@ -1,5 +1,6 @@
 import Card from "../models/card.model.js";
 import User from "../models/user.model.js";
+import { Reward } from "../models/reward.model.js";
 
 export const getCurrentWeekRange = () => {
   const now = new Date();
@@ -29,7 +30,15 @@ function formatDateToMonthDay(date) {
 export const createCard = async (req, res) => {
   try {
     const studentId = req.user.id;
-    const { recipient_name, recipient_email, college, message, type } = req.body;
+    const {
+      recipient_name,
+      recipient_email,
+      reward,
+      receiver,
+      college,
+      university,
+      message
+    } = req.body;
     const allowedDomain = process.env.STUDENT_EMAIL_DOMAIN || "@usq.edu.au";
     const emailExists = await User.findOne({ email: recipient_email });
     if (!emailExists) {
@@ -71,13 +80,31 @@ export const createCard = async (req, res) => {
       });
     }
 
+    const rewardData = await Reward.findById(reward);
+    if (!rewardData) {
+      return res.status(404).json({
+        success: false,
+        message: "Reward not found."
+      });
+    }
+
+    if (rewardData.university.toString() !== university) {
+      return res.status(400).json({
+        success: false,
+        message: "This reward does not belong to the selected university."
+      });
+    }
+
+
     const card = await Card.create({
       sender: studentId,
       recipient_name,
       recipient_email,
-      college,
-      message,
-      type
+      college: college || null,
+      reward,
+      receiver: receiver || null,
+      university,
+      message
     });
 
 
@@ -86,11 +113,13 @@ export const createCard = async (req, res) => {
     let percentage = totalSent * 20;
     if (percentage > 100) percentage = 100;
     const populatedCard = await Card.findById(card._id)
+      .populate("university", "name")
+      .populate("reward", "name totalPoints completedPoints")
       .populate({
         path: "college",
         select: "name",
-        populate: { path: "university", select: "name" }
       });
+
 
     return res.status(201).json({
       success: true,
@@ -114,21 +143,23 @@ export const createCard = async (req, res) => {
   }
 };
 
-export const createCardOLDNOTINUSE = async (req, res) => {
-  try {
-    const { college, message, recipient_name, type } = req.body;
+// export const createCardOLDNOTINUSE = async (req, res) => {
+//   try {
+//     const { college, message, recipient_name, type } = req.body;
 
-    // Use logged-in user as sender
-    const sender = req.user._id;
-    const card = await Card.create({ sender, college, message, recipient_name, type });
-    res.status(201).json({ success: true, card });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Server Error" });
-  }
-};
+//     // Use logged-in user as sender
+//     const sender = req.user._id;
+//     const card = await Card.create({ sender, college, message, recipient_name, type });
+//     res.status(201).json({ success: true, card });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ success: false, message: "Server Error" });
+//   }
+// };
 
 // Get all Cards for a College
+
+
 export const getCardsByCollege = async (req, res) => {
   try {
     const { collegeId } = req.params;
@@ -232,12 +263,18 @@ export const getSentCards = async (req, res) => {
     const studentId = req.user.id;
 
     // Fetch all cards
-    const cards = await Card.find({ sender: studentId }).populate({ path: "college", select: "name" }).sort({ createdAt: -1 });
+    const cards = await Card.find({ sender: studentId })
+      .populate("university", "name")
+      .populate("reward", "name")
+      .populate("college", "name")
+      .sort({ createdAt: -1 });
     const formatted = cards.map(card => ({
       id: card._id,
       recipient_name: card.recipient_name,
       message: card.message,
-      college: card.college ? card.college.name : null,
+      college: card.college?.name || null,
+      reward: card.reward?.name || null,
+      university: card.university?.name || null,
       date: formatDate(card.createdAt)
     }));
 

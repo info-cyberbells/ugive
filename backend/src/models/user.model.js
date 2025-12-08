@@ -60,6 +60,11 @@ const userSchema = new mongoose.Schema({
   resetCode: { type: String },
   resetCodeExpires: { type: Date },
   profileImage: { type: String, default: null },
+  isDeleted: {
+    type: Boolean,
+    default: false
+  },
+
 }, { timestamps: true });
 
 // Password hashing

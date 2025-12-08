@@ -59,6 +59,12 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
+    if (user.isDeleted) {
+      return res.status(403).json({
+        success: false,
+        message: "This account has been deactivated."
+      });
+    }
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });

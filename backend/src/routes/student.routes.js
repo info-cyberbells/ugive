@@ -6,6 +6,7 @@ import { getProfile, updateProfile, changePassword } from "../controllers/profil
 import { createCard, getCardsByCollege, getCardProgress, checkCardEligibility, getSentCards } from "../controllers/card.controller.js";
 import { sendFriendRequest, acceptFriendRequest, deleteFriendRequest, unfriendUser, getSentRequests, getReceivedRequests, getMyFriends } from "../controllers/manageFriends.controller.js";
 import { getStudentRewards } from "../controllers/reward.controller.js";
+import { deleteMyAccount } from "../controllers/student.controller.js";
 
 
 const router = express.Router();
@@ -41,6 +42,9 @@ router.get("/friend/sent", getSentRequests);
 router.get("/friend/received", getReceivedRequests);
 router.get("/friends", getMyFriends);
 
+
+//deete my account
+router.post("/delete-account", deleteMyAccount);
 
 
 //rewards 
