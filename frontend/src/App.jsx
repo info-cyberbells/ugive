@@ -20,6 +20,7 @@ import StudentDashboard from './pages/dashboard/StudentDashbaord';
 import LetsGo from './pages/LetsGo/LetsGo';
 import MyStudentProfile from './pages/Profile/MyStudentProfile';
 import MyCardReading from './pages/MyCardReading/MyCardReading';
+import Friends from './pages/Friends/Friends';
 
 
 
@@ -157,6 +158,7 @@ function App() {
 
         <Route path='/write-card' element={isAuthenticated ? <WriteCard /> : <Navigate to="/" replace />} />
         <Route path='/lets-go' element={isAuthenticated ? <LetsGo /> : <Navigate to="/" replace />} />
+        <Route path='/friends' element={isAuthenticated ? <Friends /> : <Navigate to="/" replace />} />
 
         <Route
           path='*'
