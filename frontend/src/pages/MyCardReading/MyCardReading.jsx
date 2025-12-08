@@ -33,54 +33,54 @@ const CardReadingPage = () => {
       <div className=" w-full max-w-6xl">
         <div className="flex justify-between mb-4 text-indigo-800">
           <div className="flex items-center">
-          <button
-            onClick={() => navigate(-1)}
-            className="p-2 mr-4 rounded-full cursor-pointer hover:bg-indigo-50 transition hover:scale-[1.10] duration-150"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+            <button
+              onClick={() => navigate(-1)}
+              className="p-2 mr-4 rounded-full cursor-pointer hover:bg-indigo-50 transition hover:scale-[1.10] duration-150"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              ></path>
-            </svg>
-          </button>
-          <h1 className="text-2xl font-medium text-[#5D3F87]">
-            Sent Cards
-          </h1>
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                ></path>
+              </svg>
+            </button>
+            <h1 className="text-2xl font-medium text-[#5D3F87]">
+              Sent Cards
+            </h1>
           </div>
           <div>
             <button
-          onClick={()=>navigate('/write-card')}
+              onClick={() => navigate('/write-card')}
               className="mt-4 px-6 py-2 bg-[#7f63e6]  cursor-pointer text-white text-sm font-medium rounded-4xl hover:bg-violet-700 transition duration-150 shadow-lg ">
-               Write Card
+              Write Card
             </button>
           </div>
         </div>
 
-<div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-6xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-6xl items-start">
           {isLoading &&
-  [1, 2, 3, 4,5,6,7,8].map((i) => (
-    <div
-      key={i}
-      className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 w-full animate-pulse"
-    >
-      {/* Title skeleton */}
-      <div className="h-5 w-40 bg-gray-200 rounded mb-4"></div>
+            [1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <div
+                key={i}
+                className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 w-full animate-pulse"
+              >
+                {/* Title skeleton */}
+                <div className="h-5 w-40 bg-gray-200 rounded mb-4"></div>
 
-      {/* Date skeleton */}
-      <div className="h-4 w-28 bg-gray-200 rounded mb-4"></div>
+                {/* Date skeleton */}
+                <div className="h-4 w-28 bg-gray-200 rounded mb-4"></div>
 
-      {/* Button skeleton */}
-      <div className="h-10 w-full bg-gray-200 rounded"></div>
-    </div>
-  ))}
+                {/* Button skeleton */}
+                <div className="h-10 w-full bg-gray-200 rounded"></div>
+              </div>
+            ))}
 
 
           {!isLoading &&

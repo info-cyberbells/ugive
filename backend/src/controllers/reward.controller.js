@@ -2,6 +2,7 @@
 import jwt from "jsonwebtoken";
 import { Reward } from "../models/reward.model.js";
 import User from "../models/user.model.js";
+import { StudentRewardProgress } from "../models/studentRewardProgress.model.js";
 
 
 // Create Reward
@@ -244,13 +245,11 @@ export const deleteReward = async (req, res) => {
 export const getStudentRewards = async (req, res) => {
     try {
         const authHeader = req.headers.authorization;
-
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
             return res.status(401).json({ message: "No token provided" });
         }
 
         const token = authHeader.split(" ")[1];
-
         let decoded;
         try {
             decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -261,31 +260,118 @@ export const getStudentRewards = async (req, res) => {
         const studentId = decoded.id;
 
         const student = await User.findById(studentId);
-
         if (!student) {
             return res.status(404).json({ message: "Student not found" });
         }
 
         const { university } = student;
 
-        const rewards = await Reward.find({ university }).sort({
-            createdAt: -1,
-        });
+        const rewards = await Reward.find({ university }).sort({ createdAt: -1 });
 
         const baseURL = `${req.protocol}://${req.get("host")}`;
 
-        const formattedRewards = rewards.map((r) => ({
-            ...r._doc,
-            totalPoints: r.totalPoints,
-            rewardImage: r.rewardImage ? `${baseURL}${r.rewardImage}` : null
-        }));
+        let result = [];
+
+        for (let reward of rewards) {
+            const progress = await StudentRewardProgress.findOne({
+                student: studentId,
+                reward: reward._id,
+            });
+
+            const completed = progress ? progress.completedPoints : 0;
+
+            const percentage = Math.round((completed / reward.totalPoints) * 100);
+
+            result.push({
+                rewardId: reward._id,
+                rewardName: reward.name,
+                rewardDescription: reward.rewardDescription,
+
+                totalPoints: reward.totalPoints,
+                completedPoints: completed,
+                percentage,
+
+                unlocked: completed >= reward.totalPoints,
+                claimed: progress ? progress.claimed : false,
+                rewardImage: reward.rewardImage
+                    ? `${baseURL}${reward.rewardImage}`
+                    : null,
+
+                createdAt: reward.createdAt,
+                updatedAt: reward.updatedAt,
+            });
+        }
 
         res.status(200).json({
+            success: true,
             message: "Rewards fetched successfully",
-            data: formattedRewards,
+            data: result,
         });
     } catch (error) {
         console.error("Error fetching student rewards:", error);
         res.status(500).json({ message: "Server error" });
+    }
+};
+
+
+export const claimReward = async (req, res) => {
+    try {
+        const studentId = req.user.id;
+        const { rewardId } = req.body;
+
+        const reward = await Reward.findById(rewardId);
+        if (!reward) {
+            return res.status(404).json({
+                success: false,
+                message: "Reward not found",
+            });
+        }
+
+        const progress = await StudentRewardProgress.findOne({
+            student: studentId,
+            reward: rewardId,
+        });
+
+        if (!progress) {
+            return res.status(400).json({
+                success: false,
+                message: "You haven't started progress on this reward",
+            });
+        }
+
+        if (progress.completedPoints < reward.totalPoints) {
+            return res.status(400).json({
+                success: false,
+                message: "Reward is not unlocked yet. Complete more cards to unlock it.",
+            });
+        }
+
+        if (progress.claimed) {
+            return res.status(400).json({
+                success: false,
+                message: "You have already claimed this reward",
+            });
+        }
+
+        progress.claimed = true;
+        progress.claimedAt = new Date();
+        await progress.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Reward claimed successfully!",
+            reward: {
+                rewardId: reward._id,
+                rewardName: reward.name,
+                claimed: true,
+                claimedAt: progress.claimedAt,
+            },
+        });
+    } catch (error) {
+        console.error("Error claiming reward:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Server error",
+        });
     }
 };

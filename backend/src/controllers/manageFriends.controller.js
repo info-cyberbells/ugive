@@ -67,8 +67,8 @@ export const acceptFriendRequest = async (req, res) => {
   try {
     const userId = req.user.id;
     const { requestId } = req.body;
-    console.log('requestId',requestId);
-    console.log('userId',userId);
+    console.log('requestId', requestId);
+    console.log('userId', userId);
 
     const reqDoc = await FriendRequest.findOne({
       _id: requestId,
@@ -76,7 +76,7 @@ export const acceptFriendRequest = async (req, res) => {
       status: "pending"
     });
 
-    console.log('reqDoc',reqDoc);
+    console.log('reqDoc', reqDoc);
 
     if (!reqDoc) {
       return res.status(404).json({ success: false, message: "Request not found" });
@@ -196,12 +196,11 @@ export const getReceivedRequests = async (req, res) => {
 export const getMyFriends = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { page = 1, limit = 20 } = req.query;
+    const { university, college, page = 1, limit = 20 } = req.query;
 
     const pageNum = Math.max(1, parseInt(page, 10));
-    const pageSize = Math.min(100, Math.max(1, parseInt(limit, 10)));
+    const pageSize = Math.min(50, parseInt(limit, 10));
 
-    // Get accepted relationships where user is sender OR receiver
     const connections = await FriendRequest.find({
       status: "accepted",
       $or: [
@@ -209,39 +208,52 @@ export const getMyFriends = async (req, res) => {
         { receiver: userId }
       ]
     })
-      .populate("sender", "name profileImage college university")
-      .populate("receiver", "name profileImage college university")
+      .populate("sender", "name profileImage university college")
+      .populate("receiver", "name profileImage university college")
       .lean();
 
-    if (!connections || connections.length === 0) {
+    if (!connections.length) {
       return res.status(200).json({
         success: true,
         total: 0,
-        page: pageNum,
-        limit: pageSize,
-        results: []
+        results: [],
       });
     }
 
-    // Build list of actual friends
     const baseURL = `${req.protocol}://${req.get("host")}`;
 
-    const friends = connections.map(c => {
-      const friend = c.sender._id.toString() === userId.toString()
-        ? c.receiver
-        : c.sender;
+    let friends = connections.map((relation) => {
+      const friendDoc =
+        relation.sender._id.toString() === userId
+          ? relation.receiver
+          : relation.sender;
 
       return {
-        id: friend._id,
-        name: friend.name,
-        profileImage: friend.profileImage ? `${baseURL}${friend.profileImage}` : null,
-        college: friend.college || null,
-        university: friend.university || null,
-        connectedAt: c.updatedAt
+        id: friendDoc._id,
+        name: friendDoc.name,
+        profileImage: friendDoc.profileImage
+          ? baseURL + friendDoc.profileImage
+          : null,
+        university: friendDoc.university,
+        college: friendDoc.college,
+        connectedAt: relation.updatedAt,
       };
     });
 
-    // Pagination
+
+    if (university) {
+      friends = friends.filter(
+        (f) => f.university && f.university.toString() === university.toString()
+      );
+    }
+
+    if (college) {
+      friends = friends.filter(
+        (f) => f.college && f.college.toString() === college.toString()
+      );
+    }
+
+    // STEP 4: Pagination
     const total = friends.length;
     const start = (pageNum - 1) * pageSize;
     const paginated = friends.slice(start, start + pageSize);
@@ -251,7 +263,7 @@ export const getMyFriends = async (req, res) => {
       total,
       page: pageNum,
       limit: pageSize,
-      results: paginated
+      results: paginated,
     });
 
   } catch (err) {
@@ -259,3 +271,4 @@ export const getMyFriends = async (req, res) => {
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };
+

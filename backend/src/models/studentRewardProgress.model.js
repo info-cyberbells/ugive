@@ -16,7 +16,12 @@ const studentRewardProgressSchema = new mongoose.Schema({
     completedPoints: {
         type: Number,
         default: 0
-    }
+    },
+    claimed: {
+        type: Boolean,
+        default: false,
+    },
+    claimedAt: { type: Date, default: null },
 }, { timestamps: true });
 
 studentRewardProgressSchema.index({ student: 1, reward: 1 }, { unique: true });
