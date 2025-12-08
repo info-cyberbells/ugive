@@ -7,6 +7,8 @@ import { getAllStudentsSuperAdmin, createStudentSuperAdmin, getSingleStudentSupe
 import upload from "../middleware/upload.middleware.js";
 import uploadReward from "../middleware/uploadReward.middleware.js";
 import { createReward, getRewards, getSingleReward, updateReward, deleteReward } from "../controllers/reward.controller.js";
+import { getAllFeedback, updateFeedback, deleteFeedback } from "../controllers/feedback.controller.js";
+
 
 
 
@@ -58,6 +60,10 @@ router.get("/get-reward/:id", getSingleReward);
 router.put("/update-reward/:id", uploadReward.single("rewardImage"), updateReward);
 router.delete("/delete-reward/:id", deleteReward);
 
+//feedback routes
+router.put("/update-feedback/:id", updateFeedback);
+router.delete("/delete-fadback/:id", deleteFeedback);
+router.get("/get-all-feedback", getAllFeedback);
 
 
 export default router;

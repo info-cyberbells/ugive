@@ -7,6 +7,7 @@ import { createCard, getCardsByCollege, getCardProgress, checkCardEligibility, g
 import { sendFriendRequest, acceptFriendRequest, deleteFriendRequest, unfriendUser, getSentRequests, getReceivedRequests, getMyFriends } from "../controllers/manageFriends.controller.js";
 import { getStudentRewards } from "../controllers/reward.controller.js";
 import { deleteMyAccount } from "../controllers/student.controller.js";
+import { createFeedback, getAllFeedback, getMyFeedback, updateFeedback, deleteFeedback } from "../controllers/feedback.controller.js";
 
 
 const router = express.Router();
@@ -49,6 +50,11 @@ router.post("/delete-account", deleteMyAccount);
 
 //rewards 
 router.get("/college-rewards", getStudentRewards);
+
+
+router.post("/sent-feedback", createFeedback);
+router.get("/my-feedback", getMyFeedback);
+
 
 
 export default router;
