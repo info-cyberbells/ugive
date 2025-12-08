@@ -1,15 +1,11 @@
 import User from "../models/user.model.js";
-import College from "../models/college.model.js";
-import University from "../models/university.model.js";
 import FriendRequest from "../models/friendRequest.model.js";
 import mongoose from "mongoose";
 
 /**
  * GET /api/search
  * query params:
- *   name      -> partial name search
- *   college   -> collegeId (ObjectId)
- *   university-> universityId (ObjectId)
+ *   name      -> partial name/email search
  *   page      -> page number (default 1)
  *   limit     -> page size (default 20)
  */
@@ -20,55 +16,39 @@ export const searchStudents = async (req, res) => {
             return res.status(401).json({ success: false, message: "Unauthorized" });
         }
 
-        const { name, college, university, page = 1, limit = 20 } = req.query;
+        const { name, page = 1, limit = 20 } = req.query;
         const pageNum = Math.max(1, parseInt(page, 10));
         const pageSize = Math.min(100, Math.max(1, parseInt(limit, 10)));
 
-        // Only students should be returned
-        const filters = { role: "student" };
-
-        // Exclude current user
-        filters._id = { $ne: new mongoose.Types.ObjectId(authUser.id) };
-
-        // Search by name
-        if (name) {
-            const safe = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-            filters.name = { $regex: safe, $options: "i" };
-        }
-
-        // Search by College Name
-        if (college) {
-            const collegeDocs = await College.find({
-                name: { $regex: college, $options: "i" },
-            });
-
-            if (collegeDocs.length > 0) {
-                const collegeIds = collegeDocs.map(c => c._id);
-                filters.college = { $in: collegeIds };
-            } else {
-                return res.status(200).json({ success: true, total: 0, results: [] });
+        const conditions = [
+            { role: "student" },
+            { _id: { $ne: new mongoose.Types.ObjectId(authUser.id) } },
+            {
+                $or: [
+                    { isDeleted: { $exists: false } },
+                    { isDeleted: false }
+                ]
             }
-        }
+        ];
 
-        // Search by University Name
-        if (university) {
-            const uniDocs = await University.find({
-                name: { $regex: university, $options: "i" },
+        // Search by name OR email
+        if (name && name.trim()) {
+            const safe = name.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            conditions.push({
+                $or: [
+                    { name: { $regex: safe, $options: "i" } },
+                    { email: { $regex: safe, $options: "i" } }
+                ]
             });
-
-            if (uniDocs.length > 0) {
-                const uniIds = uniDocs.map(u => u._id);
-                filters.university = { $in: uniIds };
-            } else {
-                return res.status(200).json({ success: true, total: 0, results: [] });
-            }
         }
+
+        const query = { $and: conditions };
 
         // Count
-        const total = await User.countDocuments(filters);
+        const total = await User.countDocuments(query);
 
         // Fetch Results
-        const users = await User.find(filters)
+        const users = await User.find(query)
             .select("name email profileImage university college")
             .populate({ path: "university", select: "name" })
             .populate({ path: "college", select: "name" })
@@ -81,7 +61,6 @@ export const searchStudents = async (req, res) => {
             return res.status(200).json({ success: true, total, results: [] });
         }
 
-        // Friend Request Mapping
         const resultUserIds = users.map(u => new mongoose.Types.ObjectId(u._id));
 
         const requests = await FriendRequest.find({

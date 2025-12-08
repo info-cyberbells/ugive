@@ -5,9 +5,9 @@ import { authorizeRoles } from "../middleware/role.middleware.js";
 import { getProfile, updateProfile, changePassword } from "../controllers/profile.controller.js";
 import { createCard, getCardsByCollege, getCardProgress, checkCardEligibility, getSentCards } from "../controllers/card.controller.js";
 import { sendFriendRequest, acceptFriendRequest, deleteFriendRequest, unfriendUser, getSentRequests, getReceivedRequests, getMyFriends } from "../controllers/manageFriends.controller.js";
-import { getStudentRewards } from "../controllers/reward.controller.js";
+import { getStudentRewards, claimReward } from "../controllers/reward.controller.js";
 import { deleteMyAccount } from "../controllers/student.controller.js";
-import { createFeedback, getAllFeedback, getMyFeedback, updateFeedback, deleteFeedback } from "../controllers/feedback.controller.js";
+import { createFeedback, getMyFeedback } from "../controllers/feedback.controller.js";
 
 
 const router = express.Router();
@@ -54,6 +54,7 @@ router.get("/college-rewards", getStudentRewards);
 
 router.post("/sent-feedback", createFeedback);
 router.get("/my-feedback", getMyFeedback);
+router.post("/rewards/claim", claimReward);
 
 
 
