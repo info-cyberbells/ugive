@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Award, User, Zap, Star, MessageSquare } from "lucide-react";
 import {
   Heart,
@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import card from "/card.svg"
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getSocialLinks } from "../../features/studentSlice";
 
 
 
@@ -223,6 +225,13 @@ const activitiesData = [
 
 const StudentDashboard = () => {
   const [rewardPercent, setRewardPercent] = useState(0);
+  const dispatch = useDispatch();
+
+  const {social, isLoading} = useSelector((state)=> state.auth);
+
+  useEffect(()=>{
+    dispatch(getSocialLinks());
+  },[]);
 
   const navigate = useNavigate();
 
@@ -233,13 +242,34 @@ const StudentDashboard = () => {
 
   return (
     <div className="min-h-screen ml-56 mt-10 bg-gray-50 font-[Inter] p-4 sm:p-8 lg:p-12">
-      <header className="mb-8">
-            <h1 className="text-lg font-medium text-gray-500">
+      <header className="flex justify-between mb-8">
+            <div className="">
+              <h1 className="text-lg font-medium text-gray-500">
               Welcome, <span className="text-[#DE9650] font-bold">Annie</span>!
             </h1>
             <p className="text-2xl font-semibold text-[#6955A5] mt-1">
               Be the difference in someone's world today
             </p>
+            </div>
+            <div className="flex items-center gap-3">
+              {social?.length >= 1 && <h3 className="text-[#6955A5] font-medium">Follow Us</h3> }
+              {social?.map((item) => (
+                <a
+                  key={item._id}
+                  href={item.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-6 h-6 overflow-hidden hover:scale-110 transition"
+                >
+                  <img
+                    src={item.icon || "https://cdn-icons-png.flaticon.com/512/25/25394.png"}
+                    alt={item.name}
+                    className="w-full h-full object-cover"
+                  />
+                </a>
+              ))}
+</div>
+
           </header>
       <div className="lg:grid lg:grid-cols-4 lg:gap-8">
         

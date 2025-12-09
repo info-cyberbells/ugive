@@ -169,7 +169,7 @@ export const getSentRequests = async (req, res) => {
 
     list = list.map((item) => {
       if (item.receiver?.profileImage) {
-        item.receiver.profileImage = `${baseURL}/${item.receiver.profileImage}`;
+        item.receiver.profileImage = `${baseURL}${item.receiver.profileImage}`;
       }
       return item;
     });
@@ -195,7 +195,7 @@ export const getReceivedRequests = async (req, res) => {
 
     list = list.map((item) => {
       if (item.sender?.profileImage) {
-        item.sender.profileImage = `${baseURL}/${item.sender.profileImage}`;
+        item.sender.profileImage = `${baseURL}${item.sender.profileImage}`;
       }
       return item;
     });
