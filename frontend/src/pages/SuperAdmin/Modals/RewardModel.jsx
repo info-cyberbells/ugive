@@ -137,7 +137,6 @@ const RewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) =
       "name",
       "totalPoints",
       "university",
-      "college",
       "rewardDescription",
     ];
 
@@ -168,7 +167,9 @@ const RewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) =
       updatedForm.append("rewardDescription", formData.rewardDescription);
       updatedForm.append("totalPoints", formData.totalPoints);
       updatedForm.append("university", formData.university);
-      updatedForm.append("college", formData.college);
+      if (formData.college && formData.college.trim() !== "") {
+        updatedForm.append("college", formData.college);
+      }
 
       if (rewardImage) {
         updatedForm.append("rewardImage", rewardImage);
@@ -190,11 +191,19 @@ const RewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) =
     }
 
 
-    onSave({
-      ...formData,
-      rewardImage,
-      totalPoints: formData.totalPoints
-    });
+    const saveData = {
+      name: formData.name,
+      rewardDescription: formData.rewardDescription,
+      totalPoints: formData.totalPoints,
+      university: formData.university,
+      rewardImage
+    };
+
+    if (formData.college && formData.college.trim() !== "") {
+      saveData.college = formData.college;
+    }
+
+    onSave(saveData);
     resetForm();
     onClose();
   };

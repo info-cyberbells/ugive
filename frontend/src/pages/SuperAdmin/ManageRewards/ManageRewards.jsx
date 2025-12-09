@@ -116,7 +116,9 @@ const ManageRewards = () => {
 
         formData.append("name", data.name);
         formData.append("university", data.university);
-        formData.append("college", data.college);
+        if (data.college && data.college.trim() !== "") {
+            formData.append("college", data.college);
+        }
         formData.append("rewardDescription", data.rewardDescription);
 
         formData.append("totalPoints", data.totalPoints);
