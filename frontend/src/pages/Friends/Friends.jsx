@@ -287,35 +287,30 @@ const Friends = () => {
   const [showUnfriendModal, setShowUnfriendModal] = useState(false);
   const [friendToUnfriend, setFriendToUnfriend] = useState(null);
 
-  // Fetch friends list on mount
-  useEffect(() => {
-    dispatch(getFriendsList())
-      .unwrap()
-      .catch((error) => {
-        showToast(error || "Failed to load friends list", "error");
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch]);
+    useEffect(() => {
+      const fetchAll = async () => {
+        const results = await Promise.allSettled([
+          dispatch(getFriendsList()).unwrap(),
+          dispatch(getReceivedRequests()).unwrap(),
+          dispatch(getSentRequests()).unwrap(),
+        ]);
 
-  // Fetch received requests on mount
-  useEffect(() => {
-    dispatch(getReceivedRequests())
-      .unwrap()
-      .catch((error) => {
-        showToast(error || "Failed to load friend requests", "error");
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch]);
+        // Show individual errors
+        results.forEach((result, index) => {
+          if (result.status === "rejected") {
+            const messages = [
+              "Failed to load friends list",
+              "Failed to load friend requests",
+              "Failed to load sent requests",
+            ];
+            showToast(messages[index], "error");
+          }
+        });
+      };
 
-  // Fetch sent requests on mount
-  useEffect(() => {
-    dispatch(getSentRequests())
-      .unwrap()
-      .catch((error) => {
-        showToast(error || "Failed to load sent requests", "error");
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch]);
+      fetchAll();
+    }, [dispatch]);
+
 
   // Cleanup debounce timer on unmount
   useEffect(() => {
@@ -376,6 +371,7 @@ const Friends = () => {
       setShowSearchResults(false);
       setSearchQuery("");
       dispatch(clearSearchResults());
+      dispatch(getSentRequests());
     } catch (error) {
       showToast(error || "Failed to send friend request", "error");
     } finally {
@@ -465,7 +461,7 @@ const Friends = () => {
             <button
               onClick={handleUnfriendConfirm}
               disabled={unfriendingId}
-              className="px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg transition disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+              className="px-4 py-2 text-white bg-[#6955A5] hover:scale-[1.02] rounded-lg transition disabled:opacity-50 flex items-center gap-2 cursor-pointer"
             >
               {unfriendingId ? (
                 <>
@@ -632,9 +628,7 @@ const Friends = () => {
                 </div>
               )}
             </div>
-            <button className="p-2 rounded-xl text-gray-500 hover:bg-gray-100 transition">
-              <MoreVertical className="h-5 w-5" />
-            </button>
+           
           </div>
         </div>
 

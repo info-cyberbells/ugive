@@ -6,11 +6,12 @@ import coffeeCup from "/coffeeCup.svg";
 import pizzaSlice from "/pizzaSlice.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { getUniversities, getColleges } from "../../features/studentSlice";
-import { sendStudentCard, checkCardEligibility } from "../../features/studentCardSlice";
+import {
+  sendStudentCard,
+  checkCardEligibility,
+} from "../../features/studentCardSlice";
 import { getAllRewards } from "../../features/rewardSlice";
 import { getStudentRewards } from "../../features/studentRewardsSlice";
-
-
 
 const CardForm = ({ onSubmit }) => {
   const [errors, setErrors] = useState({});
@@ -19,31 +20,31 @@ const CardForm = ({ onSubmit }) => {
   const navigate = useNavigate();
 
   const { universities, colleges } = useSelector((state) => state.auth);
-const { rewards } = useSelector((state) => state.studentReward);
-
+  const { rewards } = useSelector((state) => state.studentReward);
 
   useEffect(() => {
     dispatch(getUniversities());
     dispatch(getStudentRewards());
   }, [dispatch]);
 
-
   // State to hold form data
   const [formData, setFormData] = useState({
     name: "",
     recipientName: "",
-    // recipientLastName: '',
+    recipientLastName: '',
     recipientEmail: "",
-    reward : "",
+    collegeHouse: '',
+    reward: "",
     message: "",
     university: "",
     college: "",
   });
 
-  const filteredRewards = rewards.filter(
-  (r) => String(r.university) === String(formData.university)
-);
+  //   const filteredRewards = rewards.filter(
+  //   (r) => String(r.university) === String(formData.university)
+  // );
 
+  const filteredRewards = rewards;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -74,10 +75,19 @@ const { rewards } = useSelector((state) => state.studentReward);
 
     const newErrors = {};
 
-    const requiredFields = ['name', 'recipientName', 'reward','recipientEmail', 'message', 'university']
+    const requiredFields = [
+      "name",
+      "recipientName",
+      // "reward",
+      "recipientLastName",
+      "collegeHouse",
+      "recipientEmail",
+      "message",
+      "university",
+    ];
 
-    requiredFields.forEach((key)=>{
-      if(!formData[key]?.trim()){
+    requiredFields.forEach((key) => {
+      if (!formData[key]?.trim()) {
         newErrors[key] = true;
       }
     });
@@ -110,8 +120,8 @@ const { rewards } = useSelector((state) => state.studentReward);
       recipient_email: formData.recipientEmail,
       receiver: null,
       reward: formData.reward,
-      college: formData.college || '',
-      university: formData.university || '',
+      college: formData.college || "",
+      university: formData.university || "",
       message: formData.message,
       type: "card",
     };
@@ -162,7 +172,7 @@ const { rewards } = useSelector((state) => state.studentReward);
           <form onSubmit={handleSubmit} className="space-y-6 pr-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* UNIVERSITY FIELD */}
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700">
                   University
                 </label>
@@ -172,8 +182,9 @@ const { rewards } = useSelector((state) => state.studentReward);
                     name="university"
                     value={formData.university || ""}
                     onChange={handleUniversityChange}
-                    className={`${inputClass} appearance-none pr-10 ${errors.university ? "border-red-500" : ""
-                      }`}
+                    className={`${inputClass} appearance-none pr-10 ${
+                      errors.university ? "border-red-500" : ""
+                    }`}
                   >
                     <option value="">Select University</option>
                     {universities.map((u) => (
@@ -183,7 +194,6 @@ const { rewards } = useSelector((state) => state.studentReward);
                     ))}
                   </select>
 
-                  {/* Dropdown Arrow */}
                   <svg
                     className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
                     fill="none"
@@ -198,10 +208,10 @@ const { rewards } = useSelector((state) => state.studentReward);
                     />
                   </svg>
                 </div>
-              </div>
+              </div> */}
 
               {/* COLLEGE FIELD */}
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700">
                   College
                 </label>
@@ -211,8 +221,9 @@ const { rewards } = useSelector((state) => state.studentReward);
                     name="college"
                     value={formData.college || ""}
                     onChange={handleChange}
-                    className={`${inputClass} appearance-none pr-10 ${errors.college ? "border-red-500" : ""
-                      }`}
+                    className={`${inputClass} appearance-none pr-10 ${
+                      errors.college ? "border-red-500" : ""
+                    }`}
                     disabled={!formData.university}
                   >
                     {!formData.university && (
@@ -235,6 +246,147 @@ const { rewards } = useSelector((state) => state.studentReward);
                     )}
                   </select>
 
+                  <svg
+                    className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div> */}
+
+              <div>
+                <label htmlFor="name" className={labelClass}>
+                  Your Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Enter your Name"
+                  className={`${inputClass} ${
+                    errors.name ? "border-red-500" : ""
+                  }`}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="recipientName" className={labelClass}>
+                  Recipient's Name
+                </label>
+                <input
+                  type="text"
+                  id="recipientName"
+                  name="recipientName"
+                  value={formData.recipientName}
+                  onChange={handleChange}
+                  placeholder="Enter Recipient's Name"
+                  className={`${inputClass} ${
+                    errors.recipientName ? "border-red-500" : ""
+                  }`}
+                />
+              </div>
+
+              
+
+              <div className="">
+                <label htmlFor="recipientLastName" className={labelClass}>
+                  Recipient's Last Name
+                </label>
+                <input
+                  type="text"
+                  id="recipientLastName"
+                  name="recipientLastName"
+                  value={formData.recipientLastName}
+                  onChange={handleChange}
+                  placeholder="Enter Recipient's Email"
+                  className={`${inputClass} ${
+                    errors.recipientLastName ? "border-red-500" : ""
+                  }`}
+                />
+              </div>
+
+              <div className="">
+                <label htmlFor="recipientEmail" className={labelClass}>
+                  Recipient's Email
+                </label>
+                <input
+                  type="email"
+                  id="recipientEmail"
+                  name="recipientEmail"
+                  value={formData.recipientEmail}
+                  onChange={handleChange}
+                  placeholder="Enter Recipient's Email"
+                  className={`${inputClass} ${
+                    errors.recipientEmail ? "border-red-500" : ""
+                  }`}
+                />
+              </div>
+
+              <div className="">
+                <label htmlFor="collegeHouse" className={labelClass}>
+                  Recipients’s College House
+                </label>
+                <input
+                  type="text"
+                  id="collegeHouse"
+                  name="collegeHouse"
+                  value={formData.collegeHouse}
+                  onChange={handleChange}
+                  placeholder="Enter Recipient's College House"
+                  className={`${inputClass} ${
+                    errors.collegeHouse ? "border-red-500" : ""
+                  }`}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="reward" className={labelClass}>
+                  Reward
+                </label>
+                <div className="relative">
+                  <select
+                    id="reward"
+                    name="reward"
+                    value={formData.reward}
+                    onChange={handleChange}
+                    className={`${inputClass} appearance-none pr-10 ${
+                      errors.reward ? "border-red-500" : ""
+                    }`}
+                  >
+                    <option value="">Select Reward</option>
+
+                    {filteredRewards.length > 0 ? (
+                      filteredRewards.map((reward) => (
+                        <option
+                          key={reward.rewardId}
+                          value={reward.rewardId}
+                          disabled={!reward.unlocked}
+                          className={
+                            !reward.unlocked
+                              ? "text-gray-400 cursor-not-allowed"
+                              : ""
+                          }
+                        >
+                          {reward.rewardName} {!reward.unlocked}
+                        </option>
+                      ))
+                    ) : (
+                      <option key="no-rewards" value="">
+                        No rewards available
+                      </option>
+                    )}
+                  </select>
+
                   {/* Dropdown Arrow */}
                   <svg
                     className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
@@ -252,86 +404,6 @@ const { rewards } = useSelector((state) => state.studentReward);
                 </div>
               </div>
 
-              <div>
-                <label htmlFor="name" className={labelClass}>
-                  Your Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Enter your Name"
-                  className={`${inputClass} ${errors.name ? "border-red-500" : ""
-                    }`}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="recipientName" className={labelClass}>
-                  Recipient's Name
-                </label>
-                <input
-                  type="text"
-                  id="recipientName"
-                  name="recipientName"
-                  value={formData.recipientName}
-                  onChange={handleChange}
-                  placeholder="Enter Recipient's Name"
-                  className={`${inputClass} ${errors.recipientName ? "border-red-500" : ""
-                    }`}
-                />
-              </div>
-
-              <div>
-              <label htmlFor="reward" className={labelClass}>Reward</label>
-              <select
-                id="reward"
-                name="reward"
-                value={formData.reward}
-                onChange={handleChange}
-                disabled={!formData.university}
-                className={`${inputClass} ${errors.reward ? "border-red-500" : ""}`}
-              >
-                {!formData.university && <option value="">Select university first</option>}
-
-                {formData.university && (
-                  <>
-                    <option value="">Select Reward</option>
-
-                    {filteredRewards.length > 0 &&
-                      filteredRewards.map((reward) => (
-                        <option key={reward._id} value={reward._id}>
-                          {reward.name}
-                        </option>
-                      ))}
-
-                    {filteredRewards.length === 0 && (
-                      <option value="">No rewards for this university</option>
-                    )}
-                  </>
-                )}
-              </select>
-
-                        </div>
-
-              <div className="" >
-                <label htmlFor="recipientEmail" className={labelClass}>
-                  Recipient's Email
-                </label>
-                <input
-                  type="email"
-                  id="recipientEmail"
-                  name="recipientEmail"
-                  value={formData.recipientEmail}
-                  onChange={handleChange}
-                  placeholder="Enter Recipient's Email"
-                  className={`${inputClass} ${errors.recipientEmail ? "border-red-500" : ""
-                    }`}
-                />
-              </div>
-
             </div>
 
             <div className="">
@@ -345,8 +417,9 @@ const { rewards } = useSelector((state) => state.studentReward);
                 value={formData.message}
                 onChange={handleChange}
                 placeholder="Enter Your Message"
-                className={`${inputClass} ${errors.message ? "border-red-500" : ""
-                  }`}
+                className={`${inputClass} ${
+                  errors.message ? "border-red-500" : ""
+                }`}
               />
             </div>
 
@@ -475,7 +548,6 @@ const Modal = ({ isOpen, onClose, message, nextDate }) => {
   );
 };
 
-
 const WriteCard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -508,7 +580,7 @@ const WriteCard = () => {
 
   const handleCloseEligibilityModal = () => {
     setShowEligibilityModal(false);
-    navigate('/student-dashboard');
+    navigate("/student-dashboard");
   };
 
   // Show loading
@@ -517,7 +589,9 @@ const WriteCard = () => {
       <div className="min-h-screen ml-60 mt-14 bg-gray-50 flex items-center justify-center">
         <div className="bg-white p-8 rounded-2xl shadow-lg text-center">
           <div className="inline-block w-16 h-16 border-4 border-[#E9B243] border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-lg font-semibold text-gray-700">Checking eligibility...</p>
+          <p className="text-lg font-semibold text-gray-700">
+            Checking eligibility...
+          </p>
           <p className="text-sm text-gray-500 mt-2">Please wait a moment</p>
         </div>
       </div>
