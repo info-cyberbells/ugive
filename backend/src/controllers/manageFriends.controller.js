@@ -160,11 +160,19 @@ export const unfriendUser = async (req, res) => {
 export const getSentRequests = async (req, res) => {
   try {
     const userId = req.user.id;
+    const baseURL = `${req.protocol}://${req.get("host")}`;
 
-    const list = await FriendRequest.find({
+    let list = await FriendRequest.find({
       sender: userId,
       status: "pending"
     }).populate("receiver", "name profileImage email");
+
+    list = list.map((item) => {
+      if (item.receiver?.profileImage) {
+        item.receiver.profileImage = `${baseURL}/${item.receiver.profileImage}`;
+      }
+      return item;
+    });
 
     return res.status(200).json({ success: true, results: list });
 
@@ -178,11 +186,19 @@ export const getSentRequests = async (req, res) => {
 export const getReceivedRequests = async (req, res) => {
   try {
     const userId = req.user.id;
+    const baseURL = `${req.protocol}://${req.get("host")}`;
 
-    const list = await FriendRequest.find({
+    let list = await FriendRequest.find({
       receiver: userId,
       status: "pending"
     }).populate("sender", "name profileImage email");
+
+    list = list.map((item) => {
+      if (item.sender?.profileImage) {
+        item.sender.profileImage = `${baseURL}/${item.sender.profileImage}`;
+      }
+      return item;
+    });
 
     return res.status(200).json({ success: true, results: list });
 
