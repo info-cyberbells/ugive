@@ -452,3 +452,15 @@ export const sendFeedbackStudentService = async (feedback) => {
     )
     return response.data;
 }
+
+// STUDENTS REWARD CLAIM
+
+export const claimRewardStudentService = async (rewardId) => {
+    const response = await axios.post(
+        USER_ENDPOINTS.STUDENT_REWARDS_CLAIM,
+        { rewardId },
+        getAuthHeader()
+    );
+
+    return response.data;
+};
