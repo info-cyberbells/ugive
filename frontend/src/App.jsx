@@ -22,6 +22,7 @@ import MyStudentProfile from './pages/Profile/MyStudentProfile';
 import MyCardReading from './pages/MyCardReading/MyCardReading';
 import Friends from './pages/Friends/Friends';
 import Contactus from './pages/Contactus.jsx/Contactus';
+import Streaks from './pages/Streaks/Streaks';
 
 
 
@@ -168,6 +169,7 @@ function App() {
         <Route path='/write-card' element={isAuthenticated ? <WriteCard /> : <Navigate to="/" replace />} />
         <Route path='/lets-go' element={isAuthenticated ? <LetsGo /> : <Navigate to="/" replace />} />
         <Route path='/friends' element={isAuthenticated ? <Friends /> : <Navigate to="/" replace />} />
+        <Route path='/streaks' element={isAuthenticated ? <Streaks /> : <Navigate to="/" replace />} />
 
         <Route
           path='*'

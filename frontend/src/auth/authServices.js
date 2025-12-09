@@ -443,6 +443,27 @@ export const deleteStudentAccountService = async () => {
     return response.data;
 }
 
+// SEND FEEDBACK BY STUDENT SERVICE 
+export const sendFeedbackStudentService = async (feedback) => {
+    const response = await axios.post(
+        USER_ENDPOINTS.STUDENT_SEND_FEEDBACK,
+        {feedback},
+        getAuthHeader()
+    )
+    return response.data;
+}
+
+// STUDENTS REWARD CLAIM
+
+export const claimRewardStudentService = async (rewardId) => {
+    const response = await axios.post(
+        USER_ENDPOINTS.STUDENT_REWARDS_CLAIM,
+        { rewardId },
+        getAuthHeader()
+    );
+
+    return response.data;
+};
 // Search users
 export const searchUsersService = async (name, email) => {
     const params = new URLSearchParams();

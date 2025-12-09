@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getStudentRewardsService } from "../auth/authServices";
+import { claimRewardStudentService, getStudentRewardsService } from "../auth/authServices";
 
 export const getStudentRewards = createAsyncThunk(
     "reward/getStudentRewards",
@@ -12,6 +12,21 @@ export const getStudentRewards = createAsyncThunk(
             );
         }
     }
+);
+
+// STUDENT CLAIM REWARD
+
+export const claimReward = createAsyncThunk(
+  "studentRewards/claimReward",
+  async (rewardId, { rejectWithValue }) => {
+    try {
+      return await claimRewardStudentService(rewardId);
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to claim reward"
+      );
+    }
+  }
 );
 
 const rewardSlice = createSlice({
@@ -43,7 +58,25 @@ const rewardSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
+            })
+
+            // student claim reward
+            .addCase(claimReward.pending, (state) => {
+                state.isLoading = true;
+                state.isError = false;
+                state.message = "";
+            })
+            .addCase(claimReward.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.message = action.payload.message;
+            })
+            .addCase(claimReward.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
             });
+
     }
 });
 
