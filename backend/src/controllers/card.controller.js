@@ -34,12 +34,21 @@ export const createCard = async (req, res) => {
     const {
       recipient_name,
       recipient_email,
+      college_name,
       reward,
-      receiver,
-      college,
-      university,
       message
     } = req.body;
+
+    if (reward) {
+      const rewardExists = await Reward.findById(reward);
+      if (!rewardExists) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid reward ID. This reward does not exist."
+        });
+      }
+    }
+
     const allowedDomain = process.env.STUDENT_EMAIL_DOMAIN || "@usq.edu.au";
     const emailExists = await User.findOne({ email: recipient_email });
     if (!emailExists) {
@@ -62,7 +71,9 @@ export const createCard = async (req, res) => {
 
     const now = new Date();
     const weekStart = new Date(now);
-    weekStart.setDate(now.getDate() - now.getDay());
+    const day = now.getDay();
+    const diff = day === 0 ? 6 : day - 1;
+    weekStart.setDate(now.getDate() - diff);
     weekStart.setHours(0, 0, 0, 0);
 
     const sentThisWeek = await Card.countDocuments({
@@ -81,60 +92,47 @@ export const createCard = async (req, res) => {
       });
     }
 
-    const rewardData = await Reward.findById(reward);
-    if (!rewardData) {
-      return res.status(404).json({
-        success: false,
-        message: "Reward not found."
-      });
-    }
 
-    if (rewardData.university.toString() !== university) {
-      return res.status(400).json({
-        success: false,
-        message: "This reward does not belong to the selected university."
-      });
-    }
 
+    const receiverUser = await User.findOne({ email: recipient_email });
+    const receiver_id = receiverUser ? receiverUser._id : null;
 
     const card = await Card.create({
       sender: studentId,
+      receiver_id,
       recipient_name,
       recipient_email,
-      college: college || null,
-      reward,
-      receiver: receiver || null,
-      university,
+      college_name: college_name || null,
+      reward: reward || null,
       message
     });
 
-    let progress = await StudentRewardProgress.findOne({
-      student: studentId,
-      reward: reward
-    });
 
-    if (!progress) {
-      progress = await StudentRewardProgress.create({
-        student: studentId,
-        reward: reward,
-        completedPoints: 1
-      });
-    } else {
-      progress.completedPoints += 1;
-      if (progress.completedPoints > rewardData.totalPoints) {
-        progress.completedPoints = rewardData.totalPoints;
+    if (reward) {
+      const rewardData = await Reward.findById(reward);
+
+      if (rewardData) {
+        let progress = await StudentRewardProgress.findOne({
+          student: studentId,
+          reward
+        });
+
+        if (!progress) {
+          progress = await StudentRewardProgress.create({
+            student: studentId,
+            reward: reward || null,
+            completedPoints: 1
+          });
+        } else {
+          progress.completedPoints += 1;
+          await progress.save();
+        }
       }
-      await progress.save();
     }
 
-
     const populatedCard = await Card.findById(card._id)
-      .populate("university", "name")
-      .populate("reward", "name totalPoints completedPoints")
-      .populate({
-        path: "college",
-        select: "name",
-      });
+      .populate("reward", "name")
+      .lean();
 
 
     return res.status(201).json({
@@ -173,7 +171,7 @@ export const createCard = async (req, res) => {
 export const getCardsByCollege = async (req, res) => {
   try {
     const { collegeId } = req.params;
-    const cards = await Card.find({ college: collegeId }).populate("sender", "name email");
+    const cards = await Card.find({ college_name: collegeId }).populate("sender", "name email");
     res.status(200).json({ success: true, cards });
   } catch (err) {
     console.error(err);
@@ -312,17 +310,14 @@ export const getSentCards = async (req, res) => {
     const studentId = req.user.id;
 
     const cards = await Card.find({ sender: studentId })
-      .populate("university", "name")
       .populate("reward", "name")
-      .populate("college", "name")
       .sort({ createdAt: -1 });
 
     const formatted = cards.map(card => ({
       ...card.toObject(),
-
-      university: card.university ? card.university.name : null,
-      college: card.college ? card.college.name : null,
       reward: card.reward ? card.reward.name : null,
+      college_name: card.college_name || null,
+
 
       date: formatDate(card.createdAt)
     }));

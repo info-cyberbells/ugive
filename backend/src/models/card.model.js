@@ -8,30 +8,18 @@ const cardSchema = new mongoose.Schema(
       required: true,
     },
 
-    receiver: {
+    receiver_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: false,
-      default: null,
-    },
-
-    college: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "College",
-      required: false,
-      default: null,
-    },
-
-    university: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "University",
-      required: true,
+      default: null
     },
 
     reward: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Reward",
-      required: true,
+      required: false,
+      default: null
     },
 
     message: {
@@ -51,10 +39,17 @@ const cardSchema = new mongoose.Schema(
       trim: true,
     },
 
+    college_name: {
+      type: String,
+      required: false,
+      default: null,
+      trim: true
+    },
+
     sent_at: {
       type: Date,
       default: Date.now,
-    },
+    }
   },
   { timestamps: true }
 );
