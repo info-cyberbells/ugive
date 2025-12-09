@@ -8,6 +8,7 @@ import { sendFriendRequest, acceptFriendRequest, deleteFriendRequest, unfriendUs
 import { getStudentRewards, claimReward } from "../controllers/reward.controller.js";
 import { deleteMyAccount } from "../controllers/student.controller.js";
 import { createFeedback, getMyFeedback } from "../controllers/feedback.controller.js";
+import { getStudentStreakAndRewards } from "../controllers/getStudentStreakAndRewards.controller.js";
 
 
 const router = express.Router();
@@ -55,6 +56,12 @@ router.get("/college-rewards", getStudentRewards);
 router.post("/sent-feedback", createFeedback);
 router.get("/my-feedback", getMyFeedback);
 router.post("/rewards/claim", claimReward);
+
+
+
+
+// GET student streak + rewards + weekly stats
+router.get("/streak-summary", getStudentStreakAndRewards);
 
 
 
