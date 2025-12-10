@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { remainingCardProgress } from '../../features/studentCardSlice';
 
 const CircularProgress = ({ percent }) => {
   const radius = 80;
@@ -85,14 +87,24 @@ const CircularProgress = ({ percent }) => {
 
 const LetsGo = () => {
 
+  const dispatch = useDispatch();
+  const {cardsProgress, isLoading, isError} = useSelector((state)=> state.studentCard);
   const [rewardPercent, setRewardPercent] = useState(0);
+
+  useEffect(()=>{
+    dispatch(remainingCardProgress());
+  },[]);
+
+  const cardPercentage = cardsProgress?.currentReward?.percentage || 0;
+
+  const cardsLeft = cardsProgress?.currentReward?.totalPoints - cardsProgress?.currentReward?.completedPoints
 
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    const timer = setTimeout(() => setRewardPercent(20), 500);
+    const timer = setTimeout(() => setRewardPercent(cardPercentage), 500);
     return () => clearTimeout(timer);
-  }, []);
+  }, [cardPercentage]);
 
   return (
     <div className="min-h-screen ml-60 mt-14 bg-gray-50 p-8">
@@ -112,7 +124,21 @@ const LetsGo = () => {
         <div className="flex flex-col items-center justify-center text-center">
 
           <h1 className="text-2xl font-semibold mb-6 max-w-md leading-relaxed">
-            Send 4 more cards to receive a free <span className="font-semibold text-[#E18925]">coffee.</span>
+{
+  cardsLeft == 0
+    ? (
+        <>Your reward has unlocked!</>
+      )
+    : (
+        <>
+          Send {cardsLeft} more cards to receive a free{" "}
+          <span className="font-semibold text-[#E18925]">
+            {cardsProgress?.currentReward?.rewardName}
+          </span>
+          .
+        </>
+      )
+}
           </h1>
 
           <div className="mb-12">

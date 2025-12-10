@@ -544,3 +544,21 @@ export const getReceivedRequestsService = async () => {
     return response.data;
 };
 
+// GET STUDENT STREAK SUMMARY
+
+export const getStreakSummaryService = async () => {
+    const response = await axios.get(
+        USER_ENDPOINTS.STUDENT_STREAK_SUMMARY,
+        getAuthHeader(),
+    )
+    return response.data;
+}
+
+//  GET REMIANING CARDS PROGRESS
+export const getRemainingCardService = async () => {
+    const response = await axios.get(
+        USER_ENDPOINTS.STUDENT_REMAINING_CARD,
+        getAuthHeader(),
+    );
+    return response.data;
+}

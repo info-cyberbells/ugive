@@ -605,13 +605,13 @@ const Friends = () => {
                     onClick={() => { setSortOrder("newest"); setShowFilterMenu(false); }}
                     className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${sortOrder === "newest" ? "bg-yellow-50 text-yellow-700" : ""}`}
                   >
-                    Newest First
+                    Oldest First
                   </button>
                   <button
                     onClick={() => { setSortOrder("oldest"); setShowFilterMenu(false); }}
                     className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${sortOrder === "oldest" ? "bg-yellow-50 text-yellow-700" : ""}`}
                   >
-                    Oldest First
+                    Newest First
                   </button>
                   <button
                     onClick={() => { setSortOrder("a-z"); setShowFilterMenu(false); }}

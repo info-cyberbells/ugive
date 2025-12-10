@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { sendCardService, checkCardEligibilityService, getCardListingService } from "../auth/authServices";
+import { sendCardService, checkCardEligibilityService, getCardListingService, getRemainingCardService } from "../auth/authServices";
 
 
 // send card thunk
@@ -43,12 +43,28 @@ export const getSentCards = createAsyncThunk(
     }
 )
 
+// GET STUDENT REMAINING CARD PROGRESS
+
+export const remainingCardProgress = createAsyncThunk(
+    'card/getRemainingCardProgress',
+    async (_, thunkAPI) => {
+        try {
+            const response = await getRemainingCardService();
+            return response;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error?.response?.data?.message || "Failed to fetch Card Progress");
+        }
+    }    
+)
+
+
 const studentCardSlice = createSlice({
     name: "studentCard",
     initialState: {
         studentCard: null,
         cardsData: null,
         sentCards: [],
+        cardsProgress: null,
         isLoading: false,
         isError: false,
         message: "",
@@ -102,6 +118,20 @@ const studentCardSlice = createSlice({
                 state.sentCards = action.payload; 
             })
             .addCase(getSentCards.rejected, (state, action) =>{
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            //Remaining Cards & progress 
+            .addCase(remainingCardProgress.pending, (state)=>{
+                state.isLoading = true;
+                state.isError = false;
+            })
+            .addCase(remainingCardProgress.fulfilled, (state, action)=>{
+                state.isLoading = false;
+                state.cardsProgress = action.payload;
+            })
+            .addCase(remainingCardProgress.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;

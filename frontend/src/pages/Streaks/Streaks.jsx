@@ -1,30 +1,48 @@
-import React from 'react'
-import { Flame, Coffee, Star, Shield } from 'lucide-react';
+import React, { useEffect } from "react";
+import { Flame, Coffee, Star, Shield } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { getStreakSummary } from "../../features/studentDataSlice";
+import { useNavigate } from "react-router-dom";
 
+const Skeleton = ({ className }) => (
+  <div className={`bg-gray-200 animate-pulse rounded-md ${className}`} />
+);
 
-const MilestoneItem = ({ number, weeks, reward, progressPercent, icon: Icon, iconColor, progressColor }) => {
+const MilestoneItem = ({
+  number,
+  weekLabel,
+  cardsSent,
+  streakEarned,
+  icon: Icon,
+  iconColor,
+}) => {
   return (
     <div className="flex items-center py-3 border-b border-gray-100 last:border-b-0">
-      <div className="w-8 text-center text-sm text-gray-500 hidden sm:block">{number}</div>
-      <div className="w-10 flex-shrink-0 flex justify-center">
+      <div className="w-8 text-center text-sm text-gray-500 hidden sm:block">
+        {number}
+      </div>
+
+      <div className="w-10 ml-3 flex-shrink-0 flex justify-center">
         <Icon className={`w-5 h-5 ${iconColor}`} />
       </div>
-      <div className="w-1/4 text-sm font-medium text-gray-800 ml-4">{weeks} Weeks</div>
-      <div className="flex-1 px-4">
-        <div className="h-2 rounded-full bg-gray-200">
-          <div
-            className={`h-full rounded-full ${progressColor}`}
-            style={{ width: `${progressPercent}%` }}
-          ></div>
-        </div>
+
+      <div className="w-1/3 ml-3">
+        <p className="text-sm ml-3 font-medium text-gray-800">{weekLabel}</p>
       </div>
-      <div className="w-32 flex-shrink-0 text-right">
+
+      <div className="w-1/4 text-sm font-medium text-gray-700">
+        {cardsSent > 0 ? `${cardsSent} ` : "No card sent"}
+      </div>
+
+      <div className="w-40 flex-shrink-0 text-right">
         <span
-          className={`inline-flex items-center px-2 py-1 text-xs font-thin rounded-full ${
-            reward.includes('unlocked') ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'
+          className={`inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full ${
+            streakEarned
+              ? "bg-green-100 text-green-700"
+              : "bg-gray-200 text-gray-600"
           }`}
         >
-          {reward}
+          {streakEarned ? "Streak Earned" : "Not Earned"}
         </span>
       </div>
     </div>
@@ -32,39 +50,48 @@ const MilestoneItem = ({ number, weeks, reward, progressPercent, icon: Icon, ico
 };
 
 const RewardBadge = ({ name, rewardImage, points, activeQuarters }) => {
-  const ICON_SIZE = 'text-5xl';
+  const ICON_SIZE = "text-5xl";
 
-  const activeColor = '#fbbf24';
-  const inactiveColor = '#f59e0b20';
-  const gapColor = '#ffffff';
+  const activeColor = "#fbbf24";
+  const inactiveColor = "#f59e0b20";
+  const gapColor = "#ffffff";
 
-
-  const segmentSize = 86;
-  const gapSize = 4;
+  const segmentSize = 100;
+  const gapSize = 0;
 
   const gradientStops = [
     // Quarter 1 (0 to 90 deg) - Top Right
-    `${activeQuarters >= 4 ? activeColor : inactiveColor} 0deg ${segmentSize}deg`,
+    `${
+      activeQuarters >= 4 ? activeColor : inactiveColor
+    } 0deg ${segmentSize}deg`,
     `${gapColor} ${segmentSize}deg ${segmentSize + gapSize}deg`, // Gap
 
     // Quarter 2 (90 to 180 deg) - Bottom Right
-    `${activeQuarters >= 1 ? activeColor : inactiveColor} ${90 + gapSize}deg ${90 + segmentSize}deg`,
+    `${activeQuarters >= 1 ? activeColor : inactiveColor} ${90 + gapSize}deg ${
+      90 + segmentSize
+    }deg`,
     `${gapColor} ${90 + segmentSize}deg ${90 + segmentSize + gapSize}deg`, // Gap
 
     // Quarter 3 (180 to 270 deg) - Bottom Left
-    `${activeQuarters >= 2 ? activeColor : inactiveColor} ${180 + gapSize}deg ${180 + segmentSize}deg`,
+    `${activeQuarters >= 2 ? activeColor : inactiveColor} ${180 + gapSize}deg ${
+      180 + segmentSize
+    }deg`,
     `${gapColor} ${180 + segmentSize}deg ${180 + segmentSize + gapSize}deg`, // Gap
 
     // Quarter 4 (270 to 360 deg) - Top Left
-    `${activeQuarters >= 3 ? activeColor : inactiveColor} ${270 + gapSize}deg ${270 + segmentSize}deg`,
+    `${activeQuarters >= 3 ? activeColor : inactiveColor} ${270 + gapSize}deg ${
+      270 + segmentSize
+    }deg`,
     `${gapColor} ${270 + segmentSize}deg 360deg`, // Gap
-  ].join(', ');
+  ].join(", ");
 
   const conicGradient = `conic-gradient(${gradientStops})`;
 
   return (
-    <div className="group flex flex-col items-center p-4 rounded-2xl cursor-pointer
-  transition-all duration-300 hover:scale-[1.04] hover:-translate-y-2 hover:shadow-xl hover:shadow-purple-200">
+    <div
+      className="group flex flex-col items-center p-4 rounded-2xl cursor-pointer
+  transition-all duration-300 hover:scale-[1.04] hover:-translate-y-2 hover:shadow-xl hover:shadow-purple-200"
+    >
       <div className="relative w-32 h-32 mb-4 transition-transform duration-300 group-hover:rotate-3 group-hover:scale-[1.05]">
         <div className="absolute inset-0 overflow-hidden rounded-full pointer-events-none">
           <div className="shine absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full"></div>
@@ -76,112 +103,195 @@ const RewardBadge = ({ name, rewardImage, points, activeQuarters }) => {
           "
           style={{ backgroundImage: conicGradient }}
         >
+         <div className="w-full h-full -rotate-45 bg-white rounded-full flex flex-col items-center justify-center relative overflow-hidden">
 
-          <div className="w-full h-full -rotate-45 bg-white rounded-full flex items-center justify-center overflow-hidden">
-            <p className='text-[#6955A5] font-semibold'>4 week</p>
-          </div>
+  <img
+    src={rewardImage}
+    alt="Reward"
+    className="w-24 h-24 -mt-6 animate-pulse object-contain opacity-90"
+  />
+
+  <p className=" -mt-6 bottom-10 text-xl font-semibold text-[#6955A5]">
+    {points} {points === 1 ? "week" : "weeks"}
+  </p>
+
+</div>
+
         </div>
-
       </div>
     </div>
   );
 };
 
-
-
-
 const Streaks = () => {
+  const dispatch = useDispatch();
 
-     const currentStreakWeeks = 4;
-  const milestones = [
-    { number: 1, weeks: 3, reward: 'Coffee unlocked', progressPercent: 100, icon: Coffee, iconColor: 'text-blue-500', progressColor: 'bg-blue-400' },
-    { number: 2, weeks: 6, reward: 'Bonus points next', progressPercent: 66, icon: Star, iconColor: 'text-yellow-500', progressColor: 'bg-yellow-400' },
-    { number: 3, weeks: 10, reward: 'Premium reward', progressPercent: 40, icon: Shield, iconColor: 'text-purple-500', progressColor: 'bg-purple-400' },
-  ];
+  const navigate = useNavigate();
 
+  const { streakSummary, isLoading, isError } = useSelector(
+    (state) => state.studentData
+  );
 
-    const activeQuarters = Math.min(4, Math.floor(currentStreakWeeks / 2.5));
+  useEffect(() => {
+    dispatch(getStreakSummary());
+  }, []);
 
+  const currentStreakWeeks =  streakSummary?.monthly?.currentStreak || 0;
 
+  const milestones = streakSummary?.monthly?.weeks?.map((w, index) => ({
+    number: index + 1,
+    weekLabel: w.weekLabel,
+    cardsSent: w.cardsSent,
+    streakEarned: w.streakEarned,
+    icon: w.streakEarned ? Star : Shield,
+    iconColor: w.streakEarned ? "text-green-500" : "text-gray-400",
+  }));
+
+  const rewardUsed = streakSummary?.monthly?.rewardsUsed?.length || 0;
+  const rewardUnlocked = streakSummary?.monthly?.rewardsUnlocked?.length || 0;
+
+  const activeQuarters = Math.min(4, currentStreakWeeks);
 
   return (
     <div className="min-h-screen ml-60 mt-14 bg-gray-50 px-8 py-4 font-[Poppins]">
       <div className="">
-
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold text-[#6955A5] flex items-center">
-                        <Flame className="w-6 h-6 text-yellow-400 fill-yellow-400 mr-2" />
+            <Flame className="w-6 h-6 text-yellow-400 fill-yellow-400 mr-2" />
             Streaks
           </h1>
           <button
-          onClick={()=>navigate('/write-card')}
-              className="mt-4 px-6 py-2 bg-[#7f63e6]  cursor-pointer text-white text-sm font-medium rounded-4xl hover:bg-violet-700 hover:scale-[1.02] transition duration-150 shadow-lg ">
-               Write Card
-            </button>
+            onClick={() => navigate("/write-card")}
+            className="mt-4 px-6 py-2 bg-[#7f63e6]  cursor-pointer text-white text-sm font-medium rounded-4xl hover:bg-violet-700 hover:scale-[1.02] transition duration-150 shadow-lg "
+          >
+            Write Card
+          </button>
         </div>
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Your Streaks Card */}
-          <div className="lg:col-span-1 bg-white p-6 rounded-xl shadow-md h-full">
-            <h2 className="text-lg font-semibold text-[#05004E] mb-2">
-              Your Streaks: <span>{currentStreakWeeks} weeks</span>
-            </h2>
+          <div className="flex flex-col gap-8 lg:col-span-1">
+            <div className="flex flex-col gap-8 lg:col-span-1">
+              {isLoading ? (
+                <>
+                  <div className="bg-white p-6 rounded-xl shadow-md space-y-5">
+                    <Skeleton className="w-48 h-6" />
+                    <Skeleton className="w-28 h-28 rounded-full mx-auto" />
+                    <Skeleton className="w-40 h-4 mx-auto" />
+                  </div>
 
-            <div className="flex flex-col items-center justify-center">
-              <RewardBadge 
-                name="Streak Reward"
-                rewardImage="/your-reward-image.png"
-                points={currentStreakWeeks}
-                activeQuarters={activeQuarters}
-              />
+                  <div className="bg-white px-6 py-8 rounded-xl shadow-md space-y-4">
+                    <Skeleton className="w-32 h-5" />
+                    <Skeleton className="w-40 h-4" />
+                    <Skeleton className="w-36 h-4" />
+                    <Skeleton className="w-36 h-4" />
+                    <Skeleton className="w-28 h-4" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Your Streaks Card */}
+                  <div className="bg-white p-6 rounded-xl shadow-md">
+                    <h2 className="text-lg font-semibold text-[#05004E] mb-2">
+                     Your Streaks:{" "}
+  <span>
+    {currentStreakWeeks} {currentStreakWeeks === 1 ? "week" : "weeks"}
+  </span>
+                    </h2>
 
-              <p className="mt-2 text-sm text-gray-600">
-                You're doing amazing – keep it going!
-              </p>
+                    <div className="flex flex-col items-center justify-center">
+                      <RewardBadge
+                        name="Streak Reward"
+                        rewardImage="/flame.png"
+                        points={currentStreakWeeks}
+                        activeQuarters= {4}
+                      />
+                      <p className="mt-2 text-sm text-gray-600">
+                        You're doing amazing – keep it going!
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Your Stats Card */}
+                  <div className="bg-white px-6 py-8 rounded-xl shadow-md">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                      Your Stats
+                    </h2>
+
+                    <ul className="list-disc ml-5 space-y-2 text-gray-700">
+                      <li className="text-sm">
+                        <span className="font-semibold text-[#6955A5]">
+                          Total Cards Sent:
+                        </span>{" "}
+                        {streakSummary?.monthly?.totalCardsThisMonth || 0}
+                      </li>
+                      <li className="text-sm">
+                        <span className="font-semibold text-[#6955A5]">
+                          Best streak:
+                        </span>{" "}
+                        {streakSummary?.monthly?.bestStreak || 0} weeks
+                      </li>
+                      <li className="text-sm">
+                        <span className="font-semibold text-[#6955A5]">
+                          Rewards used:
+                        </span>{" "}
+                        {rewardUsed || 0}
+                      </li>
+                      <li className="text-sm">
+                        <span className="font-semibold text-[#6955A5]">
+                          Rewards unlocked:
+                        </span>{" "}
+                        {rewardUnlocked || 0}
+                      </li>
+                    </ul>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
-          {/* Milestones Card (Takes 2/3 width on large screens) */}
-          <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-md">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Milestones</h2>
-            
-            <div className="hidden sm:flex text-sm font-medium text-gray-500 border-b border-gray-200 pb-2 mb-2">
-              <div className="w-8 text-center">#</div>
-              <div className="w-10"></div>
-              <div className="w-1/4 ml-4">Weeks</div>
-              <div className="flex-1 px-4">Progress</div>
-              <div className="w-32 text-right">Rewards</div>
-            </div>
+          <div className="lg:col-span-2">
+            <div className="bg-white p-6 rounded-xl shadow-md">
+              {isLoading ? (
+                <>
+                  <Skeleton className="w-56 h-6 mb-4" />
 
-            <div className="">
-              {milestones.map((m, index) => (
-                <MilestoneItem key={index} {...m} />
-              ))}
+                  <Skeleton className="w-full h-6 mb-4" />
+                  <div className="space-y-4">
+                    <Skeleton className="w-full h-14" />
+                    <Skeleton className="w-full h-14" />
+                    <Skeleton className="w-full h-14" />
+                    <Skeleton className="w-full h-14" />
+                    <Skeleton className="w-full h-14" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                    Milestones {streakSummary?.monthly?.monthLabel}
+                  </h2>
+
+                  <div className="hidden sm:flex text-sm font-medium text-gray-500 border-b border-gray-200 pb-2 mb-2">
+                    <div className="w-8 text-center">#</div>
+                    <div className="w-10"></div>
+                    <div className="w-1/3 ml-7">Week</div>
+                    <div className="w-1/4">Cards Sent</div>
+                    <div className="w-32 text-right">Streak</div>
+                  </div>
+
+                  <div className="min-h-[200px]">
+                    {milestones?.map((m, index) => (
+                      <MilestoneItem key={index} {...m} />
+                    ))}
+                  </div>
+                </>
+              )}
             </div>
           </div>
-
-          {/* Your Stats Card (Below Streaks card on large screens, spanning 1 column) */}
-          <div className="lg:col-span-1 bg-white px-6 py-8 rounded-xl shadow-md">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Your Stats</h2>
-            
-            <ul className="list-disc ml-5 space-y-2 text-gray-700">
-              <li className="text-sm">
-                <span className="font-semibold text-[#6955A5]">Cards sent:</span> 12
-              </li>
-              <li className="text-sm">
-                <span className="font-semibold text-[#6955A5]">Best streak:</span> 6 weeks
-              </li>
-              <li className="text-sm">
-                <span className="font-semibold text-[#6955A5]">Rewards used:</span> 3
-              </li>
-            </ul>
-          </div>
-          
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Streaks
+export default Streaks;
