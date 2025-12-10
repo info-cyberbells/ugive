@@ -127,13 +127,13 @@ const CardReadingPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-8 mb-6 mt-4 bg-white border border-gray-200 p-4 rounded-lg">
                       <CardDetailRow
                         icon={Landmark}
-                        label="University"
-                        value={card.university}
+                        label="House"
+                        value={card.college_name}
                       />
                       <CardDetailRow
                         icon={Award}
                         label="Reward"
-                        value={card.reward}
+                        value={card.reward || "N/A"}
                       />
                       <div className="md:col-span-2">
                         <CardDetailRow

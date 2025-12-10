@@ -20,6 +20,7 @@ import {
   Bell,
   Settings,
   HelpCircle,
+  MessageSquare,
  Ticket} from "lucide-react";
 import { resetStudentState } from "../../features/studentDataSlice";
 import { clearProfile } from "../../features/superadminProfileSlice";
@@ -31,6 +32,7 @@ const ROLE_BASED_MENUS = {
     { id: "manage-colleges", title: "Manage Colleges", icon: GraduationCap },
     { id: "manage-students", title: "Manage Students", icon: BookOpen },
     { id: "manage-rewards", title: "Manage Rewards", icon: Gift },
+    { id: "feedbacks", title: "Students Feedback", icon: MessageSquare },
     { id: "social", title: "Social", icon: Share2 },
   ],
 

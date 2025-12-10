@@ -79,7 +79,7 @@ const Contactus = () => {
                      <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className={`bg-[#6955A5] text-white px-12 py-2.5 rounded-xl text-sm transition ${
+            className={`bg-[#6955A5] text-white px-12 cursor-pointer py-2.5 rounded-xl text-sm transition ${
               isLoading ? "opacity-60 cursor-not-allowed" : "hover:scale-[1.02]"
             }`}
           >

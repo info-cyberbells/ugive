@@ -23,6 +23,7 @@ import MyCardReading from './pages/MyCardReading/MyCardReading';
 import Friends from './pages/Friends/Friends';
 import Contactus from './pages/Contactus.jsx/Contactus';
 import Streaks from './pages/Streaks/Streaks';
+import Feedback from './pages/SuperAdmin/ManageFeedback/ManageFeedback';
 
 
 
@@ -138,6 +139,8 @@ function App() {
         />
 
         <Route path="/manage-rewards" element={isAuthenticated ? <ManageRewards /> : <Navigate to='/' replace />}
+        />
+        <Route path="/feedbacks" element={isAuthenticated ? <Feedback /> : <Navigate to='/' replace />}
         />
 
         <Route path="/privacy-policy" element={<PrivacyPolicy />}

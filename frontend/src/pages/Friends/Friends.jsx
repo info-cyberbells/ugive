@@ -522,19 +522,39 @@ const Friends = () => {
                         </div>
                       </div>
                       <button
-                        onClick={() => handleSendRequest(user.id || user._id)}
-                        disabled={sendingToUserId === (user.id || user._id)}
-                        className="px-4 py-1.5 bg-[#F3B11C] text-white cursor-pointer rounded-full hover:bg-yellow-500 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                      >
-                        {sendingToUserId === (user.id || user._id) ? (
-                          <>
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            Sending...
-                          </>
-                        ) : (
-                          "Add Friend"
-                        )}
-                      </button>
+  onClick={() => handleSendRequest(user.id || user._id)}
+  disabled={
+    sendingToUserId === (user.id || user._id) ||
+    user.friendshipStatus === "connected" ||
+    user.friendshipStatus === "requested_by_me"
+  }
+  className={`
+    px-4 py-1.5 rounded-full transition flex items-center gap-2
+    ${
+      sendingToUserId === (user.id || user._id)
+        ? "bg-[#F3B11C] text-white cursor-wait"
+        : user.friendshipStatus === "connected"
+        ? "bg-gray-300 text-gray-700 cursor-default"
+        : user.friendshipStatus === "requested_by_me"
+        ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+        : "bg-[#F3B11C] text-white hover:bg-yellow-500 cursor-pointer"
+    }
+  `}
+>
+  {sendingToUserId === (user.id || user._id) ? (
+    <>
+      <Loader2 className="w-4 h-4 animate-spin" />
+      Sending...
+    </>
+  ) : user.friendshipStatus === "connected" ? (
+    "Friend"
+  ) : user.friendshipStatus === "requested_by_me" ? (
+    "Requested"
+  ) : (
+    "Add Friend"
+  )}
+</button>
+
                     </div>
                   ))}
                 </div>

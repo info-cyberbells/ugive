@@ -343,6 +343,26 @@ export const updateRewardService = async (id, rewardData) => {
     return response.data;
 };
 
+// get feedback service
+
+export const getFeedbackService = async () => {
+    const response = await axios.get(
+        USER_ENDPOINTS.SUPERADMIN_GET_ALL_FEEDBACKS,
+        getAuthHeader(),
+    );
+    return response.data;
+}
+
+// delete feedback
+
+export const deleteFeedbackService = async (id) => {
+    const response = await axios.delete(
+        `${USER_ENDPOINTS.SUPERADMIN_DELETE_FEEDBACK}/${id}`,
+        getAuthHeader(),
+    );
+    return response.data;
+}
+
 
 
 

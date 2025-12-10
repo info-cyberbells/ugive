@@ -47,6 +47,9 @@ export const USER_ENDPOINTS = {
     SUPERADMIN_GET_SINGLE_REWARD: `${API_BASE_URL}/super_admin/get-reward`,
     SUPERADMIN_UPDATE_REWARD: `${API_BASE_URL}/super_admin/update-reward`,
 
+    SUPERADMIN_GET_ALL_FEEDBACKS: `${API_BASE_URL}/super_admin/get-all-feedback`,
+    SUPERADMIN_DELETE_FEEDBACK: `${API_BASE_URL}/super_admin/delete-feedback`,
+
 
 
 
