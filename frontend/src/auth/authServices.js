@@ -95,6 +95,15 @@ export const deleteSocialLinkService = async (id) => {
 };
 
 
+//get superadmin dashbaord data
+export const getSuperAdminDashboardService = async () => {
+    const response = await axios.get(
+        USER_ENDPOINTS.SUPERADMIN_DASHBAORD,
+        getAuthHeader()
+    );
+    return response.data;
+};
+
 
 
 //get superadmin profile
@@ -447,7 +456,7 @@ export const deleteStudentAccountService = async () => {
 export const sendFeedbackStudentService = async (feedback) => {
     const response = await axios.post(
         USER_ENDPOINTS.STUDENT_SEND_FEEDBACK,
-        {feedback},
+        { feedback },
         getAuthHeader()
     )
     return response.data;

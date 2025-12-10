@@ -1,5 +1,6 @@
-import React from "react";
-import { Bell } from "lucide-react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getSuperAdminDashboard } from "../../../features/superadminProfileSlice";
 import {
   LineChart,
   Line,
@@ -15,88 +16,155 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import { useToast } from "../../../context/ToastContext";
 
 const SuperAdminDashboard = () => {
+  const dispatch = useDispatch();
+  const { showToast } = useToast();
+  const { dashboardData, loading, error } = useSelector(
+    (state) => state.superadmin
+  );
+
+  useEffect(() => {
+    dispatch(getSuperAdminDashboard());
+  }, [dispatch]);
+
+
+  useEffect(() => {
+    if (error) {
+      showToast(error, "error");
+    }
+  }, [error, showToast]);
+
+  if (loading) {
+    return (
+      <div className="bg-[#F5F5F5] font-[Inter] min-h-screen mt-14 px-4 pt-6 pb-4 lg:ml-60">
+        <div className="h-8 w-64 bg-gray-300 rounded mb-6 animate-pulse"></div>
+
+        {/* Stats Cards Skeleton */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="bg-white rounded-xl shadow-sm p-4">
+              <div className="h-4 bg-gray-300 rounded w-24 mb-2 animate-pulse"></div>
+              <div className="h-8 bg-gray-300 rounded w-16 mb-2 animate-pulse"></div>
+              <div className="h-3 bg-gray-300 rounded w-32 animate-pulse"></div>
+            </div>
+          ))}
+        </div>
+
+        {/* Charts Skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          <div className="bg-white p-6 rounded-2xl shadow-sm lg:col-span-2">
+            <div className="h-6 bg-gray-300 rounded w-40 mb-4 animate-pulse"></div>
+            <div className="h-64 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+          <div className="bg-white p-6 rounded-2xl shadow-sm">
+            <div className="h-6 bg-gray-300 rounded w-40 mb-4 animate-pulse"></div>
+            <div className="h-64 bg-gray-200 rounded animate-pulse"></div>
+          </div>
+        </div>
+
+        {/* Bottom Section Skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {[...Array(2)].map((_, i) => (
+            <div key={i} className="bg-white p-6 rounded-2xl shadow-sm">
+              <div className="h-6 bg-gray-300 rounded w-40 mb-4 animate-pulse"></div>
+              <div className="h-64 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+          ))}
+        </div>
+
+        {/* Table Skeleton */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm">
+          <div className="h-6 bg-gray-300 rounded w-48 mb-4 animate-pulse"></div>
+          <div className="space-y-3">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="h-12 bg-gray-200 rounded animate-pulse"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!dashboardData) {
+    return (
+      <div className="bg-[#F5F5F5] font-[Inter] min-h-screen mt-14 px-4 pt-6 pb-4 lg:ml-60">
+        <div className="flex items-center justify-center h-96">
+          <div className="text-xl text-gray-600">No data available</div>
+        </div>
+      </div>
+    );
+  }
+
+  const { overview, userMetrics, cardMetrics, topPerformers, recentActivity } =
+    dashboardData;
+
+  // Stats cards data (5 cards now)
   const stats = [
     {
-      title: "Views",
-      value: 7265,
-      change: "+ 11.01%",
-      arrow: "↑",
+      title: "Total Students",
+      value: overview.totalStudents,
+      subtitle: `+${userMetrics.newUsersLast30Days} this month`,
+      bgColor: "bg-[#E6C8FF]",
     },
     {
-      title: "Visits",
-      value: "1,024",
-      change: "+ 8.32%",
-      arrow: "↑",
+      title: "Total Admins",
+      value: overview.totalAdmins,
+      subtitle: "System admins",
+      bgColor: "bg-[#2D4CCA2B]",
     },
     {
-      title: "New Users",
-      value: 89,
-      change: "+ 3.15%",
-      arrow: "↑",
+      title: "Universities",
+      value: overview.totalUniversities,
+      subtitle: "Registered",
+      bgColor: "bg-[#E6C8FF]",
     },
     {
-      title: "Active Users",
-      value: 412,
-      change: "+ 5.04%",
-      arrow: " ↑",
-    },
-  ];
-
-  const projectionData = [
-    { month: "Jan", projection: 8000, actual: 12000 },
-    { month: "Feb", projection: 10000, actual: 11000 },
-    { month: "Mar", projection: 12000, actual: 11000 },
-    { month: "Apr", projection: 15000, actual: 18000 },
-    { month: "May", projection: 17000, actual: 16000 },
-    { month: "Jun", projection: 21000, actual: 22000 },
-  ];
-
-  const activityData = [
-    { name: "Jan", current: 7680, previous: 5360 },
-    { name: "Feb", current: 16575, previous: 10990 },
-    { name: "Mar", current: 9000, previous: 9000 },
-    { name: "Apr", current: 12546, previous: 9000 },
-    { name: "May", current: 15000, previous: 20000 },
-    { name: "Jun", current: 22000, previous: 25000 },
-  ];
-
-  const summaryData = [
-    {
-      name: "ASOS Ridley High Waist",
-      price: 79.49,
-      quantity: 82,
-      amount: 6518.18,
+      title: "Total Colleges",
+      value: overview.totalColleges,
+      subtitle: "Active campuses",
+      bgColor: "bg-[#2D4CCA2B]",
     },
     {
-      name: "Marco Lightweight Shirt",
-      price: 128.5,
-      quantity: 37,
-      amount: 4754.5,
+      title: "Total Rewards",
+      value: overview.totalRewards,
+      subtitle: "Available rewards",
+      bgColor: "bg-[#E6C8FF]",
     },
-    { name: "Half Sleeve Shirt", price: 39.99, quantity: 64, amount: 2559.36 },
-    { name: "Lightweight Jacket", price: 20.0, quantity: 184, amount: 3680.0 },
-    { name: "Marco Shoes", price: 79.49, quantity: 64, amount: 1965.81 },
   ];
 
-  const data = [
-    { name: "Linux", value: 15000, color: "#A0BCE8" },
-    { name: "Mac", value: 25000, color: "#8CE3D4" },
-    { name: "iOS", value: 20000, color: "#000000" },
-    { name: "Window", value: 30000, color: "#8BB7FF" },
-    { name: "Android", value: 12000, color: "#C4A5FF" },
-    { name: "Other", value: 25000, color: "#87D88E" },
+  // University distribution data for pie chart
+  const universityData =
+    topPerformers.universitiesWithMostStudents?.map((uni) => ({
+      name: uni.universityName,
+      value: uni.studentCount,
+    })) || [];
+
+  const COLORS = ["#000000", "#7DBBFF", "#71DD8C", "#A0BCE8", "#C4A5FF"];
+
+  // Card metrics for line chart
+  const cardTrendData = [
+    {
+      name: "Today",
+      cards: cardMetrics.cardsToday,
+    },
+    {
+      name: "This Week",
+      cards: cardMetrics.cardsLast7Days,
+    },
+    {
+      name: "This Month",
+      cards: cardMetrics.cardsLast30Days,
+    },
   ];
 
-  const performanceData = [
-    { name: "Unitied States", value: 300.56 },
-    { name: "Canada", value: 135.18 },
-    { name: "Mexico", value: 78.02 },
-    { name: "Others", value: 48.96 },
-  ];
-
-  const COLORS = ["url(#blackGradient)", "#7DBBFF", "#71DD8C", "#A0BCE8"];
+  // Top card senders data
+  const topSendersData =
+    topPerformers.topCardSenders?.map((sender) => ({
+      name: sender.name.split(" ")[0],
+      cards: sender.cardsSent,
+    })) || [];
 
   return (
     <div className="bg-[#F5F5F5] font-[Inter] min-h-screen mt-14 px-4 pt-6 pb-4 lg:ml-60">
@@ -104,210 +172,328 @@ const SuperAdminDashboard = () => {
         Welcome Back, SuperAdmin
       </h2>
 
-      {/* === TOP SECTION === */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-4">
-        {/* Left 2 cols - cards */}
-        <div className="lg:col-span-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {stats.map((stat, index) => (
-            <div
-              key={index}
-              className={`flex-1 max-w-xs rounded-xl shadow p-4 ${index === 1 || index === 3 ? "bg-[#2D4CCA2B]" : "bg-[#E6C8FF]"
-                }`}
-            >
-              <p className="font-normal not-italic text-[14px] leading-[20px] tracking-[0px]">
-                {stat.title}
-              </p>
-              <div className="flex justify-between items-center mt-2">
-                <h2 className="text-2xl font-medium text-white">
-                  {stat.value}
-                </h2>
-                <p className="text-[12px] leading-[16px] font-normal">
-                  {stat.change} {stat.arrow}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
+      {/* === TOP SECTION - Stats Cards (5 Cards) === */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        {stats.map((stat, index) => (
+          <div
+            key={index}
+            className={`${stat.bgColor} rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow`}
+          >
+            <p className="text-sm font-medium text-gray-700 mb-1">
+              {stat.title}
+            </p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-1">
+              {stat.value}
+            </h2>
+            <p className="text-xs text-gray-600">{stat.subtitle}</p>
+          </div>
+        ))}
       </div>
 
       {/* === MIDDLE SECTION === */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
-        {/* Recent Activity */}
-        <div className="bg-[#F9F9FA] p-5 rounded-2xl shadow-sm lg:col-span-3">
-          <div className="flex gap-6">
-            <h4 className="font-semibold text-gray-700 mb-3">Total Users</h4>
-            <h4>|</h4>
-            <li className="ml-4 text-sm mt-0.5 font-medium">
-              Total Projects{" "}
-            </li>
-            <li className="ml-4 text-sm mt-0.5 font-medium">
-              Operating status
-            </li>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        {/* Card Activity Trend */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm lg:col-span-2">
+          <div className="mb-4">
+            <h4 className="text-lg font-semibold text-gray-800">
+              Card Activity Trend
+            </h4>
+            <p className="text-sm text-gray-500">
+              Cards sent over time • Growth: {cardMetrics.cardGrowthRate}%
+            </p>
           </div>
-          <ResponsiveContainer width="100%" height="90%">
-            <LineChart data={activityData}>
-              {/* <CartesianGrid strokeDasharray="3 3" /> */}
+          <ResponsiveContainer width="100%" height={280}>
+            <LineChart data={cardTrendData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis
                 dataKey="name"
                 tick={{ fill: "#6B7280", fontSize: 12 }}
-                axisLine={false}
+                axisLine={{ stroke: "#e5e7eb" }}
                 tickLine={false}
-                padding={{ left: 20, right: 20 }}
               />
-
               <YAxis
                 tick={{ fill: "#9CA3AF", fontSize: 12 }}
-                axisLine={false}
+                axisLine={{ stroke: "#e5e7eb" }}
                 tickLine={false}
               />
-              <Tooltip />
-              <Legend />
-              <Line
-                type="monotone"
-                dataKey="current"
-                stroke="#000000"
-                dot={false}
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: "#fff",
+                  border: "1px solid #e5e7eb",
+                  borderRadius: "8px",
+                  fontSize: "12px",
+                }}
               />
               <Line
                 type="monotone"
-                dataKey="previous"
-                stroke="#A0BCE8"
-                strokeDasharray="4 4"
-                dot={false}
+                dataKey="cards"
+                stroke="#000000"
+                strokeWidth={2}
+                dot={{ fill: "#000000", r: 4 }}
+                activeDot={{ r: 6 }}
               />
             </LineChart>
           </ResponsiveContainer>
+          <div className="mt-3 flex gap-6 text-sm">
+            <div>
+              <span className="text-gray-500">Avg per Student:</span>
+              <span className="ml-2 font-semibold text-gray-800">
+                {cardMetrics.avgCardsPerStudent}
+              </span>
+            </div>
+            <div>
+              <span className="text-gray-500">Total Streaks:</span>
+              <span className="ml-2 font-semibold text-gray-800">
+                {userMetrics.totalStreakRecords}
+              </span>
+            </div>
+          </div>
         </div>
 
-        {/* Jobs by Location */}
-        <div className="bg-[#F9F9FA] min-h-80 p-5 rounded-2xl shadow-sm">
-          <h2>Traffic By Website</h2>
+        {/* University Distribution */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm">
+          <h4 className="text-lg font-semibold text-gray-800 mb-4">
+            Student Distribution
+          </h4>
+          {universityData.length > 0 ? (
+            <>
+              <ResponsiveContainer width="100%" height={180}>
+                <PieChart>
+                  <Pie
+                    data={universityData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={70}
+                    innerRadius={40}
+                    paddingAngle={2}
+                  >
+                    {universityData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#fff",
+                      border: "1px solid #e5e7eb",
+                      borderRadius: "8px",
+                      fontSize: "12px",
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="mt-4 space-y-2">
+                {topPerformers.universitiesWithMostStudents.map(
+                  (uni, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="w-3 h-3 rounded-full flex-shrink-0"
+                          style={{
+                            backgroundColor: COLORS[index % COLORS.length],
+                          }}
+                        ></span>
+                        <span className="text-gray-700 truncate text-xs">
+                          {uni.universityName.length > 25
+                            ? uni.universityName.substring(0, 25) + "..."
+                            : uni.universityName}
+                        </span>
+                      </div>
+                      <span className="font-semibold text-gray-900 ml-2">
+                        {uni.studentCount}
+                      </span>
+                    </div>
+                  )
+                )}
+              </div>
+            </>
+          ) : (
+            <p className="text-gray-500 text-sm text-center py-8">
+              No data available
+            </p>
+          )}
         </div>
       </div>
 
       {/* === BOTTOM SECTION === */}
-      <div className="w-full grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* My Summary */}
-        <div className="bg-[#F9F9FA] p-5 rounded-2xl shadow-sm overflow-x-auto lg:col-span-2">
-          <h4 className="font-semibold font-[Poppins] text-black mb-3">
-            Traffic By device
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Top Card Senders */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm">
+          <h4 className="text-lg font-semibold text-gray-800 mb-4">
+            Top Card Senders
           </h4>
-          <ResponsiveContainer width="100%" height="80%">
-            <BarChart data={data} barCategoryGap="25%">
-              <CartesianGrid
-                strokeDasharray="3 3"
-                vertical={false}
-                opacity={0.1}
-              />
-
-              <XAxis
-                dataKey="name"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "#828282", fontSize: 12 }}
-              />
-
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: "#828282", fontSize: 12 }}
-              />
-
-              <Tooltip cursor={{ fill: "transparent" }} />
-
-              <Bar
-                dataKey="value"
-                radius={[10, 10, 10, 10]}
-                shape={(props) => {
-                  const { x, y, width, height, fill } = props;
-                  return (
-                    <rect
-                      x={x}
-                      y={y}
-                      width={width}
-                      height={height}
-                      fill={fill}
-                      rx={10}
-                      ry={10}
-                    />
-                  );
-                }}
-              >
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Performance Summary */}
-        <div className="bg-[#F9F9FA] lg:col-span-2 p-5 rounded-2xl shadow-sm">
-          <h4 className="font-bold text-sm text-black mb-3">
-            Trafic By Location
-          </h4>
-          <div className="flex">
-            <ResponsiveContainer width="60%" height={200}>
-              <PieChart>
-                <defs>
-                  <linearGradient
-                    id="blackGradient"
-                    x1="0%"
-                    y1="0%"
-                    x2="0%"
-                    y2="100%"
-                  >
-                    <stop offset="0%" stopColor="#000000" />
-                    <stop offset="100%" stopColor="rgba(28,28,28,0.6)" />
-                  </linearGradient>
-                </defs>
-                <Pie
-                  data={performanceData}
-                  dataKey="value"
-                  nameKey="name"
-                  outerRadius={70}
-                  innerRadius={40}
-                  paddingAngle={3}
-                  startAngle={-270}
-                  endAngle={-720}
-                >
-                  {performanceData.map((entry, index) => (
-                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
-                  ))}
-                </Pie>
-
-                {/* ✅ Tooltip on hover */}
+          {topSendersData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={topSendersData}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="#f0f0f0"
+                />
+                <XAxis
+                  dataKey="name"
+                  axisLine={{ stroke: "#e5e7eb" }}
+                  tickLine={false}
+                  tick={{ fill: "#6B7280", fontSize: 12 }}
+                />
+                <YAxis
+                  axisLine={{ stroke: "#e5e7eb" }}
+                  tickLine={false}
+                  tick={{ fill: "#9CA3AF", fontSize: 12 }}
+                />
                 <Tooltip
-                  formatter={(value, name) => [`$${value.toFixed(2)}`, name]}
                   contentStyle={{
-                    // color: "white",
-                    backgroundColor: "black",
-                    border: "1px solid #E5E7EB",
-                    borderRadius: "18px",
-                    padding: "6px 10px",
+                    backgroundColor: "#fff",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "8px",
                     fontSize: "12px",
                   }}
-                  itemStyle={{ color: "white" }}
-                  labelStyle={{ color: "white" }}
+                  cursor={{ fill: "rgba(0, 0, 0, 0.05)" }}
                 />
-              </PieChart>
+                <Bar
+                  dataKey="cards"
+                  fill="#8BB7FF"
+                  radius={[8, 8, 0, 0]}
+                  maxBarSize={60}
+                />
+              </BarChart>
             </ResponsiveContainer>
+          ) : (
+            <p className="text-gray-500 text-sm text-center py-8">
+              No data available
+            </p>
+          )}
+        </div>
 
-            <ul className="text-sm mt-4 space-y-2 text-gray-700">
-              {performanceData.map((item, index) => (
-                <li key={index} className="flex items-center gap-2">
-                  <span
-                    className="w-3 h-3 rounded-full bg-black inline-block"
-                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                  ></span>
-                  <span className="flex-1">{item.name}</span>
-                  <span className="font-semibold">
-                    ${item.value.toFixed(2)}
-                  </span>
-                </li>
-              ))}
-            </ul>
+        {/* Recent Cards */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm">
+          <h4 className="text-lg font-semibold text-gray-800 mb-4">
+            Recent Cards Sent
+          </h4>
+          <div className="space-y-3 max-h-[280px] overflow-y-auto pr-2">
+            {recentActivity.recentCards?.length > 0 ? (
+              recentActivity.recentCards.map((card) => (
+                <div
+                  key={card._id}
+                  className="bg-gray-50 p-4 rounded-lg border border-gray-100 hover:border-gray-200 transition-colors"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex-1">
+                      <p className="font-semibold text-sm text-gray-900">
+                        {card.sender?.name || "Unknown"}
+                      </p>
+                    </div>
+                    <span className="text-xs text-gray-500 whitespace-nowrap ml-2">
+                      {new Date(card.sent_at).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-gray-200">
+                    <p className="text-xs text-gray-600">
+                      <span className="font-medium">To:</span>{" "}
+                      {card.recipient_name}
+                    </p>
+                    <p className="text-xs text-gray-700 mt-1 italic line-clamp-2">
+                      "{card.message}"
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 text-sm text-center py-8">
+                No recent cards
+              </p>
+            )}
           </div>
+        </div>
+      </div>
+
+      {/* Recent Users Table */}
+      <div className="bg-white p-6 rounded-2xl shadow-sm">
+        <h4 className="text-lg font-semibold text-gray-800 mb-4">
+          Recently Registered Users
+        </h4>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 rounded-tl-lg">
+                  Name
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                  Email
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                  University
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">
+                  College
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 rounded-tr-lg">
+                  Joined
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentActivity.recentUsers?.length > 0 ? (
+                recentActivity.recentUsers.map((user, index) => (
+                  <tr
+                    key={user._id}
+                    className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${index === recentActivity.recentUsers.length - 1
+                      ? "border-b-0"
+                      : ""
+                      }`}
+                  >
+                    <td className="py-3 px-4">
+                      <p className="text-sm font-medium text-gray-900">
+                        {user.name}
+                      </p>
+                    </td>
+                    <td className="py-3 px-4">
+                      <p className="text-sm text-gray-600">{user.email}</p>
+                    </td>
+                    <td className="py-3 px-4">
+                      <p className="text-sm text-gray-700">
+                        {user.university?.name || "N/A"}
+                      </p>
+                    </td>
+                    <td className="py-3 px-4">
+                      <p className="text-sm text-gray-700">
+                        {user.college?.name || "N/A"}
+                      </p>
+                    </td>
+                    <td className="py-3 px-4">
+                      <p className="text-sm text-gray-600">
+                        {new Date(user.createdAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </p>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="5"
+                    className="py-8 text-sm text-gray-500 text-center"
+                  >
+                    No recent users
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

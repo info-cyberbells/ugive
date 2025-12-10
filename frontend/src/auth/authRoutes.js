@@ -19,6 +19,8 @@ export const USER_ENDPOINTS = {
     SUPERADMIN_UPDATE_PROFILE: `${API_BASE_URL}/super_admin/profile`,
     SUPERADMIN_CHANGE_PASSWORD: `${API_BASE_URL}/super_admin/change-password`,
 
+    SUPERADMIN_DASHBAORD: `${API_BASE_URL}/super_admin/dashboard`,
+
     SUPERADMIN_ADD_UNIVERSITY: `${API_BASE_URL}/super_admin/universities`,
     SUPERADMIN_UPDATE_UNIVERSITY: `${API_BASE_URL}/super_admin/universities`,
     SUPERADMIN_GET_ALL_UNIVERSITY: `${API_BASE_URL}/super_admin/get-all-universities`,
@@ -62,7 +64,7 @@ export const USER_ENDPOINTS = {
     STUDENT_REMAINING_CARD: `${API_BASE_URL}/student/remaining-cards`,
 
     STUDENT_DELETE_ACCOUNT: `${API_BASE_URL}/student/delete-account`,
-    STUDENT_SEND_FEEDBACK : `${API_BASE_URL}/student/sent-feedback`,
+    STUDENT_SEND_FEEDBACK: `${API_BASE_URL}/student/sent-feedback`,
 
 
     //get rewards for student college

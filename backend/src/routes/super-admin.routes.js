@@ -8,6 +8,7 @@ import upload from "../middleware/upload.middleware.js";
 import uploadReward from "../middleware/uploadReward.middleware.js";
 import { createReward, getRewards, getSingleReward, updateReward, deleteReward } from "../controllers/reward.controller.js";
 import { getAllFeedback, updateFeedback, deleteFeedback } from "../controllers/feedback.controller.js";
+import { getSuperAdminDashboard } from "../controllers/dashboard.controller.js";
 
 
 
@@ -16,11 +17,6 @@ const router = express.Router();
 
 // Protect all routes with super_admin role
 router.use(authenticate, authorizeRoles("super_admin"));
-
-// Dashboard
-router.get("/dashboard", (req, res) => {
-  res.json({ message: "Super Admin Panel Access Granted" });
-});
 
 // Profile
 router.get("/profile", getProfile);
@@ -62,8 +58,11 @@ router.delete("/delete-reward/:id", deleteReward);
 
 //feedback routes
 router.put("/update-feedback/:id", updateFeedback);
-router.delete("/delete-fadback/:id", deleteFeedback);
+router.delete("/delete-feedback/:id", deleteFeedback);
 router.get("/get-all-feedback", getAllFeedback);
+
+router.get("/dashboard", getSuperAdminDashboard);
+
 
 
 export default router;

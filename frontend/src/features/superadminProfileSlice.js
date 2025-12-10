@@ -3,6 +3,7 @@ import {
   changeSuperAdminPasswordService,
   getSuperAdminProfileService,
   updateSuperAdminProfileService,
+  getSuperAdminDashboardService
 } from '..//auth/authServices';
 
 
@@ -52,11 +53,25 @@ export const changeSuperAdminPassword = createAsyncThunk(
 );
 
 
+export const getSuperAdminDashboard = createAsyncThunk(
+  "superAdminDashboard/getData",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getSuperAdminDashboardService();
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch dashboard data"
+      );
+    }
+  }
+);
 
 const initialState = {
   profile: null,
   profileLoading: false,
   profileError: null,
+  dashboardData: null,
 
   universities: [],
   universitiesLoading: false,
@@ -78,6 +93,10 @@ const superadminSlice = createSlice({
     clearProfile: (state) => {
       state.profile = null;
       state.profileError = null;
+    },
+    clearDashboardData: (state) => {
+      state.dashboardData = null;
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
@@ -123,6 +142,20 @@ const superadminSlice = createSlice({
       .addCase(changeSuperAdminPassword.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+
+      // Get Super Admin Dashboard
+      .addCase(getSuperAdminDashboard.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getSuperAdminDashboard.fulfilled, (state, action) => {
+        state.loading = false;
+        state.dashboardData = action.payload.data;
+      })
+      .addCase(getSuperAdminDashboard.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || "Failed to fetch dashboard data";
       });
 
 

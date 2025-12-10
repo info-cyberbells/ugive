@@ -97,14 +97,11 @@ export const updateFeedback = async (req, res) => {
 // DELETE Feedback
 export const deleteFeedback = async (req, res) => {
     try {
-        const userId = req.user.id;
         const { id } = req.params;
 
         const fb = await Feedback.findById(id);
-        if (!fb) return res.status(404).json({ success: false, message: "Feedback not found" });
-
-        if (fb.user.toString() !== userId) {
-            return res.status(403).json({ success: false, message: "Not allowed" });
+        if (!fb) {
+            return res.status(404).json({ success: false, message: "Feedback not found" });
         }
 
         await fb.deleteOne();
@@ -113,8 +110,10 @@ export const deleteFeedback = async (req, res) => {
             success: true,
             message: "Feedback deleted successfully"
         });
+
     } catch (error) {
         console.error("Delete feedback error:", error);
         return res.status(500).json({ success: false, message: "Server error" });
     }
 };
+
