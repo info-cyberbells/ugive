@@ -10,6 +10,7 @@ import {
   changeStudentPasswordService,
   deleteStudentAccountService,
   sendFeedbackStudentService,
+  getStreakSummaryService,
 } from "../auth/authServices";
 import { Feedback } from "../../../backend/src/models/feedback.model";
 
@@ -25,6 +26,7 @@ const initialState = {
   isSuccess: false,
   message: "",
   studentProfile: null,
+  streakSummary: null,
 };
 
 
@@ -165,7 +167,23 @@ export const sendFeedbackStudent = createAsyncThunk(
       );
     }
   }
-)
+);
+
+// student Streak Summary
+
+export const getStreakSummary = createAsyncThunk(
+  'student/streakSummary',
+  async (_, thunkAPI) => {
+    try {
+      const response = await getStreakSummaryService();
+      return response;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to fetch the data"
+      );
+    }
+  }
+);
 
 const studentDataSlice = createSlice({
   name: "studentData",
@@ -357,7 +375,24 @@ const studentDataSlice = createSlice({
       state.isLoading = false;
       state.isError = true;
       state.message = action.payload;
-    });
+    })
+
+    // get streak summary
+    .addCase(getStreakSummary.pending, (state)=>{
+      state.isLoading = true;
+      state.isError = false;
+    })
+    .addCase(getStreakSummary.fulfilled, (state, action)=>{
+      state.isLoading = false;
+      state.isError = false;
+      state.isSuccess = true;
+      state.streakSummary = action.payload.data;
+    })
+    .addCase(getStreakSummary.rejected, (state)=>{
+      state.isLoading = false;
+      state.isSuccess = false;
+      state.isError = true;
+    })
   },
 });
 
