@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Award, User, Zap, Star, MessageSquare } from "lucide-react";
+import { Award, User, Zap, Star, MessageSquare, Frown } from "lucide-react";
 import {
   Heart,
   UserCheck,
@@ -9,19 +9,21 @@ import {
   Bell,
   Gift,
 } from "lucide-react";
-import card from "/card.svg"
+import card from "/card.svg";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getSocialLinks } from "../../features/studentSlice";
+import { getstudentDashboardData } from "../../features/studentDataSlice";
 
-
-
-const pointsData = [
-  { icon: Award, title: "Appreciation Points", value: 99 , color: "text-[#6955A5]"},
-  { icon: Star, title: "Redeemable Points", value: 99, color: "text-yellow-500" },
-  { icon: User, title: "Friend/Referral Points", value: 99, color:"text-[#71ADE2]" },
-  { icon: Zap, title: "Streak Days", value: 99, color: "text-red-300" },
-];
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
 
 const goalData = [
   { id: 1, reward: "Pizza", progress: 45, color: "bg-[#6955A5]" },
@@ -46,56 +48,56 @@ const MetricCard = ({ icon: Icon, title, value, color }) => (
 const CircularProgress = ({ percent }) => {
   const radius = 80;
 
-  const trackStrokeWidth = 8; 
+  const trackStrokeWidth = 8;
   const borderStrokeWidth = 2;
-  
+
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percent / 100) * circumference;
 
+  const trackColor = "#ffffff";
+  const progressStrokeColor = "#EBB142";
+  const borderStrokeColor = "#EBB142";
 
-  const trackColor = '#ffffff'; 
-  const progressStrokeColor = '#EBB142'; 
-  const borderStrokeColor = '#EBB142'; 
-  
-  const innerBorderRadius = radius - (trackStrokeWidth / 2) - (borderStrokeWidth / 2);
-  const outerBorderRadius = radius + (trackStrokeWidth / 2) + (borderStrokeWidth / 2);
+  const innerBorderRadius =
+    radius - trackStrokeWidth / 2 - borderStrokeWidth / 2;
+  const outerBorderRadius =
+    radius + trackStrokeWidth / 2 + borderStrokeWidth / 2;
 
   return (
     <div className="relative w-60 h-60 mx-auto">
       <svg className="w-full h-full transform -rotate-90" viewBox="0 0 200 200">
-        
         <circle
           cx="100"
           cy="100"
-          r={radius - (trackStrokeWidth / 8) - borderStrokeWidth - 5} 
+          r={radius - trackStrokeWidth / 8 - borderStrokeWidth - 5}
           fill="#ffffff"
           stroke="none"
         />
-        
+
         <circle
           cx="100"
           cy="100"
-          r={innerBorderRadius} 
+          r={innerBorderRadius}
           fill="none"
-          stroke={borderStrokeColor} 
+          stroke={borderStrokeColor}
           strokeWidth={borderStrokeWidth}
         />
-        
+
         <circle
           cx="100"
           cy="100"
-          r={outerBorderRadius} 
+          r={outerBorderRadius}
           fill="none"
-          stroke={borderStrokeColor} 
+          stroke={borderStrokeColor}
           strokeWidth={borderStrokeWidth}
         />
-        
+
         <circle
           cx="100"
           cy="100"
           r={radius}
           fill="none"
-          stroke={trackColor} 
+          stroke={trackColor}
           strokeWidth={trackStrokeWidth}
           strokeLinecap="round"
         />
@@ -110,14 +112,14 @@ const CircularProgress = ({ percent }) => {
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
-          style={{ transition: 'stroke-dashoffset 0.5s ease-out' }}
+          style={{ transition: "stroke-dashoffset 0.5s ease-out" }}
         />
       </svg>
-      
-      <div className={`absolute top-0 left-0 flex items-center justify-center w-full h-full text-[#EBB142]`}>
-        <span className="text-5xl font-bold font-inter ">
-          {percent}%
-        </span>
+
+      <div
+        className={`absolute top-0 left-0 flex items-center justify-center w-full h-full text-[#EBB142]`}
+      >
+        <span className="text-5xl font-bold font-inter ">{percent}%</span>
       </div>
     </div>
   );
@@ -227,11 +229,18 @@ const StudentDashboard = () => {
   const [rewardPercent, setRewardPercent] = useState(0);
   const dispatch = useDispatch();
 
-  const {social, isLoading} = useSelector((state)=> state.auth);
+  const { social, isLoading } = useSelector((state) => state.auth);
+  const { studentDashboard, dasboardLoading, isError } = useSelector(
+    (state) => state.studentData
+  );
 
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(getSocialLinks());
-  },[]);
+  }, []);
+
+  useEffect(() => {
+    dispatch(getstudentDashboardData());
+  }, []);
 
   const navigate = useNavigate();
 
@@ -240,39 +249,94 @@ const StudentDashboard = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const pointsData = studentDashboard
+    ? [
+        {
+          icon: Award,
+          title: "Cards Sent",
+          value: studentDashboard.cardStats.totalCardsSent,
+          color: "text-[#6955A5]",
+        },
+        {
+          icon: Star,
+          title: "Cards Received",
+          value: studentDashboard.cardStats.totalCardsReceived,
+          color: "text-yellow-500",
+        },
+        {
+          icon: User,
+          title: "Friends",
+          value: studentDashboard.friendStats.totalFriends,
+          color: "text-[#71ADE2]",
+        },
+        {
+          icon: Zap,
+          title: "Streak Days",
+          value: studentDashboard.streakInfo.currentStreak,
+          color: "text-red-300",
+        },
+      ]
+    : [];
+
+  const comparisonData = [
+    {
+      name: "All Time",
+      Sent: studentDashboard?.cardStats?.totalCardsSent || 0,
+      Received: studentDashboard?.cardStats?.totalCardsReceived || 0,
+    },
+    {
+      name: "This Month",
+      Sent: studentDashboard?.streakInfo?.totalCardsThisMonth || 0,
+      Received: studentDashboard?.cardStats?.totalCardsReceived || 0,
+    },
+    {
+      name: "Streak",
+      Sent: studentDashboard?.streakInfo?.currentStreak || 0,
+      Received: studentDashboard?.streakInfo?.bestStreak || 0,
+    },
+  ];
+
   return (
     <div className="min-h-screen ml-56 mt-10 bg-gray-50 font-[Inter] p-4 sm:p-8 lg:p-12">
       <header className="flex justify-between mb-8">
-            <div className="">
-              <h1 className="text-lg font-medium text-gray-500">
-              Welcome, <span className="text-[#DE9650] font-bold">Annie</span>!
-            </h1>
-            <p className="text-2xl font-semibold text-[#6955A5] mt-1">
-              Be the difference in someone's world today
-            </p>
-            </div>
-            <div className="flex items-center gap-3">
-              {social?.length >= 1 && <h3 className="text-[#6955A5] font-medium">Follow Us</h3> }
-              {social?.map((item) => (
-                <a
-                  key={item._id}
-                  href={item.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-6 h-6 overflow-hidden hover:scale-110 transition"
-                >
-                  <img
-                    src={item.icon || "https://cdn-icons-png.flaticon.com/512/25/25394.png"}
-                    alt={item.name}
-                    className="w-full h-full object-cover"
-                  />
-                </a>
-              ))}
-</div>
-
-          </header>
+        <div className="">
+          <h1 className="text-lg font-medium text-gray-500">
+            Welcome,{" "}
+            <span className="text-[#DE9650] font-bold">
+              {" "}
+              {studentDashboard?.studentProfile?.name}
+            </span>
+            !
+          </h1>
+          <p className="text-2xl font-semibold text-[#6955A5] mt-1">
+            Be the difference in someone's world today
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          {social?.length >= 1 && (
+            <h3 className="text-[#6955A5] font-medium">Follow Us</h3>
+          )}
+          {social?.map((item) => (
+            <a
+              key={item._id}
+              href={item.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-6 h-6 overflow-hidden hover:scale-110 transition"
+            >
+              <img
+                src={
+                  item.icon ||
+                  "https://cdn-icons-png.flaticon.com/512/25/25394.png"
+                }
+                alt={item.name}
+                className="w-full h-full object-cover"
+              />
+            </a>
+          ))}
+        </div>
+      </header>
       <div className="lg:grid lg:grid-cols-4 lg:gap-8">
-        
         <div className="lg:col-span-2 space-y-8">
           <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
             {pointsData.map((data, index) => (
@@ -286,33 +350,15 @@ const StudentDashboard = () => {
                 Send a card to a friend on campus!
               </h2>
               <button
-              onClick={()=>navigate('/write-card')}
-              className="mt-4 px-6 py-2 bg-[#AE9DEB]  cursor-pointer border-2 border-white text-white font-medium rounded-4xl hover:bg-violet-700 transition duration-150 shadow-lg ">
+                onClick={() => navigate("/write-card")}
+                className="mt-4 px-6 py-2 bg-[#AE9DEB]  cursor-pointer border-2 border-white text-white font-medium rounded-4xl hover:bg-violet-700 transition duration-150 shadow-lg "
+              >
                 Start Writing
               </button>
             </div>
 
             <div className="mt-6 md:mt-0 md:ml-8 flex-shrink-0">
               <div className="relative w-28 h-28 sm:w-36 sm:h-36">
-                {/* <div className="absolute top-0 right-0 w-2/3 h-2/3 bg-orange-200 rounded-lg transform rotate-6 shadow-md"></div>
-                <div className="absolute bottom-0 left-0 w-3/4 h-3/4 bg-blue-500 rounded-xl shadow-2xl flex items-center justify-center p-2 transform -rotate-3">
-                  <div className="text-white text-4xl transform scale-125">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="48"
-                      height="48"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="lucide lucide-heart text-red-400"
-                    >
-                      <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                    </svg>
-                  </div>
-                </div> */}
                 <img src={card} alt="" />
               </div>
             </div>
@@ -329,9 +375,10 @@ const StudentDashboard = () => {
                   <span className="font-semibold text-blue-300"> coffee.</span>
                 </p>
 
-                <button 
-                onClick={()=>navigate("/lets-go")}
-                className="px-8 py-1.5 cursor-pointer mt-4 bg-[#E9B243] hover:bg-[#daa232] text-white border-2 border-white rounded-4xl  transition shadow-md">
+                <button
+                  onClick={() => navigate("/lets-go")}
+                  className="px-8 py-1.5 cursor-pointer mt-4 bg-[#E9B243] hover:bg-[#daa232] text-white border-2 border-white rounded-4xl  transition shadow-md"
+                >
                   Let's go!
                 </button>
               </div>
@@ -344,22 +391,30 @@ const StudentDashboard = () => {
         </div>
 
         <div className="lg:col-span-2 space-y-8 mt-8 lg:mt-0">
-          <div className="bg-white p-6 sm:py-4 sm:px-0 rounded-xl shadow-sm">
-            <h2 className="text-xl px-6 font-semibold text-[#05004E] mb-4">
-              Progress & Goals Section
+          <div className="bg-white p-6 rounded-xl shadow-sm">
+            <h2 className="text-xl font-semibold text-[#05004E] mb-4 px-2">
+              Your Activity Progress
             </h2>
 
-            <div className="flex items-center pl-6 pr-10 pb-2 border-b-2 border-gray-100 font-semibold text-xs uppercase text-gray-500">
-              <div className="w-1/12">#</div>
-              <div className="w-3/12">Reward</div>
-              <div className="w-7/12 px-4">Progress</div>
-              <div className="w-1/12 text-right">%</div>
-            </div>
+            <p className="text-gray-600 text-sm px-2 mb-3">
+              Comparison of your cards activity and streak performance
+            </p>
 
-            <div className="divide-y divide-gray-100">
-              {goalData.map((goal, index) => (
-                <GoalRow key={goal.id} index={index + 1} {...goal} />
-              ))}
+            <div className="w-full h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={comparisonData} barSize={28}>
+                  <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="Sent" fill="#6955A5" radius={[6, 6, 0, 0]} />
+                  <Bar
+                    dataKey="Received"
+                    fill="#EBB142"
+                    radius={[6, 6, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
 
@@ -370,39 +425,71 @@ const StudentDashboard = () => {
             <div className="grid grid-cols-2 pl-4">
               {/* NOTIFICATIONS LIST */}
               <div className="pl-4 mt-3">
-                <h2 className="font-medium text-sm">Notifications</h2>
-                {notificationsData.map((item) => (
-                  <div key={item.id} className="flex items-start gap-3 py-2">
-                    {/* Icon */}
-                    <item.icon className="w-5 h-5 text-purple-600 mt-1" />
-
-                
-                    <div>
-                      <p className="text-xs text-[#05004E]">{item.desc}</p>
-                      <p className="text-[11px] text-gray-400 mt-1">
-                        {item.time}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                <h2 className="font-medium text-sm">Recent Card Sent</h2>
+                {studentDashboard?.recentActivity?.recentCardsSent?.length >
+                0 ? (
+                  studentDashboard.recentActivity.recentCardsSent
+                    .slice(0, 5)
+                    .map((card) => (
+                      <div
+                        key={card._id}
+                        className="flex items-start gap-3 py-2"
+                      >
+                        <MessageSquare className="w-5 h-5 text-purple-600 mt-1" />
+                        <div>
+                          <p className="text-xs text-[#05004E]">
+                            {card.message}
+                          </p>
+                          <p className="text-[11px] text-gray-400 mt-1">
+                            Sent to {card.recipient_name}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                ) : (
+                  <p className="text-gray-400 text-xs py-2 flex items-center gap-2">
+                    <Frown className="w-4 h-4 text-gray-400" />
+                    No cards sent yet.
+                  </p>
+                )}
               </div>
 
               <div className="pr-4 mt-3">
-                <h2 className="font-medium text-sm">Activities</h2>
-                {activitiesData.map((item) => (
-                  <div key={item.id} className="flex items-start gap-3 py-2">
-                    {/* Icon */}
-                    <item.icon className="w-5 h-5 text-blue-600 mt-1" />
+                <h2 className="font-medium text-sm">Recent Received Card</h2>
 
-                    {/* Text */}
-                    <div>
-                      <p className="text-xs text-[#05004E]">{item.desc}</p>
-                      <p className="text-[11px] text-gray-400 mt-1">
-                        {item.time}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                {studentDashboard?.recentActivity?.recentCardsReceived?.length >
+                0 ? (
+                  studentDashboard.recentActivity.recentCardsReceived
+                    .slice(0, 5)
+                    .map((card) => (
+                      <div
+                        key={card._id}
+                        className="flex items-start gap-3 py-2"
+                      >
+                        {/* Icon */}
+                        <MessageSquare className="w-5 h-5 text-blue-600 mt-1" />
+
+                        <div>
+                          <p className="text-xs text-[#05004E] font-medium">
+                            {card.message}
+                          </p>
+
+                          <p className="text-[11px] text-gray-400">
+                            From: {card.sender?.name}
+                          </p>
+
+                          {/* <p className="text-[11px] text-gray-400">
+          {new Date(card.sent_at).toLocaleString()}
+        </p> */}
+                        </div>
+                      </div>
+                    ))
+                ) : (
+                  <p className="text-gray-400 text-xs py-2 flex items-center gap-2">
+                    <Frown className="w-4 h-4 text-gray-400" />
+                    No cards received yet.
+                  </p>
+                )}
               </div>
             </div>
           </div>
