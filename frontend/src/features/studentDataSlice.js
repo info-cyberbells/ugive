@@ -11,6 +11,7 @@ import {
   deleteStudentAccountService,
   sendFeedbackStudentService,
   getStreakSummaryService,
+  getstudentDashboardService,
 } from "../auth/authServices";
 import { Feedback } from "../../../backend/src/models/feedback.model";
 
@@ -27,6 +28,8 @@ const initialState = {
   message: "",
   studentProfile: null,
   streakSummary: null,
+  studentDashboard: null,
+  dasboardLoading: false,
 };
 
 
@@ -185,6 +188,19 @@ export const getStreakSummary = createAsyncThunk(
   }
 );
 
+// student dashboard thunk
+export const getstudentDashboardData = createAsyncThunk(
+  'student/studentDashboardData',
+  async (_, thunkAPI) => {
+    try {
+      const response = await getstudentDashboardService();
+      return response;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to fetch data");
+    }
+  }
+);
+
 const studentDataSlice = createSlice({
   name: "studentData",
   initialState,
@@ -196,6 +212,7 @@ const studentDataSlice = createSlice({
       state.message = "";
     },
     resetStudentState: (state) => {
+    state.studentDashboard = null;
     state.studentProfile = null;
     state.singleStudent = null;
     state.studentData = [];
@@ -392,6 +409,22 @@ const studentDataSlice = createSlice({
       state.isLoading = false;
       state.isSuccess = false;
       state.isError = true;
+    })
+
+    // student dashboard builder
+    .addCase(getstudentDashboardData.pending, (state)=>{
+      state.dasboardLoading = true;
+      state.isError = false;
+    })
+    .addCase(getstudentDashboardData.fulfilled, (state, action)=>{
+      state.dasboardLoading = false;
+      state.isSuccess = true;
+      state.studentDashboard = action.payload.data;
+    })
+    .addCase(getstudentDashboardData.rejected, (state, action)=>{
+      state.dasboardLoading = false;
+      state.isError = true;
+      state.message = action.payload;
     })
   },
 });

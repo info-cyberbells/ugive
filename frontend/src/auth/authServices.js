@@ -385,6 +385,16 @@ export const deleteFeedbackService = async (id) => {
 
 
 
+// get student dashboard
+export const getstudentDashboardService = async () => {
+    const response = await axios.get(
+        USER_ENDPOINTS.STUDENT_DASHBOARD,
+        getAuthHeader(),
+    );
+    return response.data;
+}
+
+
 //student get profile   
 export const getStudentProfileService = async () => {
     const response = await axios.get(
