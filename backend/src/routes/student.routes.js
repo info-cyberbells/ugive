@@ -9,7 +9,7 @@ import { getStudentRewards, claimReward } from "../controllers/reward.controller
 import { deleteMyAccount } from "../controllers/student.controller.js";
 import { createFeedback, getMyFeedback } from "../controllers/feedback.controller.js";
 import { getStudentStreakAndRewards } from "../controllers/getStudentStreakAndRewards.controller.js";
-import { getStudentDashboard } from "../controllers/dashboard.controller.js";
+import { getStudentDashboard, getStudentNotifications } from "../controllers/dashboard.controller.js";
 
 
 const router = express.Router();
@@ -66,6 +66,8 @@ router.get("/streak-summary", getStudentStreakAndRewards);
 
 
 router.get("/student-dashboard", getStudentDashboard);
+router.get("/get-my-notifications", getStudentNotifications);
+
 
 
 

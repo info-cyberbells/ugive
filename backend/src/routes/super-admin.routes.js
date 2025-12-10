@@ -8,7 +8,7 @@ import upload from "../middleware/upload.middleware.js";
 import uploadReward from "../middleware/uploadReward.middleware.js";
 import { createReward, getRewards, getSingleReward, updateReward, deleteReward } from "../controllers/reward.controller.js";
 import { getAllFeedback, updateFeedback, deleteFeedback } from "../controllers/feedback.controller.js";
-import { getSuperAdminDashboard } from "../controllers/dashboard.controller.js";
+import { getSuperAdminDashboard, getSuperAdminEvents } from "../controllers/dashboard.controller.js";
 
 
 
@@ -62,6 +62,8 @@ router.delete("/delete-feedback/:id", deleteFeedback);
 router.get("/get-all-feedback", getAllFeedback);
 
 router.get("/dashboard", getSuperAdminDashboard);
+router.get("/notifications-and-activities", getSuperAdminEvents);
+
 
 
 

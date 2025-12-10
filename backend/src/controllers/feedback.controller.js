@@ -14,6 +14,14 @@ export const createFeedback = async (req, res) => {
             user: userId,
             feedback
         });
+        await NotificationActivity.create({
+            type: "activity",
+            action: "feedback_submitted",
+            message: `A user submitted feedback`,
+            createdBy: userId,
+            meta: { feedbackId: newFeedback._id }
+        });
+
 
         return res.status(201).json({
             success: true,

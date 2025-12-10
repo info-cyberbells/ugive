@@ -193,12 +193,14 @@ const StudentModal = ({
       return;
     }
 
+    const email = formData.email.trim().toLowerCase();
     const emailRegex = /^[^\s@]+@usq\.edu\.au$/;
-    if (!emailRegex.test(formData.email)) {
+    if (!emailRegex.test(email)) {
       setErrors((prev) => ({ ...prev, email: true }));
       showToast("Only @usq.edu.au email is allowed", "error");
       return;
     }
+
 
     const cleanedPhone = formData.phoneNumber.replace(/\s/g, "");
 

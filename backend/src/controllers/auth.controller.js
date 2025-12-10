@@ -4,6 +4,7 @@ import nodemailer from "nodemailer";
 import bcrypt from "bcrypt";
 import User from "../models/user.model.js";
 import University from "../models/university.model.js";
+import NotificationActivity from "../models/notificationActivity.model.js";
 
 // Register
 export const register = async (req, res) => {
@@ -45,6 +46,13 @@ export const register = async (req, res) => {
       phoneNumber,
       college: college || null,
       studentUniId,
+    });
+
+    await NotificationActivity.create({
+      type: "notification",
+      action: "user_registered",
+      message: `${name} joined the platform`,
+      createdBy: user._id
     });
 
     res.status(201).json({ message: "Student registered successfully", user });
@@ -97,6 +105,13 @@ export const createAdmin = async (req, res) => {
     if (existing) return res.status(400).json({ message: "User already exists" });
 
     const admin = await User.create({ name, email, password, phoneNumber, university, role: "admin" });
+    await NotificationActivity.create({
+      type: "activity",
+      action: "admin_created",
+      message: `Admin ${name} created`,
+      createdBy: req.user.id
+    });
+
     res.status(201).json({ message: "Admin created successfully", admin });
   } catch (err) {
     res.status(500).json({ message: err.message });

@@ -2,6 +2,8 @@ import User from "../models/user.model.js";
 import University from "../models/university.model.js";
 import College from "../models/college.model.js";
 import bcrypt from "bcryptjs";
+import NotificationActivity from "../models/notificationActivity.model.js";
+
 
 // Create new student
 export const createStudentSuperAdmin = async (req, res) => {
@@ -43,6 +45,13 @@ export const createStudentSuperAdmin = async (req, res) => {
             phoneNumber,
             studentUniId,
         });
+        await NotificationActivity.create({
+            type: "activity",
+            action: "student_created",
+            message: `Superadmin added student ${name}`,
+            createdBy: req.user.id
+        });
+
 
         res.status(201).json({
             success: true,
@@ -168,6 +177,14 @@ export const updateStudentSuperAdmin = async (req, res) => {
         });
 
         await student.save();
+
+        await NotificationActivity.create({
+            type: "activity",
+            action: "student_updated",
+            message: `Student ${student.name} updated`,
+            createdBy: req.user.id
+        });
+
 
         res.status(200).json({
             success: true,

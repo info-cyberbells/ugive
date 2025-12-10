@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import { Reward } from "../models/reward.model.js";
 import User from "../models/user.model.js";
 import { StudentRewardProgress } from "../models/studentRewardProgress.model.js";
+import NotificationActivity from "../models/notificationActivity.model.js";
+
 
 
 // Create Reward
@@ -25,6 +27,13 @@ export const createReward = async (req, res) => {
             rewardImage,
             createdBy: req.user?._id,
         });
+        await NotificationActivity.create({
+            type: "activity",
+            action: "reward_created",
+            message: `New reward created: ${name}`,
+            createdBy: req.user?._id
+        });
+
 
         return res.status(201).json({
             message: "Reward created successfully",
@@ -197,6 +206,12 @@ export const updateReward = async (req, res) => {
                 ? baseURL + finalPath
                 : baseURL + "/" + finalPath;
         }
+        await NotificationActivity.create({
+            type: "activity",
+            action: "reward_updated",
+            message: `Reward updated: ${name}`,
+            createdBy: req.user.id
+        });
 
         // Clean Response
         res.json({

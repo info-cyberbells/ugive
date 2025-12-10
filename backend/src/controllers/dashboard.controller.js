@@ -5,6 +5,7 @@ import Card from "../models/card.model.js";
 import { Reward } from "../models/reward.model.js";
 import { MonthlyStreak } from "../models/monthlyStreak.model.js";
 import FriendRequest from "../models/friendRequest.model.js";
+import NotificationActivity from "../models/notificationActivity.model.js";
 
 export const getSuperAdminDashboard = async (req, res) => {
     try {
@@ -272,6 +273,51 @@ export const getStudentDashboard = async (req, res) => {
         res.status(500).json({
             message: "Failed to fetch dashboard data",
             error: error.message
+        });
+    }
+};
+
+
+
+export const getSuperAdminEvents = async (req, res) => {
+    try {
+        const events = await NotificationActivity.find().sort({ createdAt: -1 }).limit(20);
+
+        return res.status(200).json({
+            success: true,
+            notifications: events.filter(e => e.type === "notification"),
+            activities: events.filter(e => e.type === "activity")
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: "Server error" });
+    }
+};
+
+
+export const getStudentNotifications = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const notifications = await NotificationActivity.find({
+            $or: [
+                { createdBy: userId },
+                { "meta.userId": userId },
+            ]
+        })
+            .sort({ createdAt: -1 })
+            .limit(10);
+
+        return res.status(200).json({
+            success: true,
+            count: notifications.length,
+            data: notifications
+        });
+
+    } catch (error) {
+        console.error("Notification error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Server error"
         });
     }
 };

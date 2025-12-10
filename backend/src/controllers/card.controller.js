@@ -2,6 +2,7 @@ import Card from "../models/card.model.js";
 import User from "../models/user.model.js";
 import { Reward } from "../models/reward.model.js";
 import { StudentRewardProgress } from "../models/studentRewardProgress.model.js";
+import NotificationActivity from "../models/notificationActivity.model.js";
 
 export const getCurrentWeekRange = () => {
   const now = new Date();
@@ -134,6 +135,13 @@ export const createCard = async (req, res) => {
       .populate("reward", "name")
       .lean();
 
+    await NotificationActivity.create({
+      type: "notification",
+      action: "card_sent",
+      message: `${sender.name} sent a card to ${recipient_name}`,
+      createdBy: studentId,
+      meta: { cardId: card._id }
+    });
 
     return res.status(201).json({
       success: true,

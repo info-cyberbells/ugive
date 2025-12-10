@@ -1,4 +1,6 @@
 import FriendRequest from "../models/friendRequest.model.js";
+import NotificationActivity from "../models/notificationActivity.model.js";
+
 
 
 export const sendFriendRequest = async (req, res) => {
@@ -84,6 +86,15 @@ export const acceptFriendRequest = async (req, res) => {
 
     reqDoc.status = "accepted";
     await reqDoc.save();
+
+    await NotificationActivity.create({
+      type: "notification",
+      action: "friend_request_accepted",
+      message: `Two users became friends`,
+      createdBy: userId,
+      meta: { requestId }
+    });
+
 
     return res.status(200).json({
       success: true,
