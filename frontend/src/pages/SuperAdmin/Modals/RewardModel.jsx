@@ -401,7 +401,7 @@ const RewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) =
                     className="h-16 w-16 rounded-lg object-cover"
                   />
 
-                  <button
+                  {!isViewMode && <button
                     type="button"
                     onClick={() => {
                       setRewardImage(null);
@@ -413,7 +413,7 @@ const RewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) =
                    hover:bg-red-300 cursor-pointer"
                   >
                     <X className="w-3 h-3" />
-                  </button>
+                  </button>}
                 </div>
               )}
             </div>

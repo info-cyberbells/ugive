@@ -8,6 +8,7 @@ import rewardReducer from "../features/rewardSlice"
 import studentRewardReducer from "../features/studentRewardsSlice";
 import studentCardReducer from "../features/studentCardSlice"
 import friendsReducer from '../features/friendsSlice';
+import feedbackReducer from '../features/feedbackSlice';
 
 
 
@@ -22,6 +23,7 @@ export const store = configureStore({
         studentReward: studentRewardReducer,
         studentCard: studentCardReducer,
         friends: friendsReducer,
+        feedback: feedbackReducer,
 
     }
 })

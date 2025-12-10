@@ -83,7 +83,6 @@ const CardForm = ({ onSubmit }) => {
       "collegeHouse",
       "recipientEmail",
       "message",
-      "university",
     ];
 
     requiredFields.forEach((key) => {
@@ -95,12 +94,6 @@ const CardForm = ({ onSubmit }) => {
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       showToast("Please fill all required fields!", "error");
-      return;
-    }
-
-    if (!formData.university) {
-      setErrors((prev) => ({ ...prev, university: true }));
-      showToast("Please select a university.", "error");
       return;
     }
 
@@ -118,10 +111,8 @@ const CardForm = ({ onSubmit }) => {
     const cardData = {
       recipient_name: formData.recipientName,
       recipient_email: formData.recipientEmail,
-      receiver: null,
-      reward: formData.reward,
-      college: formData.college || "",
-      university: formData.university || "",
+      reward: formData.reward || "",
+      college_name: formData.collegeHouse,
       message: formData.message,
       type: "card",
     };
@@ -377,7 +368,7 @@ const CardForm = ({ onSubmit }) => {
                               : ""
                           }
                         >
-                          {reward.rewardName} {!reward.unlocked}
+                          {reward.rewardName} {!reward.unlocked && "(Locked)"}
                         </option>
                       ))
                     ) : (

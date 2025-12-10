@@ -157,8 +157,13 @@ const Streaks = () => {
       <div className="">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold text-[#6955A5] flex items-center">
-            <Flame className="w-6 h-6 text-yellow-400 fill-yellow-400 mr-2" />
-            Streaks
+            {/* <Flame className="w-6 h-6 text-yellow-400 fill-yellow-400 mr-2" /> */}
+           <img
+    src='/flame.png'
+    alt="Reward"
+    className="w-11 h-11 -mt-1 -mr-2  object-contain"
+  />
+   Streaks
           </h1>
           <button
             onClick={() => navigate("/write-card")}
@@ -280,9 +285,15 @@ const Streaks = () => {
                   </div>
 
                   <div className="min-h-[200px]">
-                    {milestones?.map((m, index) => (
-                      <MilestoneItem key={index} {...m} />
-                    ))}
+                     {milestones && milestones.length > 0 ? (
+    milestones.map((m, index) => (
+      <MilestoneItem key={index} {...m} />
+    ))
+  ) : (
+    <div className="text-center text-gray-500 py-10">
+      No data available
+    </div>
+  )}
                   </div>
                 </>
               )}
