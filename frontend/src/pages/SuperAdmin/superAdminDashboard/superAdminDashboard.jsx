@@ -17,9 +17,12 @@ import {
   Cell,
 } from "recharts";
 import { useToast } from "../../../context/ToastContext";
+import { useNavigate } from "react-router-dom";
+
 
 const SuperAdminDashboard = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { showToast } = useToast();
   const { dashboardData, loading, error } = useSelector(
     (state) => state.superadmin
@@ -107,30 +110,35 @@ const SuperAdminDashboard = () => {
       value: overview.totalStudents,
       subtitle: `+${userMetrics.newUsersLast30Days} this month`,
       bgColor: "bg-[#E6C8FF]",
+      link: "/manage-students",
     },
     {
       title: "Total Admins",
       value: overview.totalAdmins,
       subtitle: "System admins",
       bgColor: "bg-[#2D4CCA2B]",
+      link: "/manage-admins",
     },
     {
       title: "Universities",
       value: overview.totalUniversities,
       subtitle: "Registered",
       bgColor: "bg-[#E6C8FF]",
+      link: "/manage-universities",
     },
     {
       title: "Total Colleges",
       value: overview.totalColleges,
       subtitle: "Active campuses",
       bgColor: "bg-[#2D4CCA2B]",
+      link: "/manage-colleges",
     },
     {
       title: "Total Rewards",
       value: overview.totalRewards,
       subtitle: "Available rewards",
       bgColor: "bg-[#E6C8FF]",
+      link: "/manage-rewards",
     },
   ];
 
@@ -177,7 +185,8 @@ const SuperAdminDashboard = () => {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className={`${stat.bgColor} rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow`}
+            onClick={() => navigate(stat.link)}
+            className={`${stat.bgColor} rounded-xl shadow-sm p-4 hover:shadow-md cursor-pointer transition-shadow`}
           >
             <p className="text-sm font-medium text-gray-700 mb-1">
               {stat.title}

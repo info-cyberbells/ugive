@@ -30,9 +30,6 @@ export const getStudentStreakAndRewards = async (req, res) => {
         const studentId = req.user.id;
         const today = new Date();
 
-        /*----------------------------------------
-          1. Get all student cards for lifetime
-        -----------------------------------------*/
         const allCards = await Card.find({ sender: studentId }).sort({ createdAt: 1 });
 
         if (allCards.length === 0) {
@@ -44,9 +41,6 @@ export const getStudentStreakAndRewards = async (req, res) => {
             });
         }
 
-        /*----------------------------------------
-          2. Group cards into lifetime weekly buckets
-        -----------------------------------------*/
         const firstCardDate = allCards[0].createdAt;
         let weekStart = getMonday(firstCardDate);
 
@@ -64,9 +58,7 @@ export const getStudentStreakAndRewards = async (req, res) => {
             weekStart = addDays(weekEnd, 1);
         }
 
-        /*----------------------------------------
-          3. Calculate lifetime streak
-        -----------------------------------------*/
+
         let currentStreak = 0;
         let bestStreak = 0;
 
@@ -79,18 +71,13 @@ export const getStudentStreakAndRewards = async (req, res) => {
             }
         }
 
-        /*----------------------------------------
-          4. Current Week Cards
-        -----------------------------------------*/
         const thisWeekStart = getMonday(today);
         const thisWeekEnd = addDays(thisWeekStart, 6);
         const cardsSentThisWeek = allCards.filter(c =>
             c.createdAt >= thisWeekStart && c.createdAt <= thisWeekEnd
         ).length;
 
-        /*----------------------------------------
-          5. Monthly Data
-        -----------------------------------------*/
+
         const year = today.getFullYear();
         const month = today.getMonth();
 
@@ -116,20 +103,19 @@ export const getStudentStreakAndRewards = async (req, res) => {
 
             totalCardsThisMonth += cards;
 
-            monthWeeks.push({
-                weekLabel: formatRange(mStart, mEnd),
-                weekStart: mStart,
-                weekEnd: mEnd,
-                cardsSent: cards,
-                streakEarned: cards > 0
-            });
+            if (mStart <= today) {
+                monthWeeks.push({
+                    weekLabel: formatRange(mStart, mEnd),
+                    weekStart: mStart,
+                    weekEnd: mEnd,
+                    cardsSent: cards,
+                    streakEarned: cards > 0
+                });
+            }
 
             mStart = addDays(mEnd, 1);
         }
 
-        /*----------------------------------------
-          6. Save or update month streak in DB
-        -----------------------------------------*/
         const saved = await MonthlyStreak.findOneAndUpdate(
             { student: studentId, monthKey },
             {
@@ -144,9 +130,6 @@ export const getStudentStreakAndRewards = async (req, res) => {
             { new: true, upsert: true }
         );
 
-        /*----------------------------------------
-          7. Rewards
-        -----------------------------------------*/
         const rewardsProgress = await StudentRewardProgress.find({ student: studentId })
             .populate("reward", "name rewardImage totalPoints rewardDescription");
 
@@ -156,9 +139,7 @@ export const getStudentStreakAndRewards = async (req, res) => {
 
         const rewardsUsed = rewardsProgress.filter(r => r.claimed === true);
 
-        /*----------------------------------------
-          8. RESPONSE
-        -----------------------------------------*/
+
         return res.status(200).json({
             success: true,
             data: {

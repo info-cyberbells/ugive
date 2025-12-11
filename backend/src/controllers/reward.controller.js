@@ -4,6 +4,9 @@ import { Reward } from "../models/reward.model.js";
 import User from "../models/user.model.js";
 import { StudentRewardProgress } from "../models/studentRewardProgress.model.js";
 import NotificationActivity from "../models/notificationActivity.model.js";
+import Card from "../models/card.model.js";
+import FriendRequest from "../models/friendRequest.model.js";
+import { MonthlyStreak } from "../models/monthlyStreak.model.js";
 
 
 
@@ -281,6 +284,37 @@ export const getStudentRewards = async (req, res) => {
 
         const { university } = student;
 
+        const now = new Date();
+        const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+        // Run stats queries in parallel
+        const [
+            totalCardsSent,
+            totalGiftsSent,
+            totalFriends,
+            currentMonthStreak
+        ] = await Promise.all([
+
+            Card.countDocuments({ sender: studentId }),
+
+            Card.countDocuments({
+                sender: studentId,
+                reward: { $ne: null }
+            }),
+
+            FriendRequest.countDocuments({
+                $or: [
+                    { sender: studentId, status: "accepted" },
+                    { receiver: studentId, status: "accepted" }
+                ]
+            }),
+
+            MonthlyStreak.findOne({ student: studentId, monthKey })
+                .select("currentStreak")
+                .lean()
+        ]);
+
+
         const rewards = await Reward.find({ university }).sort({ createdAt: -1 });
 
         const baseURL = `${req.protocol}://${req.get("host")}`;
@@ -320,6 +354,12 @@ export const getStudentRewards = async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Rewards fetched successfully",
+            stats: {
+                totalCardsSent,
+                totalGiftsSent,
+                totalFriends,
+                currentStreak: currentMonthStreak?.currentStreak || 0
+            },
             data: result,
         });
     } catch (error) {

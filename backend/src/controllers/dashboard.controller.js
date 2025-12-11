@@ -178,6 +178,8 @@ export const getStudentDashboard = async (req, res) => {
             studentInfo,
             totalCardsSent,
             totalGiftsSent,
+            totalCardsReceived,
+            totalCardsReceivedThisMonth,
             currentMonthCardsSent,
             currentMonthStreak,
             totalFriends,
@@ -188,12 +190,24 @@ export const getStudentDashboard = async (req, res) => {
             // 1. Student basic info
             User.findById(studentId)
                 .select("name email")
-                .populate("university", "name")
-                .populate("college", "name")
                 .lean(),
 
             // 2. Cards sent by student
             Card.countDocuments({ sender: studentId }),
+
+            // Total cards received
+            Card.countDocuments({
+                receiver_id: studentId
+            }),
+
+            // Total cards received this month
+            Card.countDocuments({
+                receiver_id: studentId,
+                createdAt: {
+                    $gte: new Date(now.getFullYear(), now.getMonth(), 1),
+                    $lt: new Date(now.getFullYear(), now.getMonth() + 1, 1)
+                }
+            }),
 
 
             // 3. Total gifts (rewards) sent by student
@@ -255,18 +269,17 @@ export const getStudentDashboard = async (req, res) => {
         const dashboardData = {
             studentProfile: {
                 name: studentInfo.name,
-                email: studentInfo.email,
-                university: studentInfo.university?.name || null,
-                college: studentInfo.college?.name || null
             },
             cardStats: {
                 totalCardsSent,
-                totalGiftsSent
+                totalGiftsSent,
+                totalCardsReceived,
             },
             streakInfo: {
                 currentStreak: currentMonthStreak?.currentStreak || 0,
                 bestStreak: currentMonthStreak?.bestStreak || 0,
                 totalCardsThisMonth: currentMonthCardsSent,
+                totalCardsReceivedThisMonth,
                 monthLabel: currentMonthStreak?.monthLabel || `${now.toLocaleString('default', { month: 'long' })} ${now.getFullYear()}`
             },
             friendStats: {
