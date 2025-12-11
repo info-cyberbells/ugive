@@ -109,25 +109,34 @@ export const createCard = async (req, res) => {
     });
 
 
-    if (reward) {
-      const rewardData = await Reward.findById(reward);
+    let targetRewardId = reward;
 
-      if (rewardData) {
-        let progress = await StudentRewardProgress.findOne({
+    if (!reward) {
+      const firstReward = await Reward.findOne({ university: sender.university })
+        .sort({ totalPoints: 1 });
+        console.log("Sender University =>", sender.university);
+
+
+      if (firstReward) {
+        targetRewardId = firstReward._id;
+      }
+    }
+
+    if (targetRewardId) {
+      let progress = await StudentRewardProgress.findOne({
+        student: studentId,
+        reward: targetRewardId
+      });
+
+      if (!progress) {
+        progress = await StudentRewardProgress.create({
           student: studentId,
-          reward
+          reward: targetRewardId,
+          completedPoints: 1
         });
-
-        if (!progress) {
-          progress = await StudentRewardProgress.create({
-            student: studentId,
-            reward: reward || null,
-            completedPoints: 1
-          });
-        } else {
-          progress.completedPoints += 1;
-          await progress.save();
-        }
+      } else {
+        progress.completedPoints += 1;
+        await progress.save();
       }
     }
 
