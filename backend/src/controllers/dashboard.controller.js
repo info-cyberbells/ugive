@@ -177,7 +177,8 @@ export const getStudentDashboard = async (req, res) => {
         const [
             studentInfo,
             totalCardsSent,
-            totalCardsReceived,
+            totalGiftsSent,
+            currentMonthCardsSent,
             currentMonthStreak,
             totalFriends,
             pendingRequestsReceived,
@@ -194,8 +195,23 @@ export const getStudentDashboard = async (req, res) => {
             // 2. Cards sent by student
             Card.countDocuments({ sender: studentId }),
 
-            // 3. Cards received by student
-            Card.countDocuments({ receiver_id: studentId }),
+
+            // 3. Total gifts (rewards) sent by student
+            Card.countDocuments({
+                sender: studentId,
+                reward: { $ne: null }
+            }),
+
+            // Cards sent in the current month
+            Card.countDocuments({
+                sender: studentId,
+                createdAt: {
+                    $gte: new Date(now.getFullYear(), now.getMonth(), 1),
+                    $lt: new Date(now.getFullYear(), now.getMonth() + 1, 1)
+                }
+            }),
+
+
 
             // 4. Current month streak data
             MonthlyStreak.findOne({
@@ -245,12 +261,12 @@ export const getStudentDashboard = async (req, res) => {
             },
             cardStats: {
                 totalCardsSent,
-                totalCardsReceived
+                totalGiftsSent
             },
             streakInfo: {
                 currentStreak: currentMonthStreak?.currentStreak || 0,
                 bestStreak: currentMonthStreak?.bestStreak || 0,
-                totalCardsThisMonth: currentMonthStreak?.totalCardsThisMonth || 0,
+                totalCardsThisMonth: currentMonthCardsSent,
                 monthLabel: currentMonthStreak?.monthLabel || `${now.toLocaleString('default', { month: 'long' })} ${now.getFullYear()}`
             },
             friendStats: {
