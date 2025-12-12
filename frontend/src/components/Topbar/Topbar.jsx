@@ -121,7 +121,6 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
       setShowSearchResults(false);
       setSearchQuery("");
       dispatch(clearSearchResults());
-      dispatch(getSentRequests());
     } catch (error) {
       showToast(error || "Failed to send friend request", "error");
     } finally {
@@ -131,32 +130,32 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
   return (
     <header
-  className={`
+      className={`
     fixed top-0 h-[60px] bg-white border-b border-gray-200 z-[100]
     flex items-center justify-between px-5 lg:pr-12
     ${isMobile ? "left-0 right-0" : "left-60 right-0"}   // <-- CHANGED
   `}
->
+    >
       {/* Left Section */}
       <div className="flex items-center gap-2">
-         {role === "super_admin" && !isMobile && (
+        {role === "super_admin" && !isMobile && (
           <div className="flex items-center w-sm bg-gray-50 rounded-lg px-4 py-2">
             <div className="relative w-[22rem] max-w-full" >
-                              <Search className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600 pointer-events-none" />
-                <input
+              <Search className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600 pointer-events-none" />
+              <input
                 type="text"
                 placeholder="Search.."
                 className="w-full ml-6 text-gray-800 border-none outline-none focus:ring-0 focus:outline-none"
               />
             </div>
           </div>
-         )}
-
-         
+        )}
 
 
-          {role === "student" && (
-                    <div className="flex items-center w-48 sm:w-sm bg-gray-50 rounded-lg px-4 py-2">
+
+
+        {role === "student" && (
+          <div className="flex items-center w-48 sm:w-sm bg-gray-50 rounded-lg px-4 py-2">
 
             <div className="relative w-[22rem] max-w-full">
               {searchLoading ? (
@@ -175,7 +174,7 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
               {/* Search Results Dropdown */}
               {showSearchResults && searchResults.length > 0 && (
                 // <div className="absolute top-full mt-2 w-full bg-white shadow-xl rounded-lg border border-gray-200 z-50 max-h-96 overflow-y-auto">
-                        <div className="absolute top-full mt-2 left-0 bg-white shadow-xl rounded-lg border border-gray-200 z-50 max-h-96 overflow-y-auto min-w-[22rem] sm:min-w-[30rem]">         
+                <div className="absolute top-full mt-2 left-0 bg-white shadow-xl rounded-lg border border-gray-200 z-50 max-h-96 overflow-y-auto min-w-[22rem] sm:min-w-[30rem]">
                   {searchResults.map((user) => (
                     <div
                       key={user.id || user._id}
@@ -194,39 +193,38 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                         </div>
                       </div>
                       <button
-                       onClick={() => handleSendRequest(user.id || user._id)}
-                       disabled={
-                         sendingToUserId === (user.id || user._id) ||
-                         user.friendshipStatus === "connected" ||
-                         user.friendshipStatus === "requested_by_me"
-                       }
-                       className={`
+                        onClick={() => handleSendRequest(user.id || user._id)}
+                        disabled={
+                          sendingToUserId === (user.id || user._id) ||
+                          user.friendshipStatus === "connected" ||
+                          user.friendshipStatus === "requested_by_me"
+                        }
+                        className={`
                          px-4 py-1.5 rounded-full transition flex items-center gap-2
-                         ${
-                           sendingToUserId === (user.id || user._id)
-                             ? "bg-[#F3B11C] text-white cursor-wait"
-                             : user.friendshipStatus === "connected"
-                             ? "bg-gray-300 text-gray-700 cursor-default"
-                             : user.friendshipStatus === "requested_by_me"
-                             ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                             : "bg-[#F3B11C] text-white hover:bg-yellow-500 cursor-pointer"
-                         }
+                         ${sendingToUserId === (user.id || user._id)
+                            ? "bg-[#F3B11C] text-white cursor-wait"
+                            : user.friendshipStatus === "connected"
+                              ? "bg-gray-300 text-gray-700 cursor-default"
+                              : user.friendshipStatus === "requested_by_me"
+                                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                : "bg-[#F3B11C] text-white hover:bg-yellow-500 cursor-pointer"
+                          }
                        `}
-                     >
-                       {sendingToUserId === (user.id || user._id) ? (
-                         <>
-                           <Loader2 className="w-4 h-4 animate-spin" />
-                           Sending...
-                         </>
-                       ) : user.friendshipStatus === "connected" ? (
-                         "Friend"
-                       ) : user.friendshipStatus === "requested_by_me" ? (
-                         "Requested"
-                       ) : (
-                         "Add Friend"
-                       )}
-                     </button>
-                     
+                      >
+                        {sendingToUserId === (user.id || user._id) ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Sending...
+                          </>
+                        ) : user.friendshipStatus === "connected" ? (
+                          "Friend"
+                        ) : user.friendshipStatus === "requested_by_me" ? (
+                          "Requested"
+                        ) : (
+                          "Add Friend"
+                        )}
+                      </button>
+
                     </div>
                   ))}
                 </div>
@@ -248,16 +246,16 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                 </div>
               )}
             </div>
-            </div>
-          )}
-        
+          </div>
+        )}
+
       </div>
 
       {/* Right Section */}
       <div className="flex items-center gap-1 md:gap-3">
         <button
-        onClick={()=>navigate("/notifications")}
-        className="cursor-pointer bg-red-50 p-1 lg:p-3 rounded-lg">
+          onClick={() => navigate("/notifications")}
+          className="cursor-pointer bg-red-50 p-1 lg:p-3 rounded-lg">
           <svg
             width="20"
             height="20"
