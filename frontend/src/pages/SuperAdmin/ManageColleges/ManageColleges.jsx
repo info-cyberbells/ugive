@@ -10,9 +10,12 @@ import {
 import CollegeModal from "../Modals/CollegeAddModal";
 import ConfirmationModal from "../Modals/deleteModal";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteCollege, getCollegesData, getSingleCollege } from "../../../features/collegesSlice";
+import {
+  deleteCollege,
+  getCollegesData,
+  getSingleCollege,
+} from "../../../features/collegesSlice";
 import { useToast } from "../../../context/ToastContext";
-
 
 const StatusBadge = ({ status }) => {
   const colorMap = {
@@ -51,7 +54,6 @@ const manageColleges = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   //   const [currentCollege, setCurrentCollege] = useState(null);
   const { currentCollege } = useSelector((state) => state.college);
-
 
   const [limit, setLimit] = useState(10);
 
@@ -103,7 +105,7 @@ const manageColleges = () => {
   };
 
   const openModalForAdd = () => {
-    dispatch({ type: 'college/clearCurrentCollege' });
+    dispatch({ type: "college/clearCurrentCollege" });
     setIsViewMode(false);
     setIsModalOpen(true);
   };
@@ -119,7 +121,7 @@ const manageColleges = () => {
     // setCurrentCollege(null);
   };
 
-  const handleSave = () => { };
+  const handleSave = () => {};
 
   // --- Delete Modal Handlers ---
   const openDeleteModalForSingle = (student) => {
@@ -144,9 +146,7 @@ const manageColleges = () => {
   const confirmDelete = () => {
     if (isBulkDelete) {
       Promise.all(
-        selectedCollegeIds.map((id) =>
-          dispatch(deleteCollege(id)).unwrap()
-        )
+        selectedCollegeIds.map((id) => dispatch(deleteCollege(id)).unwrap())
       )
         .then(() => {
           showToast("Selected colleges deleted successfully!", "success");
@@ -170,7 +170,7 @@ const manageColleges = () => {
   };
 
   const handleExportCSV = () => {
-    const selected = data.filter(col => selectedCollegeIds.includes(col._id));
+    const selected = data.filter((col) => selectedCollegeIds.includes(col._id));
 
     if (selected.length === 0) {
       showToast("No colleges selected!", "error");
@@ -181,16 +181,15 @@ const manageColleges = () => {
       "College Name",
       "University Name",
       "Address Line 1",
-      "State"
+      "State",
     ];
 
-    const rows = selected.map(col => [
+    const rows = selected.map((col) => [
       col.name,
       col.university?.name,
       col.address_line_1,
       col.state,
     ]);
-
 
     const escapeCSV = (value) => {
       if (value === null || value === undefined) return "";
@@ -200,9 +199,7 @@ const manageColleges = () => {
 
     const csvContent =
       "data:text/csv;charset=utf-8," +
-      [headers, ...rows]
-        .map(row => row.map(escapeCSV).join(","))
-        .join("\n");
+      [headers, ...rows].map((row) => row.map(escapeCSV).join(",")).join("\n");
 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
@@ -213,7 +210,6 @@ const manageColleges = () => {
 
     showToast("CSV exported successfully!", "success");
   };
-
 
   const SkeletonTable = () => {
     return (
@@ -233,7 +229,6 @@ const manageColleges = () => {
               <div className="w-20 h-4 bg-gray-200 rounded"></div>
               <div className="w-20 h-4 bg-gray-200 rounded"></div>
               <div className="w-20 h-4 bg-gray-200 rounded"></div>
-
             </div>
           ))}
         </div>
@@ -242,32 +237,32 @@ const manageColleges = () => {
   };
 
   return (
-    <div className="min-h-screen lg:mt-14 lg:ml-56 font-[Inter] bg-gray-50 p-4 sm:p-8 ">
+    <div className="min-h-screen mt-12 lg:mt-14 lg:ml-56 font-[Inter] bg-gray-50 px-1 py-4 md:p-4 lg:p-8">
       <div className="max-w-8xl ">
         {/* Header Section */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <h1 className="text-2xl font-semibold text-gray-900">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 w-full">
+          <h1 className="text-xl lg:text-2xl font-semibold text-gray-900">
             College List
             <span className="text-sm text-gray-500 font-normal ml-3">
               {data.length} Colleges
             </span>
           </h1>
 
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <div className="grid gap-3 sm:flex sm:w-auto w-full">
             {/* Action Buttons Group */}
-            <div className="flex space-x-3 w-full sm:w-auto">
-              {/* Delete Button - Disabled when no colleges are selected */}
+            <div className="grid grid-cols-3 gap-3 sm:flex sm:space-x-3 w-full sm:w-auto">
               <button
                 onClick={openDeleteModalForBulk}
-                className={`flex cursor-pointer items-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${isAnySelected
-                  ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600"
-                  : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
-                  }`}
+                className={`flex cursor-pointer items-center px-6 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
+                  isAnySelected
+                    ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600"
+                    : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
+                }`}
                 aria-label="Delete Selected"
                 disabled={!isAnySelected}
               >
                 Delete({selectedCollegeIds.length})
-                <Trash2 className="h-5 w-5 ml-2" />
+                <Trash2 className="h-5 w-5 ml-2 hidden sm:inline" />
               </button>
 
               {/* Filters Button (Always active) */}
@@ -279,35 +274,34 @@ const manageColleges = () => {
               {/* Export Button - Disabled when no colleges are selected */}
               <button
                 onClick={handleExportCSV}
-                className={`flex cursor-pointer items-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${isAnySelected
-                  ? "text-gray-700 bg-white hover:bg-gray-50"
-                  : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
-                  }`}
+                className={`flex cursor-pointer items-center px-10 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
+                  isAnySelected
+                    ? "text-gray-700 bg-white hover:bg-gray-50"
+                    : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
+                }`}
                 disabled={!isAnySelected}
               >
                 Export
-                <Download className="h-4 w-4 ml-2" />
+                <Download className="h-4 w-4 ml-2 hidden sm:inline" />
               </button>
 
+              {/* Add New College Button (Always active) */}
+              <button
+                onClick={openModalForAdd}
+                className="flex cursor-pointer items-center px-4 py-2 text-xs sm:text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md"
+              >
+                <Plus className="h-5 w-5 mr-2 -ml-1 hidden sm:inline" />
+                Add New College
+              </button>
             </div>
-
-            {/* Add New College Button (Always active) */}
-            <button
-              onClick={openModalForAdd}
-              className="flex cursor-pointer items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md"
-            >
-              <Plus className="h-5 w-5 mr-2 -ml-1" />
-              Add New College
-            </button>
           </div>
         </div>
 
         {/* Table/List Container */}
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-          {loading || data.length === 0 && !error ? (
+          {loading || (data.length === 0 && !error) ? (
             <SkeletonTable />
-          ) : data &&
-            data.length > 0 ? (
+          ) : data && data.length > 0 ? (
             <>
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200 ">
@@ -315,19 +309,19 @@ const manageColleges = () => {
                     <tr className="bg-gray-50">
                       <th
                         scope="col"
-                        className="px-6 py-3 w-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        className="px-2 sm:px-6 sm:py-3 w-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
                         <input
                           type="checkbox"
                           checked={isAllSelected}
                           onChange={handleSelectAll}
-                          className="form-checkbox cursor-pointer h-4 w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
+                          className="form-checkbox cursor-pointer h-2 w-2 sm:h-4 sm:w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
                         />
                       </th>
 
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                        className="sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
                           College Name
@@ -335,7 +329,7 @@ const manageColleges = () => {
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                        className="hidden lg:table-cell sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
                           University Name
@@ -343,7 +337,7 @@ const manageColleges = () => {
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                        className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
                           Address Line
@@ -359,7 +353,7 @@ const manageColleges = () => {
                       </th> */}
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                        className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
                           Phone Number
@@ -377,7 +371,7 @@ const manageColleges = () => {
                                         </th> */}
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        className="sm:px-6 py-1 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
                         Action
                       </th>
@@ -389,32 +383,33 @@ const manageColleges = () => {
                     {data.map((college) => (
                       <tr
                         key={college._id}
-                        className={`transition duration-150 ${selectedCollegeIds.includes(college._id)
-                          ? "bg-indigo-50 hover:bg-indigo-100"
-                          : "hover:bg-gray-50"
-                          }`}
+                        className={`transition duration-150 ${
+                          selectedCollegeIds.includes(college._id)
+                            ? "bg-indigo-50 hover:bg-indigo-100"
+                            : "hover:bg-gray-50"
+                        }`}
                       >
-                        <td className="px-6 py-4 whitespace-nowrap w-4">
+                        <td className="px-2 sm:px-6 sm:py-3 w-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           <input
                             type="checkbox"
                             checked={selectedCollegeIds.includes(college._id)}
                             onChange={() => handleSelectCollege(college._id)}
-                            className="form-checkbox cursor-pointer h-4 w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
+                            className="form-checkbox cursor-pointer h-2 w-2 sm:h-4 sm:w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
                           />
                         </td>
 
                         {/* College Name Column */}
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <td className="sm:px-6 py-1 sm:py-4 whitespace-nowrap text-xs sm:text-sm sm:font-medium text-gray-900">
                           {college.name || "N/A"}
                         </td>
 
                         {/* University ID Column */}
-                        <td className="px-6 py-4 whitespace-nowrap text-xs tracking-tighter text-gray-500 font-mono">
+                        <td className="hidden lg:table-cell sm:px-6 sm:py-4 whitespace-nowrap text-sm text-gray-600">
                           {college.university.name || "N/A"}
                         </td>
 
                         {/* Address Line 1 Column */}
-                        <td className="px-6 py-4 text-sm text-gray-600 max-w-[200px] whitespace-normal break-words">
+                        <td className="hidden lg:table-cell sm:px-6 sm:py-4 text-sm text-gray-600 max-w-[200px] whitespace-normal break-words">
                           {college.address_line_1 || "N/A"}
                         </td>
 
@@ -424,7 +419,7 @@ const manageColleges = () => {
                         </td> */}
 
                         {/* State Column */}
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="hidden sm:table-cell sm:px-4 sm:py-4 whitespace-nowrap text-sm text-gray-600">
                           {college.phoneNumber || "N/A"}
                         </td>
 
@@ -439,14 +434,15 @@ const manageColleges = () => {
                                             </td> */}
 
                         {/* Action Column (View, Edit, Delete) */}
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
+                        <td className="sm:px-6 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium space-x-1 sm:space-x-3">
                           <button
                             onClick={() => {
                               dispatch(getSingleCollege(college._id));
                               setIsViewMode(true);
                               setIsModalOpen(true);
                             }}
-                            className="cursor-pointer text-blue-600 hover:text-blue-900">
+                            className="cursor-pointer text-blue-600 hover:text-blue-900"
+                          >
                             View
                           </button>
                           <button
@@ -471,12 +467,14 @@ const manageColleges = () => {
                   </tbody>
                 </table>
               </div>
-              <div className="flex justify-between items-center p-4 bg-white ">
+              <div className="flex justify-between items-center p-2 sm:p-4 bg-white border-t">
                 {/* Limit Dropdown */}
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">Rows per page:</span>
+                  <span className="text-xs sm:text-sm text-gray-600">
+                    Rows per page:
+                  </span>
                   <select
-                    className="border rounded px-2 py-1 text-sm"
+                    className="border rounded px-2 py-1 text-xs sm:text-sm"
                     value={limit}
                     onChange={(e) => handleLimitChange(e.target.value)}
                   >
@@ -492,17 +490,18 @@ const manageColleges = () => {
                   <button
                     onClick={() => handlePageChange(page - 1)}
                     disabled={page === 1}
-                    className={`px-3 py-1 text-sm border rounded 
-                ${page === 1
-                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                        : "bg-white hover:bg-gray-50"
-                      }
+                    className={`px-3 py-1 text-xs sm:text-sm border rounded 
+                ${
+                  page === 1
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-white hover:bg-gray-50"
+                }
             `}
                   >
                     Prev
                   </button>
 
-                  <span className="text-sm text-gray-700">
+                  <span className="text-xs sm:text-sm text-gray-700">
                     Page <strong>{page}</strong> of{" "}
                     <strong>{totalPages}</strong>
                   </span>
@@ -510,11 +509,12 @@ const manageColleges = () => {
                   <button
                     onClick={() => handlePageChange(page + 1)}
                     disabled={page === totalPages}
-                    className={`px-3 py-1 text-sm border rounded 
-                ${page === totalPages
-                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                        : "bg-white hover:bg-gray-50"
-                      }
+                    className={`px-3 py-1 text-xs sm:text-sm border rounded 
+                ${
+                  page === totalPages
+                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    : "bg-white hover:bg-gray-50"
+                }
             `}
                   >
                     Next
@@ -559,7 +559,6 @@ const manageColleges = () => {
         onClose={closeModal}
         college={currentCollege}
         isViewMode={isViewMode}
-
         onSave={handleSave}
       />
       <ConfirmationModal

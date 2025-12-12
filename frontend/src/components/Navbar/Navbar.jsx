@@ -5,8 +5,8 @@ import RightPanel from "../RightPanel/RightPanel";
 import ugiveBlack from "/UGIVEBlack.svg";
 
 const ROLE_BASED_BG_COLOR = {
-  super_admin: ["bg-gradient-to-b from-[#8B78D0] via-[#8B78D09A] to-white"],
-  admin: ["bg-gradient-to-b from-[#8B78D0] via-[#8B78D09A] to-white"],
+  super_admin: ["bg-gradient-to-b from-[#8B78D0] via-[#9D88DD] to-white"],
+  admin: ["bg-gradient-to-b from-[#8B78D0] via-[#9D88DD] to-white"],
   student: ["bg-white"],
 };
 
@@ -17,12 +17,22 @@ const Navbar = () => {
 
     const roleBg = ROLE_BASED_BG_COLOR[role] || ["bg-white"];
 
+    const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+
 
   return (
     <div className="relative ">
 
       {/* LEFT SIDEBAR */}
-      <aside className={`fixed left-0 top-0 w-60 min-h-screen ${roleBg.join(" ")} border-r border-gray-200 z-50`}>
+      <aside 
+       className={`
+    fixed top-0 left-0 w-60 min-h-screen ${roleBg.join(" ")}
+    border-r border-gray-200 z-50
+    transition-transform duration-300
+    ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}   
+    lg:translate-x-0                                         
+  `}
+      >
 
         {/* Logo */}
         <div className="flex justify-center pt-6">
@@ -30,8 +40,8 @@ const Navbar = () => {
         </div>
 
         {/* Menu */}
-        <div className="px-4 mt-2 h-screen">
-          <MenuItems />
+        <div className="px-4 mt-2 h-screen bg-opacity-100">
+          <MenuItems setIsSidebarOpen={setIsSidebarOpen} />
         </div>
 
       </aside>
@@ -43,7 +53,9 @@ const Navbar = () => {
 
       {/* TOPBAR */}
       <header className="fixed top-0 left-60 right-60 h-14 z-40">
-        <Topbar />
+        {/* <Topbar /> */}
+        <Topbar isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
+
       </header>
 
 

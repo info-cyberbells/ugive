@@ -131,16 +131,31 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
   return (
     <header
-      className="
-  fixed left-60 top-0 right-0 h-[60px]
-  bg-white border-b border-gray-200 z-[100]
-  flex items-center justify-between px-5 pr-12
-"
-    >
+  className={`
+    fixed top-0 h-[60px] bg-white border-b border-gray-200 z-[100]
+    flex items-center justify-between px-5 lg:pr-12
+    ${isMobile ? "left-0 right-0" : "left-60 right-0"}   // <-- CHANGED
+  `}
+>
       {/* Left Section */}
       <div className="flex items-center gap-2">
-        <div className="flex items-center w-sm bg-gray-50 rounded-lg px-4 py-2">
-          {!isMobile && (
+         {role === "super_admin" && !isMobile && (
+          <div className="flex items-center w-sm bg-gray-50 rounded-lg px-4 py-2">
+            <div className="relative w-[22rem] max-w-full" >
+                              <Search className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600 pointer-events-none" />
+                <input
+                type="text"
+                placeholder="Search.."
+                className="w-full ml-6 text-gray-800 border-none outline-none focus:ring-0 focus:outline-none"
+              />
+            </div>
+          </div>
+         )}
+
+
+          {role === "student" && !isMobile && (
+                    <div className="flex items-center w-sm bg-gray-50 rounded-lg px-4 py-2">
+
             <div className="relative w-[22rem] max-w-full">
               {searchLoading ? (
                 <Loader2 className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600 animate-spin" />
@@ -230,13 +245,16 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                 </div>
               )}
             </div>
+            </div>
           )}
-        </div>
+        
       </div>
 
       {/* Right Section */}
-      <div className="flex items-center gap-4 md:gap-3">
-        <button className="cursor-pointer bg-red-50 p-3 rounded-lg">
+      <div className="flex items-center gap-1 md:gap-3">
+        <button
+        onClick={()=>navigate("/notifications")}
+        className="cursor-pointer bg-red-50 p-1 lg:p-3 rounded-lg">
           <svg
             width="20"
             height="20"
@@ -250,7 +268,7 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
         </button>
 
         <div
-          className="flex items-center gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition"
+          className="flex items-center gap-1 lg:gap-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition"
           onClick={handleProfileClick}
         >
           {/* User Image */}
@@ -259,10 +277,10 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
               <img
                 src={userData.profileImage}
                 alt="User"
-                className="w-12 h-12 rounded-md object-cover"
+                className="w-8 h-8 lg:w-12 lg:h-12 rounded-md object-cover"
               />
             ) : (
-              <div className="w-12 h-12 rounded-md bg-[#E9B243] flex items-center justify-center">
+              <div className="w-8 h-8 lg:w-12 lg:h-12 rounded-md bg-[#E9B243] flex items-center justify-center">
                 <svg
                   className="w-20 h-20 text-white"
                   fill="currentColor"
@@ -276,11 +294,11 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
           {/* User Info */}
           <div>
-            <h5 className="text-gray-800 font-semibold">
+            <h5 className="text-xs lg:text-sm text-gray-800 font-semibold">
               {" "}
               {userData?.name || "user"}
             </h5>
-            <h6 className="text-gray-500 text-sm">
+            <h6 className="text-xs lg:text-sm text-gray-500">
               {role?.replace("_", " ") || "role"}
             </h6>
           </div>

@@ -181,7 +181,7 @@ const SuperAdminDashboard = () => {
       </h2>
 
       {/* === TOP SECTION - Stats Cards (5 Cards) === */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
         {stats.map((stat, index) => (
           <div
             key={index}

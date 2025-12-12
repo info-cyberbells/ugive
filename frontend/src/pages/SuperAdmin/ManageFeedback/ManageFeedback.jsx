@@ -12,13 +12,15 @@ import {
   X,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllFeedbacks, deleteFeedback  } from "../../../features/feedbackSlice";
+import {
+  getAllFeedbacks,
+  deleteFeedback,
+} from "../../../features/feedbackSlice";
 import ConfirmationModal from "../Modals/deleteModal";
 import { useToast } from "../../../context/ToastContext";
 
 const Feedback = () => {
-
-    const {showToast} = useToast();
+  const { showToast } = useToast();
 
   const dispatch = useDispatch();
   const [selectedIds, setSelectedIds] = useState([]);
@@ -89,39 +91,39 @@ const Feedback = () => {
     setIsDeleteModalOpen(false);
     setFeedbackToDelete(null);
     setIsBulkDelete(false);
-};
+  };
 
-const confirmDelete = async () => {
-  try {
-    if (isBulkDelete) {
-      // Bulk delete
-      for (const id of selectedFeedbackIds) {
-        await dispatch(deleteFeedback({ id })).unwrap();
+  const confirmDelete = async () => {
+    try {
+      if (isBulkDelete) {
+        // Bulk delete
+        for (const id of selectedFeedbackIds) {
+          await dispatch(deleteFeedback({ id })).unwrap();
+        }
+
+        showToast(
+          `${selectedFeedbackIds.length} feedback(s) deleted`,
+          "success"
+        );
+
+        // Clear selected
+        setSelectedFeedbackIds([]);
+      } else if (feedbackToDelete) {
+        // Single delete
+        await dispatch(deleteFeedback({ id: feedbackToDelete._id })).unwrap();
+
+        showToast("Feedback deleted successfully", "success");
       }
 
-      showToast(`${selectedFeedbackIds.length} feedback(s) deleted`, "success");
-
-      // Clear selected
-      setSelectedFeedbackIds([]);
-    } else if (feedbackToDelete) {
-      // Single delete
-      await dispatch(deleteFeedback({ id: feedbackToDelete._id })).unwrap();
-
-      showToast("Feedback deleted successfully", "success");
+      // Refresh list
+      dispatch(getAllFeedbacks());
+    } catch (err) {
+      showToast(err || "Failed to delete feedback", "error");
     }
 
-    // Refresh list
-    dispatch(getAllFeedbacks());
-
-  } catch (err) {
-    showToast(err || "Failed to delete feedback", "error");
-  }
-
-  // Close modal
-  closeDeleteModal();
-};
-
-
+    // Close modal
+    closeDeleteModal();
+  };
 
   const handleExportFeedbackCSV = () => {
     const selected = allFeedbacks.filter((fb) =>
@@ -162,7 +164,7 @@ const confirmDelete = async () => {
     showToast("Feedback CSV exported successfully!", "success");
   };
 
-   const FeedbackTableSkeleton = () => {
+  const FeedbackTableSkeleton = () => {
     const rows = Array(6).fill(0);
 
     return (
@@ -318,14 +320,12 @@ const confirmDelete = async () => {
       </div>
     );
   };
- 
 
   return (
-    <div className="min-h-screen ml-60 mt-14 bg-gray-50 p-4 sm:p-8 font-sans">
+    <div className="min-h-screen mt-13 lg:mt-14 lg:ml-56 font-[Inter] bg-gray-50 px-1 py-4 md:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          {/* TITLE */}
-          <h1 className="text-2xl font-semibold text-gray-900 flex items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 w-full">
+          <h1 className="text-xl lg:text-2xl font-semibold text-gray-900">
             {/* <MessageSquare className="h-6 w-6 mt-1 text-indigo-600 mr-2" /> */}
             Students Feedback
             <span className="text-sm mt-2 text-gray-500 font-normal ml-3">
@@ -335,7 +335,7 @@ const confirmDelete = async () => {
 
           {/* ACTION BUTTONS */}
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-            <div className="flex space-x-3 w-full sm:w-auto">
+            <div className="flex justify-around space-x-3 w-full sm:w-auto">
               <button
                 className={`flex items-center px-4 py-2 text-sm font-medium border border-gray-300
           rounded-lg transition cursor-pointer duration-150 shadow-sm
@@ -376,60 +376,94 @@ const confirmDelete = async () => {
           ) : total > 0 ? (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="w-10 px-2 py-3">
+                <thead className="bg-gray-50">
+                  <tr>
+                    {/* Checkbox Column */}
+                    <th 
+                        className="px-2 sm:px-6 sm:py-3 w-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
                       <input
                         type="checkbox"
                         checked={
                           selectedFeedbackIds.length === allFeedbacks.length
                         }
                         onChange={toggleSelectAll}
-                        className="w-4 h-4"
+                          className="form-checkbox cursor-pointer h-2 w-2 sm:h-4 sm:w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
                       />
                     </th>
 
-                    {feedbackHeaders.map((header) => (
-                      <th
-                        key={header.key}
-                        scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
-                      >
-                        <div className="flex items-center gap-1">
-                          {header.label}
-                        </div>
-                      </th>
-                    ))}
+                    {/* Student */}
+                    <th
+                      scope="col"
+                        className="sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                    >
+                      Student
+                    </th>
+
+                    {/* Email */}
+                    <th
+                      scope="col"
+                        className="hidden lg:table-cell sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                    >
+                      Email
+                    </th>
+
+                    {/* Date Sent */}
+                    <th
+                      scope="col"
+                        className=" sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                    >
+                      Date Sent
+                    </th>
+
+                    {/* Summary */}
+                    <th
+                      scope="col"
+                        className="hidden lg:table-cell sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                    >
+                      Summary
+                    </th>
+
+                    {/* Action */}
+                    <th
+                      scope="col"
+                        className="sm:px-6 py-1 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Action
+                    </th>
                   </tr>
                 </thead>
+
                 <tbody className="bg-white divide-y divide-gray-200">
                   {allFeedbacks.map((feedback) => (
                     <tr
                       key={feedback._id}
                       className="hover:bg-indigo-50/50 transition duration-150"
                     >
-                      <td className="w-10 px-4 py-4">
+                      <td 
+                        className="px-2 sm:px-6 sm:py-3 w-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
                         <input
                           type="checkbox"
                           checked={selectedFeedbackIds.includes(feedback._id)}
                           onChange={() => toggleSelect(feedback._id)}
-                          className="w-4 h-4"
+                            className="form-checkbox cursor-pointer h-2 w-2 sm:h-4 sm:w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
                         />
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <td className="sm:px-6 py-1 sm:py-4 whitespace-nowrap text-xs sm:text-sm sm:font-medium text-gray-900">
                         {feedback.user?.name}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="hidden lg:table-cell sm:px-6 sm:py-4 whitespace-nowrap text-sm text-gray-600">
                         {feedback.user?.email}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                         <td className=" sm:px-4 sm:py-4 whitespace-nowrap text-sm text-gray-600">
                         {new Date(feedback.createdAt).toLocaleDateString()}
                       </td>
                       {/* Truncated Summary */}
-                      <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">
+                      <td className="hidden lg:table-cell sm:px-6 sm:py-4 text-sm text-gray-600 max-w-xs truncate">
                         {feedback.feedback}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
+                        <td className="sm:px-6 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium space-x-1 sm:space-x-3">
                         <button
                           onClick={() => openViewModal(feedback)}
                           className="text-blue-600 cursor-pointer hover:text-blue-900"
@@ -462,15 +496,14 @@ const confirmDelete = async () => {
         </div>
       </div>
       <FeedbackViewModal />
-     <ConfirmationModal
-  isOpen={isDeleteModalOpen}
-  onClose={closeDeleteModal}
-  onConfirm={confirmDelete}
-  count={isBulkDelete ? selectedFeedbackIds.length : 1}
-  entity="feedback"
-  itemName={feedbackToDelete?.user?.name}
-/>
-
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={confirmDelete}
+        count={isBulkDelete ? selectedFeedbackIds.length : 1}
+        entity="feedback"
+        itemName={feedbackToDelete?.user?.name}
+      />
     </div>
   );
 };

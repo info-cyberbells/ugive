@@ -112,7 +112,7 @@ export default function SocialLinksManager() {
 
 
   return (
-    <div className="min-h-screen font-[Poppins] ml-60 mt-14 pt-4 pb-24 px-4 space-y-5">
+    <div className="min-h-screen font-[Poppins] lg:ml-60 mt-14 pt-4 pb-24 px-4 space-y-5">
       <header className="">
         <h1 className="text-2xl font-semibold text-gray-900">
           Social Link Manager
@@ -181,7 +181,7 @@ export default function SocialLinksManager() {
                     Image Selected
                   </span>
                 ) : (
-                  <span className="flex items-center space-x-1">
+                  <span className="flex items-center lg:space-x-1">
                     <Upload className="h-4 w-4" />
                     <span>Choose File</span>
                   </span>
@@ -256,7 +256,7 @@ export default function SocialLinksManager() {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-xl border border-gray-100/50 shadow-sm">
+      <div className="bg-white p-3 md:p-6 rounded-xl border border-gray-100/50 shadow-sm">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">
           Your Current Links
         </h2>
@@ -271,7 +271,7 @@ export default function SocialLinksManager() {
                 <th className="px-6 py-4 text-left font-medium text-gray-500 uppercase tracking-wider">
                   Image
                 </th>
-                <th className="px-6 py-4 text-left font-medium text-gray-500 uppercase tracking-wider">
+                <th className="hidden md:table-cell px-6 py-4 text-left font-medium text-gray-500 uppercase tracking-wider">
                   Link
                 </th>
                 <th className="px-6 py-4 text-center font-medium text-gray-500 uppercase tracking-wider">
@@ -320,7 +320,7 @@ export default function SocialLinksManager() {
                       />
                     </td>
 
-                    <td className="px-6 py-4">
+                    <td className="hidden md:table-cell px-6 py-4">
                       <a href={item.link} className="text-blue-600">
                         {item.link}
                       </a>
