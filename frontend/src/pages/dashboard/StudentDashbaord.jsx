@@ -149,17 +149,12 @@ const StudentDashboard = () => {
   );
   const { cardsProgress } = useSelector((state) => state.studentCard);
 
-  useEffect(() => {
-    dispatch(getSocialLinks());
-  }, []);
+ useEffect(() => {
+   dispatch(getstudentDashboardData());
+   dispatch(remainingCardProgress());
+  dispatch(getSocialLinks());
+}, []);
 
-  useEffect(() => {
-    dispatch(getstudentDashboardData());
-  }, []);
-
-  useEffect(() => {
-    dispatch(remainingCardProgress());
-  }, []);
 
   const navigate = useNavigate();
 
