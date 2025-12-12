@@ -3,7 +3,8 @@ import {
   changeSuperAdminPasswordService,
   getSuperAdminProfileService,
   updateSuperAdminProfileService,
-  getSuperAdminDashboardService
+  getSuperAdminDashboardService,
+  getSuperAdminNotificationsService
 } from '..//auth/authServices';
 
 
@@ -67,11 +68,26 @@ export const getSuperAdminDashboard = createAsyncThunk(
   }
 );
 
+
+export const fetchSuperAdminNotifications = createAsyncThunk(
+  "superAdminNotifications/fetch",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getSuperAdminNotificationsService();
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch notifications");
+    }
+  }
+);
+
 const initialState = {
   profile: null,
   profileLoading: false,
   profileError: null,
   dashboardData: null,
+  notifications: [],
+  activities: [],
 
   universities: [],
   universitiesLoading: false,
@@ -156,6 +172,21 @@ const superadminSlice = createSlice({
       .addCase(getSuperAdminDashboard.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to fetch dashboard data";
+      })
+
+      //fetch superadmin notifications
+      .addCase(fetchSuperAdminNotifications.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchSuperAdminNotifications.fulfilled, (state, action) => {
+        state.loading = false;
+        state.notifications = action.payload.notifications || [];
+        state.activities = action.payload.activities || [];
+      })
+      .addCase(fetchSuperAdminNotifications.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
 
 

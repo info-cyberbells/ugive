@@ -76,9 +76,9 @@ export const getAllStudentsSuperAdmin = async (req, res) => {
         limit = Number(limit);
 
 
-        const total = await User.countDocuments({ role: "student" });
+        const total = await User.countDocuments({ role: "student", isDeleted: { $ne: true } });
 
-        const students = await User.find({ role: "student" })
+        const students = await User.find({ role: "student", isDeleted: { $ne: true } })
             .populate("university", "name city state")
             .populate("college", "name city state")
             .sort({ createdAt: -1 })
@@ -104,6 +104,8 @@ export const getAllStudentsSuperAdmin = async (req, res) => {
         });
     }
 };
+
+
 
 //get single Student
 export const getSingleStudentSuperAdmin = async (req, res) => {

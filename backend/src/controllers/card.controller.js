@@ -34,6 +34,8 @@ export const createCard = async (req, res) => {
     const studentId = req.user.id;
     const {
       recipient_name,
+      recipient_last_name,
+      sender_name,
       recipient_email,
       college_name,
       reward,
@@ -101,7 +103,9 @@ export const createCard = async (req, res) => {
     const card = await Card.create({
       sender: studentId,
       receiver_id,
+      sender_name: sender_name || null,
       recipient_name,
+      recipient_last_name: recipient_last_name || null,
       recipient_email,
       college_name: college_name || null,
       reward: reward || null,
@@ -114,7 +118,7 @@ export const createCard = async (req, res) => {
     if (!reward) {
       const firstReward = await Reward.findOne({ university: sender.university })
         .sort({ totalPoints: 1 });
-        console.log("Sender University =>", sender.university);
+      console.log("Sender University =>", sender.university);
 
 
       if (firstReward) {

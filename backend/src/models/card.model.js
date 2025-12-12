@@ -8,6 +8,12 @@ const cardSchema = new mongoose.Schema(
       required: true,
     },
 
+    sender_name: {
+      type: String,
+      required: false,
+      default: null,
+      trim: true,
+    },
     receiver_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -36,6 +42,12 @@ const cardSchema = new mongoose.Schema(
     recipient_name: {
       type: String,
       required: true,
+      trim: true,
+    },
+    recipient_last_name: {
+      type: String,
+      required: false,
+      default: null,
       trim: true,
     },
 

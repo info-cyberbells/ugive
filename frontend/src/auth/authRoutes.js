@@ -26,6 +26,8 @@ export const USER_ENDPOINTS = {
     SUPERADMIN_GET_ALL_UNIVERSITY: `${API_BASE_URL}/super_admin/get-all-universities`,
     SUPERADMIN_GET_SINGLE_UNIVERSITY: `${API_BASE_URL}/super_admin/universities`,
     SUPERADMIN_DELETE_UNIVERSITY: `${API_BASE_URL}/super_admin/universities`,
+    GET_SUPERADMIN_NOTIFICATIONS: `${API_BASE_URL}/super_admin/notifications-and-activities`,
+
 
 
 
@@ -85,6 +87,8 @@ export const USER_ENDPOINTS = {
     UNFRIEND: `${API_BASE_URL}/student/friend/unfriend`,
     GET_SENT_REQUESTS: `${API_BASE_URL}/student/friend/sent`,
     GET_RECEIVED_REQUESTS: `${API_BASE_URL}/student/friend/received`,
+
+    GET_STUDENT_NOTIFICATIONS: `${API_BASE_URL}/student/get-my-notifications`,
 
 
 };

@@ -39,8 +39,8 @@ export const getSuperAdminDashboard = async (req, res) => {
             recentUsers
         ] = await Promise.all([
             // Basic counts
-            User.countDocuments({ role: "student", isDeleted: false }),
-            User.countDocuments({ role: "admin", isDeleted: false }),
+            User.countDocuments({ role: "student", isDeleted: { $ne: true } }),
+            User.countDocuments({ role: "admin", isDeleted: { $ne: true } }),
             University.countDocuments(),
             College.countDocuments(),
             Reward.countDocuments(),
@@ -56,7 +56,7 @@ export const getSuperAdminDashboard = async (req, res) => {
 
             // Universities with most students (top 5)
             User.aggregate([
-                { $match: { role: "student", isDeleted: false, university: { $ne: null } } },
+                { $match: { role: "student", isDeleted: { $ne: true }, university: { $ne: null } } },
                 { $group: { _id: "$university", studentCount: { $sum: 1 } } },
                 { $sort: { studentCount: -1 } },
                 { $limit: 5 },

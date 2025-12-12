@@ -94,6 +94,15 @@ export const deleteSocialLinkService = async (id) => {
     return response.data;
 };
 
+// Get superadmin  notifications
+export const getSuperAdminNotificationsService = async () => {
+    const response = await axios.get(
+        USER_ENDPOINTS.GET_SUPERADMIN_NOTIFICATIONS,
+        getAuthHeader()
+    );
+    return response.data;
+};
+
 
 //get superadmin dashbaord data
 export const getSuperAdminDashboardService = async () => {
@@ -601,3 +610,13 @@ export const getRemainingCardService = async () => {
     );
     return response.data;
 }
+
+
+// Get student notifications
+export const getStudentNotificationsService = async () => {
+    const response = await axios.get(
+        USER_ENDPOINTS.GET_STUDENT_NOTIFICATIONS,
+        getAuthHeader()
+    );
+    return response.data;
+};

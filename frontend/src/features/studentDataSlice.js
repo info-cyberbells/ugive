@@ -12,6 +12,7 @@ import {
   sendFeedbackStudentService,
   getStreakSummaryService,
   getstudentDashboardService,
+  getStudentNotificationsService,
 } from "../auth/authServices";
 import { Feedback } from "../../../backend/src/models/feedback.model";
 
@@ -22,6 +23,7 @@ const initialState = {
   total: 0,
   singleStudent: null,
   totalPages: 1,
+  notifications: [],
   isLoading: false,
   isError: false,
   isSuccess: false,
@@ -102,9 +104,9 @@ export const deleteStudent = createAsyncThunk(
 
 export const fetchProfile = createAsyncThunk(
   'student/getProfile',
-  async(_, thunkAPI) => {
+  async (_, thunkAPI) => {
     try {
-      return await getStudentProfileService(); 
+      return await getStudentProfileService();
     } catch (error) {
       return thunkAPI.rejectWithValue(error.response?.data?.message || error.message)
     }
@@ -142,9 +144,9 @@ export const changeStudentPassword = createAsyncThunk(
 
 // DELETE STUDENT ACCOUNT
 
-export const deleteStudentAccount = createAsyncThunk (
+export const deleteStudentAccount = createAsyncThunk(
   'student/deleteAccount',
-  async(_, thunkAPI) => {
+  async (_, thunkAPI) => {
     try {
       const response = await deleteStudentAccountService();
       return response;
@@ -201,6 +203,19 @@ export const getstudentDashboardData = createAsyncThunk(
   }
 );
 
+export const fetchStudentNotifications = createAsyncThunk(
+  "studentNotifications/fetch",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getStudentNotificationsService();
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch notifications");
+    }
+  }
+);
+
+
 const studentDataSlice = createSlice({
   name: "studentData",
   initialState,
@@ -212,19 +227,20 @@ const studentDataSlice = createSlice({
       state.message = "";
     },
     resetStudentState: (state) => {
-    state.studentDashboard = null;
-    state.studentProfile = null;
-    state.singleStudent = null;
-    state.studentData = [];
-    state.page = 1;
-    state.limit = 10;
-    state.total = 0;
-    state.totalPages = 1;
-    state.isLoading = false;
-    state.isError = false;
-    state.isSuccess = false;
-    state.message = "";
-},
+      state.studentDashboard = null;
+      state.studentProfile = null;
+      state.singleStudent = null;
+      state.studentData = [];
+      state.page = 1;
+      state.limit = 10;
+      state.total = 0;
+      state.totalPages = 1;
+      state.isLoading = false;
+      state.isError = false;
+      state.isSuccess = false;
+      state.message = "";
+
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -329,103 +345,117 @@ const studentDataSlice = createSlice({
 
       // update profile student
       .addCase(updateStudentProfile.pending, (state) => {
-              state.isLoading = true;
-              state.isError = null;
-              state.isSuccess = false;
-            })
-            .addCase(updateStudentProfile.fulfilled, (state, action) => {
-              state.isLoading = false;
-              state.isSuccess = true;
-              state.studentProfile = action.payload;
-            })
-            .addCase(updateStudentProfile.rejected, (state, action) => {
-              state.isLoading = false;
-              state.isError = action.payload;
-            })
+        state.isLoading = true;
+        state.isError = null;
+        state.isSuccess = false;
+      })
+      .addCase(updateStudentProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.studentProfile = action.payload;
+      })
+      .addCase(updateStudentProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = action.payload;
+      })
 
-            // cahnge student password 
-            .addCase(changeStudentPassword.pending, (state) => {
-                    state.isLoading = true;
-                    state.isError = null;
-                  })
-                  .addCase(changeStudentPassword.fulfilled, (state) => {
-                    state.isLoading = false;
-                  })
-                  .addCase(changeStudentPassword.rejected, (state, action) => {
-                    state.isLoading = false;
-                    state.isError = action.payload;
-                  })
+      // cahnge student password 
+      .addCase(changeStudentPassword.pending, (state) => {
+        state.isLoading = true;
+        state.isError = null;
+      })
+      .addCase(changeStudentPassword.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(changeStudentPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = action.payload;
+      })
 
-            // delete student account
+      // delete student account
 
-            .addCase(deleteStudentAccount.pending, (state)=>{
-              state.isLoading = true;
-              state.isError = false;
+      .addCase(deleteStudentAccount.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
 
-            })
-            .addCase(deleteStudentAccount.fulfilled, (state, action)=>{
-              state.isLoading = false;
-              state.message = "Account deleted successfully";
-              state.studentProfile = null;
-              state.singleStudent = null;
-              state.studentData = [];
-              state.user = null;
-            })
-            .addCase(deleteStudentAccount.rejected, (state , action)=>{
-            state.isLoading = false;
-            state.isError = true;
-            state.message = action.payload;
-            })
+      })
+      .addCase(deleteStudentAccount.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.message = "Account deleted successfully";
+        state.studentProfile = null;
+        state.singleStudent = null;
+        state.studentData = [];
+        state.user = null;
+      })
+      .addCase(deleteStudentAccount.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
 
-            //  SENT STUDENT FEEDBACK 
-            .addCase(sendFeedbackStudent.pending, (state) => {
-      state.isLoading = true;
-      state.isError = false;
-      state.isSuccess = false;
-    })
-    .addCase(sendFeedbackStudent.fulfilled, (state, action) => {
-      state.isLoading = false;
-      state.isSuccess = true;
-      state.message = action.payload.message;
-    })
-    .addCase(sendFeedbackStudent.rejected, (state, action) => {
-      state.isLoading = false;
-      state.isError = true;
-      state.message = action.payload;
-    })
+      //  SENT STUDENT FEEDBACK 
+      .addCase(sendFeedbackStudent.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+        state.isSuccess = false;
+      })
+      .addCase(sendFeedbackStudent.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.message = action.payload.message;
+      })
+      .addCase(sendFeedbackStudent.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
 
-    // get streak summary
-    .addCase(getStreakSummary.pending, (state)=>{
-      state.isLoading = true;
-      state.isError = false;
-    })
-    .addCase(getStreakSummary.fulfilled, (state, action)=>{
-      state.isLoading = false;
-      state.isError = false;
-      state.isSuccess = true;
-      state.streakSummary = action.payload.data;
-    })
-    .addCase(getStreakSummary.rejected, (state)=>{
-      state.isLoading = false;
-      state.isSuccess = false;
-      state.isError = true;
-    })
+      // get streak summary
+      .addCase(getStreakSummary.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(getStreakSummary.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.streakSummary = action.payload.data;
+      })
+      .addCase(getStreakSummary.rejected, (state) => {
+        state.isLoading = false;
+        state.isSuccess = false;
+        state.isError = true;
+      })
 
-    // student dashboard builder
-    .addCase(getstudentDashboardData.pending, (state)=>{
-      state.dasboardLoading = true;
-      state.isError = false;
-    })
-    .addCase(getstudentDashboardData.fulfilled, (state, action)=>{
-      state.dasboardLoading = false;
-      state.isSuccess = true;
-      state.studentDashboard = action.payload.data;
-    })
-    .addCase(getstudentDashboardData.rejected, (state, action)=>{
-      state.dasboardLoading = false;
-      state.isError = true;
-      state.message = action.payload;
-    })
+      // student dashboard builder
+      .addCase(getstudentDashboardData.pending, (state) => {
+        state.dasboardLoading = true;
+        state.isError = false;
+      })
+      .addCase(getstudentDashboardData.fulfilled, (state, action) => {
+        state.dasboardLoading = false;
+        state.isSuccess = true;
+        state.studentDashboard = action.payload.data;
+      })
+      .addCase(getstudentDashboardData.rejected, (state, action) => {
+        state.dasboardLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+
+      .addCase(fetchStudentNotifications.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(fetchStudentNotifications.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.notifications = action.payload.data || [];
+      })
+      .addCase(fetchStudentNotifications.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
   },
 });
 
