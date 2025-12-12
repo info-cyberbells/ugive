@@ -435,7 +435,7 @@ const ProfileSettings = () => {
       {Loading ? (
         <ProfileSkeleton />
       ) : (
-        <div className="bg-[#F5F5F5] lg:mt-14 lg:ml-58 p-6 min-h-screen mx-auto font-[Inter]">
+        <div className="bg-[#F5F5F5] mt-10 lg:mt-14 lg:ml-58 p-6 min-h-screen mx-auto font-[Inter]">
           <div className="w-full bg-white max-w-4xl rounded-2xl shadow-sm p-6">
             {/* --- Section 1: Tabs --- */}
             <div className="flex border-b border-gray-200 mb-6">
@@ -478,7 +478,7 @@ const ProfileSettings = () => {
                     e.preventDefault();
                     handleSave();
                   }}
-                  className="grid grid-cols-[160px_1fr] gap-8 items-start"
+                  className="md:grid md:grid-cols-[160px_1fr] gap-8 items-start"
                   autoComplete="off"
                 >
                   <input
@@ -495,7 +495,7 @@ const ProfileSettings = () => {
                   />
 
                   {/*  Image Upload Section */}
-                  <div className="flex flex-col items-center w-40">
+                  <div className="flex flex-col mx-auto md:mx-0 items-center w-40">
                     <div className="relative">
                       <img
                         src={

@@ -97,7 +97,7 @@ const LetsGo = () => {
 
   const cardPercentage = cardsProgress?.currentReward?.percentage || 0;
 
-  const cardsLeft = cardsProgress?.currentReward?.totalPoints - cardsProgress?.currentReward?.completedPoints
+  const cardsLeft = cardsProgress?.currentReward?.totalPoints - cardsProgress?.currentReward?.completedPoints || "X";
 
   const navigate = useNavigate();
 
@@ -124,21 +124,20 @@ const LetsGo = () => {
         <div className="flex flex-col items-center justify-center text-center">
 
           <h1 className="text-2xl font-semibold mb-6 max-w-md leading-relaxed">
-{
-  cardsLeft == 0
-    ? (
-        <>Your reward has unlocked!</>
-      )
-    : (
-        <>
-          Send {cardsLeft} more cards to receive a free{" "}
-          <span className="font-semibold text-[#E18925]">
-            {cardsProgress?.currentReward?.rewardName}
-          </span>
-          .
-        </>
-      )
-}
+{cardsProgress?.message === "No rewards found" ? (
+  <>No rewards available right now.</>
+) : cardsLeft === 0 ? (
+  <>Your reward has unlocked!</>
+) : (
+  <>
+    Send {cardsLeft} more cards to receive a free{" "}
+    <span className="font-semibold text-[#E18925]">
+      {cardsProgress?.currentReward?.rewardName || "reward" }
+    </span>
+    .
+  </>
+)}
+
           </h1>
 
           <div className="mb-12">

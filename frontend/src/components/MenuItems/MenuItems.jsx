@@ -68,7 +68,7 @@ const ROLE_BASED_BG_COLOR = {
 };
 
 
-const MenuItems = () => {
+const MenuItems = ({ setIsSidebarOpen }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [openDropdown, setOpenDropdown] = React.useState(null);
@@ -98,6 +98,7 @@ const MenuItems = () => {
 
         <NavLink
           to={role === "student" ? "/student-dashboard" : "/dashboard"}
+          onClick={() => setIsSidebarOpen(false)} 
           className={({ isActive }) =>
             `flex items-center gap-2 px-2 py-1 rounded-md cursor-pointer
      ${isActive ? "bg-[#0000000A] font-semibold text-black" : "hover:bg-[#0000000A]"}`
@@ -138,6 +139,7 @@ const MenuItems = () => {
               // USE NAVLINK IF NO CHILDREN → FIXES HIGHLIGHT
               <NavLink
                 to={"/" + section.id}
+                onClick={() => setIsSidebarOpen(false)} 
                 className={({ isActive }) =>
                   `w-full flex items-center gap-3 py-2 px-2 rounded-lg cursor-pointer
         ${isActive ? "bg-[#0000000A] font-semibold text-black" : "hover:bg-[#0000000A]"}`}
@@ -152,6 +154,7 @@ const MenuItems = () => {
                 {section.children.map((child) => (
                   <NavLink
                     key={child.id}
+                     onClick={() => setIsSidebarOpen(false)}
                     to={"/" + child.id}
                     className={({ isActive }) =>
                       `w-full text-sm py-1 px-2 rounded-md 

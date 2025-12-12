@@ -185,24 +185,24 @@ const ManageUniversities = () => {
   };
 
   return (
-    <div className="min-h-screen lg:mt-14 lg:ml-56 font-[Inter] bg-gray-50 p-4 sm:p-8 ">
+    <div className="min-h-screen mt-12 lg:mt-14 lg:ml-56 font-[Inter] bg-gray-50 px-1 py-4 md:p-4 lg:p-8 ">
       <div className="max-w-8xl">
         {/* Header Section */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <h1 className="text-2xl font-semibold text-gray-900">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 w-full">
+          <h1 className="text-xl lg:text-2xl font-semibold text-gray-900">
             University List
             <span className="text-sm text-gray-500 font-normal ml-3">
               {data.length} Universities
             </span>
           </h1>
 
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <div className="grid gap-3 sm:flex sm:w-auto w-full">
             {/* Action Buttons Group */}
-            <div className="flex space-x-3 w-full sm:w-auto">
+            <div className="grid grid-cols-3 gap-3 sm:flex sm:space-x-3 w-full sm:w-auto">
               {/* Delete Button - Disabled when no universities are selected */}
               <button
                 onClick={openDeleteModalForBulk}
-                className={`flex cursor-pointer items-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 ${isAnySelected
+                className={`flex cursor-pointer items-center px-6 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 ${isAnySelected
                   ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600"
                   : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
                   }`}
@@ -210,7 +210,7 @@ const ManageUniversities = () => {
                 disabled={!isAnySelected}
               >
                 Delete({selectedUniversityIds.length})
-                <Trash2 className="h-5 w-5 ml-2" />
+                <Trash2 className="h-5 w-5 ml-2 hidden sm:inline" />
               </button>
 
               {/* Filters Button (Always active) */}
@@ -222,26 +222,25 @@ const ManageUniversities = () => {
               {/* Export Button - Disabled when no universities are selected */}
               <button
                 onClick={handleExportCSV}
-                className={`flex cursor-pointer items-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150  ${isAnySelected
+                className={`flex cursor-pointer items-center px-8 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150  ${isAnySelected
                   ? "text-gray-700 bg-white hover:bg-gray-50"
                   : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
                   }`}
                 disabled={!isAnySelected}
               >
                 Export
-                <Download className="h-4 w-4 ml-2" />
+                <Download className="h-4 w-4 ml-2 hidden sm:inline" />
               </button>
 
-            </div>
-
-            {/* Add New University Button (Always active) */}
             <button
               onClick={openModalForAdd}
-              className="flex cursor-pointer items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 transition duration-150 "
+              className="flex cursor-pointer items-center px-4 py-2 text-xs sm:text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 transition duration-150 "
             >
-              <Plus className="h-5 w-5 mr-2 -ml-1" />
+              <Plus className="h-5 w-5 mr-2 -ml-1 hidden sm:inline" />
               Add New University
             </button>
+            </div>
+
           </div>
         </div>
 
@@ -258,19 +257,19 @@ const ManageUniversities = () => {
                     <tr className="bg-gray-50">
                       <th
                         scope="col"
-                        className="px-6 py-3 w-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        className="px-2 sm:px-6 sm:py-3 w-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
                         <input
                           type="checkbox"
                           checked={isAllSelected}
                           onChange={handleSelectAll}
-                          className="form-checkbox cursor-pointer h-4 w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
+                          className="form-checkbox cursor-pointer h-2 w-2 sm:h-4 sm:w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
                         />
                       </th>
 
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                        className="sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
                           Name
@@ -278,7 +277,7 @@ const ManageUniversities = () => {
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                        className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
                           Phone Number
@@ -286,7 +285,7 @@ const ManageUniversities = () => {
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                        className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
                           Address Line
@@ -302,7 +301,7 @@ const ManageUniversities = () => {
                       </th> */}
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                        className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
                           City
@@ -310,7 +309,7 @@ const ManageUniversities = () => {
                       </th>
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                        className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
                           State
@@ -324,7 +323,7 @@ const ManageUniversities = () => {
                                         </th> */}
                       <th
                         scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        className="sm:px-6 py-1 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
                         Action
                       </th>
@@ -341,25 +340,27 @@ const ManageUniversities = () => {
                           : "hover:bg-gray-50"
                           }`}
                       >
-                        <td className="px-6 py-4 whitespace-nowrap w-4">
+                        <td
+                        className="px-2 sm:px-6 sm:py-3 w-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                         >
                           <input
                             type="checkbox"
                             checked={selectedUniversityIds.includes(uni._id)}
                             onChange={() => handleSelectUniversity(uni._id)}
-                            className="form-checkbox cursor-pointer h-4 w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
+                            className="form-checkbox cursor-pointer h-2 w-2 sm:h-4 sm:w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
                           />
                         </td>
 
                         {/* Name Column */}
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        <td className="sm:px-6 py-1 sm:py-4 whitespace-nowrap text-xs sm:text-sm sm:font-medium text-gray-900">
                           {uni.name || "N/A"}
                         </td>
-                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                         <td className="hidden sm:table-cell sm:px-4 sm:py-4 whitespace-nowrap text-sm text-gray-600">
                           {uni.phoneNumber || "N/A"}
                         </td>
 
                         {/* Address Line 1 Column */}
-                        <td className="px-6 py-4 text-sm text-gray-600 max-w-[200px] whitespace-normal break-words">
+                        <td className="hidden lg:table-cell sm:px-6 sm:py-4 text-sm text-gray-600 max-w-[200px] whitespace-normal break-words">
                           {uni.address_line_1 || "N/A"}
                         </td>
 
@@ -369,12 +370,12 @@ const ManageUniversities = () => {
                         </td> */}
 
                         {/* City Column */}
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="hidden lg:table-cell sm:px-6 sm:py-4 whitespace-nowrap text-sm text-gray-600">
                           {uni.city || "N/A"}
                         </td>
 
                         {/* State Column */}
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="hidden lg:table-cell sm:px-6 sm:py-4 whitespace-nowrap text-sm text-gray-600">
                           {uni.state || "N/A"}
                         </td>
 
@@ -384,14 +385,14 @@ const ManageUniversities = () => {
                                             </td> */}
 
                         {/* Action Column (View, Edit, Delete) */}
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-3">
+                        <td className="sm:px-6 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium space-x-1 sm:space-x-3">
                           <button
                             onClick={() => {
                               dispatch(getSingleUniversity(uni._id));
                               setIsViewMode(true);
                               setIsModalOpen(true);
                             }}
-                            className="cursor-pointer text-blue-600 hover:text-blue-900"
+                            className="cursor-pointer  text-blue-600 hover:text-blue-900"
                           >
                             View
                           </button>
@@ -420,10 +421,10 @@ const ManageUniversities = () => {
                 </table>
               </div>
               {/* Pagination + Limit Controls */}
-              <div className="flex justify-between items-center p-4 bg-white border-t">
+              <div className="flex justify-between items-center p-2 sm:p-4 bg-white border-t">
                 {/* Limit Dropdown */}
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">Rows per page:</span>
+                  <span className="text-xs sm:text-sm text-gray-600">Rows per page:</span>
                   <select
                     className="border rounded px-2 py-1 text-sm"
                     value={limit}
@@ -441,7 +442,7 @@ const ManageUniversities = () => {
                   <button
                     onClick={() => handlePageChange(page - 1)}
                     disabled={page === 1}
-                    className={`px-3 py-1 text-sm border rounded 
+                    className={`px-3 py-1 text-xs sm:text-sm border rounded 
                 ${page === 1
                         ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                         : "bg-white hover:bg-gray-50"
@@ -451,7 +452,7 @@ const ManageUniversities = () => {
                     Prev
                   </button>
 
-                  <span className="text-sm text-gray-700">
+                  <span className="text-xs sm:text-sm text-gray-700">
                     Page <strong>{page}</strong> of{" "}
                     <strong>{totalPages}</strong>
                   </span>
@@ -459,7 +460,7 @@ const ManageUniversities = () => {
                   <button
                     onClick={() => handlePageChange(page + 1)}
                     disabled={page === totalPages}
-                    className={`px-3 py-1 text-sm border rounded 
+                    className={`px-3 py-1 text-xs sm:text-sm border rounded 
                 ${page === totalPages
                         ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                         : "bg-white hover:bg-gray-50"
