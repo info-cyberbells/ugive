@@ -263,24 +263,26 @@ export const getMyFriends = async (req, res) => {
 
     const baseURL = `${req.protocol}://${req.get("host")}`;
 
-    let friends = connections.map((relation) => {
-      const friendDoc =
-        relation.sender._id.toString() === userId
-          ? relation.receiver
-          : relation.sender;
+    let friends = connections
+      .filter((relation) => relation.sender && relation.receiver) // Filter out null users
+      .map((relation) => {
+        const friendDoc =
+          relation.sender._id.toString() === userId
+            ? relation.receiver
+            : relation.sender;
 
-      return {
-        id: friendDoc._id,
-        name: friendDoc.name,
-        profileImage: friendDoc.profileImage
-          ? baseURL + friendDoc.profileImage
-          : null,
-        university: friendDoc.university,
-        college: friendDoc.college,
-        email: friendDoc.email,
-        connectedAt: relation.updatedAt,
-      };
-    });
+        return {
+          id: friendDoc._id,
+          name: friendDoc.name,
+          profileImage: friendDoc.profileImage
+            ? baseURL + friendDoc.profileImage
+            : null,
+          university: friendDoc.university,
+          college: friendDoc.college,
+          email: friendDoc.email,
+          connectedAt: relation.updatedAt,
+        };
+      });
 
 
     if (university) {
