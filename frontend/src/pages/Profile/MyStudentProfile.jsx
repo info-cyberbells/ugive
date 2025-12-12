@@ -92,7 +92,7 @@ const MyStudentProfile = () => {
     // Delete Account Screen
     if (showDeleteAccount) {
         return (
-            <div className="min-h-screen ml-60 mt-14 bg-gray-50 p-8">
+            <div className="min-h-screen lg:ml-60 mt-14 bg-gray-50 p-8">
                 <div className="w-full max-w-4xl">
 
                     {/* Back Button */}
@@ -172,7 +172,7 @@ const MyStudentProfile = () => {
     // Profile Info Screen
     if (showProfileInfo) {
         return (
-            <div className="min-h-screen ml-60 mt-14 bg-gray-50 p-8">
+            <div className="min-h-screen lg:ml-60 mt-14 bg-gray-50 p-8">
                 <div className="w-full max-w-4xl">
 
                     {/* Back Button */}
@@ -258,7 +258,7 @@ const MyStudentProfile = () => {
 
     // Main Profile Screen
     return (
-        <div className="min-h-screen ml-60 mt-14 bg-gray-50 p-8">
+        <div className="min-h-screen lg:ml-60 mt-14 bg-gray-50 p-8">
             <div className="w-full max-w-4xl">
 
                 {/* Back Button */}

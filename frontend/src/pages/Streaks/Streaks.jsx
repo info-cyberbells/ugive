@@ -17,24 +17,26 @@ const MilestoneItem = ({
   iconColor,
 }) => {
   return (
-    <div className="flex items-center py-3 border-b border-gray-100 last:border-b-0">
-      <div className="w-8 text-center text-sm text-gray-500 hidden sm:block">
-        {number}
-      </div>
+    <tr className="border-b border-gray-100">
+      <td className="py-3 text-center text-sm text-gray-500">{number}</td>
 
-      <div className="w-10 ml-3 flex-shrink-0 flex justify-center">
-        <Icon className={`w-5 h-5 ${iconColor}`} />
-      </div>
+      <td className="py-3 text-center">
+        <Icon className={`w-5 h-5 mx-auto ${iconColor}`} />
+      </td>
 
-      <div className="w-1/3 ml-3">
-        <p className="text-sm ml-3 font-medium text-gray-800">{weekLabel}</p>
-      </div>
+      <td className="py-3 text-sm font-medium text-gray-800">{weekLabel}</td>
 
-      <div className="w-1/4 text-sm font-medium text-gray-700">
-        {cardsSent > 0 ? `${cardsSent} ` : "No card sent"}
-      </div>
+      <td className="py-3 text-sm font-medium text-gray-700">
+        {cardsSent > 0 ? (
+          cardsSent
+        ) : (
+          <>
+            No <span className="hidden sm:inline">card sent</span>
+          </>
+        )}
+      </td>
 
-      <div className="w-40 flex-shrink-0 text-right">
+      <td className="py-3 text-center pr-2">
         <span
           className={`inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full ${
             streakEarned
@@ -44,8 +46,8 @@ const MilestoneItem = ({
         >
           {streakEarned ? "Streak Earned" : "Not Earned"}
         </span>
-      </div>
-    </div>
+      </td>
+    </tr>
   );
 };
 
@@ -103,20 +105,17 @@ const RewardBadge = ({ name, rewardImage, points, activeQuarters }) => {
           "
           style={{ backgroundImage: conicGradient }}
         >
-         <div className="w-full h-full -rotate-45 bg-white rounded-full flex flex-col items-center justify-center relative overflow-hidden">
+          <div className="w-full h-full -rotate-45 bg-white rounded-full flex flex-col items-center justify-center relative overflow-hidden">
+            <img
+              src={rewardImage}
+              alt="Reward"
+              className="w-24 h-24 -mt-6 animate-pulse object-contain opacity-90"
+            />
 
-  <img
-    src={rewardImage}
-    alt="Reward"
-    className="w-24 h-24 -mt-6 animate-pulse object-contain opacity-90"
-  />
-
-  <p className=" -mt-6 bottom-10 text-xl font-semibold text-[#6955A5]">
-    {points} {points === 1 ? "week" : "weeks"}
-  </p>
-
-</div>
-
+            <p className=" -mt-6 bottom-10 text-xl font-semibold text-[#6955A5]">
+              {points} {points === 1 ? "week" : "weeks"}
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -136,7 +135,7 @@ const Streaks = () => {
     dispatch(getStreakSummary());
   }, []);
 
-  const currentStreakWeeks =  streakSummary?.monthly?.currentStreak || 0;
+  const currentStreakWeeks = streakSummary?.monthly?.currentStreak || 0;
 
   const milestones = streakSummary?.monthly?.weeks?.map((w, index) => ({
     number: index + 1,
@@ -153,21 +152,21 @@ const Streaks = () => {
   const activeQuarters = Math.min(4, currentStreakWeeks);
 
   return (
-    <div className="min-h-screen ml-60 mt-14 bg-gray-50 px-8 py-4 font-[Poppins]">
+    <div className="min-h-screen lg:ml-60 mt-14 bg-gray-50 px-4 sm:px-8 py-4 font-[Poppins]">
       <div className="">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold text-[#6955A5] flex items-center">
             {/* <Flame className="w-6 h-6 text-yellow-400 fill-yellow-400 mr-2" /> */}
-           <img
-    src='/flame.png'
-    alt="Reward"
-    className="w-11 h-11 -mt-1 -mr-2  object-contain"
-  />
-   Streaks
+            <img
+              src="/flame.png"
+              alt="Reward"
+              className="w-11 h-11 -mt-1 -mr-2  object-contain"
+            />
+            Streaks
           </h1>
           <button
             onClick={() => navigate("/write-card")}
-            className="mt-4 px-6 py-2 bg-[#7f63e6]  cursor-pointer text-white text-sm font-medium rounded-4xl hover:bg-violet-700 hover:scale-[1.02] transition duration-150 shadow-lg "
+            className=" px-6 py-2 bg-[#7f63e6]  cursor-pointer text-white text-sm font-medium rounded-4xl hover:bg-violet-700 hover:scale-[1.02] transition duration-150 shadow-lg "
           >
             Write Card
           </button>
@@ -198,10 +197,11 @@ const Streaks = () => {
                   {/* Your Streaks Card */}
                   <div className="bg-white p-6 rounded-xl shadow-md">
                     <h2 className="text-lg font-semibold text-[#05004E] mb-2">
-                     Your Streaks:{" "}
-  <span>
-    {currentStreakWeeks} {currentStreakWeeks === 1 ? "week" : "weeks"}
-  </span>
+                      Your Streaks:{" "}
+                      <span>
+                        {currentStreakWeeks}{" "}
+                        {currentStreakWeeks === 1 ? "week" : "weeks"}
+                      </span>
                     </h2>
 
                     <div className="flex flex-col items-center justify-center">
@@ -209,7 +209,7 @@ const Streaks = () => {
                         name="Streak Reward"
                         rewardImage="/flame.png"
                         points={currentStreakWeeks}
-                        activeQuarters= {4}
+                        activeQuarters={4}
                       />
                       <p className="mt-2 text-sm text-gray-600">
                         You're doing amazing – keep it going!
@@ -276,24 +276,35 @@ const Streaks = () => {
                     Milestones {streakSummary?.monthly?.monthLabel}
                   </h2>
 
-                  <div className="hidden sm:flex text-sm font-medium text-gray-500 border-b border-gray-200 pb-2 mb-2">
-                    <div className="w-8 text-center">#</div>
-                    <div className="w-10"></div>
-                    <div className="w-1/3 ml-7">Week</div>
-                    <div className="w-1/4">Cards Sent</div>
-                    <div className="w-32 text-right">Streak</div>
-                  </div>
+                  <div className="overflow-x-auto rounded-lg border border-gray-200">
+                    <table className="w-full text-sm">
+                      <thead className="bg-gray-50">
+                        <tr className="text-gray-500 border-b font-light border-b-gray-100">
+                          <th className="py-2 w-8 text-center">#</th>
+                          <th className="py-2 w-10 text-center"></th>
+                          <th className="py-2 text-left">Week</th>
+                          <th className="py-2 text-left">Cards Sent</th>
+                          <th className="py-2 text-center pr-2">Streak</th>
+                        </tr>
+                      </thead>
 
-                  <div className="min-h-[200px]">
-                     {milestones && milestones.length > 0 ? (
-    milestones.map((m, index) => (
-      <MilestoneItem key={index} {...m} />
-    ))
-  ) : (
-    <div className="text-center text-gray-500 py-10">
-      No data available
-    </div>
-  )}
+                      <tbody>
+                        {milestones && milestones.length > 0 ? (
+                          milestones.map((m, index) => (
+                            <MilestoneItem key={index} {...m} />
+                          ))
+                        ) : (
+                          <tr>
+                            <td
+                              colSpan="5"
+                              className="text-center text-gray-500 py-10"
+                            >
+                              No data available
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
                   </div>
                 </>
               )}
