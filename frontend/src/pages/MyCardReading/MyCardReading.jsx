@@ -29,9 +29,9 @@ const CardReadingPage = () => {
   );
 
   return (
-    <div className="min-h-screen ml-60 mt-14 font-[Poppins] bg-gray-50 p-8">
+    <div className="min-h-screen lg:ml-60 mt-14 font-[Poppins] bg-gray-50 p-8">
       <div className=" w-full max-w-6xl">
-        <div className="flex justify-between mb-4 text-indigo-800">
+        <div className="flex justify-between items-center mb-4 text-indigo-800">
           <div className="flex items-center">
             <button
               onClick={() => navigate(-1)}
@@ -58,7 +58,7 @@ const CardReadingPage = () => {
           <div>
             <button
               onClick={() => navigate('/write-card')}
-              className="mt-4 px-6 py-2 bg-[#7f63e6]  cursor-pointer text-white text-sm font-medium rounded-4xl hover:bg-violet-700 transition duration-150 shadow-lg ">
+              className=" px-6 py-2 bg-[#7f63e6]  cursor-pointer text-white text-sm font-medium rounded-4xl hover:bg-violet-700 transition duration-150 shadow-lg ">
               Write Card
             </button>
           </div>
@@ -91,7 +91,7 @@ const CardReadingPage = () => {
               >
                 <button
                   onClick={() => toggleCard(card._id)}
-                  className="flex cursor-pointer flex-col sm:flex-row items-center justify-between w-full p-6 text-left focus:outline-none focus:ring-2 focus:ring-opacity-50"
+                  className="flex cursor-pointer flex-col sm:flex-row items-center justify-between w-full p-3 sm:p-4 lg:p-6 text-left focus:outline-none focus:ring-2 focus:ring-opacity-50"
                 >
                   <div className="flex flex-col items-center sm:items-start mb-3 sm:mb-0">
                     <h1 className="text-xl text-[#7B5EA6] font-medium">
@@ -106,7 +106,7 @@ const CardReadingPage = () => {
                     </p>
                   </div>
 
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center lg:space-x-2">
                     <span className="font-semibold text-sm mr-2 text-[#7B5EA6]">
                       {isOpen === card._id ? "Hide Details" : "View Details"}
                     </span>

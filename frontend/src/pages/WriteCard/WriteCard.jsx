@@ -108,13 +108,14 @@ const CardForm = ({ onSubmit }) => {
 
     setErrors({});
 
-    const cardData = {
+     const cardData = {
+      sender_name: formData.name,
       recipient_name: formData.recipientName,
+      recipient_last_name: formData.recipientLastName,
       recipient_email: formData.recipientEmail,
-      reward: formData.reward || "",
+      reward: formData.reward || null,
       college_name: formData.collegeHouse,
       message: formData.message,
-      type: "card",
     };
 
     dispatch(sendStudentCard(cardData))
@@ -134,8 +135,8 @@ const CardForm = ({ onSubmit }) => {
 
   return (
     <div className="relative">
-      <img src={coffeeCup} className="absolute left-190 top-10 z-1" alt="" />
-      <div className="max-w-4xl font-[Poppins] px-8 pt-6 relative">
+      <img src={coffeeCup} className="absolute w-20 md:w-28 lg:w-auto right-4 lg:left-190 top-14 md:top-8 lg:top-10 z-1" alt="" />
+      <div className="max-w-4xl font-[Poppins] px-4 sm:px-8 pt-6 relative">
         <div className="flex items-center mb-4 text-indigo-800">
           <button
             onClick={() => navigate(-1)}
@@ -155,13 +156,13 @@ const CardForm = ({ onSubmit }) => {
               ></path>
             </svg>
           </button>
-          <h1 className="text-2xl font-medium text-[#5D3F87]">
+          <h1 className="text-sm sm:text-2xl font-medium text-[#5D3F87]">
             One card a week keeps the smiles going!
           </h1>
         </div>
         <div className="bg-white p-6 rounded-2xl">
-          <form onSubmit={handleSubmit} className="space-y-6 pr-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <form onSubmit={handleSubmit} className="space-y-6 sm:pr-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-6">
               {/* UNIVERSITY FIELD */}
               {/* <div>
                 <label className="block text-sm font-medium text-gray-700">
@@ -286,8 +287,6 @@ const CardForm = ({ onSubmit }) => {
                   }`}
                 />
               </div>
-
-              
 
               <div className="">
                 <label htmlFor="recipientLastName" className={labelClass}>
@@ -417,7 +416,7 @@ const CardForm = ({ onSubmit }) => {
             <div className="flex justify-center pt-8 relative z-10">
               <img
                 src={pizzaSlice}
-                className="relative -left-30 -top-6"
+                className="relative sm:-left-30 -top-6"
                 alt=""
               />
               <button
@@ -577,7 +576,7 @@ const WriteCard = () => {
   // Show loading
   if (isLoading) {
     return (
-      <div className="min-h-screen ml-60 mt-14 bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen lg:ml-60 mt-14 bg-gray-50 flex items-center justify-center">
         <div className="bg-white p-8 rounded-2xl shadow-lg text-center">
           <div className="inline-block w-16 h-16 border-4 border-[#E9B243] border-t-transparent rounded-full animate-spin mb-4"></div>
           <p className="text-lg font-semibold text-gray-700">
@@ -590,7 +589,7 @@ const WriteCard = () => {
   }
 
   return (
-    <div className="min-h-screen ml-60 mt-14 bg-gray-50 flex items-start justify-center pb-20 font-sans">
+    <div className="min-h-screen lg:ml-60 mt-14 bg-gray-50 flex items-start justify-center pb-20 font-sans">
       <div className="w-full max-w-7xl">
         {isSubmitted ? (
           <SuccessMessage onGoBack={handleGoBack} />

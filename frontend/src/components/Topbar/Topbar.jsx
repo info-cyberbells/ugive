@@ -152,9 +152,11 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
           </div>
          )}
 
+         
 
-          {role === "student" && !isMobile && (
-                    <div className="flex items-center w-sm bg-gray-50 rounded-lg px-4 py-2">
+
+          {role === "student" && (
+                    <div className="flex items-center w-48 sm:w-sm bg-gray-50 rounded-lg px-4 py-2">
 
             <div className="relative w-[22rem] max-w-full">
               {searchLoading ? (
@@ -172,7 +174,8 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
               {/* Search Results Dropdown */}
               {showSearchResults && searchResults.length > 0 && (
-                <div className="absolute top-full mt-2 w-full bg-white shadow-xl rounded-lg border border-gray-200 z-50 max-h-96 overflow-y-auto">
+                // <div className="absolute top-full mt-2 w-full bg-white shadow-xl rounded-lg border border-gray-200 z-50 max-h-96 overflow-y-auto">
+                        <div className="absolute top-full mt-2 left-0 bg-white shadow-xl rounded-lg border border-gray-200 z-50 max-h-96 overflow-y-auto min-w-[22rem] sm:min-w-[30rem]">         
                   {searchResults.map((user) => (
                     <div
                       key={user.id || user._id}
@@ -294,7 +297,7 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
           {/* User Info */}
           <div>
-            <h5 className="text-xs lg:text-sm text-gray-800 font-semibold">
+            <h5 className="text-[8px] sm:text-xs lg:text-sm text-gray-800 font-semibold">
               {" "}
               {userData?.name || "user"}
             </h5>

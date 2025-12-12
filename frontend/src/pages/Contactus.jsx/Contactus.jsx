@@ -32,7 +32,7 @@ const Contactus = () => {
 
 
   return (
-            <div className="bg-gray-50 ml-60 mt-14 min-h-screen px-6 pt-2 mx-auto font-[Poppins]">
+            <div className="bg-gray-50 lg:ml-60 mt-14 min-h-screen px-6 pt-2 mx-auto font-[Poppins]">
              <h2 
              className='p-4 text-2xl font-semibold text-[#6955A5]'
              >Support</h2>

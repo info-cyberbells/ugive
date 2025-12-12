@@ -21,21 +21,20 @@ import {
 } from "../../features/friendsSlice";
 import { useToast } from "../../context/ToastContext";
 
-const ProfileAvatar = ({ src, name }) => (
+const ProfileAvatar = ({ src, name }) =>
   src ? (
-    <img
-      src={src}
-      alt={name}
-      className="w-12 h-14 rounded-2xl object-cover"
-    />
+    <img src={src} alt={name} className="w-12 h-14 rounded-2xl object-cover" />
   ) : (
     <div className="w-12 h-14 rounded-2xl bg-[#F3B11C] flex items-center justify-center">
-      <svg className="w-20 h-20 text-purple-800" fill="currentColor" viewBox="0 0 24 24">
+      <svg
+        className="w-20 h-20 text-purple-800"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+      >
         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
       </svg>
     </div>
-  )
-);
+  );
 
 const FriendSkeleton = () => (
   <div className="p-2 flex items-center justify-between animate-pulse">
@@ -46,7 +45,7 @@ const FriendSkeleton = () => (
         <div className="h-3 bg-gray-200 rounded w-48"></div>
       </div>
     </div>
-    <div className="flex gap-8">
+    <div className="hidden sm:flex gap-8">
       <div className="h-3 bg-gray-200 rounded w-20"></div>
       <div className="h-3 bg-gray-200 rounded w-24"></div>
     </div>
@@ -64,7 +63,7 @@ const FriendsListContent = ({ friends, loading, onUnfriend }) => {
             <div className="w-12"></div>
             <h2 className="font-semibold text-gray-600">Friend Name</h2>
           </div>
-          <div className="flex gap-6 text-sm min-w-[400px]">
+          <div className="hidden sm:flex gap-6 text-sm sm:min-w-[400px]">
             <h2 className="font-semibold text-gray-600 w-32">College</h2>
             <h2 className="font-semibold text-gray-600 w-64">University</h2>
           </div>
@@ -91,7 +90,7 @@ const FriendsListContent = ({ friends, loading, onUnfriend }) => {
           <div className="w-12"></div>
           <h2 className="font-semibold text-gray-600">Friend Name</h2>
         </div>
-        <div className="flex gap-6 text-sm min-w-[400px]">
+        <div className=" hidden sm:flex gap-6 text-sm min-w-[400px]">
           <h2 className="font-semibold text-gray-600 w-32">College</h2>
           <h2 className="font-semibold text-gray-600 w-64">University</h2>
         </div>
@@ -112,14 +111,18 @@ const FriendsListContent = ({ friends, loading, onUnfriend }) => {
               </p>
             </div>
           </div>
-          <div className="flex gap-6 text-sm text-gray-600 min-w-[400px]">
-            <span className="w-32 truncate">{friend.college?.name || "N/A"}</span>
-            <span className="w-64 truncate">{friend.university?.name || "N/A"}</span>
+          <div className="hidden sm:flex gap-6 text-sm text-gray-600 min-w-[400px]">
+            <span className="w-32 truncate">
+              {friend.college?.name || "N/A"}
+            </span>
+            <span className="w-64 truncate">
+              {friend.university?.name || "N/A"}
+            </span>
           </div>
           {/* Unfriend button - shows on hover */}
           <button
             onClick={() => onUnfriend(friend)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 cursor-pointer group-hover:opacity-100 px-3 py-1 text-sm text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-all"
+            className="absolute right-2 top-1/2 -translate-y-1/2 opacity-100 lg:opacity-0 cursor-pointer group-hover:opacity-100 px-3 py-1 text-sm text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-all"
           >
             Unfriend
           </button>
@@ -128,7 +131,6 @@ const FriendsListContent = ({ friends, loading, onUnfriend }) => {
     </div>
   );
 };
-
 
 const SentRequestsContent = ({ requests, loading }) => {
   const requestsList = Array.isArray(requests) ? requests : [];
@@ -159,7 +161,10 @@ const SentRequestsContent = ({ requests, loading }) => {
           className="p-2 flex items-center justify-between hover:bg-gray-50 rounded-lg transition"
         >
           <div className="flex items-center gap-4">
-            <ProfileAvatar src={req.receiver?.profileImage} name={req.receiver?.name} />
+            <ProfileAvatar
+              src={req.receiver?.profileImage}
+              name={req.receiver?.name}
+            />
             <div>
               <h2 className="text-md font-semibold text-gray-800">
                 {req.receiver?.name || "Unknown"}
@@ -182,7 +187,7 @@ const FriendRequestsContent = ({
   onAccept,
   onDelete,
   acceptingId,
-  deletingId
+  deletingId,
 }) => {
   const requestsList = Array.isArray(requests) ? requests : [];
 
@@ -212,7 +217,10 @@ const FriendRequestsContent = ({
           className="p-2 flex items-center justify-between hover:bg-gray-50 rounded-lg transition"
         >
           <div className="flex items-center gap-4">
-            <ProfileAvatar src={req.sender?.profileImage} name={req.sender?.name} />
+            <ProfileAvatar
+              src={req.sender?.profileImage}
+              name={req.sender?.name}
+            />
             <div>
               <h2 className="text-md font-semibold text-gray-800">
                 {req.sender?.name || "Unknown"}
@@ -223,7 +231,7 @@ const FriendRequestsContent = ({
             </div>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex sm:gap-3">
             <button
               onClick={() => onAccept(req.id || req._id)}
               disabled={acceptingId === (req.id || req._id)}
@@ -287,30 +295,29 @@ const Friends = () => {
   const [showUnfriendModal, setShowUnfriendModal] = useState(false);
   const [friendToUnfriend, setFriendToUnfriend] = useState(null);
 
-    useEffect(() => {
-      const fetchAll = async () => {
-        const results = await Promise.allSettled([
-          dispatch(getFriendsList()).unwrap(),
-          dispatch(getReceivedRequests()).unwrap(),
-          dispatch(getSentRequests()).unwrap(),
-        ]);
+  useEffect(() => {
+    const fetchAll = async () => {
+      const results = await Promise.allSettled([
+        dispatch(getFriendsList()).unwrap(),
+        dispatch(getReceivedRequests()).unwrap(),
+        dispatch(getSentRequests()).unwrap(),
+      ]);
 
-        // Show individual errors
-        results.forEach((result, index) => {
-          if (result.status === "rejected") {
-            const messages = [
-              "Failed to load friends list",
-              "Failed to load friend requests",
-              "Failed to load sent requests",
-            ];
-            showToast(messages[index], "error");
-          }
-        });
-      };
+      // Show individual errors
+      results.forEach((result, index) => {
+        if (result.status === "rejected") {
+          const messages = [
+            "Failed to load friends list",
+            "Failed to load friend requests",
+            "Failed to load sent requests",
+          ];
+          showToast(messages[index], "error");
+        }
+      });
+    };
 
-      fetchAll();
-    }, [dispatch]);
-
+    fetchAll();
+  }, [dispatch]);
 
   // Cleanup debounce timer on unmount
   useEffect(() => {
@@ -344,7 +351,6 @@ const Friends = () => {
     setDebounceTimer(timer);
   };
 
-
   // Sort friends based on filter
   const getSortedFriends = () => {
     const list = [...friends];
@@ -367,7 +373,10 @@ const Friends = () => {
     setSendingToUserId(receiverId);
     try {
       const result = await dispatch(sendFriendRequest(receiverId)).unwrap();
-      showToast(result.message || "Friend request sent successfully", "success");
+      showToast(
+        result.message || "Friend request sent successfully",
+        "success"
+      );
       setShowSearchResults(false);
       setSearchQuery("");
       dispatch(clearSearchResults());
@@ -378,7 +387,6 @@ const Friends = () => {
       setSendingToUserId(null);
     }
   };
-
 
   // Handle unfriend
   const handleUnfriendClick = (friend) => {
@@ -447,7 +455,9 @@ const Friends = () => {
             Remove Friend?
           </h3>
           <p className="text-gray-600 mb-6">
-            Are you sure you want to remove <span className="font-semibold">{friendToUnfriend.name}</span> from your friends list?
+            Are you sure you want to remove{" "}
+            <span className="font-semibold">{friendToUnfriend.name}</span> from
+            your friends list?
           </p>
 
           <div className="flex gap-3 justify-end">
@@ -479,7 +489,7 @@ const Friends = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-3.5rem)] ml-60 mt-14 font-[Poppins] bg-gray-50">
+    <div className="min-h-[calc(100vh-3.5rem)] lg:ml-60 mt-14 font-[Poppins] bg-gray-50">
       <div className="rounded-xl p-4 sm:p-6">
         <h1 className="text-2xl font-semibold text-[#6955A5] mb-6">Friends</h1>
 
@@ -506,14 +516,18 @@ const Friends = () => {
 
               {/* Search Results Dropdown */}
               {showSearchResults && searchResults.length > 0 && (
-                <div className="absolute top-full mt-2 w-full bg-white shadow-xl rounded-lg border border-gray-200 z-50 max-h-96 overflow-y-auto">
+                // <div className="absolute top-full mt-2 w-full bg-white shadow-xl rounded-lg border border-gray-200 z-50 max-h-96 overflow-y-auto">
+                <div className="absolute top-full mt-2 left-0 bg-white shadow-xl rounded-lg border border-gray-200 z-50 max-h-96 overflow-y-auto min-w-[22rem] sm:min-w-[30rem]">
                   {searchResults.map((user) => (
                     <div
                       key={user.id || user._id}
                       className="p-3 flex justify-between items-center hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
                     >
                       <div className="flex items-center gap-3">
-                        <ProfileAvatar src={user.profileImage} name={user.name} />
+                        <ProfileAvatar
+                          src={user.profileImage}
+                          name={user.name}
+                        />
                         <div>
                           <p className="font-medium text-gray-800">
                             {user.name}
@@ -522,13 +536,13 @@ const Friends = () => {
                         </div>
                       </div>
                       <button
-  onClick={() => handleSendRequest(user.id || user._id)}
-  disabled={
-    sendingToUserId === (user.id || user._id) ||
-    user.friendshipStatus === "connected" ||
-    user.friendshipStatus === "requested_by_me"
-  }
-  className={`
+                        onClick={() => handleSendRequest(user.id || user._id)}
+                        disabled={
+                          sendingToUserId === (user.id || user._id) ||
+                          user.friendshipStatus === "connected" ||
+                          user.friendshipStatus === "requested_by_me"
+                        }
+                        className={`
     px-4 py-1.5 rounded-full transition flex items-center gap-2
     ${
       sendingToUserId === (user.id || user._id)
@@ -540,32 +554,33 @@ const Friends = () => {
         : "bg-[#F3B11C] text-white hover:bg-yellow-500 cursor-pointer"
     }
   `}
->
-  {sendingToUserId === (user.id || user._id) ? (
-    <>
-      <Loader2 className="w-4 h-4 animate-spin" />
-      Sending...
-    </>
-  ) : user.friendshipStatus === "connected" ? (
-    "Friend"
-  ) : user.friendshipStatus === "requested_by_me" ? (
-    "Requested"
-  ) : (
-    "Add Friend"
-  )}
-</button>
-
+                      >
+                        {sendingToUserId === (user.id || user._id) ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Sending...
+                          </>
+                        ) : user.friendshipStatus === "connected" ? (
+                          "Friend"
+                        ) : user.friendshipStatus === "requested_by_me" ? (
+                          "Requested"
+                        ) : (
+                          "Add Friend"
+                        )}
+                      </button>
                     </div>
                   ))}
                 </div>
               )}
 
               {/* No Results Message */}
-              {showSearchResults && searchResults.length === 0 && !searchLoading && (
-                <div className="absolute top-full mt-2 w-full bg-white shadow-lg rounded-lg border border-gray-200 z-50 p-4 text-center text-gray-500">
-                  No users found
-                </div>
-              )}
+              {showSearchResults &&
+                searchResults.length === 0 &&
+                !searchLoading && (
+                  <div className="absolute top-full mt-2 w-full bg-white shadow-lg rounded-lg border border-gray-200 z-50 p-4 text-center text-gray-500">
+                    No users found
+                  </div>
+                )}
 
               {/* Search Error */}
               {searchError && showSearchResults && (
@@ -580,28 +595,31 @@ const Friends = () => {
           <div className="flex-shrink-0 flex bg-gray-100 rounded-full p-1 shadow-inner">
             <button
               onClick={() => setViewMode("friends")}
-              className={`px-4 py-2 text-sm font-medium tracking-wider rounded-full transition duration-300 ${viewMode === "friends"
-                ? "bg-yellow-600 text-white shadow-md"
-                : "text-gray-600 hover:bg-white/50 cursor-pointer"
-                }`}
+              className={`px-4 py-2 text-sm font-medium tracking-wider rounded-full transition duration-300 ${
+                viewMode === "friends"
+                  ? "bg-yellow-600 text-white shadow-md"
+                  : "text-gray-600 hover:bg-white/50 cursor-pointer"
+              }`}
             >
               Friend List
             </button>
             <button
               onClick={() => setViewMode("requests")}
-              className={`px-4 py-2 text-sm font-semibold rounded-full transition duration-300 ${viewMode === "requests"
-                ? "bg-yellow-600 text-white shadow-md"
-                : "text-gray-600 hover:bg-white/50 cursor-pointer"
-                }`}
+              className={`px-4 py-2 text-sm font-semibold rounded-full transition duration-300 ${
+                viewMode === "requests"
+                  ? "bg-yellow-600 text-white shadow-md"
+                  : "text-gray-600 hover:bg-white/50 cursor-pointer"
+              }`}
             >
               Friend Requests ({receivedRequests.length})
             </button>
             <button
               onClick={() => setViewMode("sent")}
-              className={`px-4 py-2 text-sm font-semibold rounded-full transition duration-300 ${viewMode === "sent"
-                ? "bg-yellow-600 text-white shadow-md"
-                : "text-gray-600 hover:bg-white/50 cursor-pointer"
-                }`}
+              className={`px-4 py-2 text-sm font-semibold rounded-full transition duration-300 ${
+                viewMode === "sent"
+                  ? "bg-yellow-600 text-white shadow-md"
+                  : "text-gray-600 hover:bg-white/50 cursor-pointer"
+              }`}
             >
               Sent Requests
             </button>
@@ -620,35 +638,58 @@ const Friends = () => {
               </button>
 
               {showFilterMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                <div className="absolute sm:right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
                   <button
-                    onClick={() => { setSortOrder("newest"); setShowFilterMenu(false); }}
-                    className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${sortOrder === "newest" ? "bg-yellow-50 text-yellow-700" : ""}`}
+                    onClick={() => {
+                      setSortOrder("newest");
+                      setShowFilterMenu(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${
+                      sortOrder === "newest"
+                        ? "bg-yellow-50 text-yellow-700"
+                        : ""
+                    }`}
                   >
                     Oldest First
                   </button>
                   <button
-                    onClick={() => { setSortOrder("oldest"); setShowFilterMenu(false); }}
-                    className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${sortOrder === "oldest" ? "bg-yellow-50 text-yellow-700" : ""}`}
+                    onClick={() => {
+                      setSortOrder("oldest");
+                      setShowFilterMenu(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${
+                      sortOrder === "oldest"
+                        ? "bg-yellow-50 text-yellow-700"
+                        : ""
+                    }`}
                   >
                     Newest First
                   </button>
                   <button
-                    onClick={() => { setSortOrder("a-z"); setShowFilterMenu(false); }}
-                    className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${sortOrder === "a-z" ? "bg-yellow-50 text-yellow-700" : ""}`}
+                    onClick={() => {
+                      setSortOrder("a-z");
+                      setShowFilterMenu(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${
+                      sortOrder === "a-z" ? "bg-yellow-50 text-yellow-700" : ""
+                    }`}
                   >
                     A-Z
                   </button>
                   <button
-                    onClick={() => { setSortOrder("z-a"); setShowFilterMenu(false); }}
-                    className={`w-full text-left px-4 py-2 hover:bg-gray-50 rounded-b-lg ${sortOrder === "z-a" ? "bg-yellow-50 text-yellow-700" : ""}`}
+                    onClick={() => {
+                      setSortOrder("z-a");
+                      setShowFilterMenu(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 hover:bg-gray-50 rounded-b-lg ${
+                      sortOrder === "z-a" ? "bg-yellow-50 text-yellow-700" : ""
+                    }`}
                   >
                     Z-A
                   </button>
                 </div>
               )}
             </div>
-           
           </div>
         </div>
 
@@ -680,7 +721,6 @@ const Friends = () => {
       <UnfriendModal />
     </div>
   );
-
 };
 
 export default Friends;

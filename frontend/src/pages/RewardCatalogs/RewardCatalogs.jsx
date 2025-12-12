@@ -217,7 +217,7 @@ const RewardCatalogs = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen ml-60 font-[Poppins] mt-14 bg-gray-50 p-6">
+      <div className="min-h-screen lg:ml-60 font-[Poppins] mt-14 bg-gray-50 p-6">
         <h1 className="text-2xl font-medium text-purple-700 mb-4">
           Rewards Catalogue
         </h1>
@@ -262,7 +262,7 @@ const RewardCatalogs = () => {
 
   if (rewards.length === 0) {
     return (
-      <div className="min-h-screen ml-60 font-[Poppins] mt-14 bg-gray-50 p-6">
+      <div className="min-h-screen lg:ml-60 font-[Poppins] mt-14 bg-gray-50 p-6">
         <h1 className="text-2xl font-medium text-purple-700 mb-0">
           Rewards Catalogue
         </h1>
@@ -275,11 +275,11 @@ const RewardCatalogs = () => {
   }
 
   return (
-    <div className="min-h-screen ml-60 font-[Poppins] mt-14 bg-gray-50 p-6">
+    <div className="min-h-screen lg:ml-60 font-[Poppins] mt-14 bg-gray-50 p-6">
       <h1 className="text-2xl font-medium text-purple-700 mb-4">
         Rewards Catalogue
       </h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-gray-700">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-6 text-sm text-gray-700">
         {/* Step 1 */}
         <div className="flex items-start gap-3">
           <div className="p-2 rounded-xl bg-purple-100 text-purple-700">

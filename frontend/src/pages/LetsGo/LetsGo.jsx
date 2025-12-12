@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { remainingCardProgress } from '../../features/studentCardSlice';
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { remainingCardProgress } from "../../features/studentCardSlice";
 
 const CircularProgress = ({ percent }) => {
   const radius = 80;
@@ -12,22 +12,22 @@ const CircularProgress = ({ percent }) => {
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percent / 100) * circumference;
 
+  const trackColor = "#fafbfa";
+  const progressStrokeColor = "#EBB142";
+  const borderStrokeColor = "#EBB142";
 
-  const trackColor = '#fafbfa';
-  const progressStrokeColor = '#EBB142';
-  const borderStrokeColor = '#EBB142';
-
-  const innerBorderRadius = radius - (trackStrokeWidth / 2) - (borderStrokeWidth / 2);
-  const outerBorderRadius = radius + (trackStrokeWidth / 2) + (borderStrokeWidth / 2);
+  const innerBorderRadius =
+    radius - trackStrokeWidth / 2 - borderStrokeWidth / 2;
+  const outerBorderRadius =
+    radius + trackStrokeWidth / 2 + borderStrokeWidth / 2;
 
   return (
     <div className="relative w-60 h-60 mx-auto">
       <svg className="w-full h-full transform -rotate-90" viewBox="0 0 200 200">
-
         <circle
           cx="100"
           cy="100"
-          r={radius - (trackStrokeWidth / 8) - borderStrokeWidth - 5}
+          r={radius - trackStrokeWidth / 8 - borderStrokeWidth - 5}
           fill="#fafbfc"
           stroke="none"
         />
@@ -70,34 +70,35 @@ const CircularProgress = ({ percent }) => {
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
-          style={{ transition: 'stroke-dashoffset 0.5s ease-out' }}
+          style={{ transition: "stroke-dashoffset 0.5s ease-out" }}
         />
       </svg>
 
-      <div className={`absolute top-0 left-0 flex items-center justify-center w-full h-full text-[#EBB142]`}>
-        <span className="text-6xl font-bold font-inter ">
-          {percent}%
-        </span>
+      <div
+        className={`absolute top-0 left-0 flex items-center justify-center w-full h-full text-[#EBB142]`}
+      >
+        <span className="text-6xl font-bold font-inter ">{percent}%</span>
       </div>
     </div>
   );
 };
 
-
-
 const LetsGo = () => {
-
   const dispatch = useDispatch();
-  const {cardsProgress, isLoading, isError} = useSelector((state)=> state.studentCard);
+  const { cardsProgress, isLoading, isError } = useSelector(
+    (state) => state.studentCard
+  );
   const [rewardPercent, setRewardPercent] = useState(0);
 
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(remainingCardProgress());
-  },[]);
+  }, []);
 
   const cardPercentage = cardsProgress?.currentReward?.percentage || 0;
 
-  const cardsLeft = cardsProgress?.currentReward?.totalPoints - cardsProgress?.currentReward?.completedPoints || "X";
+  const cardsLeft =
+    cardsProgress?.currentReward?.totalPoints -
+      cardsProgress?.currentReward?.completedPoints || "X";
 
   const navigate = useNavigate();
 
@@ -107,37 +108,58 @@ const LetsGo = () => {
   }, [cardPercentage]);
 
   return (
-    <div className="min-h-screen ml-60 mt-14 bg-gray-50 p-8">
+    <div className="min-h-screen lg:ml-60 mt-14 bg-gray-50 p-8">
       <div className="w-full max-w-4xl rounded-2xl ">
-
         <div className="mb-2 text-indigo-800">
           <button
             onClick={() => navigate(-1)}
             className="p-2 mr-4 rounded-full cursor-pointer hover:bg-indigo-50 transition transform hover:scale-[1.10] duration-150"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              ></path>
             </svg>
           </button>
         </div>
 
         <div className="flex flex-col items-center justify-center text-center">
-
-          <h1 className="text-2xl font-semibold mb-6 max-w-md leading-relaxed">
-{cardsProgress?.message === "No rewards found" ? (
-  <>No rewards available right now.</>
-) : cardsLeft === 0 ? (
-  <>Your reward has unlocked!</>
-) : (
-  <>
-    Send {cardsLeft} more cards to receive a free{" "}
-    <span className="font-semibold text-[#E18925]">
-      {cardsProgress?.currentReward?.rewardName || "reward" }
-    </span>
-    .
-  </>
-)}
-
+          <h1 className="text-md sm:text-2xl font-semibold mb-6 max-w-md leading-relaxed">
+            {cardsProgress?.message === "No rewards found" ? (
+                    <>
+                      <span>No rewards available right now.</span>
+                      <br />
+                      <span className="text-gray-500 text-sm">
+                        You can still send cards to your friends!
+                      </span>
+                    </>
+                  ) : cardsLeft === 0 ? (
+                    <div className="flex flex-col items-center md:items-start">
+                      <span className="text-lg font-medium text-[#7C759B]">
+                        Your reward has unlocked!
+                      </span>
+                      <span className="text-purple-400 text-sm font-medium mt-2">
+                        Please visit the reward catalog to claim your reward.
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="text-[#7C759B] leading-snug">
+                      Send <span className="font-semibold">{cardsLeft}</span>{" "}
+                      more cards to receive a free{" "}
+                      <span className="font-semibold text-[#E18925]">
+                        {cardsProgress?.currentReward?.rewardName || "reward"}
+                      </span>
+                      .
+                    </div>
+                  )}
           </h1>
 
           <div className="mb-12">
@@ -145,7 +167,7 @@ const LetsGo = () => {
           </div>
 
           <button
-            onClick={() => navigate('/write-card')}
+            onClick={() => navigate("/write-card")}
             className="py-3 px-10 rounded-full cursor-pointer border-3 border-white text-white font-medium  shadow-xl transition transform hover:scale-[1.02] active:scale-[0.98]
                        bg-[#E9B243]
                        hover:bg-[#daa232]
@@ -153,7 +175,6 @@ const LetsGo = () => {
           >
             Start Writing
           </button>
-
         </div>
       </div>
     </div>
