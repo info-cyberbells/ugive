@@ -121,7 +121,7 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
       setShowSearchResults(false);
       setSearchQuery("");
       dispatch(clearSearchResults());
-      dispatch(getSentRequests());
+      // dispatch(getSentRequests());
     } catch (error) {
       showToast(error || "Failed to send friend request", "error");
     } finally {
@@ -134,12 +134,12 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   className={`
     fixed top-0 h-[60px] bg-white border-b border-gray-200 z-[100]
     flex items-center justify-between px-5 lg:pr-12
-    ${isMobile ? "left-0 right-0" : "left-60 right-0"}   // <-- CHANGED
+    ${isMobile ? "left-0 right-0" : "left-60 right-0"}  
   `}
 >
       {/* Left Section */}
       <div className="flex items-center gap-2">
-         {role === "super_admin" && !isMobile && (
+         {role === !"super_admin" && !isMobile && (
           <div className="flex items-center w-sm bg-gray-50 rounded-lg px-4 py-2">
             <div className="relative w-[22rem] max-w-full" >
                               <Search className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600 pointer-events-none" />

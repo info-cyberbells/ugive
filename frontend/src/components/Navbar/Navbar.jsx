@@ -6,7 +6,8 @@ import ugiveBlack from "/UGIVEBlack.svg";
 
 const ROLE_BASED_BG_COLOR = {
   super_admin: ["bg-gradient-to-b from-[#8B78D0] via-[#9D88DD] to-white"],
-  admin: ["bg-gradient-to-b from-[#8B78D0] via-[#9D88DD] to-white"],
+  // admin: ["bg-gradient-to-b from-[#8B78D0] via-[#9D88DD] to-white"],
+  admin: ["bg-white"],
   student: ["bg-white"],
 };
 
