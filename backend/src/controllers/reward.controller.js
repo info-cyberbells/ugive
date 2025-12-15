@@ -291,7 +291,7 @@ export const getStudentRewards = async (req, res) => {
         const [
             totalCardsSent,
             totalGiftsSent,
-            totalFriends,
+            incomingFriendRequests,
             currentMonthStreak
         ] = await Promise.all([
 
@@ -303,10 +303,8 @@ export const getStudentRewards = async (req, res) => {
             }),
 
             FriendRequest.countDocuments({
-                $or: [
-                    { sender: studentId, status: "accepted" },
-                    { receiver: studentId, status: "accepted" }
-                ]
+                receiver: studentId,
+                status: "pending"
             }),
 
             MonthlyStreak.findOne({ student: studentId, monthKey })
@@ -357,7 +355,7 @@ export const getStudentRewards = async (req, res) => {
             stats: {
                 totalCardsSent,
                 totalGiftsSent,
-                totalFriends,
+                incomingFriendRequests,
                 currentStreak: currentMonthStreak?.currentStreak || 0
             },
             data: result,

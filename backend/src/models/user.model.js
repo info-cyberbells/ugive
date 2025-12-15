@@ -35,6 +35,12 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "College",
   },
+  colleges: [
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "College"
+  }
+],
   // universityDomain: { type: String, trim: true }, // internal helper
   phoneNumber: {
     type: String,

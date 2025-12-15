@@ -98,7 +98,7 @@ export const getSuperAdminDashboard = async (req, res) => {
                 .lean(),
 
             // Recent 3 users
-            User.find({ isDeleted: false })
+            User.find({ isDeleted: false, role: "student" })
                 .sort({ createdAt: -1 })
                 .limit(3)
                 .select("name email role createdAt")

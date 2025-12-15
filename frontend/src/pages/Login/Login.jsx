@@ -197,7 +197,7 @@ const Login = () => {
         {/* Right Side (2/3) */}
         <div className="login-image-section">
           <img
-            src="/UgiveImg.jpg"
+            src="/UgiveImg.webp"
             alt="A group of people collaborating over a laptop"
             onError={(e) => {
               e.target.onerror = null;
