@@ -18,10 +18,23 @@ export const validateUpdateProfile = (data, role) => {
     case "admin":
       schema = Joi.object({
         name: Joi.string().max(191).optional(),
-        phoneNumber: Joi.string().pattern(/^04\d{2}\s\d{3}\s\d{3}$/).optional(),
-        university: Joi.string(),
-      });
+
+        phoneNumber: Joi.string()
+          .pattern(/^04\d{2}\s\d{3}\s\d{3}$/)
+          .optional(),
+
+        university: Joi.string().hex().length(24).optional(),
+
+        colleges: Joi.alternatives().try(
+          Joi.array().items(Joi.string().hex().length(24)),
+          Joi.string()
+        ).optional(),
+
+        password: Joi.string().min(6).optional(),
+      })
+        .options({ allowUnknown: true });
       break;
+
 
     case "super_admin":
       schema = Joi.object({

@@ -2,7 +2,8 @@ import express from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
 import { authorizeRoles } from "../middleware/role.middleware.js";
 import { getProfile, updateProfile } from "../controllers/profile.controller.js";
-import { createUniversity, createCollege, updateUniversity, updateCollege, deleteUniversity, deleteCollege } from "../controllers/university.controller.js";
+import upload from "../middleware/upload.middleware.js";
+import { createUniversity, createCollege, getSingleUniversity, getAllAdminColleges, getSingleCollege, getAllAdminUniversities, updateUniversity, updateCollege, deleteUniversity, deleteCollege } from "../controllers/university.controller.js";
 
 const router = express.Router();
 
@@ -16,15 +17,19 @@ router.get("/dashboard", (req, res) => {
 
 // Profile
 router.get("/profile", getProfile);
-router.put("/profile", updateProfile);
+router.put("/profile", upload.single("profileImage"), updateProfile);
 
 // University & College Management
 router.post("/universities", createUniversity);
-router.put("/universities/:id",updateUniversity);
-router.delete("/universities/:id",deleteUniversity);
+router.get("/universities", getAllAdminUniversities);
+router.get("/universities/:id", getSingleUniversity);
+router.put("/universities/:id", updateUniversity);
+router.delete("/universities/:id", deleteUniversity);
 
 router.post("/colleges", createCollege);
-router.put("/colleges/:id",updateCollege);
+router.get("/colleges", getAllAdminColleges);
+router.get("/colleges/:id", getSingleCollege);
+router.put("/colleges/:id", updateCollege);
 router.delete("/colleges/:id", deleteCollege);
 
 export default router;

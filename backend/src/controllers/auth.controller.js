@@ -4,6 +4,7 @@ import nodemailer from "nodemailer";
 import bcrypt from "bcrypt";
 import User from "../models/user.model.js";
 import University from "../models/university.model.js";
+import College from "../models/college.model.js";
 import NotificationActivity from "../models/notificationActivity.model.js";
 
 // Register
@@ -92,19 +93,80 @@ export const login = async (req, res) => {
 // Only Super Admin can create Admin users
 export const createAdmin = async (req, res) => {
   try {
-    const { name, email, password, phoneNumber, university } = req.body;
+    const {
+      name,
+      email,
+      password,
+      phoneNumber,
+      university,
+      colleges
+    } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(university)) {
       return res.status(400).json({ message: "Invalid university id" });
     }
-    // console.log('university',university)
+
     const uniDoc = await University.findById(university);
-    if (!uniDoc) return res.status(400).json({ message: "University not found" });
+    if (!uniDoc) {
+      return res.status(400).json({ message: "University not found" });
+    }
+
+    const existingAdminForUniversity = await User.findOne({
+      university: university,
+      role: "admin"
+    });
+
+    if (existingAdminForUniversity) {
+      return res.status(400).json({
+        message: "An admin already exists for this university"
+      });
+    }
 
     const existing = await User.findOne({ email });
-    if (existing) return res.status(400).json({ message: "User already exists" });
+    if (existing) {
+      return res.status(400).json({ message: "User already exists" });
+    }
 
-    const admin = await User.create({ name, email, password, phoneNumber, university, role: "admin" });
+    let collegeIds = [];
+
+    if (colleges) {
+      collegeIds = Array.isArray(colleges)
+        ? colleges
+        : colleges.split(",").map(id => id.trim());
+
+
+      for (const collegeId of collegeIds) {
+        if (!mongoose.Types.ObjectId.isValid(collegeId)) {
+          return res.status(400).json({
+            message: `Invalid college id: ${collegeId}`
+          });
+        }
+      }
+
+      const validColleges = await College.find({
+        _id: { $in: collegeIds },
+        university: university
+      });
+
+      if (validColleges.length !== collegeIds.length) {
+        return res.status(400).json({
+          message: "One or more colleges do not belong to the selected university"
+        });
+      }
+    }
+
+
+    const admin = await User.create({
+      name,
+      email,
+      password,
+      phoneNumber,
+      university,
+      colleges: collegeIds,
+      role: "admin"
+    });
+
+    // ✅ Log activity
     await NotificationActivity.create({
       type: "activity",
       action: "admin_created",
@@ -112,9 +174,15 @@ export const createAdmin = async (req, res) => {
       createdBy: req.user.id
     });
 
-    res.status(201).json({ message: "Admin created successfully", admin });
+    return res.status(201).json({
+      success: true,
+      message: "Admin created successfully",
+      admin
+    });
+
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Create admin error:", err);
+    return res.status(500).json({ message: err.message });
   }
 };
 

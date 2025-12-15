@@ -23,6 +23,111 @@ export const getColleges = async (req, res) => {
   }
 };
 
+
+// GET /api/admin/universities
+export const getAllAdminUniversities = async (req, res) => {
+  try {
+    const universities = await University.find()
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      total: universities.length,
+      data: universities
+    });
+  } catch (error) {
+    console.error("Get universities error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+// GET /api/admin/colleges
+export const getAllAdminColleges = async (req, res) => {
+  try {
+    const adminUniversityId = req.user.university;
+
+    const colleges = await College.find({
+      university: adminUniversityId
+    })
+      .populate("university")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      total: colleges.length,
+      data: colleges
+    });
+  } catch (error) {
+    console.error("Get colleges error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+
+//get single univ
+export const getSingleUniversity = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const university = await University.findById(id);
+
+    if (!university) {
+      return res.status(404).json({
+        success: false,
+        message: "University not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: university,
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+//get single college
+export const getSingleCollege = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const college = await College.findById(id)
+      .populate("university", "name city state postcode phoneNumber");
+
+    if (!college) {
+      return res.status(404).json({
+        success: false,
+        message: "College not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: college,
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
+
 // Get colleges by university ID
 export const getCollegesByUniversity = async (req, res) => {
   try {

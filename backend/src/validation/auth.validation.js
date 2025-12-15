@@ -9,6 +9,10 @@ export const registerSchema = Joi.object({
   college: Joi.string().optional().allow("", null),
   phoneNumber: Joi.string().pattern(/^04\d{2}\s\d{3}\s\d{3}$/).required(),
   studentUniId: Joi.string(),
+  colleges: Joi.alternatives().try(
+  Joi.array().items(Joi.string().hex().length(24)),
+  Joi.string() 
+).optional(),
 });
 
 export const validateRegister = (req, res, next) => {
