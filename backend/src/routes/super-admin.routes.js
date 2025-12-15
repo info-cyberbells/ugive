@@ -9,6 +9,8 @@ import uploadReward from "../middleware/uploadReward.middleware.js";
 import { createReward, getRewards, getSingleReward, updateReward, deleteReward } from "../controllers/reward.controller.js";
 import { getAllFeedback, updateFeedback, deleteFeedback } from "../controllers/feedback.controller.js";
 import { getSuperAdminDashboard, getSuperAdminEvents } from "../controllers/dashboard.controller.js";
+import { createAdmin, getAllAdmins, getSingleAdmin, updateAdmin, deleteAdmin } from "../controllers/auth.controller.js";
+
 
 
 
@@ -30,6 +32,13 @@ router.put("/universities/:id", updateUniversity);
 router.delete("/universities/:id", deleteUniversity);
 router.get("/get-all-universities", getAllUniversitiesSuperAdmin);
 router.get("/universities/:id", getSingleUniversitySuperAdmin);
+
+
+router.post("/create-admin", createAdmin);
+router.get("/admins", getAllAdmins);
+router.get("/admins/:id", getSingleAdmin);
+router.put("/admins/:id", updateAdmin);
+router.delete("/admins/:id", deleteAdmin);
 
 
 

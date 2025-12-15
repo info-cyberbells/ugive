@@ -7,6 +7,8 @@ import { createUniversity, createCollege, getSingleUniversity, getAllAdminColleg
 import { getUniversityCardsForAdmin, updateCardStatus, deleteCardByAdmin } from "../controllers/card.controller.js";
 import { createStudentByAdmin, getAllStudentsByAdmin, getSingleStudentByAdmin, updateStudentByAdmin, deleteStudentByAdmin } from "../controllers/student.controller.js";
 import { getAdminDashboard, getAdminNotifications } from "../controllers/dashboard.controller.js";
+import { createFeedback } from "../controllers/feedback.controller.js";
+
 
 
 
@@ -46,6 +48,8 @@ router.delete("/cards/:cardId", deleteCardByAdmin);
 
 router.get("/dashboard", getAdminDashboard);
 router.get("/get-notifications", getAdminNotifications);
+
+router.post("/sent-feedback", createFeedback);
 
 
 

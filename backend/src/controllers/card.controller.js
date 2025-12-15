@@ -112,37 +112,32 @@ export const createCard = async (req, res) => {
       message
     });
 
+    const universityRewards = await Reward.find({
+      university: sender.university
+    });
 
-    let targetRewardId = reward;
-
-    if (!reward) {
-      const firstReward = await Reward.findOne({ university: sender.university })
-        .sort({ totalPoints: 1 });
-      console.log("Sender University =>", sender.university);
-
-
-      if (firstReward) {
-        targetRewardId = firstReward._id;
-      }
-    }
-
-    if (targetRewardId) {
+    for (const rewardItem of universityRewards) {
       let progress = await StudentRewardProgress.findOne({
         student: studentId,
-        reward: targetRewardId
+        reward: rewardItem._id
       });
 
       if (!progress) {
-        progress = await StudentRewardProgress.create({
+        await StudentRewardProgress.create({
           student: studentId,
-          reward: targetRewardId,
-          completedPoints: 1
+          reward: rewardItem._id,
+          completedPoints: 1,
+          claimed: false
         });
-      } else {
+      }
+      else if (progress.completedPoints < rewardItem.totalPoints) {
         progress.completedPoints += 1;
         await progress.save();
       }
+      // If completed → do nothing
     }
+
+
 
     const populatedCard = await Card.findById(card._id)
       .populate("reward", "name")
