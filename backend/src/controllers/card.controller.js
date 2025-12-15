@@ -366,3 +366,151 @@ function formatDate(date) {
     year: "numeric"
   });
 }
+
+
+
+
+
+
+export const getUniversityCardsForAdmin = async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied"
+      });
+    }
+
+    const adminUniversityId = req.user.university;
+
+    // ✅ Pagination from frontend
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(50, parseInt(req.query.limit) || 10);
+    const skip = (page - 1) * limit;
+
+    // 1️⃣ Get student IDs of admin university
+    const studentIds = await User.find({
+      role: "student",
+      university: adminUniversityId
+    }).distinct("_id");
+
+    // 2️⃣ Total count
+    const total = await Card.countDocuments({
+      sender: { $in: studentIds }
+    });
+
+    // 3️⃣ Paginated cards
+    const cards = await Card.find({
+      sender: { $in: studentIds }
+    })
+      .populate("sender", "name email university")
+      .populate("receiver_id", "name email role university college")
+      .populate("reward", "name points")
+      .sort({ sent_at: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+      count: cards.length, // 🔥 items in this page
+      data: cards
+    });
+
+  } catch (error) {
+    console.error("Get university cards error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+export const updateCardStatus = async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied"
+      });
+    }
+
+    const { cardId } = req.params;
+    const { status } = req.body;
+
+    const allowedStatus = ["pending", "printed", "delivered"];
+
+    if (!allowedStatus.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status value"
+      });
+    }
+
+    const card = await Card.findById(cardId);
+
+    if (!card) {
+      return res.status(404).json({
+        success: false,
+        message: "Card not found"
+      });
+    }
+
+    card.status = status;
+    await card.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Card status updated successfully",
+      data: card
+    });
+
+  } catch (error) {
+    console.error("Update card status error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+export const deleteCardByAdmin = async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied"
+      });
+    }
+
+    const { cardId } = req.params;
+
+    const card = await Card.findById(cardId);
+
+    if (!card) {
+      return res.status(404).json({
+        success: false,
+        message: "Card not found"
+      });
+    }
+
+    await Card.findByIdAndDelete(cardId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Card deleted successfully"
+    });
+
+  } catch (error) {
+    console.error("Delete card error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+

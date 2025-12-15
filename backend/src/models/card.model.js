@@ -61,7 +61,13 @@ const cardSchema = new mongoose.Schema(
     sent_at: {
       type: Date,
       default: Date.now,
-    }
+    },
+    status: {
+      type: String,
+      enum: ["pending", "printed", "delivered"],
+      default: "pending",
+    },
+
   },
   { timestamps: true }
 );

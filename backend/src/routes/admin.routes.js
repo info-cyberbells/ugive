@@ -4,16 +4,16 @@ import { authorizeRoles } from "../middleware/role.middleware.js";
 import { getProfile, updateProfile } from "../controllers/profile.controller.js";
 import upload from "../middleware/upload.middleware.js";
 import { createUniversity, createCollege, getSingleUniversity, getAllAdminColleges, getSingleCollege, getAllAdminUniversities, updateUniversity, updateCollege, deleteUniversity, deleteCollege } from "../controllers/university.controller.js";
+import { getUniversityCardsForAdmin, updateCardStatus, deleteCardByAdmin } from "../controllers/card.controller.js";
+import { createStudentByAdmin, getAllStudentsByAdmin, getSingleStudentByAdmin, updateStudentByAdmin, deleteStudentByAdmin } from "../controllers/student.controller.js";
+import { getAdminDashboard, getAdminNotifications } from "../controllers/dashboard.controller.js";
+
+
 
 const router = express.Router();
 
 // Protect all routes with admin role
 router.use(authenticate, authorizeRoles("admin"));
-
-// Dashboard
-router.get("/dashboard", (req, res) => {
-  res.json({ message: "Admin Dashboard Access Granted" });
-});
 
 // Profile
 router.get("/profile", getProfile);
@@ -31,5 +31,23 @@ router.get("/colleges", getAllAdminColleges);
 router.get("/colleges/:id", getSingleCollege);
 router.put("/colleges/:id", updateCollege);
 router.delete("/colleges/:id", deleteCollege);
+
+//students routes
+router.post("/students", createStudentByAdmin);
+router.get("/students", getAllStudentsByAdmin);
+router.get("/students/:id", getSingleStudentByAdmin);
+router.put("/students/:id", updateStudentByAdmin);
+router.delete("/students/:id", deleteStudentByAdmin);
+
+router.get("/cards", getUniversityCardsForAdmin);
+router.put("/cards/:cardId", updateCardStatus);
+router.delete("/cards/:cardId", deleteCardByAdmin);
+
+
+router.get("/dashboard", getAdminDashboard);
+router.get("/get-notifications", getAdminNotifications);
+
+
+
 
 export default router;
