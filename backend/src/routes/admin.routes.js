@@ -20,11 +20,11 @@ router.get("/profile", getProfile);
 router.put("/profile", upload.single("profileImage"), updateProfile);
 
 // University & College Management
-router.post("/universities", createUniversity);
-router.get("/universities", getAllAdminUniversities);
+// router.post("/universities", createUniversity);
+// router.get("/universities", getAllAdminUniversities);
 router.get("/universities/:id", getSingleUniversity);
-router.put("/universities/:id", updateUniversity);
-router.delete("/universities/:id", deleteUniversity);
+// router.put("/universities/:id", updateUniversity);
+// router.delete("/universities/:id", deleteUniversity);
 
 router.post("/colleges", createCollege);
 router.get("/colleges", getAllAdminColleges);
