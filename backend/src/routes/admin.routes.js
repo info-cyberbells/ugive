@@ -1,7 +1,7 @@
 import express from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
 import { authorizeRoles } from "../middleware/role.middleware.js";
-import { getProfile, updateProfile } from "../controllers/profile.controller.js";
+import { getProfile, updateProfile, changePassword } from "../controllers/profile.controller.js";
 import upload from "../middleware/upload.middleware.js";
 import { createUniversity, createCollege, getSingleUniversity, getAllAdminColleges, getSingleCollege, getAllAdminUniversities, updateUniversity, updateCollege, deleteUniversity, deleteCollege } from "../controllers/university.controller.js";
 import { getUniversityCardsForAdmin, updateCardStatus, deleteCardByAdmin } from "../controllers/card.controller.js";
@@ -50,6 +50,8 @@ router.get("/dashboard", getAdminDashboard);
 router.get("/get-notifications", getAdminNotifications);
 
 router.post("/sent-feedback", createFeedback);
+router.put("/change-password", changePassword);
+
 
 
 
