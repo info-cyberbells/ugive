@@ -10,7 +10,5 @@ const router = express.Router();
 router.post("/register", validateRegister, register);
 router.post("/login", login);
 
-// Protected (Super Admin only)
-router.post("/create-admin", authenticate, authorizeRoles("super_admin"), createAdmin);
 
 export default router;

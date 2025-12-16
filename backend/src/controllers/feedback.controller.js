@@ -1,4 +1,6 @@
 import { Feedback } from "../models/feedback.model.js";
+import NotificationActivity from "../models/notificationActivity.model.js";
+
 
 // CREATE Feedback
 export const createFeedback = async (req, res) => {
@@ -41,7 +43,7 @@ export const createFeedback = async (req, res) => {
 export const getAllFeedback = async (req, res) => {
     try {
         const feedbacks = await Feedback.find()
-            .populate("user", "name email")
+            .populate("user", "name email role")
             .sort({ createdAt: -1 });
 
         return res.status(200).json({

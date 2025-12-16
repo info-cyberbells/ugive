@@ -49,15 +49,28 @@ export const getAllAdminColleges = async (req, res) => {
   try {
     const adminUniversityId = req.user.university;
 
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.max(1, parseInt(req.query.limit) || 10);
+    const skip = (page - 1) * limit;
+
+    const totalColleges = await College.countDocuments({
+      university: adminUniversityId
+    });
+
     const colleges = await College.find({
       university: adminUniversityId
     })
       .populate("university")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
     res.status(200).json({
       success: true,
-      total: colleges.length,
+      page,
+      limit,
+      total: totalColleges,
+      totalPages: Math.ceil(totalColleges / limit),
       data: colleges
     });
   } catch (error) {
@@ -68,6 +81,7 @@ export const getAllAdminColleges = async (req, res) => {
     });
   }
 };
+
 
 
 //get single univ

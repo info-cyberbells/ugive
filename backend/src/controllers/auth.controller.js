@@ -7,6 +7,12 @@ import University from "../models/university.model.js";
 import College from "../models/college.model.js";
 import NotificationActivity from "../models/notificationActivity.model.js";
 
+const buildImageUrl = (req, path) => {
+  if (!path) return null;
+  return `${req.protocol}://${req.get("host")}${path}`;
+};
+
+
 // Register
 export const register = async (req, res) => {
   try {
@@ -185,6 +191,204 @@ export const createAdmin = async (req, res) => {
     return res.status(500).json({ message: err.message });
   }
 };
+
+//get all admins
+export const getAllAdmins = async (req, res) => {
+  try {
+    if (req.user.role !== "super_admin") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const admins = await User.find({
+      role: "admin"
+    })
+      .populate("university", "name city state")
+      .populate("colleges", "name")
+      .select("-password")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    const formattedAdmins = admins.map(admin => ({
+      ...admin,
+      profileImage: buildImageUrl(req, admin.profileImage)
+    }));
+
+    return res.status(200).json({
+      success: true,
+      total: formattedAdmins.length,
+      data: formattedAdmins
+    });
+
+  } catch (error) {
+    console.error("Get all admins error:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+//get single admin
+export const getSingleAdmin = async (req, res) => {
+  try {
+    if (req.user.role !== "super_admin") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const { id } = req.params;
+
+    const admin = await User.findOne({
+      _id: id,
+      role: "admin"
+    })
+      .populate("university", "name city state postcode")
+      .populate("colleges", "name")
+      .select("-password")
+      .lean();
+
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: "Admin not found"
+      });
+    }
+
+    admin.profileImage = buildImageUrl(req, admin.profileImage);
+
+    return res.status(200).json({
+      success: true,
+      data: admin
+    });
+
+  } catch (error) {
+    console.error("Get single admin error:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+//update admin
+export const updateAdmin = async (req, res) => {
+  try {
+    if (req.user.role !== "super_admin") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const { id } = req.params;
+    const { name, phoneNumber, colleges } = req.body;
+
+    const admin = await User.findOne({
+      _id: id,
+      role: "admin",
+      isDeleted: { $ne: true }
+    });
+
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: "Admin not found"
+      });
+    }
+
+    // Update basic fields
+    if (name) admin.name = name;
+    if (phoneNumber) admin.phoneNumber = phoneNumber;
+
+    // Update colleges (must belong to admin university)
+    if (colleges) {
+      const collegeIds = Array.isArray(colleges)
+        ? colleges
+        : colleges.split(",").map(id => id.trim());
+
+      for (const collegeId of collegeIds) {
+        if (!mongoose.Types.ObjectId.isValid(collegeId)) {
+          return res.status(400).json({
+            message: `Invalid college id: ${collegeId}`
+          });
+        }
+      }
+
+      const validColleges = await College.find({
+        _id: { $in: collegeIds },
+        university: admin.university
+      });
+
+      if (validColleges.length !== collegeIds.length) {
+        return res.status(400).json({
+          message: "One or more colleges do not belong to admin university"
+        });
+      }
+
+      admin.colleges = collegeIds;
+    }
+
+    await admin.save();
+
+    await NotificationActivity.create({
+      type: "activity",
+      action: "admin_updated",
+      message: `Admin ${admin.name} updated`,
+      createdBy: req.user.id,
+      meta: { adminId: admin._id }
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Admin updated successfully",
+      data: admin
+    });
+
+  } catch (error) {
+    console.error("Update admin error:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+//delete admin
+export const deleteAdmin = async (req, res) => {
+  try {
+    if (req.user.role !== "super_admin") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const { id } = req.params;
+
+    const admin = await User.findOne({
+      _id: id,
+      role: "admin"
+    });
+
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: "Admin not found"
+      });
+    }
+
+    // 🔥 HARD DELETE
+    await User.findByIdAndDelete(id);
+
+    await NotificationActivity.create({
+      type: "activity",
+      action: "admin_deleted",
+      message: `Admin ${admin.name} permanently deleted`,
+      createdBy: req.user.id,
+      meta: { adminId: id }
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Admin deleted permanently"
+    });
+
+  } catch (error) {
+    console.error("Delete admin error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
 
 
 //Request reset password

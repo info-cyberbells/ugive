@@ -17,11 +17,6 @@ const router = express.Router();
 // Protect all routes with student role
 router.use(authenticate, authorizeRoles("student"));
 
-// Dashboard
-router.get("/dashboard", (req, res) => {
-  res.json({ message: "Student Dashboard Access Granted" });
-});
-
 // Profile
 router.get("/profile", getProfile);
 router.put("/profile", upload.single("profileImage"), updateProfile);

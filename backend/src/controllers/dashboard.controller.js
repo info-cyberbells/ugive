@@ -157,7 +157,117 @@ export const getSuperAdminDashboard = async (req, res) => {
 };
 
 
+export const getAdminDashboard = async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Admin only."
+      });
+    }
 
+    const universityId = req.user.university;
+
+    // Dates
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    // 1️⃣ Get student IDs of this university
+    const studentIds = await User.find({
+      role: "student",
+      university: universityId,
+      isDeleted: { $ne: true }
+    }).distinct("_id");
+
+    // 2️⃣ Run queries in parallel
+    const [
+      totalStudents,
+      totalColleges,
+      totalCards,
+      cardsToday,
+      cardsLast7Days,
+      cardsLast30Days,
+      recentCards,
+      recentStudents
+    ] = await Promise.all([
+      User.countDocuments({
+        role: "student",
+        university: universityId,
+        isDeleted: { $ne: true }
+      }),
+
+      College.countDocuments({ university: universityId }),
+
+      Card.countDocuments({ sender: { $in: studentIds } }),
+
+      Card.countDocuments({
+        sender: { $in: studentIds },
+        sent_at: { $gte: today }
+      }),
+
+      Card.countDocuments({
+        sender: { $in: studentIds },
+        sent_at: { $gte: sevenDaysAgo }
+      }),
+
+      Card.countDocuments({
+        sender: { $in: studentIds },
+        sent_at: { $gte: thirtyDaysAgo }
+      }),
+
+      // Recent 5 cards
+      Card.find({ sender: { $in: studentIds } })
+        .sort({ sent_at: -1 })
+        .limit(5)
+        .populate("sender", "name email")
+        .select("sender recipient_name message sent_at")
+        .lean(),
+
+      // Recent 5 students
+      User.find({
+        role: "student",
+        university: universityId,
+        isDeleted: { $ne: true }
+      })
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .select("name email createdAt")
+        .lean()
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      message: "Admin dashboard data fetched successfully",
+      data: {
+        overview: {
+          totalStudents,
+          totalColleges,
+          totalCards
+        },
+        cardStats: {
+          cardsToday,
+          cardsLast7Days,
+          cardsLast30Days
+        },
+        recentActivity: {
+          recentCards,
+          recentStudents
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error("Admin dashboard error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
 
 
 export const getStudentDashboard = async (req, res) => {
@@ -344,6 +454,49 @@ export const getStudentNotifications = async (req, res) => {
 
     } catch (error) {
         console.error("Notification error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+
+
+export const getAdminNotifications = async (req, res) => {
+    try {
+        if (req.user.role !== "admin") {
+            return res.status(403).json({
+                success: false,
+                message: "Access denied"
+            });
+        }
+
+        const adminUniversityId = req.user.university;
+
+        const universityUserIds = await User.find({
+            university: adminUniversityId,
+            isDeleted: { $ne: true }
+        }).distinct("_id");
+
+        const events = await NotificationActivity.find({
+            $or: [
+                { createdBy: { $in: universityUserIds } },
+                { "meta.universityId": adminUniversityId }
+            ]
+        })
+            .sort({ createdAt: -1 })
+            .limit(20)
+            .lean();
+
+        return res.status(200).json({
+            success: true,
+            notifications: events.filter(e => e.type === "notification"),
+            activities: events.filter(e => e.type === "activity"),
+            total: events.length
+        });
+
+    } catch (error) {
+        console.error("Admin notification error:", error);
         return res.status(500).json({
             success: false,
             message: "Server error"
