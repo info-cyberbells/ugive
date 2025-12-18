@@ -199,13 +199,19 @@ export const getAllAdmins = async (req, res) => {
       return res.status(403).json({ message: "Access denied" });
     }
 
-    const admins = await User.find({
-      role: "admin"
-    })
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const limit = Math.min(Math.max(parseInt(req.query.limit) || 10, 1), 50);
+    const skip = (page - 1) * limit;
+
+    const totalAdmins = await User.countDocuments({ role: "admin" });
+
+    const admins = await User.find({ role: "admin" })
       .populate("university", "name city state")
       .populate("colleges", "name")
       .select("-password")
       .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .lean();
 
     const formattedAdmins = admins.map(admin => ({
@@ -215,7 +221,12 @@ export const getAllAdmins = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      total: formattedAdmins.length,
+      pagination: {
+        page,
+        limit,
+        total: totalAdmins,
+        totalPages: Math.ceil(totalAdmins / limit)
+      },
       data: formattedAdmins
     });
 
@@ -224,6 +235,7 @@ export const getAllAdmins = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
 
 
 

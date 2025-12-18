@@ -295,7 +295,7 @@ export const createStudentByAdmin = async (req, res) => {
             studentUniId
         } = req.body;
 
-        const university = admin.university; // ✅ AUTO
+        const university = admin.university; 
 
         if (!university) {
             return res.status(400).json({
@@ -330,7 +330,7 @@ export const createStudentByAdmin = async (req, res) => {
         const student = await User.create({
             name,
             email,
-            password: hashedPassword,
+            password,
             role: "student",
             university,
             college: college || null,
