@@ -29,6 +29,7 @@ import AdminDashboard from "./pages/Admin/AdminDashboard/AdminDashboard";
 import AdminManageStudents from "./pages/Admin/AdminManagestudents/AdminManageStudents";
 import AdminColleges from "./pages/Admin/AdminColleges/AdminColleges";
 import AdminManageCards from "./pages/Admin/AdminCardsManage/AdminCardsManage";
+import ManageAdmins from "./pages/SuperAdmin/ManageAdmins/ManageAdmins";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -150,6 +151,8 @@ function App() {
             isAuthenticated ? <ManageColleges /> : <Navigate to="/" replace />
           }
         />
+
+        <Route path="/manage-admins" element={isAuthenticated ? <ManageAdmins /> : <Navigate to="/" replace />} />
 
         <Route
           path="/profile"

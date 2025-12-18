@@ -368,7 +368,7 @@ if (isError) {
                       scope="col"
                       className="px-6 py-3 hidden lg:table-cell text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      <div className="flex items-center gap-1">Status</div>
+                      <div className="flex items-center gap-1">Phone Number</div>
                     </th>
                     <th
                       scope="col"
@@ -428,9 +428,10 @@ if (isError) {
 
                       {/* Status Column (Badge) */}
                       <td className="px-6 py-4 hidden lg:table-cell whitespace-nowrap text-sm">
-                        <StatusBadge
+                        {/* <StatusBadge
                           status={student.isDeleted ? "Inactive" : "Active"}
-                        />{" "}
+                        />{" "} */}
+                        {student.phoneNumber || "-"}
                       </td>
 
                       {/* Action Column (Static buttons for context) */}
