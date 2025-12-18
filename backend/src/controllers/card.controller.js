@@ -427,7 +427,7 @@ export const getUniversityCardsForAdmin = async (req, res) => {
 
 export const updateCardStatus = async (req, res) => {
   try {
-    if (req.user.role !== "admin") {
+    if (!["admin", "vendor"].includes(req.user.role)) {
       return res.status(403).json({
         success: false,
         message: "Access denied"

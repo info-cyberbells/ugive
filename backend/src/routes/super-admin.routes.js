@@ -6,12 +6,11 @@ import { createUniversity, createCollege, updateUniversity, updateCollege, delet
 import { getAllStudentsSuperAdmin, createStudentSuperAdmin, getSingleStudentSuperAdmin, updateStudentSuperAdmin, deleteStudentSuperAdmin, } from "../controllers/student.controller.js";
 import upload from "../middleware/upload.middleware.js";
 import uploadReward from "../middleware/uploadReward.middleware.js";
-import { createReward, getRewards, getSingleReward, updateReward, deleteReward } from "../controllers/reward.controller.js";
+import { createReward, getRewards, getSingleReward, updateReward, deleteReward, getAllVendorRewardsForSuperAdmin, setVendorRewardActiveStatus } from "../controllers/reward.controller.js";
 import { getAllFeedback, updateFeedback, deleteFeedback } from "../controllers/feedback.controller.js";
 import { getSuperAdminDashboard, getSuperAdminEvents } from "../controllers/dashboard.controller.js";
 import { createAdmin, getAllAdmins, getSingleAdmin, updateAdmin, deleteAdmin } from "../controllers/auth.controller.js";
-
-
+import { createVendor, getAllVendors, getSingleVendor, getMyVendorProfile, updateVendor, deleteVendor } from "../controllers/vendor.controller.js";
 
 
 
@@ -49,6 +48,14 @@ router.get("/students/:id", getSingleStudentSuperAdmin);
 router.put("/update-students/:id", updateStudentSuperAdmin);
 router.delete("/delete-students/:id", deleteStudentSuperAdmin);
 
+//vendor managment
+router.post("/create-vendor", createVendor);
+router.get("/vendors", getAllVendors);
+router.get("/vendors/:id", getSingleVendor);
+router.get("/vendor/profile", getMyVendorProfile);
+router.put("/update-vendor/:id", updateVendor);
+router.delete("/delete-vendor/:id", deleteVendor);
+
 
 //college routes
 router.post("/colleges", createCollege);
@@ -72,6 +79,11 @@ router.get("/get-all-feedback", getAllFeedback);
 
 router.get("/dashboard", getSuperAdminDashboard);
 router.get("/notifications-and-activities", getSuperAdminEvents);
+
+
+router.get("/vendor-rewards", getAllVendorRewardsForSuperAdmin);
+
+router.put("/vendor-rewards/:id", setVendorRewardActiveStatus);
 
 
 

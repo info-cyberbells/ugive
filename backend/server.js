@@ -10,6 +10,7 @@ import adminRoutes from "./src/routes/admin.routes.js";
 import studentRoutes from "./src/routes/student.routes.js";
 import publicRoutes from "./src/routes/public.routes.js";
 import searchRoutes from "./src/routes/search.routes.js";
+import vendorRutes from "./src/routes/vendor.routes.js"
 
 connectDB();
 
@@ -35,6 +36,8 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/public", publicRoutes);
 app.use("/api/search", searchRoutes);
+app.use("/api/vendor", vendorRutes);
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

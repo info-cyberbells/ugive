@@ -8,6 +8,7 @@ import {
     deleteFeatureLink
 } from "../controllers/featureLink.controller.js";
 import uploadFeatureIcon from "../middleware/uploadFeatureIcon.js";
+import { getActiveVendorRewards } from "../controllers/reward.controller.js";
 
 
 const router = express.Router();
@@ -30,6 +31,10 @@ router.post("/create-social-link", uploadFeatureIcon.single("icon"), createFeatu
 router.get("/get-all-social-links", getAllFeatureLinks);        // Get all
 router.put("/update-link/:id", uploadFeatureIcon.single("icon"), updateFeatureLink);  // Update
 router.delete("/delete-link/:id", deleteFeatureLink);   // Delete
+
+
+
+router.get("/active-rewards", getActiveVendorRewards);
 
 
 

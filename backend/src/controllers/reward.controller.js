@@ -7,6 +7,7 @@ import NotificationActivity from "../models/notificationActivity.model.js";
 import Card from "../models/card.model.js";
 import FriendRequest from "../models/friendRequest.model.js";
 import { MonthlyStreak } from "../models/monthlyStreak.model.js";
+import VendorReward from "../models/vendorReward.model.js";
 
 
 
@@ -366,7 +367,7 @@ export const getStudentRewards = async (req, res) => {
     }
 };
 
-
+//claim reward
 export const claimReward = async (req, res) => {
     try {
         const studentId = req.user.id;
@@ -425,6 +426,341 @@ export const claimReward = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: "Server error",
+        });
+    }
+};
+
+
+//admin reward create
+export const createRewardByUniversityAdmin = async (req, res) => {
+    try {
+        const admin = req.user;
+
+        if (!admin.university) {
+            return res.status(400).json({
+                success: false,
+                message: "Admin is not linked to any university"
+            });
+        }
+
+        const {
+            name,
+            college,
+            rewardDescription,
+            totalPoints
+        } = req.body;
+
+        if (!name || !rewardDescription || !totalPoints) {
+            return res.status(400).json({
+                message: "All required fields must be provided"
+            });
+        }
+
+        const rewardImage = req.file
+            ? "/" + req.file.path.replace(/\\/g, "/")
+            : null;
+
+        const reward = await Reward.create({
+            name,
+            university: admin.university,
+            college: college || null,
+            rewardDescription,
+            totalPoints,
+            rewardImage,
+            createdBy: admin._id
+        });
+
+        await NotificationActivity.create({
+            type: "activity",
+            action: "reward_created",
+            message: `University admin created reward: ${name}`,
+            createdBy: admin._id
+        });
+
+        return res.status(201).json({
+            success: true,
+            message: "Reward created successfully",
+            reward
+        });
+
+    } catch (error) {
+        console.error("Create reward by admin error:", error);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
+//get all rewards
+export const getRewardsByUniversityAdmin = async (req, res) => {
+    try {
+        const admin = req.user;
+        const baseURL = `${req.protocol}://${req.get("host")}`;
+
+        let { page = 1, limit = 10 } = req.query;
+        page = Math.max(1, parseInt(page));
+        limit = Math.min(50, parseInt(limit));
+
+        const query = { university: admin.university };
+
+        const totalRewards = await Reward.countDocuments(query);
+
+        const rewards = await Reward.find(query)
+            .populate("college", "name")
+            .populate("createdBy", "name email")
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .sort({ createdAt: -1 });
+
+        const formatted = rewards.map(r => ({
+            ...r.toObject(),
+            rewardImage: r.rewardImage ? `${baseURL}${r.rewardImage}` : null
+        }));
+
+        return res.status(200).json({
+            success: true,
+            page,
+            limit,
+            totalRewards,
+            totalPages: Math.ceil(totalRewards / limit),
+            rewards: formatted
+        });
+
+    } catch (error) {
+        console.error("Get rewards by admin error:", error);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
+//get single reward
+export const getSingleRewardByUniversityAdmin = async (req, res) => {
+    try {
+        const admin = req.user;
+        const { id } = req.params;
+
+        const reward = await Reward.findOne({
+            _id: id,
+            university: admin.university
+        })
+            .populate("college", "name")
+            .populate("createdBy", "name email");
+
+        if (!reward) {
+            return res.status(404).json({
+                success: false,
+                message: "Reward not found"
+            });
+        }
+
+        const baseURL = `${req.protocol}://${req.get("host")}`;
+
+        const response = reward.toObject();
+        response.rewardImage = response.rewardImage
+            ? `${baseURL}${response.rewardImage}`
+            : null;
+
+        return res.status(200).json({
+            success: true,
+            reward: response
+        });
+
+    } catch (error) {
+        console.error("Get single reward admin error:", error);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
+//update reward
+export const updateRewardByUniversityAdmin = async (req, res) => {
+    try {
+        const admin = req.user;
+        const { id } = req.params;
+
+        const reward = await Reward.findOne({
+            _id: id,
+            university: admin.university
+        });
+
+        if (!reward) {
+            return res.status(404).json({ message: "Reward not found" });
+        }
+
+        const {
+            name,
+            college,
+            rewardDescription,
+            totalPoints
+        } = req.body;
+
+        if (name) reward.name = name;
+        if (college !== undefined) reward.college = college;
+        if (rewardDescription) reward.rewardDescription = rewardDescription;
+        if (totalPoints) reward.totalPoints = totalPoints;
+
+        if (req.file) {
+            reward.rewardImage = "/" + req.file.path.replace(/\\/g, "/");
+        }
+
+        await reward.save();
+
+        return res.json({
+            success: true,
+            message: "Reward updated successfully",
+            reward
+        });
+
+    } catch (error) {
+        console.error("Update reward admin error:", error);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
+//delete reward
+export const deleteRewardByUniversityAdmin = async (req, res) => {
+    try {
+        const admin = req.user;
+        const { id } = req.params;
+
+        const deleted = await Reward.findOneAndDelete({
+            _id: id,
+            university: admin.university
+        });
+
+        if (!deleted) {
+            return res.status(404).json({ message: "Reward not found" });
+        }
+
+        return res.json({
+            success: true,
+            message: "Reward deleted successfully"
+        });
+
+    } catch (error) {
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
+
+//get all vedors addeed reward
+export const getAllVendorRewardsForSuperAdmin = async (req, res) => {
+    try {
+        const baseURL = `${req.protocol}://${req.get("host")}`;
+
+        // Pagination
+        let { page = 1, limit = 10 } = req.query;
+        page = Math.max(1, parseInt(page));
+        limit = Math.min(50, Math.max(1, parseInt(limit)));
+
+        const skip = (page - 1) * limit;
+
+        const total = await VendorReward.countDocuments();
+
+        const rewards = await VendorReward.find()
+            .populate("vendor", "name email")
+            .populate("university", "name")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const formattedRewards = rewards.map(r => {
+            const obj = r.toObject();
+            return {
+                ...obj,
+                rewardImage: obj.rewardImage
+                    ? `${baseURL}${obj.rewardImage}`
+                    : null
+            };
+        });
+
+        return res.status(200).json({
+            success: true,
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
+            data: formattedRewards
+        });
+
+    } catch (error) {
+        console.error("Super admin get all vendor rewards error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+
+//add active rewrds from all rewrds
+export const setVendorRewardActiveStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { isActive } = req.body;
+
+        if (typeof isActive !== "boolean") {
+            return res.status(400).json({
+                success: false,
+                message: "isActive must be true or false"
+            });
+        }
+
+        const reward = await VendorReward.findById(id);
+
+        if (!reward) {
+            return res.status(404).json({
+                success: false,
+                message: "Reward not found"
+            });
+        }
+
+        reward.isActive = isActive;
+        await reward.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Reward active status updated",
+            data: {
+                rewardId: reward._id,
+                isActive: reward.isActive
+            }
+        });
+
+    } catch (error) {
+        console.error("Set reward active status error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+
+//show all active rewards 
+export const getActiveVendorRewards = async (req, res) => {
+    try {
+        const baseURL = `${req.protocol}://${req.get("host")}`;
+
+        const rewards = await VendorReward.find({
+            isActive: true
+        })
+            .select("name description rewardImage")
+            .sort({ createdAt: -1 });
+
+        const formatted = rewards.map(r => ({
+            _id: r._id,
+            name: r.name,
+            description: r.description,
+            rewardImage: r.rewardImage
+                ? `${baseURL}${r.rewardImage}`
+                : null
+        }));
+
+        return res.status(200).json({
+            success: true,
+            data: formatted
+        });
+
+    } catch (error) {
+        console.error("Get active rewards error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Server error"
         });
     }
 };

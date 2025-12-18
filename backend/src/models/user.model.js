@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true, minlength: 6 },
   role: {
     type: String,
-    enum: ["super_admin", "admin", "student"],
+    enum: ["super_admin", "admin", "student", "vendor"],
     default: "student",
   },
   university: {
@@ -36,11 +36,11 @@ const userSchema = new mongoose.Schema({
     ref: "College",
   },
   colleges: [
-  {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "College"
-  }
-],
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "College"
+    }
+  ],
   // universityDomain: { type: String, trim: true }, // internal helper
   phoneNumber: {
     type: String,
