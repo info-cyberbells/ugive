@@ -4,7 +4,6 @@ import { useDispatch } from "react-redux";
 import { logout, reset } from "../../features/studentSlice";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-
 import {
   LayoutDashboard,
   UserCircle,
@@ -21,7 +20,8 @@ import {
   Settings,
   HelpCircle,
   MessageSquare,
- Ticket} from "lucide-react";
+  Ticket,
+} from "lucide-react";
 import { resetStudentState } from "../../features/studentDataSlice";
 import { clearProfile } from "../../features/superadminProfileSlice";
 
@@ -38,13 +38,25 @@ const ROLE_BASED_MENUS = {
 
   admin: [
     { id: "profile", title: "User Profile", icon: UserCircle },
-    { id: "manage-students", title: "Manage Students", icon: BookOpen },
+    { id: "admin-students", title: "Students", icon: BookOpen },
+    { id: "admin-colleges", title: "Colleges", icon: GraduationCap },
+    { id: "admin-cards", title: "Cards", icon: Ticket },
+    {
+      id: "support",
+      title: "Support",
+      icon: HelpCircle,
+      children: [
+        { id: "privacy-policy", title: "Privacy Policy" },
+        { id: "terms-and-conditions", title: "Terms & Conditions" },
+        { id: "contactus", title: "Contact Us" },
+      ],
+    },
   ],
   student: [
     // { id: "profile", title: "User Profile", icon: UserCircle },
     { id: "rewards-catalog", title: "Rewards Catalog", icon: Gift },
     { id: "streaks", title: "Streaks", icon: Flame },
-    { id: "my-cards", title: "Sent Cards", icon:  Ticket },
+    { id: "my-cards", title: "Sent Cards", icon: Ticket },
     { id: "friends", title: "Friends", icon: Users },
     // { id: "settings", title: "Settings", icon: Settings },
     {
@@ -54,8 +66,8 @@ const ROLE_BASED_MENUS = {
       children: [
         { id: "privacy-policy", title: "Privacy Policy" },
         { id: "terms-and-conditions", title: "Terms & Conditions" },
-        { id: "contactus", title: "Contact Us" }
-      ]
+        { id: "contactus", title: "Contact Us" },
+      ],
     },
     // { id: "social", title: "Social", icon: Share2 },
   ],
@@ -66,7 +78,6 @@ const ROLE_BASED_BG_COLOR = {
   admin: ["bg-purple-600"],
   student: ["bg-white"],
 };
-
 
 const MenuItems = ({ setIsSidebarOpen }) => {
   const navigate = useNavigate();
@@ -83,7 +94,7 @@ const MenuItems = ({ setIsSidebarOpen }) => {
     localStorage.clear();
     dispatch(reset());
     dispatch(logout());
-    dispatch((resetStudentState()));
+    dispatch(resetStudentState());
     dispatch(clearProfile());
     window.dispatchEvent(new Event("authChange"));
     navigate("/");
@@ -91,24 +102,25 @@ const MenuItems = ({ setIsSidebarOpen }) => {
 
   return (
     <div className="w-full pl-2 font-[Inter] text-black/70 mb-8 h-screen overflow-y-auto">
-
       {/* DASHBOARD SECTION */}
       <div className="flex flex-col gap-2 mt-4">
         <h2 className="text-[#00000066]">Dashboards</h2>
 
         <NavLink
-          to={role === "student" ? "/student-dashboard" : "/dashboard"}
-          onClick={() => setIsSidebarOpen(false)} 
+          to={ role === "student" ? "/student-dashboard" : role === "super_admin" ? "/dashboard" : role === "admin" ? "/admin-dashboard" : "/" }
+          onClick={() => setIsSidebarOpen(false)}
           className={({ isActive }) =>
             `flex items-center gap-2 px-2 py-1 rounded-md cursor-pointer
-     ${isActive ? "bg-[#0000000A] font-semibold text-black" : "hover:bg-[#0000000A]"}`
+     ${
+       isActive
+         ? "bg-[#0000000A] font-semibold text-black"
+         : "hover:bg-[#0000000A]"
+     }`
           }
         >
           <LayoutDashboard className="w-5 h-5" />
           Overview
         </NavLink>
-
-
       </div>
 
       {/* PAGES SECTION */}
@@ -121,10 +133,16 @@ const MenuItems = ({ setIsSidebarOpen }) => {
               // KEEP DIV IF CHILDREN EXIST
               <div
                 onClick={() =>
-                  setOpenDropdown(openDropdown === section.id ? null : section.id)
+                  setOpenDropdown(
+                    openDropdown === section.id ? null : section.id
+                  )
                 }
                 className={`w-full flex items-center gap-3 py-2 px-2 rounded-lg cursor-pointer
-      ${openDropdown === section.id ? "bg-[#0000000A] font-semibold text-black" : "hover:bg-[#0000000A]"}`}
+      ${
+        openDropdown === section.id
+          ? "bg-[#0000000A] font-semibold text-black"
+          : "hover:bg-[#0000000A]"
+      }`}
               >
                 <section.icon className="w-5 h-5" />
                 <p className="text-sm flex-1">{section.title}</p>
@@ -139,10 +157,15 @@ const MenuItems = ({ setIsSidebarOpen }) => {
               // USE NAVLINK IF NO CHILDREN → FIXES HIGHLIGHT
               <NavLink
                 to={"/" + section.id}
-                onClick={() => setIsSidebarOpen(false)} 
+                onClick={() => setIsSidebarOpen(false)}
                 className={({ isActive }) =>
                   `w-full flex items-center gap-3 py-2 px-2 rounded-lg cursor-pointer
-        ${isActive ? "bg-[#0000000A] font-semibold text-black" : "hover:bg-[#0000000A]"}`}
+        ${
+          isActive
+            ? "bg-[#0000000A] font-semibold text-black"
+            : "hover:bg-[#0000000A]"
+        }`
+                }
               >
                 <section.icon className="w-5 h-5" />
                 <p className="text-sm flex-1">{section.title}</p>
@@ -154,7 +177,7 @@ const MenuItems = ({ setIsSidebarOpen }) => {
                 {section.children.map((child) => (
                   <NavLink
                     key={child.id}
-                     onClick={() => setIsSidebarOpen(false)}
+                    onClick={() => setIsSidebarOpen(false)}
                     to={"/" + child.id}
                     className={({ isActive }) =>
                       `w-full text-sm py-1 px-2 rounded-md 
@@ -169,8 +192,6 @@ const MenuItems = ({ setIsSidebarOpen }) => {
           </div>
         ))}
 
-
-
         {/* LOGOUT */}
         <button
           onClick={handleLogout}
@@ -179,11 +200,9 @@ const MenuItems = ({ setIsSidebarOpen }) => {
           <LogOut className="w-5 h-5" />
           <span className="text-sm font-medium">Logout</span>
         </button>
-
       </div>
     </div>
   );
-
 };
 
 export default MenuItems;

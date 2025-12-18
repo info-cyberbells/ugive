@@ -1,14 +1,20 @@
-import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { useToast } from '../../context/ToastContext';
-import { sendFeedbackStudent } from '../../features/studentDataSlice';
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useToast } from "../../context/ToastContext";
+import { sendFeedbackStudent } from "../../features/studentDataSlice";
+import { sendFeedbackByAdmin } from "../../features/adminSlice";
 
 const Contactus = () => {
-
   const { showToast } = useToast();
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const role = user?.role?.toLowerCase();
 
   const dispatch = useDispatch();
   const { isLoading } = useSelector((state) => state.studentData);
+  const { isAdminLoading } = useSelector((state) => state.admin);
+
+  const loading = role === "student" ? isLoading : isAdminLoading;
 
   const [feedback, setFeedback] = useState("");
 
@@ -19,23 +25,23 @@ const Contactus = () => {
         return;
       }
 
-      await dispatch(sendFeedbackStudent(feedback));
-
-      showToast("Feedback submitted successfully!", "success");
-      setFeedback("");
+      if (role === "student") {
+        await dispatch(sendFeedbackStudent(feedback)).unwrap();
+        showToast("Feedback submitted successfully!", "success");
+        setFeedback("");
+      } else if (role === "admin") {
+        await dispatch(sendFeedbackByAdmin(feedback)).unwrap();
+        showToast("Feedback submitted successfully!", "success");
+        setFeedback("");
+      }
     } catch (err) {
       showToast(err || "Unexpected error occurred", "error");
     }
   };
 
-
-
-
   return (
     <div className="bg-gray-50 lg:ml-60 mt-14 min-h-screen px-6 pt-2 mx-auto font-[Poppins]">
-      <h2
-        className='p-4 text-2xl font-semibold text-[#6955A5]'
-      >Support</h2>
+      <h2 className="p-4 text-2xl font-semibold text-[#6955A5]">Support</h2>
       <div className="bg-white p-8 rounded-3xl max-w-4xl">
         <div className="border-b border-gray-200 mb-2">
           <h2 className="text-[#6955A5] font-medium text-sm border-b-2 border-[#6955A5] w-fit pb-1">
@@ -84,17 +90,17 @@ const Contactus = () => {
         <div className="flex justify-center mt-6">
           <button
             onClick={handleSubmit}
-            disabled={isLoading}
-            className={`bg-[#6955A5] text-white px-12 cursor-pointer py-2.5 rounded-xl text-sm transition ${isLoading ? "opacity-60 cursor-not-allowed" : "hover:scale-[1.02]"
-              }`}
+            disabled={loading}
+            className={`bg-[#6955A5] text-white px-12 cursor-pointer py-2.5 rounded-xl text-sm transition ${
+              loading ? "opacity-60 cursor-not-allowed" : "hover:scale-[1.02]"
+            }`}
           >
-            {isLoading ? "Submitting..." : "Submit"}
+            {loading ? "Submitting..." : "Submit"}
           </button>
-
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Contactus
+export default Contactus;

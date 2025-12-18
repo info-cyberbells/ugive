@@ -9,8 +9,10 @@ import studentRewardReducer from "../features/studentRewardsSlice";
 import studentCardReducer from "../features/studentCardSlice"
 import friendsReducer from '../features/friendsSlice';
 import feedbackReducer from '../features/feedbackSlice';
-
-
+import adminReducer from '../features/adminSlice';
+import adminCollegesReducer from '../features/adminCollegesSlice'
+import adminCardReducer from "../features/adminCardSlice"
+import adminStudentsReducer from '../features/adminStudentSlice'
 
 export const store = configureStore({
     reducer: {
@@ -24,7 +26,10 @@ export const store = configureStore({
         studentCard: studentCardReducer,
         friends: friendsReducer,
         feedback: feedbackReducer,
-
+        admin: adminReducer,
+        adminColleges: adminCollegesReducer,
+        adminCard:  adminCardReducer,
+        adminStudents: adminStudentsReducer,
     }
 })
 

@@ -194,6 +194,15 @@ const authSlice = createSlice({
                     }
 
                     localStorage.setItem("user", JSON.stringify(minimalUser));
+
+                    if (user.role === "admin" && user.university) {
+                    localStorage.setItem("universityId", user.university);
+                    }
+                    
+                    if (user.role === "admin" && Array.isArray(user.colleges)) {
+                    localStorage.setItem("colleges", JSON.stringify(user.colleges));
+                    }
+
                 }
             })
             .addCase(login.rejected, (state, action) => {

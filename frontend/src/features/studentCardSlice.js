@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { sendCardService, checkCardEligibilityService, getCardListingService, getRemainingCardService } from "../auth/authServices";
+import { sendCardService, checkCardEligibilityService, getCardListingService, getRemainingCardService, checkBanWordsService } from "../auth/authServices";
 
 
 // send card thunk
@@ -57,6 +57,19 @@ export const remainingCardProgress = createAsyncThunk(
     }    
 )
 
+// BAN WORD CHECK THUNK 
+export const checkBanWords = createAsyncThunk (
+    'card/checkforbanWords',
+    async (message, {rejectWithValue}) => {
+        try {
+            const response = await checkBanWordsService(message);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || "Message Validation Failed")
+        }
+    }
+);
+
 
 const studentCardSlice = createSlice({
     name: "studentCard",
@@ -69,6 +82,8 @@ const studentCardSlice = createSlice({
         isError: false,
         message: "",
         eligibility: null,
+        banWordCheck: null,
+        banWordError: null,
     },
     reducers: {
         resetCardState: (state) => {
@@ -135,6 +150,22 @@ const studentCardSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
+            })
+
+            // check for ban words
+            .addCase(checkBanWords.pending, (state)=>{
+                state.isLoading = true;
+                state.isError = false;
+                state.banWordError = null;
+            })
+            .addCase(checkBanWords.fulfilled, (state, action)=>{
+                state.isLoading = false;
+                state.banWordCheck = action.payload;
+            })
+            .addCase(checkBanWords.rejected, (state, action)=>{
+                state.isLoading = false;
+                state.isError = true;
+                state.banWordError = action.payload;
             })
     }
 });

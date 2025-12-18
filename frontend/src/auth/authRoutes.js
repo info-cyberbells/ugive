@@ -91,6 +91,36 @@ export const USER_ENDPOINTS = {
     GET_STUDENT_NOTIFICATIONS: `${API_BASE_URL}/student/get-my-notifications`,
 
 
+    // ADMIN ROUTES
+    ADMIN_GET_PROFILE: `${API_BASE_URL}/admin/profile`,
+    ADMIN_UPDATE_PROFILE: `${API_BASE_URL}/admin/profile`,
+    ADMIN_CHANGE_PASSWORD: `${API_BASE_URL}/admin/change-password`,
+
+    ADMIN_DASHBOARD_DATA: `${API_BASE_URL}/admin/dashboard`,
+
+    ADMIN_GET_ALL_COLLEGES : `${API_BASE_URL}/admin/colleges`,
+    ADMIN_GET_SINGLE_UNIVERSITY : `${API_BASE_URL}/admin/universities`,
+    ADMIN_ADD_COLLEGE : `${API_BASE_URL}/admin/colleges`,
+    ADMIN_VIEW_SINGLE_COLLEGE : `${API_BASE_URL}/admin/colleges`,
+    ADMIN_UPDATE_COLLEGE : `${API_BASE_URL}/admin/colleges`,
+    ADMIN_DELETE_COLLEGE : `${API_BASE_URL}/admin/colleges`,
+
+
+    ADMIN_GET_UNI_CARDS : `${API_BASE_URL}/admin/cards`,
+    ADMIN_UPDATE_CARD_STATUS : `${API_BASE_URL}/admin/cards`,
+    ADMIN_DELETE_CARD : `${API_BASE_URL}/admin/cards`,
+    
+    ADMIN_GET_ALL_STUDENTS : `${API_BASE_URL}/admin/students`,
+    ADMIN_CREATE_STUDENT : `${API_BASE_URL}/admin/students`,
+    ADMIN_GET_SINGLE_STUDENT : `${API_BASE_URL}/admin/students`,
+    ADMIN_UPDATE_STUDENT : `${API_BASE_URL}/admin/students`,
+    ADMIN_DELETE_STUDENT : `${API_BASE_URL}/admin/students`,
+
+    ADMIN_GET_NOTIFICATIONS : `${API_BASE_URL}/admin/get-notifications`,
+    ADMIN_SEND_FEEDBACK : `${API_BASE_URL}/admin/sent-feedback`,
+    
+
+
 };
 
 

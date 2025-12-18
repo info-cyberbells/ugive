@@ -18,6 +18,7 @@ import {
   clearSearchResults,
 } from "../../features/friendsSlice";
 import { useToast } from "../../context/ToastContext";
+import { getAdminProfile } from "../../features/adminSlice";
 
 const ProfileAvatar = ({ src, name }) =>
   src ? (
@@ -52,11 +53,12 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
   const { profile } = useSelector((state) => state.superadmin);
   const { studentProfile } = useSelector((state) => state.studentData);
+  const {adminProfile} = useSelector((state)=> state.admin);
 
   const role =
-    profile?.role?.toLowerCase() || studentProfile?.role?.toLowerCase();
+    profile?.role?.toLowerCase() || studentProfile?.role?.toLowerCase() ||  adminProfile?.role?.toLowerCase();
 
-  const userData = profile || studentProfile || {};
+  const userData = profile || studentProfile || adminProfile ||{};
 
   // Cleanup debounce timer on unmount
   useEffect(() => {
@@ -73,6 +75,7 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
     if (storedRole === "super_admin") dispatch(fetchSuperAdminProfile());
     if (storedRole === "student") dispatch(fetchProfile());
+    if (storedRole === "admin") dispatch(getAdminProfile());
   }, []);
 
   useEffect(() => {
@@ -133,7 +136,7 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
       className={`
     fixed top-0 h-[60px] bg-white border-b border-gray-200 z-[100]
     flex items-center justify-between px-5 lg:pr-12
-    ${isMobile ? "left-0 right-0" : "left-60 right-0"}   // <-- CHANGED
+    ${isMobile ? "left-0 right-0" : "left-60 right-0"}  
   `}
     >
       {/* Left Section */}

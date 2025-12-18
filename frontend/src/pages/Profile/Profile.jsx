@@ -15,6 +15,7 @@ import {
 } from "../../features/studentDataSlice";
 import { useNavigate } from "react-router-dom";
 import { getColleges } from "../../features/studentSlice";
+import { changeAdminPassword, getAdminProfile, updateAdminProfile } from "../../features/adminSlice";
 
 const ProfileSkeleton = () => {
   return (
@@ -64,6 +65,9 @@ const ProfileSettings = () => {
   const { studentProfile, isLoading } = useSelector(
     (state) => state.studentData
   );
+  const { adminProfile, isAdminLoading, isAdminSuccess } = useSelector(
+    (state) => state.admin
+  );
   const { colleges } = useSelector((state) => state.auth);
   const [showCurrentPass, setShowCurrentPass] = useState(false);
   const [showNewPass, setShowNewPass] = useState(false);
@@ -84,6 +88,8 @@ const ProfileSettings = () => {
     collegeId: "",
     collegeName: "",
     studentId: "",
+    colleges: [],
+    selectedColleges: [],
   });
 
   const [initialProfile, setInitialProfile] = useState(null);
@@ -116,6 +122,9 @@ const ProfileSettings = () => {
     if (role == "student") {
       dispatch(fetchProfile());
     }
+    if (role == "admin") {
+      dispatch(getAdminProfile());
+    }
   }, [dispatch, role]);
 
   useEffect(() => {
@@ -131,15 +140,14 @@ const ProfileSettings = () => {
       setInitialProfile(loaded);
       setImagePreview(profile.profileImage || null);
     }
-
-    // STUDENT PROFILE
     // STUDENT PROFILE
     if (role === "student" && studentProfile) {
       const loaded = {
         fullName: studentProfile.name || "",
         email: studentProfile.email || "",
         phoneNumber: studentProfile.phoneNumber || "",
-        universityId: studentProfile.university?._id || studentProfile.university || "",
+        universityId:
+          studentProfile.university?._id || studentProfile.university || "",
         universityName:
           studentProfile.university?.name ||
           studentProfile.university_name ||
@@ -155,14 +163,34 @@ const ProfileSettings = () => {
       setInitialProfile(loaded);
       setImagePreview(studentProfile.profileImage || null);
     }
-  }, [role, profile, studentProfile]);
+
+    // admin profile
+    if (role === "admin" && adminProfile) {
+      const loaded = {
+        fullName: adminProfile.name || "",
+        email: adminProfile.email || "",
+        phoneNumber: adminProfile.phoneNumber || "",
+        universityId:
+          adminProfile.university?._id || adminProfile.university || "",
+        universityName:
+          adminProfile.university?.name || adminProfile.university_name || "",
+        colleges: adminProfile.colleges || [],
+        selectedColleges: adminProfile.colleges?.map((c) => c._id) || [],
+      };
+      setFormData((prev) => ({ ...prev, ...loaded }));
+      setInitialProfile(loaded);
+      setImagePreview(adminProfile.profileImage || null);
+    }
+  }, [role, profile, studentProfile, adminProfile]);
 
   useEffect(() => {
     if (role === "student" && studentProfile?.university?._id) {
       dispatch(getColleges(studentProfile.university._id));
     }
-  }, [studentProfile?.university?._id]);
-
+    if (role === "admin" && adminProfile?.university?._id) {
+      dispatch(getColleges(adminProfile.university._id));
+    }
+  }, [role, studentProfile?.university?._id, adminProfile?.university?._id]);
 
   const hasChanges = () => {
     if (!initialProfile) return true;
@@ -201,13 +229,13 @@ const ProfileSettings = () => {
       } else if (value.length <= 5) {
         formatted += value.slice(0, 2) + " " + value.slice(2);
       } else {
-        formatted += value.slice(0, 2) + " " + value.slice(2, 5) + " " + value.slice(5);
+        formatted +=
+          value.slice(0, 2) + " " + value.slice(2, 5) + " " + value.slice(5);
       }
     }
 
     setFormData((prev) => ({ ...prev, phoneNumber: formatted }));
   };
-
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
@@ -246,7 +274,7 @@ const ProfileSettings = () => {
 
     const allowedType = ["image/jpeg", "image/png"];
     if (!allowedType.includes(file.type)) {
-      showToast("Only PNG or JPG files are allowed", "error")
+      showToast("Only PNG or JPG files are allowed", "error");
       return;
     }
 
@@ -305,7 +333,6 @@ const ProfileSettings = () => {
       }
     }
 
-
     if (profileImage) {
       formDataToSend.append("profileImage", profileImage);
     }
@@ -348,49 +375,83 @@ const ProfileSettings = () => {
           console.error(err);
         });
     }
+    if (role === "admin") {
+      const collegesString = formData.selectedColleges.join(",");
+
+      formDataToSend.append("colleges", collegesString);
+
+      dispatch(updateAdminProfile(formDataToSend))
+        .unwrap()
+        .then((updatedUser) => {
+          showToast("Profile updated successfully!", "success");
+
+          const updatedColleges =
+            updatedUser.colleges?.map((id, i) => ({
+              _id: id,
+              name: updatedUser.colleges_names?.[i],
+            })) || [];
+
+          setFormData((prev) => ({
+            ...prev,
+            colleges: updatedColleges,
+            selectedColleges: updatedColleges.map((c) => c._id),
+          }));
+
+          setInitialProfile({
+            fullName: updatedUser.name,
+            phoneNumber: updatedUser.phoneNumber,
+          });
+
+          setProfileImage(null);
+        })
+        .catch(() => {
+          showToast("Failed to update profile", "error");
+        });
+    }
   };
 
-  const handlePassChange = () => {
-    const { currentPassword, newPassword, confirmPassword } = securityData;
-    const errors = {};
+  const handlePassChange = async () => {
+  const { currentPassword, newPassword, confirmPassword } = securityData;
+  const errors = {};
 
-    // Empty field validation
-    if (!currentPassword.trim()) errors.currentPassword = true;
-    if (!newPassword.trim()) errors.newPassword = true;
-    if (!confirmPassword.trim()) errors.confirmPassword = true;
+  // Empty field validation
+  if (!currentPassword.trim()) errors.currentPassword = true;
+  if (!newPassword.trim()) errors.newPassword = true;
+  if (!confirmPassword.trim()) errors.confirmPassword = true;
 
-    setPasswordErrors(errors);
+  setPasswordErrors(errors);
 
-    if (Object.keys(errors).length > 0) {
-      showToast("Please fill all password fields!", "error");
-      return;
-    }
+  if (Object.keys(errors).length > 0) {
+    showToast("Please fill all password fields!", "error");
+    return;
+  }
 
-    // New password must be at least 6 characters
-    if (newPassword.length < 6) {
-      showToast("New password must be at least 6 characters long!", "error");
-      setPasswordErrors((prev) => ({ ...prev, newPassword: true }));
-      return;
-    }
+  // New password must be at least 6 characters
+  if (newPassword.length < 6) {
+    showToast("New password must be at least 6 characters long!", "error");
+    setPasswordErrors((prev) => ({ ...prev, newPassword: true }));
+    return;
+  }
 
-    // Password match validation
-    if (newPassword !== confirmPassword) {
-      showToast("New passwords do not match!", "error");
-      setPasswordErrors({
-        newPassword: true,
-        confirmPassword: true,
-      });
-      return;
-    }
+  // Password match validation
+  if (newPassword !== confirmPassword) {
+    showToast("New passwords do not match!", "error");
+    setPasswordErrors({
+      newPassword: true,
+      confirmPassword: true,
+    });
+    return;
+  }
 
+  try {
     let action;
 
     if (role === "super_admin") {
       action = changeSuperAdminPassword({ currentPassword, newPassword });
-    }
-
-    if (role === "student") {
+    } else if (role === "student") {
       action = changeStudentPassword({ currentPassword, newPassword });
+    } else if (role === "admin") {
+      action = changeAdminPassword({ currentPassword, newPassword });
     }
 
     // If no valid role
@@ -399,36 +460,33 @@ const ProfileSettings = () => {
       return;
     }
 
-    dispatch(action)
-      .unwrap()
-      .then(() => {
-        showToast("Password changed successfully!", "success");
+    await dispatch(action).unwrap();
+    showToast("Password changed successfully!", "success");
 
-        // Reset form
-        setSecurityData({
-          currentPassword: "",
-          newPassword: "",
-          confirmPassword: "",
-        });
+    // Reset form
+    setSecurityData({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
 
-        setPasswordErrors({
-          currentPassword: false,
-          newPassword: false,
-          confirmPassword: false,
-        });
+    setPasswordErrors({
+      currentPassword: false,
+      newPassword: false,
+      confirmPassword: false,
+    });
 
-        // Hide toggles
-        setShowCurrentPass(false);
-        setShowNewPass(false);
-        setShowConfirmPass(false);
+    // Hide toggles
+    setShowCurrentPass(false);
+    setShowNewPass(false);
+    setShowConfirmPass(false);
 
-        // Switch back to profile tab
-        setActiveTab("profile");
-      })
-      .catch((err) => {
-        showToast(err || "Failed to change password!", "error");
-      });
-  };
+    // Switch back to profile tab
+    setActiveTab("profile");
+  } catch (err) {
+    showToast(err || "Failed to change password!", "error");
+  }
+};
 
   return (
     <>
@@ -444,27 +502,39 @@ const ProfileSettings = () => {
                   onClick={() => navigate(-1)}
                   className="px-2 rounded-full cursor-pointer hover:bg-indigo-50 transition transform hover:scale-[1.10] duration-150"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    ></path>
                   </svg>
                 </button>
               </div>
               <button
                 onClick={() => setActiveTab("profile")}
-                className={`pb-2 px-4 text-sm cursor-pointer font-medium transition ${activeTab === "profile"
-                  ? "text-[#5D3F87] border-b-2 border-[#5D3F87]"
-                  : "text-[#718EBF] hover:scale-[1.08]"
-                  }`}
+                className={`pb-2 px-4 text-sm cursor-pointer font-medium transition ${
+                  activeTab === "profile"
+                    ? "text-[#5D3F87] border-b-2 border-[#5D3F87]"
+                    : "text-[#718EBF] hover:scale-[1.08]"
+                }`}
               >
                 Edit Profile
               </button>
 
               <button
                 onClick={() => setActiveTab("security")}
-                className={`pb-2 px-4 text-sm font-medium cursor-pointer transition ${activeTab === "security"
-                  ? "text-[#5D3F87] border-b-2 border-[#5D3F87]"
-                  : "text-[#718EBF] hover:scale-[1.08]"
-                  }`}
+                className={`pb-2 px-4 text-sm font-medium cursor-pointer transition ${
+                  activeTab === "security"
+                    ? "text-[#5D3F87] border-b-2 border-[#5D3F87]"
+                    : "text-[#718EBF] hover:scale-[1.08]"
+                }`}
               >
                 Security
               </button>
@@ -522,11 +592,15 @@ const ProfileSettings = () => {
                     </div>
                     <p className="text-sm text-gray-500 mt-3">Change Photo</p>
                     <p className="text-[11px] text-gray-400 text-center mt-1 leading-tight">
-                      Only <span className="text-[#6558A1] font-medium">JPG / PNG</span> files
+                      Only{" "}
+                      <span className="text-[#6558A1] font-medium">
+                        JPG / PNG
+                      </span>{" "}
+                      files
                       <br />
-                      Max size: <span className="text-[#6558A1] font-medium">5MB</span>
+                      Max size:{" "}
+                      <span className="text-[#6558A1] font-medium">5MB</span>
                     </p>
-
                   </div>
 
                   {/* Form Section */}
@@ -574,7 +648,7 @@ const ProfileSettings = () => {
 
                     {/* University */}
 
-                    {role == "student" && (
+                    {role !== "super_admin" && (
                       <div>
                         <label className="text-sm">University</label>
                         <input
@@ -587,9 +661,107 @@ const ProfileSettings = () => {
                       </div>
                     )}
 
+                    {role === "admin" && (
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Colleges
+                        </label>
+
+                        {/* Selected Colleges (placeholder-style tags) */}
+                        <div
+                          className="w-full min-h-[44px] border border-gray-200 rounded-xl
+      flex flex-wrap items-center gap-2 px-3 py-2 bg-white"
+                        >
+                          {formData.colleges.length === 0 && (
+                            <span className="text-sm text-gray-400">
+                              Select colleges
+                            </span>
+                          )}
+
+                          {formData.colleges.map((college) => (
+                            <span
+                              key={college._id}
+                              className="flex items-center gap-1 bg-[#EDE9FE]
+            text-[#5D3F87] text-xs px-2 py-1 rounded-full"
+                            >
+                              {college.name}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setFormData((prev) => {
+                                    const updatedIds =
+                                      prev.selectedColleges.filter(
+                                        (id) => id !== college._id
+                                      );
+
+                                    return {
+                                      ...prev,
+                                      selectedColleges: updatedIds,
+                                      colleges: prev.colleges.filter(
+                                        (c) => c._id !== college._id
+                                      ),
+                                    };
+                                  });
+                                }}
+                                className="text-[#5D3F87] disabled cursor-pointer hover:text-red-500 font-bold"
+                              >
+                                {/* ×  */}
+                              </button>
+                            </span>
+                          ))}
+                        </div>
+
+                        {/* Dropdown */}
+                        <select
+                          className="w-full mt-2 border border-gray-200 rounded-xl
+        text-[#718EBF] px-3 py-2.5 text-sm
+        focus:ring-1 focus:ring-[#DFEAF2] outline-none"
+                          value=""
+                          disabled={!formData.universityId}
+                          onChange={(e) => {
+                            const selectedId = e.target.value;
+                            if (!selectedId) return;
+
+                            const selectedCollege = colleges.find(
+                              (c) => c._id === selectedId
+                            );
+
+                            if (!selectedCollege) return;
+
+                            setFormData((prev) => {
+                              // prevent duplicates
+                              if (prev.selectedColleges.includes(selectedId))
+                                return prev;
+
+                              return {
+                                ...prev,
+                                selectedColleges: [
+                                  ...prev.selectedColleges,
+                                  selectedId,
+                                ],
+                                colleges: [...prev.colleges, selectedCollege],
+                              };
+                            });
+                          }}
+                        >
+                          <option value="">Select a college</option>
+
+                          {colleges.map((college) => (
+                            <option
+                              key={college._id}
+                              value={college._id}
+                              disabled={formData.selectedColleges.includes(
+                                college._id
+                              )}
+                            >
+                              {college.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
 
                     {role == "student" && (
-
                       <div>
                         <label className="block text-sm font-medium text-gray-700">
                           College
@@ -600,25 +772,30 @@ const ProfileSettings = () => {
                             name="collegeId"
                             value={formData.collegeId || ""}
                             onChange={(e) =>
-                              setFormData((prev) => ({ ...prev, collegeId: e.target.value }))
+                              setFormData((prev) => ({
+                                ...prev,
+                                collegeId: e.target.value,
+                              }))
                             }
                             className="w-full border border-gray-200 rounded-xl text-[#718EBF] appearance-none focus:ring-1 focus:ring-[#DFEAF2] outline-none px-3 py-2.5 mt-1 text-sm"
                           >
-
                             {formData.universityId && colleges.length === 0 && (
-                              <option value="">No colleges found for this university</option>
+                              <option value="">
+                                No colleges found for this university
+                              </option>
                             )}
 
                             {formData.universityId && colleges.length > 0 && (
                               <>
                                 <option value="">Select your college</option>
                                 {colleges.map((c) => (
-                                  <option key={c._id} value={c._id}>{c.name}</option>
+                                  <option key={c._id} value={c._id}>
+                                    {c.name}
+                                  </option>
                                 ))}
                               </>
                             )}
                           </select>
-
 
                           {/* Custom Dropdown Arrow */}
                           <svg
@@ -658,10 +835,11 @@ const ProfileSettings = () => {
                         onClick={handleSave}
                         type="button"
                         disabled={Loading}
-                        className={`${Loading
-                          ? "bg-gray-400 cursor-not-allowed"
-                          : "bg-[#6558A1] hover:bg-[#7A6CCF] cursor-pointer transition transform hover:scale-[1.05] duration-150"
-                          } text-white text-xs font-semibold rounded-xl px-16 py-2.5 transition`}
+                        className={`${
+                          Loading
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : "bg-[#6558A1] hover:bg-[#7A6CCF] cursor-pointer transition transform hover:scale-[1.05] duration-150"
+                        } text-white text-xs font-semibold rounded-xl px-16 py-2.5 transition`}
                       >
                         {loading ? "Saving..." : "Save"}
                       </button>
@@ -686,10 +864,11 @@ const ProfileSettings = () => {
                           onChange={handleSecurityChange}
                           placeholder="Enter current password"
                           autoComplete="new-password"
-                          className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${passwordErrors.currentPassword
-                            ? "border-red-500 bg-red-50 focus:ring-red-300"
-                            : "border-gray-200 focus:ring-[#DFEAF2]"
-                            } text-[#718EBF]`}
+                          className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${
+                            passwordErrors.currentPassword
+                              ? "border-red-500 bg-red-50 focus:ring-red-300"
+                              : "border-gray-200 focus:ring-[#DFEAF2]"
+                          } text-[#718EBF]`}
                         />
                         <button
                           type="button"
@@ -715,10 +894,11 @@ const ProfileSettings = () => {
                           value={securityData.newPassword}
                           onChange={handleSecurityChange}
                           placeholder="Enter new password"
-                          className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${passwordErrors.newPassword
-                            ? "border-red-500 bg-red-50 focus:ring-red-300"
-                            : "border-gray-200 focus:ring-[#DFEAF2]"
-                            } text-[#718EBF]`}
+                          className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${
+                            passwordErrors.newPassword
+                              ? "border-red-500 bg-red-50 focus:ring-red-300"
+                              : "border-gray-200 focus:ring-[#DFEAF2]"
+                          } text-[#718EBF]`}
                         />
                         <button
                           type="button"
@@ -743,10 +923,11 @@ const ProfileSettings = () => {
                           value={securityData.confirmPassword}
                           onChange={handleSecurityChange}
                           placeholder="Re-enter new password"
-                          className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${passwordErrors.confirmPassword
-                            ? "border-red-500 bg-red-50 focus:ring-red-300"
-                            : "border-gray-200 focus:ring-[#DFEAF2]"
-                            } text-[#718EBF]`}
+                          className={`w-full border rounded-xl px-3 py-2.5 pr-10 mt-1 text-sm focus:ring-1 outline-none ${
+                            passwordErrors.confirmPassword
+                              ? "border-red-500 bg-red-50 focus:ring-red-300"
+                              : "border-gray-200 focus:ring-[#DFEAF2]"
+                          } text-[#718EBF]`}
                         />
                         <button
                           type="button"
