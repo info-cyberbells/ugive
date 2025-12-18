@@ -417,6 +417,125 @@ export const getStudentDashboard = async (req, res) => {
 };
 
 
+export const getVendorDashboard = async (req, res) => {
+  try {
+    if (req.user.role !== "vendor") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Vendor only."
+      });
+    }
+
+    const vendorId = req.user.id;
+
+    // Dates
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const vendorRewards = await Reward.find({
+      vendor: vendorId
+    }).select("_id");
+
+    const rewardIds = vendorRewards.map(r => r._id);
+
+    const [
+      totalRewards,
+      totalCards,
+      printedCards,
+      deliveredCards,
+      cardsPrintedToday,
+      cardsDeliveredToday,
+      recentPrintedCards,
+      recentDeliveredCards
+    ] = await Promise.all([
+
+      // Total rewards
+      Reward.countDocuments({ vendor: vendorId }),
+
+      Card.countDocuments({ reward: { $in: rewardIds } }),
+
+      // Printed cards
+      Card.countDocuments({
+        reward: { $in: rewardIds },
+        status: "printed"
+      }),
+
+      // Delivered cards
+      Card.countDocuments({
+        reward: { $in: rewardIds },
+        status: "delivered"
+      }),
+
+      // Printed today
+      Card.countDocuments({
+        reward: { $in: rewardIds },
+        status: "printed",
+        updatedAt: { $gte: today }
+      }),
+
+      // Delivered today
+      Card.countDocuments({
+        reward: { $in: rewardIds },
+        status: "delivered",
+        updatedAt: { $gte: today }
+      }),
+
+      // Recent printed cards
+      Card.find({
+        reward: { $in: rewardIds },
+        status: "printed"
+      })
+        .sort({ updatedAt: -1 })
+        .limit(5)
+        .select("recipient_name message updatedAt")
+        .lean(),
+
+      // Recent delivered cards
+      Card.find({
+        reward: { $in: rewardIds },
+        status: "delivered"
+      })
+        .sort({ updatedAt: -1 })
+        .limit(5)
+        .select("recipient_name message updatedAt")
+        .lean()
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      message: "Vendor dashboard data fetched successfully",
+      data: {
+        overview: {
+          totalRewards,
+          totalCards,
+          printedCards,
+          deliveredCards
+        },
+        todayStats: {
+          cardsPrintedToday,
+          cardsDeliveredToday
+        },
+        recentActivity: {
+          recentPrintedCards,
+          recentDeliveredCards
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error("Vendor dashboard error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+
 
 export const getSuperAdminEvents = async (req, res) => {
     try {
@@ -502,4 +621,42 @@ export const getAdminNotifications = async (req, res) => {
             message: "Server error"
         });
     }
+};
+
+
+export const getVendorNotifications = async (req, res) => {
+  try {
+    if (req.user.role !== "vendor") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied"
+      });
+    }
+
+    const vendorId = req.user.id;
+
+    const events = await NotificationActivity.find({
+      $or: [
+        { createdBy: vendorId },
+        { "meta.vendorId": vendorId }
+      ]
+    })
+      .sort({ createdAt: -1 })
+      .limit(20)
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      notifications: events.filter(e => e.type === "notification"),
+      activities: events.filter(e => e.type === "activity"),
+      total: events.length
+    });
+
+  } catch (error) {
+    console.error("Vendor notification error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
 };

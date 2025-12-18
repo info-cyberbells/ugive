@@ -455,6 +455,23 @@ export const updateCardStatus = async (req, res) => {
       });
     }
 
+    if (req.user.role === "admin" && card.reward && status === "printed") {
+
+      const reward = await Reward.findById(card.reward);
+
+      await NotificationActivity.create({
+        type: "notification",
+        action: "card_printed",
+        message: "A reward card is ready for delivery",
+        createdBy: req.user.id,
+        meta: {
+          vendorId: reward.vendor,
+          cardId: card._id,
+          status: "printed"
+        }
+      });
+    }
+
     card.status = status;
     await card.save();
 
@@ -502,6 +519,43 @@ export const deleteCardByAdmin = async (req, res) => {
 
   } catch (error) {
     console.error("Delete card error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+
+export const getPrintedRewardCardsForVendor = async (req, res) => {
+  try {
+    if (req.user.role !== "vendor") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. Vendor only."
+      });
+    }
+
+    const cards = await Card.find({
+      status: "printed",
+      reward: { $ne: null }
+    })
+      .populate("reward", "name")
+      .populate("sender", "name email")
+      .sort({ updatedAt: -1 })
+      .select(
+        "sender_name recipient_name recipient_last_name recipient_email college_name message reward status sent_at"
+      )
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      count: cards.length,
+      data: cards
+    });
+
+  } catch (error) {
+    console.error("Get printed reward cards error:", error);
     return res.status(500).json({
       success: false,
       message: "Server error"
