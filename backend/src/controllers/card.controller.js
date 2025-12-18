@@ -536,13 +536,23 @@ export const getPrintedRewardCardsForVendor = async (req, res) => {
       });
     }
 
-    const cards = await Card.find({
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(50, parseInt(req.query.limit) || 10);
+    const skip = (page - 1) * limit;
+
+    const filter = {
       status: "printed",
       reward: { $ne: null }
-    })
+    };
+
+    const total = await Card.countDocuments(filter);
+
+    const cards = await Card.find(filter)
       .populate("reward", "name")
       .populate("sender", "name email")
       .sort({ updatedAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .select(
         "sender_name recipient_name recipient_last_name recipient_email college_name message reward status sent_at"
       )
@@ -550,6 +560,10 @@ export const getPrintedRewardCardsForVendor = async (req, res) => {
 
     return res.status(200).json({
       success: true,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
       count: cards.length,
       data: cards
     });
@@ -562,4 +576,5 @@ export const getPrintedRewardCardsForVendor = async (req, res) => {
     });
   }
 };
+
 
