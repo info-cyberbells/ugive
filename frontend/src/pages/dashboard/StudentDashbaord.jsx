@@ -131,9 +131,9 @@ const CircularProgress = ({ percent }) => {
       </svg>
 
       <div
-        className={`absolute top-0 left-0 flex items-center justify-center w-full h-full text-[#EBB142]`}
+        className={`absolute top-0 left-0 tracking-tighter flex items-center justify-center w-full h-full text-[#EBB142]`}
       >
-        <span className="text-5xl font-bold font-inter ">{percent}%</span>
+        <span className="text-4xl font-bold font-inter ">{percent}%</span>
       </div>
     </div>
   );
@@ -201,9 +201,14 @@ const StudentDashboard = () => {
 
   const cardPercentage = cardsProgress?.currentReward?.percentage || 0;
 
-  const cardsLeft =
-    cardsProgress?.currentReward?.totalPoints -
-      cardsProgress?.currentReward?.completedPoints || "X";
+ const cardsLeft =
+    cardsProgress?.currentReward
+      ? Math.max(
+        0,
+        cardsProgress.currentReward.totalPoints -
+        cardsProgress.currentReward.completedPoints
+      )
+      : "X";
 
   useEffect(() => {
     const timer = setTimeout(() => setRewardPercent(cardPercentage), 500);
@@ -285,8 +290,8 @@ const StudentDashboard = () => {
             </div>
           ) : (
             <div className="bg-white p-4 sm:p-8 rounded-xl shadow-sm flex flex-col md:flex-row items-center justify-between mt-8">
-              <div className="flex-1 text-center md:text-left">
-                <h2 className="text-xl sm:text-2xl font-semibold text-[#7C759B] max-w-sm leading-snug">
+              <div className="flex-1 text-center ">
+                <h2 className="text-xl sm:text-2xl font-semibold text-[#7C759B] leading-snug">
                   Send a card to a friend on campus!
                 </h2>
 
@@ -327,7 +332,7 @@ const StudentDashboard = () => {
             <div className="bg-white lg:col-span-2 p-6 sm:p-8 rounded-xl shadow-sm mt-8">
               <div className="flex flex-col md:flex-row items-center justify-between sm:gap-8">
                
-                <div className="flex-1 text-center md:text-left px-4">
+                <div className="flex-1 text-center  px-4">
                   {cardsProgress?.message === "No rewards found" ? (
                     <>
                       <span>No rewards available right now.</span>
@@ -337,7 +342,7 @@ const StudentDashboard = () => {
                       </span>
                     </>
                   ) : cardsLeft === 0 ? (
-                    <div className="flex flex-col items-center md:items-start">
+                    <div className="flex flex-col items-center">
                       <span className="text-lg font-medium text-[#7C759B]">
                         Your reward has unlocked!
                       </span>
@@ -356,10 +361,10 @@ const StudentDashboard = () => {
                     </div>
                   )}
 
-                  <div className="mt-2 mb-1 sm:mt-6">
+                  <div className="flex justify-center mt-2 mb-1 sm:mt-6">
                     <button
                       onClick={() => navigate("/lets-go")}
-                      className="px-8 py-2 bg-[#E9B243] hover:bg-[#d3a032] text-white 
+                      className="px-8 py-2 bg-[#E9B243] cursor-pointer hover:bg-[#d3a032] text-white 
                font-medium border-2 border-white rounded-3xl 
                transition duration-150 shadow-md"
                     >

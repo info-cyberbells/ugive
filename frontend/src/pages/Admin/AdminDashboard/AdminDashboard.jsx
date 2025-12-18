@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Download,
   FileDown,
   DollarSign,
   ShoppingCart,
   PackageCheck,
-  Users,
+  Users, School, CreditCard, Calendar,  Send,
+  MessageSquare,
 } from "lucide-react";
 import {
   BarChart,
@@ -21,38 +22,11 @@ import {
   Area,
   AreaChart,
 } from "recharts";
+import { useDispatch, useSelector } from "react-redux";
+import { getAdminDashboardData } from "../../../features/adminSlice";
 
-// Dummy Data
-const weeklySummary = [
-  {
-    title: "Total Sales",
-    value: "$1k",
-    diff: "+8%",
-    color: "bg-[#FFE2E5]",
-    icon: DollarSign,
-  },
-  {
-    title: "Total Order",
-    value: "300",
-    diff: "+5%",
-    color: "bg-[#FFF4DE]",
-    icon: ShoppingCart,
-  },
-  {
-    title: "Product Sold",
-    value: "5",
-    diff: "+1.2%",
-    color: "bg-[#DCFCE7]",
-    icon: PackageCheck,
-  },
-  {
-    title: "New Customers",
-    value: "8",
-    diff: "0.5%",
-    color: "bg-[#F3E8FF]",
-    icon: Users,
-  },
-];
+
+
 
 const universityParticipation = [
   { day: "Mon", online: 15000, offline: 12000 },
@@ -89,21 +63,67 @@ const activityGraphData = [
 ];
 
 const AdminDashboard = () => {
+
+  const dispatch = useDispatch()
+
+  const { adminDashboard } = useSelector((state) => state.admin);
+  
+  useEffect(()=>{
+    dispatch(getAdminDashboardData());
+  },[dispatch])
+
+  const overview = adminDashboard?.overview;
+  const cardStats = adminDashboard?.cardStats;
+  const recentCards = adminDashboard?.recentActivity?.recentCards || [];
+  const recentStudents = adminDashboard?.recentActivity?.recentStudents || [];
+
+ const weeklySummary = [
+  {
+    title: "Total Students",
+    value: overview?.totalStudents ?? 0,
+    diff: "",
+    color: "bg-[#FFE2E5]",
+    icon: Users,
+  },
+  {
+    title: "Total Colleges",
+    value: overview?.totalColleges ?? 0,
+    diff: "",
+    color: "bg-[#FFF4DE]",
+    icon: School,
+  },
+  {
+    title: "Total Cards",
+    value: overview?.totalCards ?? 0,
+    diff: "",
+    color: "bg-[#DCFCE7]",
+    icon: CreditCard,
+  },
+  {
+    title: "Cards (Last 7 Days)",
+    value: cardStats?.cardsLast7Days ?? 0,
+    diff: "",
+    color: "bg-[#F3E8FF]",
+    icon: Calendar,
+  },
+];
+
+
   return (
     <div className=" lg:ml-60 mt-14 p-6 font-[Poppins] bg-gray-50 min-h-screen grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div className="lg:col-span-8 bg-white p-6 rounded-xl shadow-md">
         <header className="flex justify-between items-center">
           <div>
             <h2 className="text-lg text-[#05004E] font-semibold">
-              Total cards sent this week
+              Overview
             </h2>
-            <h4 className="text-[#737791]">Sales Summary</h4>
+            {/* <h4 className="text-[#737791]"> Summary</h4> */}
           </div>
 
-          <button className="border flex items-center border-[#C3D3E2] px-4 py-1 cursor-pointer rounded-xl">
+          {/* <button className="border flex items-center border-[#C3D3E2] px-4 py-1 cursor-pointer rounded-xl">
             <Download className="h-4 w-4 mr-2" />
             Export
-          </button>
+          </button> */}
         </header>
         {/* Cards Row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 mt-4 gap-4">
@@ -120,9 +140,9 @@ const AdminDashboard = () => {
                 <p className="text-[#425166] font-medium text-sm">
                   {card.title}
                 </p>
-                <p className="text-blue-500 text-xs">
+                {/* <p className="text-blue-500 text-xs">
                   {card.diff} from yesterday
-                </p>
+                </p> */}
               </div>
             );
           })}
@@ -260,7 +280,7 @@ const AdminDashboard = () => {
         </ResponsiveContainer>
       </div>
 
-      <div className="lg:col-span-8 bg-white p-6 rounded-xl shadow-md">
+      {/* <div className="lg:col-span-8 bg-white p-6 rounded-xl shadow-md">
         <h2 className="text-lg font-semibold mb-4">Activity Graph</h2>
         <div style={{ width: "100%", height: 350 }}>
           <ResponsiveContainer>
@@ -329,10 +349,10 @@ const AdminDashboard = () => {
             </LineChart>
           </ResponsiveContainer>
         </div>
-      </div>
+      </div> */}
 
       {/* Weekly Activity */}
-      <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow-md">
+      {/* <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow-md">
         <h2 className="text-lg font-semibold mb-4">Weekly Activity</h2>
         <div className="space-y-4">
           <div className="flex justify-between">
@@ -348,7 +368,81 @@ const AdminDashboard = () => {
             <span className="text-gray-500">18</span>
           </div>
         </div>
+      </div> */}
+      {/* Recent Students Table */}
+ <div className="lg:col-span-8 bg-white sm:p-6 rounded-xl shadow-lg">
+        <h2 className="text-xl text-[#05004E] px-3 py-2 sm:px-0 sm:py-0 font-semibold sm:mb-6">Recent Students</h2>
+
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead className="text-sm text-[#737791] border-b-2 border-gray-100">
+              <tr>
+                <th className="px-6 py-3 font-medium text-left">Name</th>
+                <th className="px-6 py-3 font-medium text-left hidden md:table-cell">Email</th>
+                <th className="px-6 py-3 font-medium text-left">Joined On</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {recentStudents.length > 0 ? (
+                recentStudents.slice(0,5).map((student) => (
+                  <tr
+                    key={student._id}
+                    className="text-gray-800 transition-colors duration-150 hover:bg-[#F9F7FF] hover:shadow-sm" // Highlight hover
+                  >
+                    <td className="px-6 py-4 font-medium text-[#05004E] flex items-center">
+                        <Users size={16} className="text-gray-400 mr-2" />
+                        {student.name}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500 hidden md:table-cell">{student.email}</td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      {new Date(student.createdAt).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                    <td colSpan="3" className="text-center py-6 text-gray-500">No recent student records available.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      {/* --- IMPROVED RECENT CARDS PANEL --- */}
+      <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow-lg">
+        <h2 className="text-xl text-[#05004E] font-semibold mb-6">Recent Cards Sent</h2>
+
+        <div className="space-y-4">
+          {recentCards.length > 0 ? (
+            recentCards.slice(0,3).map((card) => (
+              <div
+                key={card._id}
+                className="bg-gray-50 rounded-xl p-4 text-sm transition duration-200 hover:shadow-lg hover:border-b-4 hover:border-[#8B78D0] border-2 border-gray-100" // Added more distinct styling
+              >
+                <div className="flex justify-between items-start mb-2">
+                    <p className="font-semibold text-gray-800 flex items-center">
+                        <Send size={14} className="text-[#8B78D0] mr-2" />
+                        {card.sender?.name || 'Anonymous'} → {card.recipient_name}
+                    </p>
+                    <p className="text-xs text-gray-400 whitespace-nowrap">
+                        {new Date(card.sent_at).toLocaleDateString()}
+                    </p>
+                </div>
+                
+                <p className="text-gray-700 italic truncate text-sm border-t pt-2 border-gray-200">
+                  <MessageSquare size={12} className="inline-block mr-1 text-gray-500 mb-1" />
+                  “{card.message}”
+                </p>
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-6 text-gray-500 text-sm">No recent cards found.</div>
+          )}
+        </div>
+      </div>
+
+
     </div>
   );
 };

@@ -9,6 +9,7 @@ import { getUniversities, getColleges } from "../../features/studentSlice";
 import {
   sendStudentCard,
   checkCardEligibility,
+  checkBanWords,
 } from "../../features/studentCardSlice";
 import { getAllRewards } from "../../features/rewardSlice";
 import { getStudentRewards } from "../../features/studentRewardsSlice";
@@ -31,9 +32,9 @@ const CardForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
     name: "",
     recipientName: "",
-    recipientLastName: '',
+    recipientLastName: "",
     recipientEmail: "",
-    collegeHouse: '',
+    collegeHouse: "",
     reward: "",
     message: "",
     university: "",
@@ -70,7 +71,7 @@ const CardForm = ({ onSubmit }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const newErrors = {};
@@ -108,14 +109,37 @@ const CardForm = ({ onSubmit }) => {
 
     setErrors({});
 
-     const cardData = {
+    let finalMessage = formData.message;
+
+    try {
+      const result = await dispatch(checkBanWords(formData.message)).unwrap();
+
+      if (result?.clean_text && result.clean_text !== result.original) {
+        finalMessage = result.clean_text;
+
+        setFormData((prev) => ({
+          ...prev,
+          message: result.clean_text,
+        }));
+
+        showToast(
+          "Inappropriate words detected. We cleaned the message for you.",
+          "info"
+        );
+      }
+    } catch (error) {
+      showToast("Message validation failed. Please try again.", "error");
+      return;
+    }
+
+    const cardData = {
       sender_name: formData.name,
       recipient_name: formData.recipientName,
       recipient_last_name: formData.recipientLastName,
       recipient_email: formData.recipientEmail,
       reward: formData.reward || null,
       college_name: formData.collegeHouse,
-      message: formData.message,
+      message: finalMessage,
     };
 
     dispatch(sendStudentCard(cardData))
@@ -135,7 +159,11 @@ const CardForm = ({ onSubmit }) => {
 
   return (
     <div className="relative">
-      <img src={coffeeCup} className="absolute w-20 md:w-28 lg:w-auto right-4 lg:left-190 top-14 md:top-8 lg:top-10 z-1" alt="" />
+      <img
+        src={coffeeCup}
+        className="absolute w-20 md:w-28 lg:w-auto right-4 lg:left-190 top-14 md:top-8 lg:top-10 z-1"
+        alt=""
+      />
       <div className="max-w-4xl font-[Poppins] px-4 sm:px-8 pt-6 relative">
         <div className="flex items-center mb-4 text-indigo-800">
           <button
@@ -393,7 +421,6 @@ const CardForm = ({ onSubmit }) => {
                   </svg>
                 </div>
               </div>
-
             </div>
 
             <div className="">

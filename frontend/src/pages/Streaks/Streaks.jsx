@@ -146,8 +146,7 @@ const Streaks = () => {
     iconColor: w.streakEarned ? "text-green-500" : "text-gray-400",
   }));
 
-  const rewardUsed = streakSummary?.monthly?.rewardsUsed?.length || 0;
-  const rewardUnlocked = streakSummary?.monthly?.rewardsUnlocked?.length || 0;
+  const rewardUsed = streakSummary?.rewardsUsed?.length || 0;
 
   const activeQuarters = Math.min(4, currentStreakWeeks);
 
@@ -242,12 +241,7 @@ const Streaks = () => {
                         </span>{" "}
                         {rewardUsed || 0}
                       </li>
-                      <li className="text-sm">
-                        <span className="font-semibold text-[#6955A5]">
-                          Rewards unlocked:
-                        </span>{" "}
-                        {rewardUnlocked || 0}
-                      </li>
+                     
                     </ul>
                   </div>
                 </>

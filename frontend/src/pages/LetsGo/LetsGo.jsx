@@ -96,9 +96,14 @@ const LetsGo = () => {
 
   const cardPercentage = cardsProgress?.currentReward?.percentage || 0;
 
-  const cardsLeft =
-    cardsProgress?.currentReward?.totalPoints -
-      cardsProgress?.currentReward?.completedPoints || "X";
+const cardsLeft =
+    cardsProgress?.currentReward
+      ? Math.max(
+        0,
+        cardsProgress.currentReward.totalPoints -
+        cardsProgress.currentReward.completedPoints
+      )
+      : "X";
 
   const navigate = useNavigate();
 
@@ -142,7 +147,7 @@ const LetsGo = () => {
                       </span>
                     </>
                   ) : cardsLeft === 0 ? (
-                    <div className="flex flex-col items-center md:items-start">
+                    <div className="flex flex-col items-center ">
                       <span className="text-lg font-medium text-[#7C759B]">
                         Your reward has unlocked!
                       </span>
