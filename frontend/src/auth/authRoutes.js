@@ -36,6 +36,15 @@ export const USER_ENDPOINTS = {
     SUPERADMIN_GET_SINGLE_COLLEGE: `${API_BASE_URL}/super_admin/colleges`,
     SUPERADMIN_UPDATE_COLLEGE: `${API_BASE_URL}/super_admin/colleges`,
     SUPERADMIN_DELETE_COLLEGE: `${API_BASE_URL}/super_admin/colleges`,
+    
+    
+    SUPERADMIN_GET_ADMINS: `${API_BASE_URL}/super_admin/admins`,
+    SUPERADMIN_CREATE_ADMIN: `${API_BASE_URL}/super_admin/create-admin`,
+    SUPERADMIN_VIEW_ADMIN: `${API_BASE_URL}/super_admin/admins`,
+    SUPERADMIN_UPDATE_ADMIN: `${API_BASE_URL}/super_admin/admins`,
+    SUPERADMIN_DELETE_ADMIN: `${API_BASE_URL}/super_admin/admins`,
+
+
 
 
     SUPERADMIN_GET_ALL_STUDENTS: `${API_BASE_URL}/super_admin/get-all-students`,

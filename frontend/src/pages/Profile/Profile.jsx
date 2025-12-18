@@ -661,13 +661,12 @@ const ProfileSettings = () => {
                       </div>
                     )}
 
-                    {role === "admin" && (
+                    {/* {role === "admin" && (
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Colleges
                         </label>
 
-                        {/* Selected Colleges (placeholder-style tags) */}
                         <div
                           className="w-full min-h-[44px] border border-gray-200 rounded-xl
       flex flex-wrap items-center gap-2 px-3 py-2 bg-white"
@@ -705,13 +704,12 @@ const ProfileSettings = () => {
                                 }}
                                 className="text-[#5D3F87] disabled cursor-pointer hover:text-red-500 font-bold"
                               >
-                                {/* ×  */}
+                                × 
                               </button>
                             </span>
                           ))}
                         </div>
 
-                        {/* Dropdown */}
                         <select
                           className="w-full mt-2 border border-gray-200 rounded-xl
         text-[#718EBF] px-3 py-2.5 text-sm
@@ -729,7 +727,6 @@ const ProfileSettings = () => {
                             if (!selectedCollege) return;
 
                             setFormData((prev) => {
-                              // prevent duplicates
                               if (prev.selectedColleges.includes(selectedId))
                                 return prev;
 
@@ -759,7 +756,7 @@ const ProfileSettings = () => {
                           ))}
                         </select>
                       </div>
-                    )}
+                    )} */}
 
                     {role == "student" && (
                       <div>

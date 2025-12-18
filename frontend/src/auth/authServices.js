@@ -363,6 +363,72 @@ export const deleteFeedbackService = async (id) => {
   return response.data;
 };
 
+// GET ALL ADMINS BY SUPERADMIN
+
+export const getAllAdminsBySuperAdminService = async ({page = 1, limit = 10}) => {
+  const response = await axios.get(
+    `${USER_ENDPOINTS.SUPERADMIN_GET_ADMINS}?page=${page}&limit=${limit}`,
+    getAuthHeader(),
+  )
+  return response.data;
+}
+
+// CREATE ADMIN (SUPER ADMIN)
+export const createAdminService = async (adminData) => {
+  const response = await axios.post(
+    USER_ENDPOINTS.SUPERADMIN_CREATE_ADMIN,
+    adminData,
+    getAuthHeader(),
+  );
+  return response.data;
+};
+
+// GET SINGLE ADMIN (SUPER ADMIN)
+export const getSingleAdminService = async (adminId) => {
+  const response = await axios.get(
+    `${USER_ENDPOINTS.SUPERADMIN_VIEW_ADMIN}/${adminId}`,
+    getAuthHeader(),
+  );
+  return response.data;
+};
+
+
+//  Update ADMIN (SUPER ADMIN)
+export const updateAdminDetailsService = async (id, payload) => {
+  const response = await axios.put(
+    `${USER_ENDPOINTS.SUPERADMIN_UPDATE_ADMIN}/${id}`,
+    payload,
+    getAuthHeader()
+  );
+  return response.data;
+};
+
+
+
+// DELETE ADMIN (SUPER ADMIN)
+export const deleteAdminService = async (adminId) => {
+  const response = await axios.delete(
+    `${USER_ENDPOINTS.SUPERADMIN_VIEW_ADMIN}/${adminId}`,
+    getAuthHeader(),
+  );
+  return response.data;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ADMIN SERVICES
 
 // GET ADMIN DASHBOARD DATA

@@ -13,6 +13,7 @@ import adminReducer from '../features/adminSlice';
 import adminCollegesReducer from '../features/adminCollegesSlice'
 import adminCardReducer from "../features/adminCardSlice"
 import adminStudentsReducer from '../features/adminStudentSlice'
+import superadminAdminsReducer from "../features/superadminAdminSlice"
 
 export const store = configureStore({
     reducer: {
@@ -30,6 +31,7 @@ export const store = configureStore({
         adminColleges: adminCollegesReducer,
         adminCard:  adminCardReducer,
         adminStudents: adminStudentsReducer,
+        superadminAdmins : superadminAdminsReducer,
     }
 })
 
