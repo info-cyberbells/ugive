@@ -18,19 +18,17 @@ const StudentAdminModal = ({
   const dispatch = useDispatch();
   const { colleges } = useSelector((state) => state.auth);
 
-const universityId = localStorage.getItem("universityId");
+  const universityId = localStorage.getItem("universityId");
 
-useEffect(() => {
-  if (isOpen && universityId) {
-    dispatch(getColleges(universityId));
-  }
-}, [isOpen, universityId, dispatch]);
+  useEffect(() => {
+    if (isOpen && universityId) {
+      dispatch(getColleges(universityId));
+    }
+  }, [isOpen, universityId, dispatch]);
 
-
-
-    const { studentDetails, isLoading } = useSelector(
-  (state) => state.adminStudents
-);
+  const { studentDetails, isLoading } = useSelector(
+    (state) => state.adminStudents
+  );
   const { showToast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -40,35 +38,33 @@ useEffect(() => {
   const isAddMode = !studentId;
 
   useEffect(() => {
-  if (isOpen) {
-    // When modal opens
-    setErrors({});
-  } else {
-    // When modal closes
-    setFormData({
-      name: "",
-      email: "",
-      phoneNumber: "",
-      college: "",
-      studentUniId: "",
-      password: "",
-      confirmPassword: "",
-    });
+    if (isOpen) {
+      // When modal opens
+      setErrors({});
+    } else {
+      // When modal closes
+      setFormData({
+        name: "",
+        email: "",
+        phoneNumber: "",
+        college: "",
+        studentUniId: "",
+        password: "",
+        confirmPassword: "",
+      });
 
-    setOriginalData(null);
-    setErrors({});
-    setShowPassword(false);
-    setShowConfirmPassword(false);
-  }
-}, [isOpen]);
-
+      setOriginalData(null);
+      setErrors({});
+      setShowPassword(false);
+      setShowConfirmPassword(false);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
-  if (isOpen && studentId && (isEditMode || isViewMode)) {
-    dispatch(getSingleStudentByAdmin(studentId));
-  }
-}, [isOpen, studentId]);
-
+    if (isOpen && studentId && (isEditMode || isViewMode)) {
+      dispatch(getSingleStudentByAdmin(studentId));
+    }
+  }, [isOpen, studentId]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -84,16 +80,13 @@ useEffect(() => {
 
   const [errors, setErrors] = useState({});
 
-//   const colleges = JSON.parse(localStorage.getItem("colleges")) || [];
-
+  //   const colleges = JSON.parse(localStorage.getItem("colleges")) || [];
 
   const title = isViewMode
     ? "View Student Details"
     : isEditMode
-      ? "Edit Student Details"
-      : "Add New Student";
-
- 
+    ? "Edit Student Details"
+    : "Add New Student";
 
   const handlePhoneFormat = (e) => {
     let value = e.target.value;
@@ -113,7 +106,8 @@ useEffect(() => {
       } else if (value.length <= 5) {
         formatted += value.slice(0, 2) + " " + value.slice(2);
       } else {
-        formatted += value.slice(0, 2) + " " + value.slice(2, 5) + " " + value.slice(5);
+        formatted +=
+          value.slice(0, 2) + " " + value.slice(2, 5) + " " + value.slice(5);
       }
     }
 
@@ -125,36 +119,37 @@ useEffect(() => {
     });
   };
 
-useEffect(() => {
-  if (studentDetails && (isEditMode || isViewMode)) {
-    setFormData({
-      name: studentDetails.name || "",
-      email: studentDetails.email || "",
-      phoneNumber: studentDetails.phoneNumber || "",
-      college: studentDetails.college?._id || "",
-      studentUniId: studentDetails.studentUniId || "",
-      password: "",
-      confirmPassword: "",
-    });
+  useEffect(() => {
+    if (studentDetails && (isEditMode || isViewMode)) {
+      setFormData({
+        name: studentDetails.name || "",
+        email: studentDetails.email || "",
+        phoneNumber: studentDetails.phoneNumber || "",
+        college: studentDetails.college?._id || "",
+        studentUniId: studentDetails.studentUniId || "",
+        password: "",
+        confirmPassword: "",
+      });
 
-    setOriginalData({
-      name: studentDetails.name || "",
-      email: studentDetails.email || "",
-      phoneNumber: studentDetails.phoneNumber || "",
-      college: studentDetails.college?._id || "",
-      studentUniId: studentDetails.studentUniId || "",
-    });
-  }
-}, [studentDetails]);
+      setOriginalData({
+        name: studentDetails.name || "",
+        email: studentDetails.email || "",
+        phoneNumber: studentDetails.phoneNumber || "",
+        college: studentDetails.college?._id || "",
+        studentUniId: studentDetails.studentUniId || "",
+      });
+    }
+  }, [studentDetails]);
 
   if (!isOpen) return null;
 
   const inputClasses = (field) =>
     `mt-1 block w-full rounded-lg border shadow-sm sm:text-sm p-2 transition duration-150 
-        ${errors[field]
-      ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-      : "border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
-    }`;
+        ${
+          errors[field]
+            ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+            : "border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+        }`;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -175,7 +170,7 @@ useEffect(() => {
       "name",
       "email",
       "phoneNumber",
-    //   "university",
+      //   "university",
       "studentUniId",
     ];
     if (isAddMode) {
@@ -201,7 +196,6 @@ useEffect(() => {
       showToast("Only @usq.edu.au email is allowed", "error");
       return;
     }
-
 
     const cleanedPhone = formData.phoneNumber.replace(/\s/g, "");
 
@@ -345,26 +339,25 @@ useEffect(() => {
 
             <div className="relative">
               <select
-  name="college"
-  value={formData.college || ""}
-  onChange={handleChange}
-  className={`${inputClasses("college")} appearance-none pr-10`}
-  disabled={isViewMode}
->
-  {colleges.length === 0 ? (
-    <option value="">No colleges available</option>
-  ) : (
-    <>
-      <option value="">Select your college</option>
-      {colleges.map((c) => (
-        <option key={c._id || c} value={c._id || c}>
-          {c.name || c}
-        </option>
-      ))}
-    </>
-  )}
-</select>
-
+                name="college"
+                value={formData.college || ""}
+                onChange={handleChange}
+                className={`${inputClasses("college")} appearance-none pr-10`}
+                disabled={isViewMode}
+              >
+                {colleges.length === 0 ? (
+                  <option value="">No colleges available</option>
+                ) : (
+                  <>
+                    <option value="">Select your college</option>
+                    {colleges.map((c) => (
+                      <option key={c._id || c} value={c._id || c}>
+                        {c.name || c}
+                      </option>
+                    ))}
+                  </>
+                )}
+              </select>
 
               {/* Custom Dropdown Arrow */}
               <svg

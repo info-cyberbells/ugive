@@ -403,8 +403,6 @@ export const updateAdminDetailsService = async (id, payload) => {
   return response.data;
 };
 
-
-
 // DELETE ADMIN (SUPER ADMIN)
 export const deleteAdminService = async (adminId) => {
   const response = await axios.delete(
@@ -415,7 +413,52 @@ export const deleteAdminService = async (adminId) => {
 };
 
 
+// GET ALL VENDORS (SUPER ADMIN)
+export const getAllVendorsSuperadminService = async ({page = 1, limit = 10}) => {
+  const response = await axios.get(
+    `${USER_ENDPOINTS.SUPERADMIN_GET_ALL_VENDORS}?page=${page}&limit=${limit}`,
+    getAuthHeader(),
+  );
+  return response.data;
+}
 
+// CREATE VENDER (SUPER ADMIN)
+export const createVendorBySuperAdminService = async (details) => {
+  const response = await axios.post(
+    USER_ENDPOINTS.SUPERADMIN_CREATE_VENDOR,
+    details,
+    getAuthHeader(),
+  );
+  return response.data;
+}
+
+// VIEW VENDOR PROFILE
+export const viewVendorProfileBySuperAdmin = async (id) =>{
+  const response = await axios.get(
+    `${USER_ENDPOINTS.SUPERADMIN_GET_SINGLE_VENDOR}/${id}`,
+    getAuthHeader(),
+  );
+  return response.data;
+}
+
+// UPDATE VENDORS PROFILE
+export const updateVendorsProfileBySuperAdminService = async (id, details)=>{
+  const response = await axios.put(
+    `${USER_ENDPOINTS.SUPERADMIN_UPDATE_VENDOR}/${id}`,
+    details,
+    getAuthHeader(),
+  );
+  return response.data;
+}
+
+//DELETE VENDOR (SUPER-ADMIN)
+export const deleteVendorBySuperAdminService = async (id) => {
+  const response = await axios.delete(
+    `${USER_ENDPOINTS.SUPERADMIN_DELETE_VENDOR}/${id}`,
+    getAuthHeader(),
+  );
+  return response;
+}
 
 
 
@@ -634,10 +677,84 @@ export const sendFeedbackByAdminService = async (feedback)=> {
 }
 
 
+// GET ALL VENDORS BY ADMIN
+export const getAllVendorsByAdminService = async ({limit = 10, page = 1})=>{
+  const response = await axios.get(
+    `${USER_ENDPOINTS.ADMIN_GET_ALL_VENDORS}?page=${page}&limit=${limit}`,
+    getAuthHeader(),
+  );
+  return response.data;
+}
 
+// CREATE VENDOR BY ADMIN
+export const createVendorByAdminService = async (details) =>{
+  const response = await axios.post(
+    USER_ENDPOINTS.ADMIN_CREATE_VENDOR,
+    details,
+    getAuthHeader(),
+  );
+  return response.data;
+}
 
+// VIEW VENDOR PROFILE BY ADMIN
+export const viewVendorProfileByAdminService = async (id) => {
+  const response = await axios.get(
+    `${USER_ENDPOINTS.ADMIN_GET_VENDOR}/${id}`,
+    getAuthHeader(),
+  );
+  return response.data;
+} 
 
+// UPDATE VENDOR PROFILE BY ADMIN
+export const updateVendorProfileByAdminService = async(id, payload) =>{
+  const response = await axios.put(
+    `${USER_ENDPOINTS.ADMIN_UPDATE_VENDOR}/${id}`,
+    payload,
+    getAuthHeader(),
+  );
+  return response.data;
+}
 
+//DELETE VENDOR PROFILE BY ADMIN
+export const deleteVendorProfileByAdminService = async(id)=>{
+  const response = await axios.delete(
+    `${USER_ENDPOINTS.ADMIN_DELETE_VENDOR}/${id}`,
+    getAuthHeader(),
+  );
+  return response.data;
+}
+
+// GET ALL REWARDS (ADMIN)
+export const getAllRewardsByAdminService = async ({page = 1, limit = 10 }) =>{
+  const response = await axios.get(
+    `${USER_ENDPOINTS.ADMIN_GET_ALL_REWARD}?page=${page}&limit=${limit}`,
+      getAuthHeader(),
+  );
+  return response.data;
+}
+
+//CREATE REWARD BY ADMIN
+export const createRewardByAdminService = async (payload) => {
+  const auth = getAuthHeader();
+  const response = await axios.post(
+    USER_ENDPOINTS.ADMIN_CREATE_REWARD,
+    payload,
+    { headers:{
+      ...auth.headers,
+        "Content-Type": "multipart/form-data",
+    }},
+  );
+  return response.data;
+}
+
+// VIEW REWARD BY ADMIN
+export const viewSingleRewardByAdminService = async (id) => {
+  const response = await axios.get(
+    `${USER_ENDPOINTS.ADMIN_VIEW_REWARD}/${id}`,
+    getAuthHeader(),
+  );
+  return response.data;
+}
 
 
 

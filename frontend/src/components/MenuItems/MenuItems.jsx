@@ -14,7 +14,7 @@ import {
   LogOut,
   Gift,
   Flame,
-  Activity,
+  Store,
   Users,
   Bell,
   Settings,
@@ -22,6 +22,8 @@ import {
   MessageSquare,
   Ticket,
    UserCog,
+   Trophy,
+   BadgePercent
 } from "lucide-react";
 import { resetStudentState } from "../../features/studentDataSlice";
 import { clearProfile } from "../../features/superadminProfileSlice";
@@ -33,6 +35,7 @@ const ROLE_BASED_MENUS = {
     { id: "manage-colleges", title: "Manage Colleges", icon: GraduationCap },
     { id: "manage-admins", title: "Manage Admins", icon:  UserCog },
     { id: "manage-students", title: "Manage Students", icon: BookOpen },
+    { id: "manage-vendors", title: "Manage Vendors", icon: Store },
     { id: "manage-rewards", title: "Manage Rewards", icon: Gift },
     { id: "feedbacks", title: "Students Feedback", icon: MessageSquare },
     { id: "social", title: "Social", icon: Share2 },
@@ -42,6 +45,8 @@ const ROLE_BASED_MENUS = {
     { id: "profile", title: "User Profile", icon: UserCircle },
     { id: "admin-students", title: "Students", icon: BookOpen },
     { id: "admin-colleges", title: "Colleges", icon: GraduationCap },
+    { id: "admin-vendors", title: "Vendors", icon: Store },
+    { id: "admin-rewards", title: "Rewards", icon: Gift },
     { id: "admin-cards", title: "Cards", icon: Ticket },
     {
       id: "support",
