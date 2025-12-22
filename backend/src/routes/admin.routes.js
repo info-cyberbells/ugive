@@ -38,11 +38,11 @@ router.delete("/colleges/:id", deleteCollege);
 
 
 //vendor managment
-router.post("/create-vendor", createVendorByUniversityAdmin);
+router.post("/create-vendor", upload.single("profileImage"), createVendorByUniversityAdmin);
 router.get("/vendors", getAllVendors);
 router.get("/vendors/:id", getSingleVendor);
 router.get("/vendor/profile", getMyVendorProfile);
-router.put("/update-vendor/:id", updateVendor);
+router.put("/update-vendor/:id", upload.single("profileImage"), updateVendor);
 router.delete("/delete-vendor/:id", deleteVendor);
 
 //students routes

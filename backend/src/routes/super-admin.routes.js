@@ -49,11 +49,11 @@ router.put("/update-students/:id", updateStudentSuperAdmin);
 router.delete("/delete-students/:id", deleteStudentSuperAdmin);
 
 //vendor managment
-router.post("/create-vendor", createVendor);
+router.post("/create-vendor", upload.single("profileImage"), createVendor);
 router.get("/vendors", getAllVendors);
 router.get("/vendors/:id", getSingleVendor);
 router.get("/vendor/profile", getMyVendorProfile);
-router.put("/update-vendor/:id", updateVendor);
+router.put("/update-vendor/:id", upload.single("profileImage"), updateVendor);
 router.delete("/delete-vendor/:id", deleteVendor);
 
 

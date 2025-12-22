@@ -11,9 +11,12 @@ export const createVendor = async (req, res) => {
             email,
             password,
             phoneNumber,
-            profileImage,
             university
         } = req.body;
+
+        const profileImage = req.file
+            ? "/" + req.file.path.replace(/\\/g, "/")
+            : null;
 
         if (!university) {
             return res.status(400).json({
@@ -185,6 +188,9 @@ export const updateVendor = async (req, res) => {
     try {
         const vendorId = req.params.id || req.user.id;
         const updates = req.body || {};
+        if (req.file) {
+            updates.profileImage = "/" + req.file.path.replace(/\\/g, "/");
+        }
 
         const vendor = await User.findOne({
             _id: vendorId,
@@ -304,8 +310,11 @@ export const createVendorByUniversityAdmin = async (req, res) => {
             email,
             password,
             phoneNumber,
-            profileImage
         } = req.body;
+
+        const profileImage = req.file
+            ? "/" + req.file.path.replace(/\\/g, "/")
+            : null;
 
         const exists = await User.findOne({ email });
         if (exists) {
