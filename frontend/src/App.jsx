@@ -30,6 +30,9 @@ import AdminManageStudents from "./pages/Admin/AdminManagestudents/AdminManageSt
 import AdminColleges from "./pages/Admin/AdminColleges/AdminColleges";
 import AdminManageCards from "./pages/Admin/AdminCardsManage/AdminCardsManage";
 import ManageAdmins from "./pages/SuperAdmin/ManageAdmins/ManageAdmins";
+import ManageVendors from "./pages/SuperAdmin/ManageVendors/ManageVendors";
+import AdminManageVendors from "./pages/Admin/AdminVendors/AdminManageVendors";
+import AdminRewardsManage from "./pages/Admin/AdminRewards/AdminRewards";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -153,6 +156,7 @@ function App() {
         />
 
         <Route path="/manage-admins" element={isAuthenticated ? <ManageAdmins /> : <Navigate to="/" replace />} />
+        <Route path="/manage-vendors" element={isAuthenticated ? <ManageVendors /> : <Navigate to="/" replace />} />
 
         <Route
           path="/profile"
@@ -253,6 +257,18 @@ function App() {
           path="/admin-cards"
           element={
             isAuthenticated ? <AdminManageCards /> : <Navigate to="/" replace />
+          }
+        />
+        <Route
+          path="/admin-vendors"
+          element={
+            isAuthenticated ? <AdminManageVendors /> : <Navigate to="/" replace />
+          }
+        />
+        <Route
+          path="/admin-rewards"
+          element={
+            isAuthenticated ? <AdminRewardsManage /> : <Navigate to="/" replace />
           }
         />
 

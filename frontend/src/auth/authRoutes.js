@@ -45,13 +45,19 @@ export const USER_ENDPOINTS = {
     SUPERADMIN_DELETE_ADMIN: `${API_BASE_URL}/super_admin/admins`,
 
 
-
-
     SUPERADMIN_GET_ALL_STUDENTS: `${API_BASE_URL}/super_admin/get-all-students`,
     SUPERADMIN_GET_SINGLE_STUDENT: `${API_BASE_URL}/super_admin/students`,
     SUPERADMIN_ADD_STUDENT: `${API_BASE_URL}/super_admin/create-student`,
     SUPERADMIN_UPDATE_STUDENT: `${API_BASE_URL}/super_admin/update-students`,
     SUPERADMIN_DELETE_STUDENT: `${API_BASE_URL}/super_admin/delete-students`,
+
+
+
+    SUPERADMIN_GET_ALL_VENDORS: `${API_BASE_URL}/super_admin/vendors`,
+    SUPERADMIN_CREATE_VENDOR: `${API_BASE_URL}/super_admin/create-vendor`,
+    SUPERADMIN_GET_SINGLE_VENDOR: `${API_BASE_URL}/super_admin/vendors`,
+    SUPERADMIN_UPDATE_VENDOR: `${API_BASE_URL}/super_admin/update-vendor`,
+    SUPERADMIN_DELETE_VENDOR: `${API_BASE_URL}/super_admin/delete-vendor`,
 
 
     SUPERADMIN_GET_ALL_REWARDS: `${API_BASE_URL}/super_admin/get-all-rewards`,
@@ -124,6 +130,18 @@ export const USER_ENDPOINTS = {
     ADMIN_GET_SINGLE_STUDENT : `${API_BASE_URL}/admin/students`,
     ADMIN_UPDATE_STUDENT : `${API_BASE_URL}/admin/students`,
     ADMIN_DELETE_STUDENT : `${API_BASE_URL}/admin/students`,
+
+    ADMIN_GET_ALL_VENDORS : `${API_BASE_URL}/admin/vendors`,
+    ADMIN_CREATE_VENDOR : `${API_BASE_URL}/admin/create-vendor`,
+    ADMIN_GET_VENDOR : `${API_BASE_URL}/admin/vendors`,
+    ADMIN_UPDATE_VENDOR : `${API_BASE_URL}/admin/update-vendor`,
+    ADMIN_DELETE_VENDOR : `${API_BASE_URL}/admin/delete-vendor`,
+
+    ADMIN_GET_ALL_REWARD : `${API_BASE_URL}/admin/rewards`,
+    ADMIN_CREATE_REWARD : `${API_BASE_URL}/admin/create-reward`,
+    ADMIN_VIEW_REWARD : `${API_BASE_URL}/admin/rewards`,
+    ADMIN_UPDATE_REWARD : `${API_BASE_URL}/admin/update-rewards`,
+    ADMIN_DELETE_REWARD : `${API_BASE_URL}/admin/delete-rewards`,
 
     ADMIN_GET_NOTIFICATIONS : `${API_BASE_URL}/admin/get-notifications`,
     ADMIN_SEND_FEEDBACK : `${API_BASE_URL}/admin/sent-feedback`,

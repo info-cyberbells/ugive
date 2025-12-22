@@ -310,9 +310,8 @@ if (isError) {
                         {card.recipient_name || "Invaild Receiver"}
                       </td>
 
-                      {/* Time Sent */}
                       <td className="px-6 py-4 hidden lg:table-cell whitespace-nowrap text-sm text-gray-600">
-                        {card.reward || "N/A"}
+                        {card.reward?.name || "N/A"}
                       </td>
                       {/* <td className="px-6 py-4 hidden lg:table-cell whitespace-nowrap text-sm text-gray-600">
                         {card.cardId || "N/A"}

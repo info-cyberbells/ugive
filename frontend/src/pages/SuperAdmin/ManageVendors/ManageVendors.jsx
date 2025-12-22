@@ -4,94 +4,79 @@ import {
   Filter,
   Download,
   Plus,
-  ArrowUpDown,
-  Building2,
+  
 } from "lucide-react";
-import AdminModal from "../Modals/AdminModel";
+import VendorModal from "../Modals/VendorModal";
 import ConfirmationModal from "../Modals/deleteModal";
 import { useDispatch, useSelector } from "react-redux";
 import { useToast } from "../../../context/ToastContext";
 import {
-  createAdminBySuperAdmin,
-  deleteAdminBySuperAdmin,
-  getAllAdminsBySuperAdmin,
-  getSingleAdminBySuperAdmin,
-  updateAdminBySuperAdmin,
-} from "../../../features/superadminAdminSlice";
+  createVendorBySuperAdmin,
+  deleteVendorBySuperAdmin,
+  getAllVendorsBySuperAdmin,
+  getSingleVendorBySuperAdmin,
+  updateVendorBySuperAdmin,
+} from "../../../features/superadminVendors";
 
-const StatusBadge = ({ status }) => {
-  const colorMap = {
-    Operational: "bg-green-100 text-green-800",
-    "Under Review": "bg-yellow-100 text-yellow-800",
-  };
-  const dotColorMap = {
-    Operational: "bg-green-500",
-    "Under Review": "bg-yellow-500",
-  };
 
-  const color = colorMap[status] || "bg-gray-100 text-gray-800";
-  const dotColor = dotColorMap[status] || "bg-gray-500";
 
-  return (
-    <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${color}`}
-    >
-      <span className={`w-2 h-2 mr-1.5 rounded-full ${dotColor}`}></span>
-      {status}
-    </span>
-  );
-};
-
-const ManageAdmins = () => {
+const ManageVendors = () => {
   const dispatch = useDispatch();
   const { showToast } = useToast();
 
-  const { adminsList, isLoading, isError, totalPages, limit, page, total } =
-    useSelector((state) => state.superadminAdmins);
+  const {
+    vendorsList,
+    isLoading,
+    isError,
+    totalPages,
+    limit,
+    page,
+    totalVendors,
+    singleVendor,
+  } = useSelector((state) => state.superadminVendors);
 
-  const [selectedAdminId, setSelectedAdminId] = useState(null);
   const [modalMode, setModalMode] = useState("add"); // add | view | edit
 
-  const [selectedAdminIds, setSelectedAdminIds] = useState([]);
+  const [selectedVendorIds, setSelectedVendorIds] = useState([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [isViewMode, setIsViewMode] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [adminToDelete, setAdminToDelete] = useState(null);
+  const [vendorToDelete, setVendorToDelete] = useState(null);
   const [isBulkDelete, setIsBulkDelete] = useState(false);
 
   useEffect(() => {
-    dispatch(getAllAdminsBySuperAdmin({ limit, page }));
+    dispatch(getAllVendorsBySuperAdmin({ limit, page }));
   }, [dispatch]);
 
-  const data = adminsList;
+  const data = vendorsList || [];
 
   const isAllSelected =
-    data.length > 0 && selectedAdminIds.length === data.length;
-  const isAnySelected = selectedAdminIds.length > 0;
+    data.length > 0 && selectedVendorIds.length === data.length;
+  const isAnySelected = selectedVendorIds.length > 0;
 
   const handleLimitChange = (newLimit) => {
-    dispatch(getAllAdminsBySuperAdmin({ page: 1, limit: Number(newLimit) }));
+    dispatch(getAllVendorsBySuperAdmin({ page: 1, limit: Number(newLimit) }));
   };
 
   const handlePageChange = (newPage) => {
     if (newPage < 1 || newPage > totalPages) return;
-    dispatch(getAllAdminsBySuperAdmin({ page: newPage, limit }));
+    dispatch(getAllVendorsBySuperAdmin({ page: newPage, limit }));
   };
 
   // Handler to select/deselect all admin
   const handleSelectAll = (e) => {
     if (e.target.checked) {
-      setSelectedAdminIds(data.map((admin) => admin._id));
+      setSelectedVendorIds(data.map((admin) => admin._id));
     } else {
-      setSelectedAdminIds([]);
+      setSelectedVendorIds([]);
     }
   };
 
   // Handler to select/deselect a single college
-  const handleSelectAdmin = (id) => {
-    setSelectedAdminIds((prevSelected) => {
+  const handleSelectVendor = (id) => {
+    setSelectedVendorIds((prevSelected) => {
       if (prevSelected.includes(id)) {
         // Deselect
         return prevSelected.filter((adminId) => adminId !== id);
@@ -103,14 +88,14 @@ const ManageAdmins = () => {
   };
 
   const openModalForAdd = () => {
-    dispatch({ type: "college/clearCurrentCollege" });
+    setModalMode("add");
     setIsViewMode(false);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedAdminId(null);
+    setSelectedVendorIds([]);
     setModalMode(null);
   };
 
@@ -118,19 +103,19 @@ const ManageAdmins = () => {
     try {
       if (modalMode === "edit") {
         await dispatch(
-          updateAdminBySuperAdmin({
-            id: selectedAdminId,
+          updateVendorBySuperAdmin({
+            id: singleVendor._id,
             payload,
           })
         ).unwrap();
-
-        showToast("Admin updated successfully", "success");
+        dispatch(getAllVendorsBySuperAdmin({page, limit}));
+        showToast("Vendor updated successfully", "success");
       } else {
-        await dispatch(createAdminBySuperAdmin(payload)).unwrap();
-        showToast("Admin created successfully", "success");
+        await dispatch(createVendorBySuperAdmin(payload)).unwrap();
+        showToast("Vendor created successfully", "success");
+        dispatch(getAllVendorsBySuperAdmin({page, limit}));
       }
 
-      dispatch(getAllAdminsBySuperAdmin({ page, limit }));
       closeModal();
     } catch (err) {
       showToast(err || "Operation failed", "error");
@@ -138,95 +123,98 @@ const ManageAdmins = () => {
   };
 
   // --- Delete Modal Handlers ---
-  const openDeleteModalForSingle = (admin) => {
-    setAdminToDelete(admin);
+  const openDeleteModalForSingle = (vendor) => {
+    setVendorToDelete(vendor);
     setIsBulkDelete(false);
     setIsDeleteModalOpen(true);
   };
 
   const openDeleteModalForBulk = () => {
     if (!isAnySelected) return;
-    setAdminToDelete(null);
+    setVendorToDelete(null);
     setIsBulkDelete(true);
     setIsDeleteModalOpen(true);
   };
 
   const closeDeleteModal = () => {
     setIsDeleteModalOpen(false);
-    setAdminToDelete(null);
+    setVendorToDelete(null);
     setIsBulkDelete(false);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
+  try {
     if (isBulkDelete) {
-      Promise.all(
-        selectedAdminIds.map((id) =>
-          dispatch(deleteAdminBySuperAdmin(id)).unwrap()
+      await Promise.all(
+        selectedVendorIds.map((id) =>
+          dispatch(deleteVendorBySuperAdmin(id)).unwrap()
         )
-      )
-        .then(() => {
-          showToast("Selected admins deleted successfully!", "success");
-          setSelectedAdminIds([]);
-        })
-        .catch((err) => {
-          showToast(err || "Failed to delete selected admins", "error");
-        });
-    } else if (adminToDelete) {
-      dispatch(deleteAdminBySuperAdmin(adminToDelete._id))
-        .unwrap()
-        .then(() => {
-          showToast("Admin deleted successfully!", "success");
-        })
-        .catch((err) => {
-          showToast(err || "Failed to delete admin", "error");
-        });
-    }
+      );
+      setSelectedVendorIds([]);
+      showToast("Selected vendors deleted successfully!", "success");
+    } else if (vendorToDelete) {
+      await dispatch(
+        deleteVendorBySuperAdmin(vendorToDelete._id)
+      ).unwrap();
 
+      showToast("Vendor deleted successfully!", "success");
+    }
+  } catch (err) {
+    showToast(err || "Failed to delete vendor", "error");
+  } finally {
     closeDeleteModal();
+  }
+};
+
+
+const handleExportCSV = () => {
+  const selected = data.filter((vendor) => selectedVendorIds.includes(vendor._id));
+
+  if (selected.length === 0) {
+    showToast("No vendors selected!", "error");
+    return;
+  }
+
+  const headers = [
+    "Vendor Name",
+    "Email",
+    "Phone Number",
+    "University Name",
+    "Colleges",
+
+  ];
+
+  const rows = selected.map((vendor) => [
+    vendor.name,
+    vendor.email,
+    vendor.phoneNumber,
+    vendor.university?.name || "",
+    vendor.colleges?.map(college => college.name).join("; ") || "",
+
+  ]);
+
+  const escapeCSV = (value) => {
+    if (value === null || value === undefined) return "";
+    const str = String(value).replace(/"/g, '""');
+    return `"${str}"`;
   };
 
-  //   const handleExportCSV = () => {
-  //     const selected = data.filter((col) => selectedCollegeIds.includes(col._id));
+  const csvContent =
+    "data:text/csv;charset=utf-8," +
+    [headers, ...rows].map((row) => row.map(escapeCSV).join(",")).join("\n");
 
-  //     if (selected.length === 0) {
-  //       showToast("No colleges selected!", "error");
-  //       return;
-  //     }
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `vendors_export_${new Date().toISOString().split('T')[0]}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 
-  //     const headers = [
-  //       "College Name",
-  //       "University Name",
-  //       "Address Line 1",
-  //       "State",
-  //     ];
+  showToast(`${selected.length} vendor(s) exported successfully!`, "success");
+};
 
-  //     const rows = selected.map((col) => [
-  //       col.name,
-  //       col.university?.name,
-  //       col.address_line_1,
-  //       col.state,
-  //     ]);
-
-  //     const escapeCSV = (value) => {
-  //       if (value === null || value === undefined) return "";
-  //       const str = String(value).replace(/"/g, '""');
-  //       return `"${str}"`;
-  //     };
-
-  //     const csvContent =
-  //       "data:text/csv;charset=utf-8," +
-  //       [headers, ...rows].map((row) => row.map(escapeCSV).join(",")).join("\n");
-
-  //     const encodedUri = encodeURI(csvContent);
-  //     const link = document.createElement("a");
-  //     link.setAttribute("href", encodedUri);
-  //     link.setAttribute("download", "colleges_export.csv");
-  //     document.body.appendChild(link);
-  //     link.click();
-
-  //     showToast("CSV exported successfully!", "success");
-  //   };
-
+  
   const SkeletonTable = () => {
     return (
       <div className="animate-pulse p-4">
@@ -258,10 +246,9 @@ const ManageAdmins = () => {
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 w-full">
           <h1 className="text-xl lg:text-2xl font-semibold text-gray-900">
-            Admin's List
+            Vendor's List
             <span className="text-sm text-gray-500 font-normal ml-3">
-              {total} {" "}
-              Admins
+              {totalVendors || 0} Vendors
             </span>
           </h1>
 
@@ -278,7 +265,7 @@ const ManageAdmins = () => {
                 aria-label="Delete Selected"
                 disabled={!isAnySelected}
               >
-                Delete({selectedAdminIds.length})
+                Delete({selectedVendorIds.length})
                 <Trash2 className="h-5 w-5 ml-2 hidden sm:inline" />
               </button>
 
@@ -290,7 +277,7 @@ const ManageAdmins = () => {
 
               {/* Export Button - Disabled when no colleges are selected */}
               <button
-                // onClick={handleExportCSV}
+                onClick={handleExportCSV}
                 className={`flex cursor-pointer items-center px-10 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
                   isAnySelected
                     ? "text-gray-700 bg-white hover:bg-gray-50"
@@ -308,7 +295,7 @@ const ManageAdmins = () => {
                 className="flex cursor-pointer items-center px-4 py-2 text-xs sm:text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md"
               >
                 <Plus className="h-5 w-5 mr-2 -ml-1 hidden sm:inline" />
-                Add New Admin
+                Add New Vendor
               </button>
             </div>
           </div>
@@ -350,20 +337,13 @@ const ManageAdmins = () => {
                           University Name
                         </div>
                       </th>
-                      <th
+                      {/* <th
                         scope="col"
                         className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">Email</div>
-                      </th>
-                      {/* <th
-                        scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
-                      >
-                        <div className="flex items-center gap-1">
-                          City 
-                        </div>
                       </th> */}
+                      
                       <th
                         scope="col"
                         className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
@@ -372,16 +352,7 @@ const ManageAdmins = () => {
                           Phone Number
                         </div>
                       </th>
-                      {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150">
-                                            <div className="flex items-center gap-1">
-                                                Postcode <ArrowUpDown size={14} />
-                                            </div>
-                                        </th> */}
-                      {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150">
-                                            <div className="flex items-center gap-1">
-                                                Status <ArrowUpDown size={14} />
-                                            </div>
-                                        </th> */}
+                    
                       <th
                         scope="col"
                         className="sm:px-6 py-1 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -393,11 +364,11 @@ const ManageAdmins = () => {
 
                   {/* Table Body */}
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {data.map((admin) => (
+                    {data.map((vendor) => (
                       <tr
-                        key={admin._id}
+                        key={vendor._id}
                         className={`transition duration-150 ${
-                          selectedAdminIds.includes(admin._id)
+                          selectedVendorIds.includes(vendor._id)
                             ? "bg-indigo-50 hover:bg-indigo-100"
                             : "hover:bg-gray-50"
                         }`}
@@ -405,49 +376,68 @@ const ManageAdmins = () => {
                         <td className="px-2 sm:px-6 sm:py-3 w-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           <input
                             type="checkbox"
-                            checked={selectedAdminIds.includes(admin._id)}
-                            onChange={() => handleSelectAdmin(admin._id)}
+                            checked={selectedVendorIds.includes(vendor._id)}
+                            onChange={() => handleSelectVendor(vendor._id)}
                             className="form-checkbox cursor-pointer h-2 w-2 sm:h-4 sm:w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
                           />
                         </td>
 
                         {/*  Name Column */}
                         <td className="sm:px-6 py-1 sm:py-4 whitespace-nowrap text-xs sm:text-sm sm:font-medium text-gray-900">
-                          {admin.name || "N/A"}
+                          {vendor.name || "N/A"}
                         </td>
 
                         {/* University ID Column */}
                         <td className="hidden lg:table-cell sm:px-6 sm:py-4 whitespace-nowrap text-sm text-gray-600">
-                          {admin.university.name || "N/A"}
+                          {vendor.university.name || "N/A"}
                         </td>
 
                         {/* Address Line 1 Column */}
-                        <td className="hidden lg:table-cell sm:px-6 sm:py-4 text-sm text-gray-600 max-w-[200px] whitespace-normal break-words">
-                          {admin.email || "N/A"}
-                        </td>
+                        {/* <td className="hidden lg:table-cell sm:px-6 sm:py-4 text-sm text-gray-600 max-w-[200px] whitespace-normal break-words">
+                          {vendor.email || "N/A"}
+                        </td> */}
 
                         {/* State Column */}
                         <td className="hidden sm:table-cell sm:px-4 sm:py-4 whitespace-nowrap text-sm text-gray-600">
-                          {admin.phoneNumber || "N/A"}
+                          {vendor.phoneNumber || "N/A"}
                         </td>
 
                         {/* Action Column (View, Edit, Delete) */}
                         <td className="sm:px-6 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium space-x-1 sm:space-x-3">
                           <button
-                            onClick={() => {
-                              setSelectedAdminId(admin._id);
-                              setModalMode("view");
-                              setIsModalOpen(true);
+                            onClick={async () => {
+                              try {
+                                const res = await dispatch(
+                                  getSingleVendorBySuperAdmin(vendor._id)
+                                ).unwrap();
+
+                                setModalMode("view");
+                                setIsModalOpen(true);
+                              } catch (err) {
+                                showToast(
+                                  err || "Failed to load vendor details",
+                                  "error"
+                                );
+                              }
                             }}
                             className="cursor-pointer text-blue-600 hover:text-blue-900"
                           >
                             View
                           </button>
                           <button
-                            onClick={() => {
-                              setSelectedAdminId(admin._id);
-                              setModalMode("edit");
-                              setIsModalOpen(true);
+                            onClick={async () => {
+                              try {
+                                await dispatch(
+                                  getSingleVendorBySuperAdmin(vendor._id)
+                                ).unwrap();
+                                setModalMode("edit");
+                                setIsModalOpen(true);
+                              } catch (err) {
+                                showToast(
+                                  err || "Failed to load vendor",
+                                  "error"
+                                );
+                              }
                             }}
                             className="cursor-pointer text-yellow-600 hover:text-yellow-900"
                           >
@@ -455,7 +445,7 @@ const ManageAdmins = () => {
                           </button>
 
                           <button
-                            onClick={() => openDeleteModalForSingle(admin)}
+                            onClick={() => openDeleteModalForSingle(vendor)}
                             className="cursor-pointer text-red-600 hover:text-red-900"
                           >
                             Delete
@@ -542,10 +532,10 @@ const ManageAdmins = () => {
                 </svg>
 
                 <h3 className="mt-2 text-lg font-medium text-gray-900">
-                  No Admin found
+                  No Vendor found
                 </h3>
                 <p className="mt-1 text-sm text-gray-500">
-                  Get started by adding a new Admin using the "Add New Admin"
+                  Get started by adding a new vendor using the "Add New Vendor"
                   button.
                 </p>
               </div>
@@ -553,11 +543,11 @@ const ManageAdmins = () => {
           )}
         </div>
       </div>
-      <AdminModal
+      <VendorModal
         isOpen={isModalOpen}
         onClose={closeModal}
         mode={modalMode}
-        adminId={selectedAdminId}
+        initialData={singleVendor}
         onSave={handleSave}
       />
 
@@ -565,12 +555,12 @@ const ManageAdmins = () => {
         isOpen={isDeleteModalOpen}
         onClose={closeDeleteModal}
         onConfirm={confirmDelete}
-        count={isBulkDelete ? selectedAdminIds.length : 1}
-        entity="admin"
-        itemName={adminToDelete?.name}
+        count={isBulkDelete ? selectedVendorIds.length : 1}
+        entity="vendor"
+        itemName={vendorToDelete?.name}
       />
     </div>
   );
 };
 
-export default ManageAdmins;
+export default ManageVendors;
