@@ -58,7 +58,7 @@ const ViewCardModal = ({ isOpen, onClose, card }) => {
             Card Details
           </h2>
           <button onClick={onClose}>
-            <X className="w-4.5 h-4.5 text-gray-500 hover:text-gray-700" />
+            <X className="w-4.5 h-4.5 text-gray-500 hover:text-gray-700 cursor-pointer" />
           </button>
         </div>
 
@@ -93,11 +93,11 @@ const ViewCardModal = ({ isOpen, onClose, card }) => {
           {/* Receiver */}
           {(hasValue(card.receiver_id?.name) ||
             hasValue(card.receiver_id?.email)) && (
-            <Section title="Recipient Details">
-              <Row label="Full Name" value={`${card.recipient_name}${card.recipient_last_name ? ` ${card.recipient_last_name}` : ""}`} />
-              <Row label="Email" value={card.receiver_id?.email} />
-            </Section>
-          )}
+              <Section title="Recipient Details">
+                <Row label="Full Name" value={`${card.recipient_name}${card.recipient_last_name ? ` ${card.recipient_last_name}` : ""}`} />
+                <Row label="Email" value={card.receiver_id?.email} />
+              </Section>
+            )}
 
           {/* Timeline */}
           {hasValue(card.sent_at) && (

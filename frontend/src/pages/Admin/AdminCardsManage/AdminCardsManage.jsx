@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Trash2, Filter, Download, Plus, ArrowUpDown } from "lucide-react";
+import { Trash2, Filter, Download, X, Printer } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteCardByAdmin,
@@ -9,6 +9,8 @@ import {
 import ConfirmationModal from "../AdminModals/DeleteModalAdmin";
 import ViewCardModal from "../AdminModals/ViewSentCardDetails";
 import { useToast } from "../../../context/ToastContext";
+import PrintPreviewModal from "./PrintPreviewModal";
+
 
 const AdminManageCards = () => {
   const [selectedCardIds, setSelectedCardIds] = useState([]);
@@ -22,6 +24,15 @@ const AdminManageCards = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteMode, setDeleteMode] = useState("single");
   const [cardToDelete, setCardToDelete] = useState(null);
+
+  const [isStatusChangeModalOpen, setIsStatusChangeModalOpen] = useState(false);
+  const [statusChangeData, setStatusChangeData] = useState({
+    cardId: null,
+    currentStatus: null,
+    newStatus: null
+  });
+  const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
+  const [cardToPrint, setCardToPrint] = useState(null);
 
   const {
     adminCards,
@@ -45,8 +56,38 @@ const AdminManageCards = () => {
     selectedCardIds.length === data.length && data.length > 0;
   const isAnySelected = selectedCardIds.length > 0;
 
-  const handleStatusChange = (cardId, status) => {
-    dispatch(updateCardStatusByAdmin({ cardId, status }));
+  const handleStatusChangeClick = (card, newStatus) => {
+    setStatusChangeData({
+      cardId: card._id,
+      currentStatus: card.status,
+      newStatus: newStatus
+    });
+    setIsStatusChangeModalOpen(true);
+  };
+
+  const handleConfirmStatusChange = async () => {
+    try {
+      await dispatch(updateCardStatusByAdmin({
+        cardId: statusChangeData.cardId,
+        status: statusChangeData.newStatus
+      })).unwrap();
+      showToast("Card status updated successfully", "success");
+    } catch (error) {
+      showToast(error || "Failed to update status", "error");
+    } finally {
+      setIsStatusChangeModalOpen(false);
+      setStatusChangeData({ cardId: null, currentStatus: null, newStatus: null });
+    }
+  };
+
+  const handleCloseStatusModal = () => {
+    setIsStatusChangeModalOpen(false);
+    setStatusChangeData({ cardId: null, currentStatus: null, newStatus: null });
+  };
+
+  const handleClosePrintPreview = () => {
+    setIsPrintPreviewOpen(false);
+    setCardToPrint(null);
   };
 
   const handleConfirmDelete = async () => {
@@ -197,11 +238,10 @@ const AdminManageCards = () => {
                   setDeleteMode("bulk");
                   setIsDeleteModalOpen(true);
                 }}
-                className={`flex items-center justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 ${
-                  isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600"
-                    : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
-                }`}
+                className={`flex items-center justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 ${isAnySelected
+                  ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600"
+                  : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
+                  }`}
                 aria-label="Delete Selected"
                 disabled={!isAnySelected}
               >
@@ -211,11 +251,10 @@ const AdminManageCards = () => {
 
               {/* Export Button */}
               <button
-                className={`flex items-center justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
-                  isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-gray-50"
-                    : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
-                }`}
+                className={`flex items-center justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${isAnySelected
+                  ? "text-gray-700 bg-white hover:bg-gray-50"
+                  : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
+                  }`}
                 disabled={!isAnySelected}
               >
                 Export
@@ -284,11 +323,10 @@ const AdminManageCards = () => {
                       {data.map((card) => (
                         <tr
                           key={card._id}
-                          className={`transition duration-150 ${
-                            selectedCardIds.includes(card._id)
-                              ? "bg-indigo-50 hover:bg-indigo-100"
-                              : "hover:bg-gray-50"
-                          }`}
+                          className={`transition duration-150 ${selectedCardIds.includes(card._id)
+                            ? "bg-indigo-50 hover:bg-indigo-100"
+                            : "hover:bg-gray-50"
+                            }`}
                         >
                           {/* Individual Selection Checkbox */}
                           <td className="px-2 sm:px-6 sm:py-4 whitespace-nowrap w-4">
@@ -319,31 +357,45 @@ const AdminManageCards = () => {
                       </td> */}
 
                           {/* Print Status */}
+                          {/* Print Status */}
                           <td className="sm:px-6 py-4 whitespace-nowrap text-sm">
-                            <select
-                              value={card.status}
-                              disabled={card.status === "delivered"}
-                              onChange={(e) =>
-                                handleStatusChange(card._id, e.target.value)
-                              }
-                              className={`px-2 py-1 border rounded-md text-sm
-      bg-white focus:outline-none focus:ring-1
-      focus:ring-indigo-500
-      ${card.status === "delivered" ? "bg-gray-100 cursor-not-allowed" : ""}
-    `}
-                            >
-                              <option value="pending">Pending</option>
-                              <option value="printed">Printed</option>
-                              <option value="delivered" disabled>
-                                Delivered
-                              </option>
-                            </select>
+                            <div className="flex items-center gap-2">
+                              <select
+                                value={card.status}
+                                disabled={card.status === "delivered" || card.status === "printed"}
+                                onChange={(e) =>
+                                  handleStatusChangeClick(card, e.target.value)
+                                }
+                                className={`px-2 py-1 border rounded-md text-sm
+    bg-white focus:outline-none focus:ring-1
+    focus:ring-indigo-500
+    ${card.status === "delivered" || card.status === "printed" ? "bg-gray-100 cursor-not-allowed" : ""}
+  `}
+                              >
+                                <option value="pending">Pending</option>
+                                {card.reward && card.reward !== null && (
+                                  <option value="printed">Printed</option>
+                                )}
+                                <option value="delivered">Delivered</option>
+                              </select>
+
+                              {/* Print Button - Only show if status is "printed" */}
+                              {(card.status === "printed" || card.status === "delivered") && (
+                                <button
+                                  onClick={() => {
+                                    setCardToPrint(card);
+                                    setIsPrintPreviewOpen(true);
+                                  }}
+                                  className="px-3 py-1 bg-indigo-600 text-white rounded-md text-xs font-medium hover:bg-indigo-700 transition flex items-center gap-1 cursor-pointer"
+                                  title="Print Card"
+                                >
+                                  <Printer className="w-3 h-3" />
+                                  Print
+                                </button>
+                              )}
+                            </div>
                           </td>
 
-                          {/* Delivery Status */}
-                          {/* <td className="px-6 py-4 hidden lg:table-cell whitespace-nowrap text-sm">
-                        {getDeliveryBadge(card.status)}
-                      </td> */}
 
                           {/* Description */}
                           <td className="px-6 py-4 hidden lg:table-cell whitespace-nowrap text-sm text-gray-600">
@@ -401,11 +453,10 @@ const AdminManageCards = () => {
                     onClick={() => handlePageChange(page - 1)}
                     disabled={page === 1}
                     className={`px-3 py-1 text-xs sm:text-sm border rounded 
-                ${
-                  page === 1
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-white hover:bg-gray-50"
-                }
+                ${page === 1
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-white hover:bg-gray-50"
+                      }
             `}
                   >
                     Prev
@@ -420,11 +471,10 @@ const AdminManageCards = () => {
                     onClick={() => handlePageChange(page + 1)}
                     disabled={page === totalPages}
                     className={`px-3 py-1 text-xs sm:text-sm border rounded 
-                ${
-                  page === totalPages
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-white hover:bg-gray-50"
-                }
+                ${page === totalPages
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-white hover:bg-gray-50"
+                      }
             `}
                   >
                     Next
@@ -473,6 +523,68 @@ const AdminManageCards = () => {
         onClose={handleCloseViewModal}
         card={viewCard}
       />
+      {isStatusChangeModalOpen && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Confirm Status Change
+              </h3>
+              <button
+                onClick={handleCloseStatusModal}
+                className="text-gray-400 hover:text-gray-600 cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6">
+              <p className="text-gray-600 mb-4">
+                Are you sure you want to change the card status?
+              </p>
+              <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Current Status:</span>
+                  <span className="text-sm font-semibold text-gray-900 capitalize">
+                    {statusChangeData.currentStatus}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">New Status:</span>
+                  <span className="text-sm font-semibold text-indigo-600 capitalize">
+                    {statusChangeData.newStatus}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex gap-3 p-4 border-t bg-gray-50">
+              <button
+                onClick={handleCloseStatusModal}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmStatusChange}
+                className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition cursor-pointer"
+              >
+                Confirm Change
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <PrintPreviewModal
+        isOpen={isPrintPreviewOpen}
+        onClose={handleClosePrintPreview}
+        card={cardToPrint}
+      />
+
     </div>
   );
 };
