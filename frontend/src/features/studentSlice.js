@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { loginService, registerService, getPublicUniversitiesService, getCollegesService, forgotPasswordService, resetPasswordService, getSocialLinksService, addSocialLinkService, updateSocialLinkService, deleteSocialLinkService } from "../auth/authServices";
+import { loginService, registerService, getPublicUniversitiesService, getCollegesService, forgotPasswordService, resetPasswordService, getSocialLinksService, addSocialLinkService, updateSocialLinkService, deleteSocialLinkService, getActiveRewardsService } from "../auth/authServices";
 
 const user = JSON.parse(localStorage.getItem("User"));
 
@@ -12,6 +12,7 @@ const initialState = {
     universities: [],
     colleges: [],
     social: [],
+    activeRewards: [],
 }
 
 //Login Thunk
@@ -107,7 +108,7 @@ export const addSocialLink = createAsyncThunk(
     async (formData, thunkAPI) => {
         try {
             const response = await addSocialLinkService(formData);
-            return response.data; 
+            return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(
                 error.response?.data?.message || error.message
@@ -121,7 +122,7 @@ export const updateSocialLink = createAsyncThunk(
     async ({ id, formData }, thunkAPI) => {
         try {
             const response = await updateSocialLinkService(id, formData);
-            return response.data; 
+            return response.data;
         } catch (error) {
             return thunkAPI.rejectWithValue(
                 error.response?.data?.message || error.message
@@ -135,10 +136,24 @@ export const deleteSocialLink = createAsyncThunk(
     async (id, thunkAPI) => {
         try {
             await deleteSocialLinkService(id);
-            return id; 
+            return id;
         } catch (error) {
             return thunkAPI.rejectWithValue(
                 error.response?.data?.message || error.message
+            );
+        }
+    }
+);
+
+// GET ACTIVE PUBLIC REWARDS
+export const getActiveRewards = createAsyncThunk(
+    "auth/getActiveRewards",
+    async (_, thunkAPI) => {
+        try {
+            return await getActiveRewardsService();
+        } catch (error) {
+            return thunkAPI.rejectWithValue(
+                error.response?.data?.message || "Failed to fetch active rewards"
             );
         }
     }
@@ -196,11 +211,11 @@ const authSlice = createSlice({
                     localStorage.setItem("user", JSON.stringify(minimalUser));
 
                     if (user.role === "admin" && user.university) {
-                    localStorage.setItem("universityId", user.university);
+                        localStorage.setItem("universityId", user.university);
                     }
-                    
+
                     if (user.role === "admin" && Array.isArray(user.colleges)) {
-                    localStorage.setItem("colleges", JSON.stringify(user.colleges));
+                        localStorage.setItem("colleges", JSON.stringify(user.colleges));
                     }
 
                 }
@@ -289,16 +304,16 @@ const authSlice = createSlice({
             })
 
             //get social links 
-            .addCase(getSocialLinks.pending, (state)=>{
+            .addCase(getSocialLinks.pending, (state) => {
                 state.isLoading = true;
                 state.isError = false;
             })
-            .addCase(getSocialLinks.fulfilled, (state, action)=>{
+            .addCase(getSocialLinks.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isError = false;
                 state.social = action.payload;
             })
-            .addCase(getSocialLinks.rejected, (state)=>{
+            .addCase(getSocialLinks.rejected, (state) => {
                 state.isLoading = false;
                 state.isError = true;
             })
@@ -343,10 +358,25 @@ const authSlice = createSlice({
             })
             .addCase(deleteSocialLink.fulfilled, (state, action) => {
                 state.isLoading = false;
-            const deletedId = action.payload;
-            state.social = state.social.filter((item) => item._id !== deletedId);
+                const deletedId = action.payload;
+                state.social = state.social.filter((item) => item._id !== deletedId);
             })
             .addCase(deleteSocialLink.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+
+            // GET ACTIVE PUBLIC REWARDS
+            .addCase(getActiveRewards.pending, (state) => {
+                state.isLoading = true;
+                state.isError = false;
+            })
+            .addCase(getActiveRewards.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.activeRewards = action.payload.data;
+            })
+            .addCase(getActiveRewards.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;

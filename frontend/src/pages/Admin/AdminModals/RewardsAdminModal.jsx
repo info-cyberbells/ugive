@@ -2,17 +2,20 @@ import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useToast } from "../../../context/ToastContext";
 import { useDispatch, useSelector } from "react-redux";
-import { getUniversities, getColleges } from "../../../features/studentSlice";
-import { getAllRewards, updateReward } from '../../../features/rewardSlice';
+import { getUniversities, getColleges, getActiveRewards } from "../../../features/studentSlice";
+import { updateRewardByAdmin, getAllRewardsByAdmin } from '../../../features/adminRewardSlice';
+
+
 
 const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => {
 
   const dispatch = useDispatch();
-  const { universities, colleges } = useSelector((state) => state.auth);
+  const { universities, colleges, activeRewards } = useSelector((state) => state.auth);
   const { showToast } = useToast();
   const [rewardImage, setRewardImage] = useState(null);
   const [rewardImagePreview, setRewardImagePreview] = useState(null);
-  const { selectedReward } = useSelector((state) => state.reward);
+  const { selectedReward } = useSelector((state) => state.adminReward);
+  const [selectedRewardImagePath, setSelectedRewardImagePath] = useState("");
 
 
   const handleImageChange = (e) => {
@@ -54,29 +57,37 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
   useEffect(() => {
     if (!isOpen) return;
 
-    if (!isViewMode) {
-      dispatch(getUniversities());
-    }
+    dispatch(getUniversities());
+    dispatch(getActiveRewards());
+
   }, [isOpen, isViewMode, dispatch]);
 
   useEffect(() => {
-    if (isOpen && isEditMode && selectedReward?.university?._id) {
+    if (isOpen && (isEditMode || isViewMode) && selectedReward?.university?._id) {
       dispatch(getColleges(selectedReward.university._id));
     }
-  }, [isOpen, isEditMode, selectedReward?.university?._id, dispatch]);
+  }, [isOpen, isEditMode, isViewMode, selectedReward?.university?._id, dispatch]);
 
   useEffect(() => {
     if (isOpen && (isEditMode || isViewMode) && selectedReward) {
+      setRewardImage(null);
+      setRewardImagePreview(null);
+      setSelectedRewardImagePath("");
       setFormData({
         name: selectedReward.name || "",
         totalPoints: selectedReward.totalPoints || "",
         rewardDescription: selectedReward.rewardDescription || "",
-        university: selectedReward.university?._id || "",
-        college: selectedReward.college?._id || "",
+        university: typeof selectedReward.university === 'string'
+          ? selectedReward.university
+          : selectedReward.university?._id || "",
+        college: typeof selectedReward.college === 'string'
+          ? selectedReward.college
+          : selectedReward.college?._id || "",
       });
 
       if (selectedReward.rewardImage) {
         setRewardImagePreview(selectedReward.rewardImage);
+        setSelectedRewardImagePath(selectedReward.rewardImage);
       }
     }
   }, [isOpen, selectedReward, isEditMode, isViewMode]);
@@ -106,9 +117,9 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
     });
     setRewardImage(null);
     setRewardImagePreview(null);
+    setSelectedRewardImagePath("");
     setErrors({});
   };
-
   if (!isOpen) return null;
 
   const inputClasses = (field) =>
@@ -175,11 +186,11 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
         updatedForm.append("rewardImage", rewardImage);
       }
 
-      dispatch(updateReward({ id: rewardId, formData: updatedForm }))
+      dispatch(updateRewardByAdmin({ id: rewardId, formData: updatedForm }))
         .unwrap()
         .then(() => {
           showToast("Reward updated successfully!", "success");
-          dispatch(getAllRewards({ page, limit }));
+          dispatch(getAllRewardsByAdmin({ page, limit }));
           resetForm();
           onClose();
         })
@@ -196,8 +207,13 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
       rewardDescription: formData.rewardDescription,
       totalPoints: formData.totalPoints,
       university: formData.university,
-      rewardImage
     };
+
+    if (rewardImage) {
+      saveData.rewardImage = rewardImage;
+    } else if (selectedRewardImagePath) {
+      saveData.rewardImagePath = selectedRewardImagePath;
+    }
 
     if (formData.college && formData.college.trim() !== "") {
       saveData.college = formData.college;
@@ -231,7 +247,7 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
 
             {isViewMode ? (
               <div className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 shadow-sm sm:text-sm p-2">
-                {selectedReward?.university?.name || "N/A"}
+                {universities.find(u => u._id === formData.university)?.name || "N/A"}
               </div>
             ) : (
               <div className="relative">
@@ -276,7 +292,7 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
 
             {isViewMode ? (
               <div className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 shadow-sm sm:text-sm p-2">
-                {selectedReward?.college?.name || "N/A"}
+                {colleges.find(c => c._id === formData.college)?.name || "N/A"}
               </div>
             ) : (
               <div className="relative">
@@ -331,16 +347,48 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
             <label className="block text-sm font-medium text-gray-700">
               Reward Name
             </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              disabled={isViewMode}
-              onChange={handleChange}
-              placeholder="Coffee"
-              autoComplete="off"
-              className={inputClasses("name")}
-            />
+            {!isViewMode && activeRewards.length === 0 ? (
+              <div className="mt-1 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-sm text-yellow-800">
+                  No active rewards found. Please ask the vendor to add rewards first or add them in the audit rewards list.
+                </p>
+              </div>
+            ) : (
+              <select
+                name="rewardId"
+                disabled={isViewMode}
+                value={isEditMode || isViewMode ?
+                  activeRewards.find(r => r.name === formData.name)?._id || ""
+                  : ""
+                }
+                className={inputClasses("name")}
+                onChange={(e) => {
+                  const selected = activeRewards.find(
+                    (r) => r._id === e.target.value
+                  );
+
+                  if (!selected) return;
+
+                  setFormData((prev) => ({
+                    ...prev,
+                    name: selected.name,
+                    rewardDescription: selected.description,
+                  }));
+
+                  setSelectedRewardImagePath(selected.rewardImage);
+                  setRewardImagePreview(selected.rewardImage);
+                  setRewardImage(null);
+                }}
+              >
+                <option value="">Select Reward</option>
+
+                {activeRewards.map((reward) => (
+                  <option key={reward._id} value={reward._id}>
+                    {reward.name}
+                  </option>
+                ))}
+              </select>
+            )}
           </div>
 
           <div>
@@ -351,7 +399,7 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
               type="text"
               name="rewardDescription"
               value={formData.rewardDescription}
-              disabled={isViewMode}
+              disabled={true}
               onChange={handleChange}
               placeholder="Award for good performance"
               autoComplete="off"
@@ -446,6 +494,7 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
           </div>
         </form>
       </div>
+
     </div>
   );
 };

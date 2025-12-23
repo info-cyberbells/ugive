@@ -541,7 +541,7 @@ export const getPrintedRewardCardsForVendor = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const filter = {
-      status: "printed",
+       status: { $in: ["printed", "delivered"] },
       reward: { $ne: null }
     };
 

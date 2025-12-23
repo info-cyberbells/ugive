@@ -1,31 +1,31 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { createVendorBySuperAdminService, deleteVendorBySuperAdminService, getAllVendorsSuperadminService, updateVendorsProfileBySuperAdminService, viewVendorProfileBySuperAdmin } from "../auth/authServices";
+import { createVendorBySuperAdminService, deleteVendorBySuperAdminService, getAllVendorsSuperadminService, updateVendorsProfileBySuperAdminService, viewVendorProfileBySuperAdmin, getVendorRewardsBySuperAdminService, auditVendorRewardBySuperAdminService } from "../auth/authServices";
 
 
 // GET ALL VENDORS THUNK 
 export const getAllVendorsBySuperAdmin = createAsyncThunk(
-    'superadminVendors/getAllVendors',
-    async({page, limit}, thunkAPI) =>{
-        try {
-            const response = await getAllVendorsSuperadminService({page, limit});
-            return response;
-        } catch (error) {
-            return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to Load Vendors Data");
-        }
+  'superadminVendors/getAllVendors',
+  async ({ page, limit }, thunkAPI) => {
+    try {
+      const response = await getAllVendorsSuperadminService({ page, limit });
+      return response;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to Load Vendors Data");
     }
+  }
 );
 
 // CRETAE VENDOR THUNK
 export const createVendorBySuperAdmin = createAsyncThunk(
-    'superadminVendors/createVendor',
-    async(details, thunkAPI)=>{
-        try {
-            const response = await createVendorBySuperAdminService(details);
-            return response;
-        } catch (error) {
-            return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to create message");
-        }
+  'superadminVendors/createVendor',
+  async (details, thunkAPI) => {
+    try {
+      const response = await createVendorBySuperAdminService(details);
+      return response;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to create message");
     }
+  }
 );
 
 // VIEW VENDORS PROFILE
@@ -62,7 +62,7 @@ export const deleteVendorBySuperAdmin = createAsyncThunk(
   async (id, thunkAPI) => {
     try {
       await deleteVendorBySuperAdminService(id);
-      return id; 
+      return id;
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Failed to delete vendor"
@@ -72,146 +72,218 @@ export const deleteVendorBySuperAdmin = createAsyncThunk(
 );
 
 
+// GET vendor  rewards
+export const getVendorRewardsBySuperAdmin = createAsyncThunk(
+  "vendorRewards/getAll",
+  async (params, thunkAPI) => {
+    try {
+      return await getVendorRewardsBySuperAdminService(params);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Failed to fetch vendor rewards"
+      );
+    }
+  }
+);
+
+// PUT audit rewards
+export const auditVendorRewardBySuperAdmin = createAsyncThunk(
+  "vendorRewards/audit",
+  async ({ id, data }, thunkAPI) => {
+    try {
+      return await auditVendorRewardBySuperAdminService(id, data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data || "Failed to update vendor reward"
+      );
+    }
+  }
+);
+
+
+
 
 const superadminVendorsSlice = createSlice({
-    name: "superadminVendors",
-    initialState: {
-      vendorsList: [],
-      singleVendor: null,
-      isSingleLoading: false,
-      isSingleError: false,
-      page: 1,
-      limit: 10,
-      totalVendors: 0,
-      totalPages: 1,
-      isLoading: false,
-      isError: false,
-      isSuccess: false,
-      message: "",
+  name: "superadminVendors",
+  initialState: {
+    vendorsList: [],
+    singleVendor: null,
+    isSingleLoading: false,
+    isSingleError: false,
+    page: 1,
+    limit: 10,
+    totalVendors: 0,
+    totalPages: 1,
+    totalRewards: 0,
+    isLoading: false,
+    isError: false,
+    isSuccess: false,
+    message: "",
+  },
+  reducers: {
+    reset: (state) => {
+      state.vendorsList = [];
+      state.isLoading = false;
+      state.isError = false;
+      state.isSuccess = false;
     },
-    reducers: {
-      reset: (state)=>{
-        state.vendorsList = [];
-        state.isLoading = false;
-        state.isError = false;
-        state.isSuccess = false;
-      },
-    },
+  },
 
-    extraReducers: (builder) => {
-        builder
+  extraReducers: (builder) => {
+    builder
 
-        // Get All Vendors
-        .addCase(getAllVendorsBySuperAdmin.pending, (state)=>{
-            state.isLoading = true;
-            state.isError = false;
-            state.isSuccess = false;
-        })
-        .addCase(getAllVendorsBySuperAdmin.fulfilled, (state, action)=>{
-            state.isLoading = false;
-            state.isSuccess = true;
-            state.isError = false;
-            state.vendorsList = action.payload.data;
-            state.page = action.payload.page;
-            state.limit = action.payload.limit;
-            state.totalPages = action.payload.totalPages;
-            state.totalVendors = action.payload.total;
-        })
-        .addCase(getAllVendorsBySuperAdmin.rejected, (state, action)=>{
-            state.isLoading = false;
-            state.isError = true;
-            state.message = action.payload;
-        })
-
-        // create vendor
-        .addCase(createVendorBySuperAdmin.pending, (state)=>{
-            state.isLoading = true;
-            state.isError = false;
-            state.isSuccess = false;
-        })
-        .addCase(createVendorBySuperAdmin.fulfilled, (state, action)=>{
-            state.isLoading = false;
-            state.isError = false;
-            state.isSuccess = true;
-            state.totalVendors += 1;
-            if (state.vendorsList.length < state.limit) {
-                state.vendorsList.unshift(action.payload.data);
-                }
-        })
-        .addCase(createVendorBySuperAdmin.rejected, (state, action)=>{
-            state.isLoading = false;
-            state.isError = true;
-        })
-
-        // view vendor profile
-        .addCase(getSingleVendorBySuperAdmin.pending, (state) => {
-            state.isSingleLoading = true;
-            state.isSingleError = false;
-            state.isSuccess = false;
-        })
-        .addCase(getSingleVendorBySuperAdmin.fulfilled, (state, action) => {
-            state.isSingleLoading = false;
-            state.singleVendor = action.payload.data;
-        })
-        .addCase(getSingleVendorBySuperAdmin.rejected, (state) => {
-            state.isSingleLoading = false;
-            state.isSingleError = true;
-        })
-
-        // update vendor
-        .addCase(updateVendorBySuperAdmin.pending, (state) => {
+      // Get All Vendors
+      .addCase(getAllVendorsBySuperAdmin.pending, (state) => {
         state.isLoading = true;
         state.isError = false;
         state.isSuccess = false;
-        })
+      })
+      .addCase(getAllVendorsBySuperAdmin.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.isError = false;
+        state.vendorsList = action.payload.data;
+        state.page = action.payload.page;
+        state.limit = action.payload.limit;
+        state.totalPages = action.payload.totalPages;
+        state.totalVendors = action.payload.total;
+      })
+      .addCase(getAllVendorsBySuperAdmin.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
 
-        .addCase(updateVendorBySuperAdmin.fulfilled, (state, action) => {
+      // create vendor
+      .addCase(createVendorBySuperAdmin.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+        state.isSuccess = false;
+      })
+      .addCase(createVendorBySuperAdmin.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.totalVendors += 1;
+        if (state.vendorsList.length < state.limit) {
+          state.vendorsList.unshift(action.payload.data);
+        }
+      })
+      .addCase(createVendorBySuperAdmin.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+      })
+
+      // view vendor profile
+      .addCase(getSingleVendorBySuperAdmin.pending, (state) => {
+        state.isSingleLoading = true;
+        state.isSingleError = false;
+        state.isSuccess = false;
+      })
+      .addCase(getSingleVendorBySuperAdmin.fulfilled, (state, action) => {
+        state.isSingleLoading = false;
+        state.singleVendor = action.payload.data;
+      })
+      .addCase(getSingleVendorBySuperAdmin.rejected, (state) => {
+        state.isSingleLoading = false;
+        state.isSingleError = true;
+      })
+
+      // update vendor
+      .addCase(updateVendorBySuperAdmin.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+        state.isSuccess = false;
+      })
+
+      .addCase(updateVendorBySuperAdmin.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
 
         const updatedVendor = action.payload.data;
 
         state.vendorsList = state.vendorsList.map((vendor) =>
-            vendor._id === updatedVendor._id ? updatedVendor : vendor
+          vendor._id === updatedVendor._id ? updatedVendor : vendor
         );
 
         state.singleVendor = updatedVendor;
-        })
+      })
 
-        .addCase(updateVendorBySuperAdmin.rejected, (state, action) => {
+      .addCase(updateVendorBySuperAdmin.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
-        })
+      })
 
-        // DELETE VENDOR
+      // DELETE VENDOR
 
-        .addCase(deleteVendorBySuperAdmin.pending, (state) => {
-            state.isLoading = true;
-            state.isError = false;
-            state.isSuccess = false;
-        })
-        .addCase(deleteVendorBySuperAdmin.fulfilled, (state, action) => {
-            state.isLoading = false;
-            state.isSuccess = true;
+      .addCase(deleteVendorBySuperAdmin.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+        state.isSuccess = false;
+      })
+      .addCase(deleteVendorBySuperAdmin.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
 
-            state.vendorsList = state.vendorsList.filter(
-                (vendor) => vendor._id !== action.payload
-            );
+        state.vendorsList = state.vendorsList.filter(
+          (vendor) => vendor._id !== action.payload
+        );
 
-            state.totalVendors = Math.max(state.totalVendors - 1, 0);
-        })
-        .addCase(deleteVendorBySuperAdmin.rejected, (state, action) => {
-            state.isLoading = false;
-            state.isError = true;
-            state.message = action.payload;
-        })
-
-
+        state.totalVendors = Math.max(state.totalVendors - 1, 0);
+      })
+      .addCase(deleteVendorBySuperAdmin.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
 
 
-        
-    }
+      // GET
+      .addCase(getVendorRewardsBySuperAdmin.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getVendorRewardsBySuperAdmin.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.rewards = action.payload.data || [];
+        state.page = action.payload.page;
+        state.limit = action.payload.limit;
+        state.totalPages = action.payload.totalPages;
+        state.totalRewards = action.payload.total;
+      })
+
+      .addCase(getVendorRewardsBySuperAdmin.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+
+      // PUT
+      .addCase(auditVendorRewardBySuperAdmin.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(auditVendorRewardBySuperAdmin.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+
+        const updatedReward = action.payload.data;
+
+        state.rewards = state.rewards.map((reward) =>
+          reward._id === updatedReward._id ? updatedReward : reward
+        );
+      })
+      .addCase(auditVendorRewardBySuperAdmin.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
+
+
+
+
+
+  }
 
 })
 

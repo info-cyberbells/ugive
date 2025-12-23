@@ -1,7 +1,16 @@
 import User from "../models/user.model.js";
 import University from "../models/university.model.js";
 import College from "../models/college.model.js";
-import bcrypt from "bcryptjs";
+
+const buildImageUrl = (req, imagePath) => {
+    if (!imagePath) return null;
+
+    if (imagePath.startsWith("http") || imagePath.startsWith("data:")) {
+        return imagePath;
+    }
+
+    return `${req.protocol}://${req.get("host")}${imagePath}`;
+};
 
 
 export const createVendor = async (req, res) => {
@@ -90,7 +99,14 @@ export const getAllVendors = async (req, res) => {
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit)
-            .select("-password");
+            .select("-password")
+            .lean();
+
+        const formattedVendors = vendors.map(vendor => ({
+            ...vendor,
+            profileImage: buildImageUrl(req, vendor.profileImage),
+        }));
+
 
         return res.status(200).json({
             success: true,
@@ -98,7 +114,7 @@ export const getAllVendors = async (req, res) => {
             limit,
             total,
             totalPages: Math.ceil(total / limit),
-            data: vendors
+            data: formattedVendors
         });
 
     } catch (error) {

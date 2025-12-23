@@ -9,6 +9,7 @@ import {
   User,
   Mail,
   Calendar,
+  UserCog,
   X,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
@@ -42,13 +43,7 @@ const Feedback = () => {
     dispatch(getAllFeedbacks());
   }, []);
 
-  const feedbackHeaders = [
-    { key: "studentName", label: "Student" },
-    { key: "email", label: "Email" },
-    { key: "date", label: "Date Sent" },
-    { key: "summary", label: "Summary" },
-    { key: "action", label: "Action" },
-  ];
+
 
   const toggleSelect = (id) => {
     setSelectedFeedbackIds((prev) =>
@@ -135,11 +130,12 @@ const Feedback = () => {
       return;
     }
 
-    const headers = ["Student Name", "Email", "Date Sent", "Feedback"];
+    const headers = ["Student Name", "Email", "Role", "Date Sent", "Feedback"];
 
     const rows = selected.map((fb) => [
       fb.user?.name,
       fb.user?.email,
+       fb.user?.role,
       new Date(fb.createdAt).toLocaleDateString(),
       fb.feedback,
     ]);
@@ -280,6 +276,17 @@ const Feedback = () => {
                 </dd>
               </dl>
 
+
+ <dl className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                <dt className="text-xs font-medium text-gray-700 uppercase tracking-wider flex items-center gap-1">
+                  <UserCog size={14} className="text-indigo-500" /> Role
+                </dt>
+                <dd className="text-sm text-indigo-600 hover:underline mt-1 truncate">
+                  {data.user?.role || "N/A"}
+                </dd>
+              </dl>
+
+
               {/* Date */}
               <dl className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
                 <dt className="text-xs font-medium text-gray-700 uppercase tracking-wider flex items-center gap-1">
@@ -339,11 +346,10 @@ const Feedback = () => {
               <button
                 className={`flex items-center px-4 py-2 text-sm font-medium border border-gray-300
           rounded-lg transition cursor-pointer duration-150 shadow-sm
-          ${
-            isAnySelected
-              ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600 cursor-pointer"
-              : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
-          }`}
+          ${isAnySelected
+                    ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600 cursor-pointer"
+                    : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
+                  }`}
                 disabled={!isAnySelected}
                 onClick={openBulkDeleteModal}
               >
@@ -356,11 +362,10 @@ const Feedback = () => {
                 onClick={handleExportFeedbackCSV}
                 className={`flex items-center px-4 py-2 text-sm font-medium border border-gray-300
           rounded-lg transition cursor-pointer duration-150 shadow-sm
-          ${
-            isAnySelected
-              ? "text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
-              : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
-          }`}
+          ${isAnySelected
+                    ? "text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
+                    : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
+                  }`}
                 disabled={!isAnySelected}
               >
                 Export
@@ -379,8 +384,8 @@ const Feedback = () => {
                 <thead className="bg-gray-50">
                   <tr>
                     {/* Checkbox Column */}
-                    <th 
-                        className="px-2 sm:px-6 sm:py-3 w-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    <th
+                      className="px-2 sm:px-6 sm:py-3 w-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
                       <input
                         type="checkbox"
@@ -388,14 +393,14 @@ const Feedback = () => {
                           selectedFeedbackIds.length === allFeedbacks.length
                         }
                         onChange={toggleSelectAll}
-                          className="form-checkbox cursor-pointer h-2 w-2 sm:h-4 sm:w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
+                        className="form-checkbox cursor-pointer h-2 w-2 sm:h-4 sm:w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
                       />
                     </th>
 
                     {/* Student */}
                     <th
                       scope="col"
-                        className="sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                      className="sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                     >
                       Student
                     </th>
@@ -403,15 +408,22 @@ const Feedback = () => {
                     {/* Email */}
                     <th
                       scope="col"
-                        className="hidden lg:table-cell sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                      className="hidden lg:table-cell sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                     >
                       Email
+                    </th>
+
+                    <th
+                      scope="col"
+                      className="hidden lg:table-cell sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                    >
+                      Role
                     </th>
 
                     {/* Date Sent */}
                     <th
                       scope="col"
-                        className=" sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                      className=" sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                     >
                       Date Sent
                     </th>
@@ -419,7 +431,7 @@ const Feedback = () => {
                     {/* Summary */}
                     <th
                       scope="col"
-                        className="hidden lg:table-cell sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                      className="hidden lg:table-cell sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                     >
                       Summary
                     </th>
@@ -427,7 +439,7 @@ const Feedback = () => {
                     {/* Action */}
                     <th
                       scope="col"
-                        className="sm:px-6 py-1 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      className="sm:px-6 py-1 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
                       Action
                     </th>
@@ -440,30 +452,34 @@ const Feedback = () => {
                       key={feedback._id}
                       className="hover:bg-indigo-50/50 transition duration-150"
                     >
-                      <td 
+                      <td
                         className="px-2 sm:px-6 sm:py-3 w-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
                         <input
                           type="checkbox"
                           checked={selectedFeedbackIds.includes(feedback._id)}
                           onChange={() => toggleSelect(feedback._id)}
-                            className="form-checkbox cursor-pointer h-2 w-2 sm:h-4 sm:w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
+                          className="form-checkbox cursor-pointer h-2 w-2 sm:h-4 sm:w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
                         />
                       </td>
-                        <td className="sm:px-6 py-1 sm:py-4 whitespace-nowrap text-xs sm:text-sm sm:font-medium text-gray-900">
+                      <td className="sm:px-6 py-1 sm:py-4 whitespace-nowrap text-xs sm:text-sm sm:font-medium text-gray-900">
                         {feedback.user?.name}
                       </td>
-                        <td className="hidden lg:table-cell sm:px-6 sm:py-4 whitespace-nowrap text-sm text-gray-600">
+                      <td className="hidden lg:table-cell sm:px-6 sm:py-4 whitespace-nowrap text-sm text-gray-600">
                         {feedback.user?.email}
                       </td>
-                         <td className=" sm:px-4 sm:py-4 whitespace-nowrap text-sm text-gray-600">
+
+                      <td className="hidden lg:table-cell sm:px-6 sm:py-4 whitespace-nowrap text-sm text-gray-600">
+                        {feedback.user?.role}
+                      </td>
+                      <td className=" sm:px-4 sm:py-4 whitespace-nowrap text-sm text-gray-600">
                         {new Date(feedback.createdAt).toLocaleDateString()}
                       </td>
                       {/* Truncated Summary */}
                       <td className="hidden lg:table-cell sm:px-6 sm:py-4 text-sm text-gray-600 max-w-xs truncate">
                         {feedback.feedback}
                       </td>
-                        <td className="sm:px-6 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium space-x-1 sm:space-x-3">
+                      <td className="sm:px-6 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium space-x-1 sm:space-x-3">
                         <button
                           onClick={() => openViewModal(feedback)}
                           className="text-blue-600 cursor-pointer hover:text-blue-900"

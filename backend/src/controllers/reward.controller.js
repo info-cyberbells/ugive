@@ -14,13 +14,24 @@ import VendorReward from "../models/vendorReward.model.js";
 // Create Reward
 export const createReward = async (req, res) => {
     try {
-        const { name, university, college, rewardDescription, totalPoints } = req.body;
+        const { name, university, college, rewardDescription, totalPoints, rewardImagePath } = req.body;
 
         if (!name || !university || !rewardDescription || !totalPoints) {
             return res.status(400).json({ message: "All fields are required." });
         }
 
-        const rewardImage = req.file ? "/" + req.file.path.replace(/\\/g, "/") : null;
+        let rewardImage = null;
+
+        if (req.file) {
+            rewardImage = "/" + req.file.path.replace(/\\/g, "/");
+        } else if (rewardImagePath) {
+            try {
+                const url = new URL(rewardImagePath);
+                rewardImage = url.pathname;
+            } catch (error) {
+                rewardImage = rewardImagePath;
+            }
+        }
 
         const reward = await Reward.create({
             name,
@@ -188,6 +199,13 @@ export const updateReward = async (req, res) => {
             updatedData.rewardImage = cleanPath.startsWith("/")
                 ? cleanPath
                 : `/${cleanPath}`;
+        } else if (req.body.rewardImagePath) {
+            try {
+                const url = new URL(req.body.rewardImagePath);
+                updatedData.rewardImage = url.pathname;
+            } catch (error) {
+                updatedData.rewardImage = req.body.rewardImagePath;
+            }
         }
 
         // Update reward
@@ -456,10 +474,18 @@ export const createRewardByUniversityAdmin = async (req, res) => {
             });
         }
 
-        const rewardImage = req.file
-            ? "/" + req.file.path.replace(/\\/g, "/")
-            : null;
+        let rewardImage = null;
 
+        if (req.file) {
+            rewardImage = "/" + req.file.path.replace(/\\/g, "/");
+        } else if (req.body.rewardImagePath) {
+            try {
+                const url = new URL(req.body.rewardImagePath);
+                rewardImage = url.pathname;
+            } catch (error) {
+                rewardImage = req.body.rewardImagePath;
+            }
+        }
         const reward = await Reward.create({
             name,
             university: admin.university,
@@ -504,6 +530,7 @@ export const getRewardsByUniversityAdmin = async (req, res) => {
         const totalRewards = await Reward.countDocuments(query);
 
         const rewards = await Reward.find(query)
+            .populate("university", "name")
             .populate("college", "name")
             .populate("createdBy", "name email")
             .skip((page - 1) * limit)
@@ -596,9 +623,18 @@ export const updateRewardByUniversityAdmin = async (req, res) => {
         if (totalPoints) reward.totalPoints = totalPoints;
 
         if (req.file) {
-            reward.rewardImage = "/" + req.file.path.replace(/\\/g, "/");
+            const cleanPath = req.file.path.replace(/\\/g, "/");
+            reward.rewardImage = cleanPath.startsWith("/")
+                ? cleanPath
+                : `/${cleanPath}`;
+        } else if (req.body.rewardImagePath) {
+            try {
+                const url = new URL(req.body.rewardImagePath);
+                reward.rewardImage = url.pathname;
+            } catch (error) {
+                reward.rewardImage = req.body.rewardImagePath;
+            }
         }
-
         await reward.save();
 
         return res.json({
