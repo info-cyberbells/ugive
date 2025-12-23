@@ -26,6 +26,7 @@ export const getSuperAdminDashboard = async (req, res) => {
     const [
       totalStudents,
       totalAdmins,
+      totalVendors,
       totalUniversities,
       totalColleges,
       totalRewards,
@@ -42,6 +43,7 @@ export const getSuperAdminDashboard = async (req, res) => {
       // Basic counts
       User.countDocuments({ role: "student", isDeleted: { $ne: true } }),
       User.countDocuments({ role: "admin", isDeleted: { $ne: true } }),
+      User.countDocuments({ role: "vendor", isDeleted: { $ne: true } }),
       University.countDocuments(),
       College.countDocuments(),
       Reward.countDocuments(),
@@ -117,6 +119,7 @@ export const getSuperAdminDashboard = async (req, res) => {
       overview: {
         totalStudents,
         totalAdmins,
+        totalVendors,
         totalUniversities,
         totalColleges,
         totalRewards
