@@ -926,8 +926,55 @@ export const getVendorDashboardService = async() => {
   return response.data;
 }
 
+// CREATE REWARD BY VENDOR
+export const createRewardByVendorService = async (formData)=>{
+  const auth = getAuthHeader();
+  const response = await axios.post(
+    USER_ENDPOINTS.VENDOR_CREATE_REWARD,
+    formData,
+    {
+      headers:{
+        ...auth.headers,
+        "Content-Type": "multipart/form-data"
+      },
+    }
+  );
+  return response.data;
+}
 
+// VIEW REWARD BY VENDOR
+export const viewSingleRewardByVendorService = async(id)=>{
+  const response = await axios.get(
+    `${USER_ENDPOINTS.VENDOR_VIEW_REWARD}/${id}`,
+    getAuthHeader(),
+  );
+  return response.data;
+}
 
+// UPDATE REWARD BY ADMIN
+export const updateRewardByVendorService = async ({id, formData})=>{
+  const auth = getAuthHeader();
+  const response = await axios.put(
+    `${USER_ENDPOINTS.VENDOR_UPDATE_REWARD}/${id}`,
+    formData,
+    {
+      headers:{
+        ...auth.headers,
+        "Content-Type":"multipart/form-data"
+      },
+    },
+  );
+  return response.data;
+}
+
+// DELETE REWARD BY VENDOR
+export const deleterewardByVendorService = async (id)=>{
+  const response = await axios.delete(
+    `${USER_ENDPOINTS.VENDOR_DELETE_REWARD}/${id}`,
+    getAuthHeader(),
+  );
+  return response.data;
+} 
 
 
 

@@ -486,7 +486,7 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
             {!isViewMode && (
               <button
                 type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg cursor-pointer"
+                className="px-4 py-2 text-sm font-medium  text-white bg-[#6955A5] hover:bg-[#533f8e] hover:scale-[1.02] rounded-lg cursor-pointer"
               >
                 {isEditMode ? "Save Changes" : "Add Reward"}
               </button>

@@ -5,7 +5,13 @@ import {
   DollarSign,
   ShoppingCart,
   PackageCheck,
-  Users, School, CreditCard, Calendar,  Send,
+  Users,
+  School,
+  CreditCard,
+  Ticket,
+  Send,
+  Trophy,
+  Printer,
   MessageSquare,
 } from "lucide-react";
 import {
@@ -25,9 +31,6 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { getAdminDashboardData } from "../../../features/adminSlice";
 import { getVendorDashBoard } from "../../../features/venderSlice";
-
-
-
 
 const universityParticipation = [
   { day: "Mon", online: 15000, offline: 12000 },
@@ -64,67 +67,126 @@ const activityGraphData = [
 ];
 
 const VendorsDashboard = () => {
+  const dispatch = useDispatch();
 
-  const dispatch = useDispatch()
+  const { vendorDashBoard, isLoading } = useSelector((state) => state.vendor);
 
-  const { adminDashboard } = useSelector((state) => state.admin);
-  
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(getVendorDashBoard());
-  },[dispatch])
+  }, [dispatch]);
 
-  const overview = adminDashboard?.overview || 0;
-  const cardStats = adminDashboard?.cardStats || 0;
-  const recentCards = adminDashboard?.recentActivity?.recentCards || [];
-  const recentStudents = adminDashboard?.recentActivity?.recentStudents || [];
+  const overview = vendorDashBoard?.overview || {};
+  const todayStats = vendorDashBoard?.todayStats || {};
+  const recentPrintedCards =
+    vendorDashBoard?.recentActivity?.recentPrintedCards || [];
 
- const weeklySummary = [
-  {
-    title: "Total Students",
-    value: overview?.totalStudents ?? 0,
-    diff: "",
-    color: "bg-[#FFE2E5]",
-    icon: Users,
-  },
-  {
-    title: "Total Colleges",
-    value: overview?.totalColleges ?? 0,
-    diff: "",
-    color: "bg-[#FFF4DE]",
-    icon: School,
-  },
-  {
-    title: "Total Cards",
-    value: overview?.totalCards ?? 0,
-    diff: "",
-    color: "bg-[#DCFCE7]",
-    icon: CreditCard,
-  },
-  {
-    title: "Cards (Last 7 Days)",
-    value: cardStats?.cardsLast7Days ?? 0,
-    diff: "",
-    color: "bg-[#F3E8FF]",
-    icon: Calendar,
-  },
-];
+  const recentDeliveredCards =
+    vendorDashBoard?.recentActivity?.recentDeliveredCards || [];
 
+  const recentStudents = vendorDashBoard?.recentActivity?.recentStudents || [];
+
+  const weeklySummary = [
+    {
+      title: "Total Rewards",
+      value: overview?.totalRewards ?? 0,
+      diff: "",
+      color: "bg-[#FFE2E5]",
+      icon: Trophy,
+    },
+    {
+      title: "Total Cards",
+      value: overview?.totalCards ?? 0,
+      diff: "",
+      color: "bg-[#FFF4DE]",
+      icon: Ticket,
+    },
+    {
+      title: "Total Printed",
+      value: overview?.printedCards ?? 0,
+      diff: "",
+      color: "bg-[#DCFCE7]",
+      icon: Printer,
+    },
+    {
+      title: "Total Deliveries",
+      value: overview?.deliveredCards ?? 0,
+      diff: "",
+      color: "bg-[#F3E8FF]",
+      icon: PackageCheck,
+    },
+  ];
+
+  const DashboardSkeleton = () => (
+    <div className="lg:ml-60 mt-14 p-6 min-h-screen bg-gray-50 animate-pulse grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* Overview */}
+      <div className="lg:col-span-8 bg-white p-6 rounded-xl shadow-md">
+        <div className="h-5 w-32 bg-gray-200 rounded mb-4" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="p-4 rounded-xl bg-gray-100">
+              <div className="h-6 w-6 bg-gray-300 rounded mb-3" />
+              <div className="h-6 w-12 bg-gray-300 rounded mb-2" />
+              <div className="h-4 w-24 bg-gray-200 rounded" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Today Stats */}
+      <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow-md">
+        <div className="h-5 w-28 bg-gray-200 rounded mb-4" />
+        <div className="grid grid-cols-2 gap-4">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="p-4 rounded-xl bg-gray-100">
+              <div className="h-5 w-5 bg-gray-300 rounded mb-3" />
+              <div className="h-6 w-10 bg-gray-300 rounded mb-2" />
+              <div className="h-3 w-24 bg-gray-200 rounded" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Recent Printed Cards */}
+      <div className="lg:col-span-6 bg-white p-6 rounded-xl shadow-lg">
+        <div className="h-5 w-40 bg-gray-200 rounded mb-6" />
+        <div className="space-y-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="flex justify-between items-center">
+              <div className="h-4 w-40 bg-gray-200 rounded" />
+              <div className="h-4 w-28 bg-gray-200 rounded hidden md:block" />
+              <div className="h-4 w-20 bg-gray-200 rounded" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Recent Delivered Cards */}
+      <div className="lg:col-span-6 bg-white p-6 rounded-xl shadow-lg">
+        <div className="h-5 w-44 bg-gray-200 rounded mb-6" />
+        <div className="space-y-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="flex justify-between items-center">
+              <div className="h-4 w-40 bg-gray-200 rounded" />
+              <div className="h-4 w-28 bg-gray-200 rounded hidden md:block" />
+              <div className="h-4 w-20 bg-gray-200 rounded" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  if (isLoading) {
+    return <DashboardSkeleton />;
+  }
 
   return (
-    <div className=" lg:ml-60 mt-14 p-6 font-[Poppins] bg-gray-50 min-h-screen grid grid-cols-1 lg:grid-cols-12 gap-6">
-      <div className="lg:col-span-8 bg-white p-6 rounded-xl shadow-md">
+    <div className=" lg:ml-60 mt-14 p-6 font-[Poppins] bg-gray-50 min-h-[calc(100vh-56px)] grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="lg:col-span-8 bg-white p-6 rounded-xl lg:max-h-[250px] shadow-md">
         <header className="flex justify-between items-center">
           <div>
-            <h2 className="text-lg text-[#05004E] font-semibold">
-              Overview
-            </h2>
-            {/* <h4 className="text-[#737791]"> Summary</h4> */}
+            <h2 className="text-lg text-[#05004E] font-semibold">Overview</h2>
           </div>
-
-          {/* <button className="border flex items-center border-[#C3D3E2] px-4 py-1 cursor-pointer rounded-xl">
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </button> */}
         </header>
         {/* Cards Row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 mt-4 gap-4">
@@ -150,29 +212,36 @@ const VendorsDashboard = () => {
         </div>
       </div>
 
-      {/* Active Streaks */}
-      <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow-md">
-        <h2 className="text-lg font-semibold mb-2">Active Streaks</h2>
-        <ResponsiveContainer width="100%" height={150}>
-          <BarChart data={universityParticipation}>
-            {/* <CartesianGrid strokeDasharray="3 3" /> */}
-            <XAxis dataKey="day" />
-            <Bar
-              dataKey="online"
-              fill="#FFE2E5"
-              barSize={20}
-              radius={[30, 30, 0, 0]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
+      <div className="lg:col-span-4 bg-white p-6 rounded-xl lg:max-h-[250px] shadow-md">
+        <h2 className="text-lg font-semibold mb-4">Today Stats</h2>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-[#DCFCE7] rounded-xl p-4">
+            <Printer className="mb-2 text-[#166534]" size={28} />
+            <h3 className="text-xl font-semibold">
+              {todayStats?.cardsPrintedToday ?? 0}
+            </h3>
+            <p className="text-sm text-[#166534] font-medium">
+              Cards Printed 
+            </p>
+          </div>
+
+          <div className="bg-[#F3E8FF] rounded-xl p-4">
+            <Send className="mb-2 text-[#6B21A8]" size={28} />
+            <h3 className="text-xl font-semibold">
+              {todayStats?.cardsDeliveredToday ?? 0}
+            </h3>
+            <p className="text-sm text-[#6B21A8] font-medium">
+              Deliveries  </p>
+          </div>
+        </div>
       </div>
 
       {/* University Participation */}
-      <div className="lg:col-span-8 bg-white p-6 rounded-xl shadow-md">
+      {/* <div className="lg:col-span-8 bg-white p-6 rounded-xl shadow-md">
         <h2 className="text-lg font-semibold mb-4">University Participation</h2>
         <ResponsiveContainer width="100%" height={250}>
           <BarChart data={universityParticipation}>
-            {/* <CartesianGrid strokeDasharray="3 3" /> */}
             <CartesianGrid
               stroke="#E5E7EB"
               vertical={false}
@@ -186,10 +255,10 @@ const VendorsDashboard = () => {
             <Legend />
           </BarChart>
         </ResponsiveContainer>
-      </div>
+      </div> */}
 
       {/* Active Status */}
-      <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow-md">
+      {/* <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow-md">
         <h2 className="text-lg font-semibold mb-4">
           Active Status of University
         </h2>
@@ -199,13 +268,11 @@ const VendorsDashboard = () => {
             margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
           >
             <defs>
-              {/* Shadow for Last */}
               <linearGradient id="shadowLast" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#D2AFF97A" stopOpacity="0.75" />
                 <stop offset="70%" stopColor="#8B78D0" stopOpacity="0" />
               </linearGradient>
 
-              {/* Shadow for Current */}
               <linearGradient id="shadowCurrent" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#FA5A7D" stopOpacity="0.35" />
                 <stop offset="50%" stopColor="#FFA559" stopOpacity="0" />
@@ -279,130 +346,46 @@ const VendorsDashboard = () => {
             <Legend />
           </AreaChart>
         </ResponsiveContainer>
-      </div>
-
-      {/* <div className="lg:col-span-8 bg-white p-6 rounded-xl shadow-md">
-        <h2 className="text-lg font-semibold mb-4">Activity Graph</h2>
-        <div style={{ width: "100%", height: 350 }}>
-          <ResponsiveContainer>
-            <LineChart
-              data={activityGraphData}
-              margin={{ top: 20, right: 30, left: 10, bottom: 5 }}
-            >
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                domain={[0, 700]}
-                ticks={[0, 100, 200, 300, 400, 500, 600, 700]}
-                tick={{ fill: "#6B7280", fontSize: 14 }}
-              />
-
-              <XAxis
-                dataKey="month"
-                axisLine={false}
-                tickLine={false}
-                padding={{ left: 20, right: 20 }}
-                tick={{ fill: "#6B7280", fontSize: 14 }}
-              />
-
-              <Tooltip
-                cursor={{ stroke: "#9CA3AF", strokeDasharray: "3 3" }}
-                contentStyle={{
-                  borderRadius: "0.5rem",
-                  backgroundColor: "rgba(255, 255, 255, 0.95)",
-                  border: "1px solid #E5E7EB",
-                }}
-              />
-
-              <Line
-                type="natural"
-                dataKey="loyal"
-                stroke={"#C4B5FD"}
-                strokeWidth={3}
-                dot={false}
-                name="Loyal Customers"
-              />
-
-              <Line
-                type="natural"
-                dataKey="new"
-                stroke={"#FCA5A5"}
-                strokeWidth={3}
-                dot={false}
-                name="New Customers"
-              />
-
-              <Line
-                type="natural"
-                dataKey="unique"
-                stroke={"#A7F3D0"}
-                strokeWidth={3}
-                dot={false}
-                name="Unique Customers"
-              />
-
-              <Legend
-                verticalAlign="bottom"
-                align="center"
-                iconType="square"
-                wrapperStyle={{ paddingTop: "5px" }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
       </div> */}
 
-      {/* Weekly Activity */}
-      {/* <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow-md">
-        <h2 className="text-lg font-semibold mb-4">Weekly Activity</h2>
-        <div className="space-y-4">
-          <div className="flex justify-between">
-            <span>Home Decor</span>
-            <span className="text-gray-500">45</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Disney Princess Pink</span>
-            <span className="text-gray-500">29</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Bathroom</span>
-            <span className="text-gray-500">18</span>
-          </div>
-        </div>
-      </div> */}
       {/* Recent Students Table */}
- <div className="lg:col-span-8 bg-white sm:p-6 rounded-xl shadow-lg">
-        <h2 className="text-xl text-[#05004E] px-3 py-2 sm:px-0 sm:py-0 font-semibold sm:mb-6">Recent Students</h2>
+      <div className="lg:col-span-6 bg-white sm:p-6 rounded-xl shadow-lg">
+        <h2 className="text-xl text-[#05004E] px-3 py-2 sm:px-0 sm:py-0 font-semibold sm:mb-6">
+          Recent Printed Cards
+        </h2>
 
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead className="text-sm text-[#737791] border-b-2 border-gray-100">
               <tr>
                 <th className="px-6 py-3 font-medium text-left">Name</th>
-                <th className="px-6 py-3 font-medium text-left hidden md:table-cell">Email</th>
-                <th className="px-6 py-3 font-medium text-left">Joined On</th>
+                <th className="px-6 py-3 font-medium text-left hidden md:table-cell">
+                  Message
+                </th>
+                <th className="px-6 py-3 font-medium text-left">Date</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {recentStudents.length > 0 ? (
-                recentStudents.slice(0,5).map((student) => (
-                  <tr
-                    key={student._id}
-                    className="text-gray-800 transition-colors duration-150 hover:bg-[#F9F7FF] hover:shadow-sm" // Highlight hover
-                  >
-                    <td className="px-6 py-4 font-medium text-[#05004E] flex items-center">
-                        <Users size={16} className="text-gray-400 mr-2" />
-                        {student.name}
+              {recentPrintedCards.length > 0 ? (
+                recentPrintedCards.map((card, index) => (
+                  <tr key={index} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 font-medium">
+                      <Users size={14} className="inline mr-2 text-gray-400" />
+                      {card.recipient_name || "-"}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 hidden md:table-cell">{student.email}</td>
+                    <td className="px-6 py-4 text-sm truncate text-gray-500 hidden md:table-cell">
+                      {card.message || "—"}
+                    </td>
                     <td className="px-6 py-4 text-sm text-gray-500">
-                      {new Date(student.createdAt).toLocaleDateString()}
+                      {new Date(card.updatedAt).toLocaleDateString() || "-"}
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                    <td colSpan="3" className="text-center py-6 text-gray-500">No recent student records available.</td>
+                  <td colSpan="3" className="text-center py-6 text-gray-500">
+                    No recent printed cards.
+                  </td>
                 </tr>
               )}
             </tbody>
@@ -411,39 +394,54 @@ const VendorsDashboard = () => {
       </div>
 
       {/* --- IMPROVED RECENT CARDS PANEL --- */}
-      <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow-lg">
-        <h2 className="text-xl text-[#05004E] font-semibold mb-6">Recent Cards Sent</h2>
+      <div className="lg:col-span-6 bg-white p-6 rounded-xl shadow-lg">
+        <h2 className="text-xl text-[#05004E] font-semibold mb-6">
+          Recent Delivered Cards{" "}
+        </h2>
 
-        <div className="space-y-4">
-          {recentCards.length > 0 ? (
-            recentCards.slice(0,3).map((card) => (
-              <div
-                key={card._id}
-                className="bg-gray-50 rounded-xl p-4 text-sm transition duration-200 hover:shadow-lg hover:border-b-4 hover:border-[#8B78D0] border-2 border-gray-100" // Added more distinct styling
-              >
-                <div className="flex justify-between items-start mb-2">
-                    <p className="font-semibold text-gray-800 flex items-center">
-                        <Send size={14} className="text-[#8B78D0] mr-2" />
-                        {card.sender?.name || 'Anonymous'} → {card.recipient_name}
-                    </p>
-                    <p className="text-xs text-gray-400 whitespace-nowrap">
-                        {new Date(card.sent_at).toLocaleDateString()}
-                    </p>
-                </div>
-                
-                <p className="text-gray-700 italic truncate text-sm border-t pt-2 border-gray-200">
-                  <MessageSquare size={12} className="inline-block mr-1 text-gray-500 mb-1" />
-                  “{card.message}”
-                </p>
-              </div>
-            ))
-          ) : (
-            <div className="text-center py-6 text-gray-500 text-sm">No recent cards found.</div>
-          )}
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead className="text-sm text-[#737791] border-b-2 border-gray-100">
+              <tr>
+                <th className="px-6 py-3 font-medium text-left">Name</th>
+                <th className="px-6 py-3 font-medium text-left hidden md:table-cell">
+                  Message
+                </th>
+                <th className="px-6 py-3 font-medium text-left">
+                  Delivered On
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {recentDeliveredCards.length > 0 ? (
+                recentDeliveredCards.map((card, index) => (
+                  <tr key={index} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 font-medium">
+                      <PackageCheck
+                        size={14}
+                        className="inline mr-2 text-green-500"
+                      />
+                      {card.recipient_name || "Not found"}
+                    </td>
+                    <td className="px-6 py-4 text-sm truncate text-gray-500 hidden md:table-cell">
+                      {card.message || "—"}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">
+                      {new Date(card.updatedAt).toLocaleDateString() || "-"}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3" className="text-center py-6 text-gray-500">
+                    No recent delivered cards.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
-
-
     </div>
   );
 };

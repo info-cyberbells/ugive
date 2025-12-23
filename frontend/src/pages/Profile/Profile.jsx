@@ -219,6 +219,10 @@ const ProfileSettings = () => {
 
     let fieldsToCheck = ["fullName", "phoneNumber", "collegeId"];
 
+     if (role === "vendor") {
+    fieldsToCheck = ["fullName", "phoneNumber"];
+  }
+
     // Check if any formData field differs from initialProfile
     const basicChanged = fieldsToCheck.some(
       (field) => formData[field] !== initialProfile[field]
