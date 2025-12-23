@@ -297,7 +297,7 @@ const handleExportCSV = () => {
 
         {/* Table/List Container */}
         <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-          {isLoading || (data.length === 0 && !isError) ? (
+          {isLoading ? (
             <SkeletonTable />
           ) : data && data.length > 0 ? (
             <>
