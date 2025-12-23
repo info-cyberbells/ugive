@@ -195,6 +195,8 @@ export const getAdminDashboard = async (req, res) => {
       cardsToday,
       cardsLast7Days,
       cardsLast30Days,
+      printedCards,
+      deliveredCards,
       recentCards,
       recentStudents
     ] = await Promise.all([
@@ -221,6 +223,16 @@ export const getAdminDashboard = async (req, res) => {
       Card.countDocuments({
         sender: { $in: studentIds },
         sent_at: { $gte: thirtyDaysAgo }
+      }),
+
+      Card.countDocuments({
+        sender: { $in: studentIds },
+        status: "printed"
+      }),
+
+      Card.countDocuments({
+        sender: { $in: studentIds },
+        status: "delivered"
       }),
 
       // Recent 5 cards
@@ -255,7 +267,9 @@ export const getAdminDashboard = async (req, res) => {
         cardStats: {
           cardsToday,
           cardsLast7Days,
-          cardsLast30Days
+          cardsLast30Days,
+          printedCards,
+          deliveredCards
         },
         recentActivity: {
           recentCards,
