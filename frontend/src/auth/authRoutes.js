@@ -158,7 +158,10 @@ export const USER_ENDPOINTS = {
 
 
     VENDOR_GET_ALL_REWARDS: `${API_BASE_URL}/vendor/rewards`,
-    VENDOR_VIEW_REWARD: `${API_BASE_URL}/vendor/rewards`,
+    VENDOR_CREATE_REWARD: `${API_BASE_URL}/vendor/create-reward`,
+    VENDOR_VIEW_REWARD: `${API_BASE_URL}/vendor/reward`,
+    VENDOR_UPDATE_REWARD: `${API_BASE_URL}/vendor/update-reward`,
+    VENDOR_DELETE_REWARD: `${API_BASE_URL}/vendor/delete-reward`,
 
     VENDOR_PRINTED_CARDS: `${API_BASE_URL}/vendor/printed-reward-cards`,
     VENDOR_UPDATE_CARD_STATUS: `${API_BASE_URL}/vendor/cards`,

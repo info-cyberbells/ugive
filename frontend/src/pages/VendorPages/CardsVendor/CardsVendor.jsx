@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Trash2, Filter, Download, Plus, ArrowUpDown } from "lucide-react";
+import { Trash2, Filter, Download, Plus, ArrowUpDown, X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  deleteCardByAdmin,
-  getAdminStudentCards,
-  updateCardStatusByAdmin,
-} from "../../../features/adminCardSlice";
-import ConfirmationModal from "../../Admin/AdminModals/DeleteModalAdmin";
-import ViewCardModal from "../../Admin/AdminModals/ViewSentCardDetails";
+import ViewCardModal from "../ModalsVendor/ViewPrintedCard";
 import { useToast } from "../../../context/ToastContext";
-import { getPrintedCards, updateCardStatusByVendor } from "../../../features/vendorCardSlice";
+import {
+  getPrintedCards,
+  updateCardStatusByVendor,
+} from "../../../features/vendorCardSlice";
 
 const CardsVendor = () => {
   const [selectedCardIds, setSelectedCardIds] = useState([]);
@@ -20,19 +17,28 @@ const CardsVendor = () => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [viewCard, setViewCard] = useState(null);
 
+  const [isStatusChangeModalOpen, setIsStatusChangeModalOpen] = useState(false);
+  const [statusChangeData, setStatusChangeData] = useState({
+    id: null,
+    currentStatus: "",
+    newStatus: "",
+  });
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteMode, setDeleteMode] = useState("single");
   const [cardToDelete, setCardToDelete] = useState(null);
 
   const {
-    adminCards,
-    
-   
-    
-
-  } = useSelector((state) => state.adminCard);
-
-  const {printedCards, isLoading, page, isError,isSuccess, limit, total, totalPages, message, } = useSelector((state)=> state.vendorCards);
+    printedCards,
+    isLoading,
+    page,
+    isError,
+    isSuccess,
+    limit,
+    total,
+    totalPages,
+    message,
+  } = useSelector((state) => state.vendorCards);
 
   useEffect(() => {
     dispatch(getPrintedCards({ page, limit }));
@@ -44,52 +50,26 @@ const CardsVendor = () => {
     selectedCardIds.length === data.length && data.length > 0;
   const isAnySelected = selectedCardIds.length > 0;
 
-  const handleStatusChange = (id, status) => {
-    dispatch(updateCardStatusByVendor({ id, status }));
-  };
+  // const handleStatusChange = (id, status) => {
+  //   dispatch(updateCardStatusByVendor({ id, status }));
+  // };
 
-  const handleConfirmDelete = async () => {
-    try {
-      if (deleteMode === "single" && cardToDelete?._id) {
-        await dispatch(deleteCardByAdmin(cardToDelete._id)).unwrap();
-        showToast("Card deleted successfully", "success");
-      }
-
-      if (deleteMode === "bulk") {
-        await Promise.all(
-          selectedCardIds.map((id) => dispatch(deleteCardByAdmin(id)).unwrap())
-        );
-
-        showToast(
-          `${selectedCardIds.length} cards deleted successfully`,
-          "success"
-        );
-
-        setSelectedCardIds([]);
-      }
-    } catch (error) {
-      showToast(error || "Failed to delete card(s)", "error");
-    } finally {
-      setIsDeleteModalOpen(false);
-      setCardToDelete(null);
-    }
-  };
+  const handleConfirmDelete = async () => {};
 
   const handlePageChange = (newPage) => {
-  if (newPage < 1 || newPage > totalPages) return;
-  dispatch(getPrintedCards({ page: newPage, limit }));
-};
+    if (newPage < 1 || newPage > totalPages) return;
+    dispatch(getPrintedCards({ page: newPage, limit }));
+  };
 
-const handleLimitChange = (newLimit) => {
-  dispatch(
-    getPrintedCards({
-      page: 1,          
-      limit: Number(newLimit),
-    })
-  );
-  setSelectedCardIds([]); 
-};
-
+  const handleLimitChange = (newLimit) => {
+    dispatch(
+      getPrintedCards({
+        page: 1,
+        limit: Number(newLimit),
+      })
+    );
+    setSelectedCardIds([]);
+  };
 
   const handleCloseModal = () => {
     setIsDeleteModalOpen(false);
@@ -122,60 +102,138 @@ const handleLimitChange = (newLimit) => {
     });
   };
 
- const TableSkeleton = () => (
-  <>
-    <thead>
-      <tr className="bg-gray-50 animate-pulse">
-        {Array.from({ length: 7 }).map((_, i) => (
-          <th key={i} className="px-6 py-3">
-            <div className="h-4 w-20 bg-gray-200 rounded" />
-          </th>
-        ))}
-      </tr>
-    </thead>
+  const handleStatusChange = (id, newStatus, currentStatus) => {
+    if (currentStatus === "printed" && newStatus === "delivered") {
+      setStatusChangeData({ id, currentStatus, newStatus });
+      setIsStatusChangeModalOpen(true);
+      return;
+    }
+    dispatch(updateCardStatusByVendor({ id, status: newStatus }));
+  };
 
-    <tbody className="bg-white divide-y divide-gray-200">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <tr key={i} className="animate-pulse">
-          <td className="px-2 sm:px-6 sm:py-4">
-            <div className="h-4 w-4 bg-gray-200 rounded" />
-          </td>
-          <td className="px-6 py-4">
-            <div className="h-4 w-28 bg-gray-200 rounded" />
-          </td>
-          <td className="px-6 py-4 hidden md:table-cell">
-            <div className="h-4 w-32 bg-gray-200 rounded" />
-          </td>
-          <td className="px-6 py-4 hidden lg:table-cell">
-            <div className="h-4 w-20 bg-gray-200 rounded" />
-          </td>
-          <td className="px-6 py-4">
-            <div className="h-8 w-24 bg-gray-200 rounded" />
-          </td>
-          <td className="px-6 py-4 hidden lg:table-cell">
-            <div className="h-4 w-40 bg-gray-200 rounded" />
-          </td>
-          <td className="px-6 py-4">
-            <div className="h-4 w-16 bg-gray-200 rounded" />
-          </td>
+  const handleConfirmStatusChange = () => {
+    dispatch(
+      updateCardStatusByVendor({
+        id: statusChangeData.id,
+        status: statusChangeData.newStatus,
+      })
+    );
+    setIsStatusChangeModalOpen(false);
+  };
+
+  const handleCloseStatusModal = () => {
+    setIsStatusChangeModalOpen(false);
+  };
+
+  const handleExport = () => {
+    const selected = data.filter((card) => selectedCardIds.includes(card._id));
+
+    if (selected.length === 0) {
+      showToast("No Reward selected!", "error");
+      return;
+    }
+
+    const headers = [
+      "Sender Name",
+      "Sender Email",
+      "Recipient Name",
+      "Recipient Email",
+      "Reward",
+      "College",
+      "Status",
+      "Message",
+      "Sent At",
+    ];
+
+    const rows = selected.map((card) => [
+      card.sender_name,
+      card.sender?.email || "",
+      `${card.recipient_name}${
+        card.recipient_last_name ? ` ${card.recipient_last_name}` : ""
+      }`,
+      card.recipient_email,
+      card.reward?.name || "",
+      card.college_name || "",
+      card.status,
+      card.message || "",
+      new Date(card.sent_at).toLocaleString(),
+    ]);
+
+    // Fix CSV — wrap values in quotes to prevent merging
+    const escapeCSV = (value) => {
+      if (value === null || value === undefined) return "";
+      const str = String(value).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers, ...rows].map((row) => row.map(escapeCSV).join(",")).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.href = encodedUri;
+    link.download = "sent_card.csv";
+    document.body.appendChild(link);
+    link.click();
+
+    showToast("CSV exported successfully!", "success");
+  };
+
+  const TableSkeleton = () => (
+    <>
+      <thead>
+        <tr className="bg-gray-50 animate-pulse">
+          {Array.from({ length: 7 }).map((_, i) => (
+            <th key={i} className="px-6 py-3">
+              <div className="h-4 w-20 bg-gray-200 rounded" />
+            </th>
+          ))}
         </tr>
-      ))}
-    </tbody>
-  </>
-);
+      </thead>
 
-if (isError) {
-  return (
-    <main className="mt-14 lg:ml-60 font-[Inter] min-h-screen bg-gray-50 p-8">
-      <div className="flex justify-center items-center h-64">
-        <p className="text-red-500">
-          Error: {typeof message === "string" ? message : "Failed to load data"}
-        </p>
-      </div>
-    </main>
+      <tbody className="bg-white divide-y divide-gray-200">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <tr key={i} className="animate-pulse">
+            <td className="px-2 sm:px-6 sm:py-4">
+              <div className="h-4 w-4 bg-gray-200 rounded" />
+            </td>
+            <td className="px-6 py-4">
+              <div className="h-4 w-28 bg-gray-200 rounded" />
+            </td>
+            <td className="px-6 py-4 hidden md:table-cell">
+              <div className="h-4 w-32 bg-gray-200 rounded" />
+            </td>
+            <td className="px-6 py-4 hidden lg:table-cell">
+              <div className="h-4 w-20 bg-gray-200 rounded" />
+            </td>
+            <td className="px-6 py-4">
+              <div className="h-8 w-24 bg-gray-200 rounded" />
+            </td>
+            <td className="px-6 py-4 hidden lg:table-cell">
+              <div className="h-4 w-40 bg-gray-200 rounded" />
+            </td>
+            <td className="px-6 py-4">
+              <div className="h-4 w-16 bg-gray-200 rounded" />
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </>
   );
-}
 
+  if (isError) {
+    return (
+      <main className="mt-14 lg:ml-60 font-[Inter] min-h-screen bg-gray-50 p-8">
+        <div className="flex justify-center items-center h-64">
+          <p className="text-red-500">
+            Error:{" "}
+            {typeof message === "string" ? message : "Failed to load data"}
+          </p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <div className="min-h-screen lg:ml-60 mt-14 font-[Inter] bg-gray-50 p-4 sm:p-8 ">
@@ -192,7 +250,7 @@ if (isError) {
           <div className="grid gap-3 sm:flex sm:w-auto w-full">
             {/* Action Buttons Group */}
             <div className="grid grid-cols-3 gap-3 sm:flex sm:space-x-3 w-full sm:w-auto">
-              <button
+              {/* <button
                 onClick={() => {
                   setDeleteMode("bulk");
                   setIsDeleteModalOpen(true);
@@ -207,11 +265,12 @@ if (isError) {
               >
                 Delete ({selectedCardIds.length})
                 <Trash2 className="h-5 w-5 ml-2 hidden sm:inline" />
-              </button>
+              </button> */}
 
               {/* Export Button */}
               <button
-                className={`flex items-center justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
+                onClick={handleExport}
+                className={`flex items-center justify-center cursor-pointer px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
                   isAnySelected
                     ? "text-gray-700 bg-white hover:bg-gray-50"
                     : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
@@ -221,7 +280,6 @@ if (isError) {
                 Export
                 <Download className="h-4 w-4 ml-2 hidden sm:inline" />
               </button>
-             
             </div>
           </div>
         </div>
@@ -231,128 +289,128 @@ if (isError) {
           {isLoading || data.length > 0 ? (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200 ">
-              {isLoading ? ( <TableSkeleton />) : ( <> 
-                <thead>
-                  <tr className="bg-gray-50">
-                    {/* Selection Checkbox Header */}
-                    <th
-                      scope="col"
-                      className=" px-2 sm:px-6 sm:py-3 w-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isAllSelected}
-                        onChange={handleSelectAll}
-                        className="form-checkbox cursor-pointer h-2 w-2 sm:h-4 sm:w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
-                      />
-                    </th>
-
-                    <th className="sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Sender
-                    </th>
-                    <th className="px-6 py-3 hidden md:table-cell text-left text-xs font-medium text-gray-500 uppercase">
-                      Receiver
-                    </th>
-                    <th className="px-6 py-3 hidden lg:table-cell text-left text-xs font-medium text-gray-500 uppercase">
-                      Reward
-                    </th>
-                    {/* <th className="px-6 py-3 hidden lg:table-cell text-left text-xs font-medium text-gray-500 uppercase">
-                      Card ID
-                    </th> */}
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                      Print Status
-                    </th>
-                    {/* <th className="px-6 py-3 hidden lg:table-cell text-left text-xs font-medium text-gray-500 uppercase">
-                      Delivery Status
-                    </th> */}
-                    <th className="px-6 py-3 hidden lg:table-cell text-left text-xs font-medium text-gray-500 uppercase">
-                      Description
-                    </th>
-                    {/* <th
-                      scope="col"
-                      className=" sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                    >
-                      <div className="flex items-center gap-1">Actions</div>
-                    </th> */}
-                  </tr>
-                </thead>
-
-                {/* Table Body */}
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {data.map((card) => (
-                    <tr
-                      key={card._id}
-                      className={`transition duration-150 ${
-                        selectedCardIds.includes(card._id)
-                          ? "bg-indigo-50 hover:bg-indigo-100"
-                          : "hover:bg-gray-50"
-                      }`}
-                    >
-                      {/* Individual Selection Checkbox */}
-                      <td className="px-2 sm:px-6 sm:py-4 whitespace-nowrap w-4">
-                        <input
-                          type="checkbox"
-                          checked={selectedCardIds.includes(card._id)}
-                          onChange={() => handleSelectCard(card._id)}
-                          className="form-checkbox cursor-pointer h-2 w-2  sm:h-4 sm:w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
-                        />
-                      </td>
-
-                      {/* Name Column (Bold Text) */}
-                      {/* Sender Name */}
-                      <td className="sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {card.sender_name}
-                      </td>
-
-                      {/* Receiver Name */}
-                      <td className="px-6 py-4 hidden md:table-cell whitespace-nowrap text-sm text-gray-600">
-                        {card.recipient_name || "Invaild Receiver"}
-                      </td>
-
-                      <td className="px-6 py-4 hidden lg:table-cell whitespace-nowrap text-sm text-gray-600">
-                        {card.reward?.name || "N/A"}
-                      </td>
-                      {/* <td className="px-6 py-4 hidden lg:table-cell whitespace-nowrap text-sm text-gray-600">
-                        {card.cardId || "N/A"}
-                      </td> */}
-
-                      {/* Print Status */}
-                      <td className=" sm:px-6 py-4 whitespace-nowrap text-sm">
-                        <select
-                          value={card.status}
-                          onChange={(e) =>
-                            handleStatusChange(card._id, e.target.value)
-                          }
-                          className="px-2 py-1 border rounded-md text-sm
-               bg-white focus:outline-none focus:ring-1
-               focus:ring-indigo-500"
+                {isLoading ? (
+                  <TableSkeleton />
+                ) : (
+                  <>
+                    <thead>
+                      <tr className="bg-gray-50">
+                        {/* Selection Checkbox Header */}
+                        <th
+                          scope="col"
+                          className=" px-2 sm:px-6 sm:py-3 w-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                         >
-                          <option value="printed">Printed</option>
-                          <option value="delivered">Delivered</option>
-                        </select>
-                      </td>
+                          <input
+                            type="checkbox"
+                            checked={isAllSelected}
+                            onChange={handleSelectAll}
+                            className="form-checkbox cursor-pointer h-2 w-2 sm:h-4 sm:w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
+                          />
+                        </th>
 
-                      {/* Delivery Status */}
-                      {/* <td className="px-6 py-4 hidden lg:table-cell whitespace-nowrap text-sm">
-                        {getDeliveryBadge(card.status)}
-                      </td> */}
+                        <th className="sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Sender
+                        </th>
+                        <th className="px-6 py-3 hidden md:table-cell text-left text-xs font-medium text-gray-500 uppercase">
+                          Receiver
+                        </th>
+                        <th className="px-6 py-3 hidden lg:table-cell text-left text-xs font-medium text-gray-500 uppercase">
+                          Reward
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                          Print Status
+                        </th>
 
-                      {/* Description */}
-                      <td className="px-6 py-4 hidden lg:table-cell whitespace-nowrap text-sm text-gray-600">
-                        {card.message || "N/A"}
-                      </td>
-                      {/* <td className="sm:px-6 py-4 space-x-2 whitespace-nowrap text-sm">
-                        <button
-                          onClick={() => {
-                            setViewCard(card);
-                            setIsViewModalOpen(true);
-                          }}
-                          className="cursor-pointer text-blue-600 hover:text-blue-900"
+                        <th className="px-6 py-3 hidden lg:table-cell text-left text-xs font-medium text-gray-500 uppercase">
+                          Description
+                        </th>
+                        <th
+                          scope="col"
+                          className=" sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                         >
-                          View
-                        </button>
+                          <div className="flex items-center gap-1">Actions</div>
+                        </th>
+                      </tr>
+                    </thead>
 
-                        <button
+                    {/* Table Body */}
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {data.map((card) => (
+                        <tr
+                          key={card._id}
+                          className={`transition duration-150 ${
+                            selectedCardIds.includes(card._id)
+                              ? "bg-indigo-50 hover:bg-indigo-100"
+                              : "hover:bg-gray-50"
+                          }`}
+                        >
+                          {/* Individual Selection Checkbox */}
+                          <td className="px-2 sm:px-6 sm:py-4 whitespace-nowrap w-4">
+                            <input
+                              type="checkbox"
+                              checked={selectedCardIds.includes(card._id)}
+                              onChange={() => handleSelectCard(card._id)}
+                              className="form-checkbox cursor-pointer h-2 w-2  sm:h-4 sm:w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
+                            />
+                          </td>
+
+                          {/* Name Column (Bold Text) */}
+                          {/* Sender Name */}
+                          <td className="sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {card.sender_name}
+                          </td>
+
+                          {/* Receiver Name */}
+                          <td className="px-6 py-4 hidden md:table-cell whitespace-nowrap text-sm text-gray-600">
+                            {card.recipient_name || "Invaild Receiver"}
+                          </td>
+
+                          <td className="px-6 py-4 hidden lg:table-cell whitespace-nowrap text-sm text-gray-600">
+                            {card.reward?.name || "N/A"}
+                          </td>
+
+                          {/* Print Status */}
+                          <td className=" sm:px-6 py-4 whitespace-nowrap text-sm">
+                            <select
+                              value={card.status}
+                              disabled={card.status === "delivered"}
+                              onChange={(e) =>
+                                handleStatusChange(
+                                  card._id,
+                                  e.target.value,
+                                  card.status
+                                )
+                              }
+                              className={`px-2 py-1 border rounded-md text-sm bg-white focus:outline-none focus:ring-1
+    ${
+      card.status === "delivered"
+        ? "cursor-not-allowed bg-gray-100 text-gray-500"
+        : "focus:ring-indigo-500"
+    }`}
+                            >
+                              <option value="printed" disabled>
+                                Printed
+                              </option>
+                              <option value="delivered">Delivered</option>
+                            </select>
+                          </td>
+
+                          {/* Description */}
+                          <td className="px-6 py-4 hidden lg:table-cell whitespace-nowrap text-sm text-gray-600">
+                            {card.message || "N/A"}
+                          </td>
+                          <td className="sm:px-6 py-4 space-x-2 whitespace-nowrap text-sm">
+                            <button
+                              onClick={() => {
+                                setViewCard(card);
+                                setIsViewModalOpen(true);
+                              }}
+                              className="cursor-pointer text-blue-600 hover:text-blue-900"
+                            >
+                              View
+                            </button>
+
+                            {/* <button
                           onClick={() => {
                             setDeleteMode("single");
                             setCardToDelete(card);
@@ -361,13 +419,13 @@ if (isError) {
                           className="cursor-pointer text-red-600 hover:text-red-900"
                         >
                           Delete
-                        </button>
-                      </td> */}
-                    </tr>
-                  ))}
-                </tbody>
-              </>)}
-              
+                        </button> */}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </>
+                )}
               </table>
               <div className="flex justify-between items-center p-2 sm:p-4 bg-white border-t">
                 {/* Limit Dropdown */}
@@ -452,19 +510,50 @@ if (isError) {
           )}
         </div>
       </div>
-      <ConfirmationModal
-        isOpen={isDeleteModalOpen}
-        onClose={handleCloseModal}
-        onConfirm={handleConfirmDelete}
-        count={deleteMode === "bulk" ? selectedCardIds.length : 1}
-        entity="card"
-        itemName={cardToDelete?.message || "this card"}
-      />
       <ViewCardModal
         isOpen={isViewModalOpen}
         onClose={handleCloseViewModal}
         card={viewCard}
       />
+      {isStatusChangeModalOpen && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-semibold">Confirm Status Change</h3>
+              <button onClick={handleCloseStatusModal}>
+                <X className="w-5 h-5 cursor-pointer text-gray-500" />
+              </button>
+            </div>
+
+            <div className="p-6">
+              <p className="text-gray-600 mb-4">
+                Are you sure you want to mark this card as <b>Delivered</b>?
+              </p>
+              <div className="flex justify-between text-sm">
+                <span>Current:</span>
+                <span className="font-semibold capitalize">
+                  {statusChangeData.currentStatus}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex gap-3 p-4 border-t bg-gray-50">
+              <button
+                onClick={handleCloseStatusModal}
+                className="flex-1 cursor-pointer border rounded-lg py-2"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmStatusChange}
+                className="flex-1 cursor-pointer bg-indigo-600 text-white rounded-lg py-2"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

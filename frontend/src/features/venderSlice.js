@@ -76,7 +76,7 @@ const vendorSlice = createSlice({
     name: "vendor",
     initialState: {
         vendorProfile: null,
-        vendorDashBoard: [],
+        vendorDashBoard: null,
         isLoading: false,
         isError: false,
         isSuccess: false,
@@ -88,7 +88,7 @@ const vendorSlice = createSlice({
     reducers: {
         reset: (state) => {
             state.vendorProfile= null;
-            state.vendorDashBoard= [];
+            state.vendorDashBoard= null;
             state.isLoading= false;
             state.isError= false;
             state.isSuccess= false;

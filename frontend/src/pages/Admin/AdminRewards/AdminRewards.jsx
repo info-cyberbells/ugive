@@ -296,7 +296,7 @@ const AdminRewardsManage = () => {
                             {/* Add New Student Button (Always active) */}
                             <button
                                 onClick={openModalForAdd}
-                                className="flex cursor-pointer items-center px-4 py-2 text-xs sm:text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md"
+                className="flex cursor-pointer items-center px-4 py-2 text-xs sm:text-sm font-medium text-white bg-[#6955A5] hover:bg-[#533f8e] hover:scale-[1.02] transition duration-150 border border-transparent rounded-lg  shadow-md"
                             >
                                 <Plus className="h-5 w-5 mr-2 -ml-1 hidden sm:inline" />
                                 Add New Reward

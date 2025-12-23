@@ -200,6 +200,56 @@ const handleConfirmDelete = () => {
 };
 
 
+  const handleExport = () => {
+    const selected = data.filter((student) => selectedStudentIds.includes(student._id));
+
+    if (selected.length === 0) {
+      showToast("No Student selected!", "error");
+      return;
+    }
+
+ const headers = [
+  "Name",
+  "Email",
+  "Role",
+  "College",
+  "Phone Number",
+  "Student University ID",
+  "Created At",
+];
+
+
+   const rows = selected.map((student) => [
+  student.name,
+  student.email,
+  student.role,
+  student.college?.name || "",
+  student.phoneNumber || "",
+  student.studentUniId || "",
+  new Date(student.createdAt).toLocaleString(),
+]);
+
+
+    // Fix CSV — wrap values in quotes to prevent merging
+    const escapeCSV = (value) => {
+      if (value === null || value === undefined) return "";
+      const str = String(value).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers, ...rows].map((row) => row.map(escapeCSV).join(",")).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.href = encodedUri;
+    link.download = "students.csv";
+    document.body.appendChild(link);
+    link.click();
+
+    showToast("CSV exported successfully!", "success");
+  };
 
 
 
@@ -293,6 +343,7 @@ if (isError) {
 
               {/* Export Button */}
               <button
+              onClick={handleExport}
                 className={`flex items-center justify-center cursor-pointer px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
                   isAnySelected
                     ? "text-gray-700 bg-white hover:bg-gray-50"

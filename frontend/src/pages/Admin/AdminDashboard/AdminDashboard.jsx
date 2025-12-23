@@ -6,7 +6,7 @@ import {
   ShoppingCart,
   PackageCheck,
   Users, School, CreditCard, Calendar,  Send,
-  MessageSquare,
+  MessageSquare,Printer,
 } from "lucide-react";
 import {
   BarChart,
@@ -20,7 +20,7 @@ import {
   ResponsiveContainer,
   Legend,
   Area,
-  AreaChart,
+  AreaChart,PieChart, Pie
 } from "recharts";
 import { useDispatch, useSelector } from "react-redux";
 import { getAdminDashboardData } from "../../../features/adminSlice";
@@ -66,7 +66,7 @@ const AdminDashboard = () => {
 
   const dispatch = useDispatch()
 
-  const { adminDashboard } = useSelector((state) => state.admin);
+  const { adminDashboard, isAdminLoading } = useSelector((state) => state.admin);
   
   useEffect(()=>{
     dispatch(getAdminDashboardData());
@@ -76,6 +76,10 @@ const AdminDashboard = () => {
   const cardStats = adminDashboard?.cardStats;
   const recentCards = adminDashboard?.recentActivity?.recentCards || [];
   const recentStudents = adminDashboard?.recentActivity?.recentStudents || [];
+
+ 
+
+
 
  const weeklySummary = [
   {
@@ -107,6 +111,60 @@ const AdminDashboard = () => {
     icon: Calendar,
   },
 ];
+
+const AdminDashboardSkeleton = () => (
+  <div className="lg:ml-60 mt-14 p-6 min-h-screen bg-gray-50 grid grid-cols-1 lg:grid-cols-12 gap-6 animate-pulse">
+    
+    {/* Overview */}
+    <div className="lg:col-span-12 bg-white p-6 rounded-xl shadow-md">
+      <div className="h-5 w-32 bg-gray-200 rounded mb-4" />
+      <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="p-4 rounded-xl bg-gray-100">
+            <div className="h-6 w-6 bg-gray-300 rounded mb-3" />
+            <div className="h-6 w-12 bg-gray-300 rounded mb-2" />
+            <div className="h-4 w-28 bg-gray-200 rounded" />
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Recent Students */}
+    <div className="lg:col-span-8 bg-white p-6 rounded-xl shadow-lg">
+      <div className="h-5 w-40 bg-gray-200 rounded mb-6" />
+      <div className="space-y-4">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="flex justify-between items-center">
+            <div className="h-4 w-40 bg-gray-200 rounded" />
+            <div className="h-4 w-48 bg-gray-200 rounded hidden md:block" />
+            <div className="h-4 w-24 bg-gray-200 rounded" />
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Recent Cards Sent */}
+    <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow-lg">
+      <div className="h-5 w-36 bg-gray-200 rounded mb-6" />
+      <div className="space-y-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="p-4 bg-gray-100 rounded-xl">
+            <div className="flex justify-between mb-2">
+              <div className="h-4 w-32 bg-gray-300 rounded" />
+              <div className="h-3 w-16 bg-gray-300 rounded" />
+            </div>
+            <div className="h-3 w-full bg-gray-200 rounded" />
+          </div>
+        ))}
+      </div>
+    </div>
+
+  </div>
+);
+
+if (isAdminLoading) {
+  return <AdminDashboardSkeleton />;
+}
 
 
   return (
@@ -151,27 +209,35 @@ const AdminDashboard = () => {
 
       {/* Active Streaks */}
       <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow-md">
-        <h2 className="text-lg font-semibold mb-2">Active Streaks</h2>
-        <ResponsiveContainer width="100%" height={150}>
-          <BarChart data={universityParticipation}>
-            {/* <CartesianGrid strokeDasharray="3 3" /> */}
-            <XAxis dataKey="day" />
-            <Bar
-              dataKey="online"
-              fill="#FFE2E5"
-              barSize={20}
-              radius={[30, 30, 0, 0]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+              <h2 className="text-lg font-semibold mb-4">Cards Stats</h2>
 
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-[#DCFCE7] rounded-xl p-4">
+            <Printer className="mb-2 text-[#166534]" size={22} />
+            <h3 className="text-xl font-semibold">
+              {cardStats?.printedCards ?? 0}
+            </h3>
+            <p className="text-sm text-[#166534] font-medium">
+              Cards Printed 
+            </p>
+          </div>
+
+          <div className="bg-[#F3E8FF] rounded-xl p-4">
+            <Send className="mb-2 text-[#6B21A8]" size={22} />
+            <h3 className="text-xl font-semibold">
+              {cardStats?.deliveredCards ?? 0}
+            </h3>
+            <p className="text-sm text-[#6B21A8] font-medium">
+              Cards Delivered 
+            </p>
+          </div>
+      </div>
+</div>
       {/* University Participation */}
-      <div className="lg:col-span-8 bg-white p-6 rounded-xl shadow-md">
+      {/* <div className="lg:col-span-8 bg-white p-6 rounded-xl shadow-md">
         <h2 className="text-lg font-semibold mb-4">University Participation</h2>
         <ResponsiveContainer width="100%" height={250}>
           <BarChart data={universityParticipation}>
-            {/* <CartesianGrid strokeDasharray="3 3" /> */}
             <CartesianGrid
               stroke="#E5E7EB"
               vertical={false}
@@ -185,26 +251,24 @@ const AdminDashboard = () => {
             <Legend />
           </BarChart>
         </ResponsiveContainer>
-      </div>
+      </div> */}
 
       {/* Active Status */}
-      <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow-md">
+      {/* <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow-md">
         <h2 className="text-lg font-semibold mb-4">
           Active Status of University
         </h2>
         <ResponsiveContainer width="100%" height={250}>
           <AreaChart
-            data={activeStatus}
+            data={statusChartData}
             margin={{ top: 10, right: 0, left: 0, bottom: 0 }}
           >
             <defs>
-              {/* Shadow for Last */}
               <linearGradient id="shadowLast" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#D2AFF97A" stopOpacity="0.75" />
                 <stop offset="70%" stopColor="#8B78D0" stopOpacity="0" />
               </linearGradient>
 
-              {/* Shadow for Current */}
               <linearGradient id="shadowCurrent" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#FA5A7D" stopOpacity="0.35" />
                 <stop offset="50%" stopColor="#FFA559" stopOpacity="0" />
@@ -227,7 +291,7 @@ const AdminDashboard = () => {
 
             <Area
               type="monotone"
-              dataKey="last"
+              dataKey="printed"
               stroke="none"
               fill="url(#shadowLast)"
               legendType="none"
@@ -242,7 +306,7 @@ const AdminDashboard = () => {
 
             <Line
               type="monotone"
-              dataKey="last"
+              dataKey="printed"
               stroke="#8B78D0"
               strokeWidth={1}
               dot={{
@@ -278,7 +342,8 @@ const AdminDashboard = () => {
             <Legend />
           </AreaChart>
         </ResponsiveContainer>
-      </div>
+      </div> */}
+
 
       {/* <div className="lg:col-span-8 bg-white p-6 rounded-xl shadow-md">
         <h2 className="text-lg font-semibold mb-4">Activity Graph</h2>

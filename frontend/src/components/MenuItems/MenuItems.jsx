@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { resetStudentState } from "../../features/studentDataSlice";
 import { clearProfile } from "../../features/superadminProfileSlice";
+import { adminreset } from "../../features/adminSlice";
 
 const ROLE_BASED_MENUS = {
   super_admin: [
@@ -109,6 +110,7 @@ const MenuItems = ({ setIsSidebarOpen }) => {
     dispatch(logout());
     dispatch(resetStudentState());
     dispatch(clearProfile());
+    dispatch(adminreset());
     window.dispatchEvent(new Event("authChange"));
     navigate("/");
   };
@@ -172,7 +174,7 @@ const MenuItems = ({ setIsSidebarOpen }) => {
                 to={"/" + section.id}
                 onClick={() => setIsSidebarOpen(false)}
                 className={({ isActive }) =>
-                  `w-full flex items-center gap-3 py-2 px-2 rounded-lg cursor-pointer
+                  `w-full flex items-center gap-3 py-2 lg:py-1.5 2xl:py-2 px-2 rounded-lg cursor-pointer
         ${
           isActive
             ? "bg-[#0000000A] font-semibold text-black"

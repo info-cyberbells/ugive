@@ -140,6 +140,13 @@ const SuperAdminDashboard = () => {
       bgColor: "bg-[#E6C8FF]",
       link: "/manage-rewards",
     },
+    {
+      title: "Total Vendors",
+      value: overview.totalVendors,
+      subtitle: "Available vendors",
+      bgColor: "bg-[#2D4CCA2B]",
+      link: "/manage-vendors",
+    },
   ];
 
   // University distribution data for pie chart
@@ -181,7 +188,7 @@ const SuperAdminDashboard = () => {
       </h2>
 
       {/* === TOP SECTION - Stats Cards (5 Cards) === */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
         {stats.map((stat, index) => (
           <div
             key={index}

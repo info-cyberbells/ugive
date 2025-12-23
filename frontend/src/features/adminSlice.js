@@ -97,11 +97,12 @@ const adminSlice = createSlice({
     name: "admin",
     initialState,
     reducers: {
-        reset: (state) => {
+        adminreset: (state) => {
       state.isAdminLoading = false;
       state.isAdminSuccess = false;
       state.isAdminError = false;
       state.adminMessage = "";
+      state.adminProfile = null;
     },
     },
 
@@ -211,5 +212,5 @@ const adminSlice = createSlice({
 
 })
 
-export const {reset } = adminSlice.actions;
+export const {adminreset } = adminSlice.actions;
 export default adminSlice.reducer;
