@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchSuperAdminNotifications } from "../../features/superadminProfileSlice";
 import { fetchStudentNotifications } from "../../features/studentDataSlice";
 import { getAdminNotifiactions } from "../../features/adminSlice";
+import { getNotificationVendor } from "../../features/venderSlice";
 
 const SkeletonLoader = () => (
   <div className="animate-pulse">
@@ -35,6 +36,7 @@ const NotificationPage = () => {
   const superAdminData = useSelector((state) => state.superadmin);
   const studentData = useSelector((state) => state.studentData);
   const adminData = useSelector((state) => state.admin);
+  const vendorData = useSelector((state)=> state.vendor)
 
   const [activeTab, setActiveTab] = useState("notifications");
   const [visibleCount, setVisibleCount] = useState(4);
@@ -47,6 +49,8 @@ const NotificationPage = () => {
       dispatch(fetchStudentNotifications());
     } else if (userRole === "admin") {
       dispatch(getAdminNotifiactions());
+    } else if (userRole === "vendor") {
+      dispatch(getNotificationVendor());
     }
   }, [dispatch, userRole]);
 
@@ -60,7 +64,8 @@ const NotificationPage = () => {
     userRole === "super_admin"
       ? superAdminData.loading
       : userRole === "admin"
-      ? adminData.isAdminLoading
+      ? adminData.isAdminLoading 
+      : userRole === "vendor" ? vendorData.isLoading 
       : studentData.isLoading;
 
   const error =
@@ -68,6 +73,7 @@ const NotificationPage = () => {
       ? superAdminData.error
       : userRole === "admin"
       ? adminData.isAdminError
+      : userRole === "vendor" ? vendorData.isError
       : studentData.isError;
  
       const notifications =
@@ -75,9 +81,10 @@ const NotificationPage = () => {
       ? superAdminData.notifications
       : userRole === "admin"
       ? adminData.adminNotifications
+      : userRole === "vendor" ? vendorData.notifications
       : studentData.notifications;
   
-      const activities = userRole === "super_admin"  ? superAdminData.activities : userRole === "admin" ? adminData.adminActivities : [];
+      const activities = userRole === "super_admin"  ? superAdminData.activities : userRole === "admin" ? adminData.adminActivities : userRole === "vendor" ? vendorData.activities : [];
 
   // Icon selector based on action type
   const getIcon = (action, type) => {

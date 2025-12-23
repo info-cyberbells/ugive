@@ -59,6 +59,10 @@ export const USER_ENDPOINTS = {
     SUPERADMIN_UPDATE_VENDOR: `${API_BASE_URL}/super_admin/update-vendor`,
     SUPERADMIN_DELETE_VENDOR: `${API_BASE_URL}/super_admin/delete-vendor`,
 
+    SHOW_VENDORS_REWARDS: `${API_BASE_URL}/super_admin/vendor-rewards`,
+    AUDIT_VENDORS_REWARD: `${API_BASE_URL}/super_admin/vendor-rewards`,
+    PUBLIC_ACTIVE_REWARDS: `${API_BASE_URL}/public/active-rewards`,
+
 
     SUPERADMIN_GET_ALL_REWARDS: `${API_BASE_URL}/super_admin/get-all-rewards`,
     SUPERADMIN_ADD_REWARD: `${API_BASE_URL}/super_admin/create-reward`,
@@ -145,6 +149,22 @@ export const USER_ENDPOINTS = {
 
     ADMIN_GET_NOTIFICATIONS : `${API_BASE_URL}/admin/get-notifications`,
     ADMIN_SEND_FEEDBACK : `${API_BASE_URL}/admin/sent-feedback`,
+
+    VENDOR_PROFILE: `${API_BASE_URL}/vendor/profile`,
+    VENDOR_UPDATE_PROFILE: `${API_BASE_URL}/vendor/update-profile`,
+    VENDOR_CHANGE_PASSWORD: `${API_BASE_URL}/vendor/change-password`,
+
+    VENDOR_DASHBOARD: `${API_BASE_URL}/vendor/dashboard`,
+
+
+    VENDOR_GET_ALL_REWARDS: `${API_BASE_URL}/vendor/rewards`,
+    VENDOR_VIEW_REWARD: `${API_BASE_URL}/vendor/rewards`,
+
+    VENDOR_PRINTED_CARDS: `${API_BASE_URL}/vendor/printed-reward-cards`,
+    VENDOR_UPDATE_CARD_STATUS: `${API_BASE_URL}/vendor/cards`,
+
+
+    VENDOR_NOTIFICATION: `${API_BASE_URL}/vendor/notifications-and-activities`,
     
 
 
