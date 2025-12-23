@@ -1,6 +1,5 @@
 import axios from "axios";
 import USER_ENDPOINTS from "./authRoutes";
-import { get } from "mongoose";
 
 const getAuthHeader = () => {
   const token = localStorage.getItem("token");
@@ -424,10 +423,16 @@ export const getAllVendorsSuperadminService = async ({page = 1, limit = 10}) => 
 
 // CREATE VENDER (SUPER ADMIN)
 export const createVendorBySuperAdminService = async (details) => {
+  const auth = getAuthHeader();
   const response = await axios.post(
     USER_ENDPOINTS.SUPERADMIN_CREATE_VENDOR,
     details,
-    getAuthHeader(),
+    {
+      headers: {
+        ...auth.headers,
+        "Content-Type": "multipart/form-data",
+      },
+    },
   );
   return response.data;
 }
@@ -460,7 +465,36 @@ export const deleteVendorBySuperAdminService = async (id) => {
   return response;
 }
 
-
+//show vendor rewards
+export const getVendorRewardsBySuperAdminService = async (params = {}) => {
+  const response = await axios.get(
+    USER_ENDPOINTS.SHOW_VENDORS_REWARDS,
+    {
+      ...getAuthHeader(),
+      params,
+    }
+  );
+  return response.data;
+};
+ 
+// PUT audit vendor reward (approve / reject / update)
+export const auditVendorRewardBySuperAdminService = async (id, payload) => {
+  const response = await axios.put(
+    `${USER_ENDPOINTS.AUDIT_VENDORS_REWARD}/${id}`,
+    payload,
+    getAuthHeader()
+  );
+  return response.data;
+};
+ 
+ 
+// GET ACTIVE PUBLIC REWARDS
+export const getActiveRewardsService = async () => {
+  const response = await axios.get(
+    `${USER_ENDPOINTS.PUBLIC_ACTIVE_REWARDS}`
+  );
+  return response.data;
+};
 
 
 
@@ -688,10 +722,16 @@ export const getAllVendorsByAdminService = async ({limit = 10, page = 1})=>{
 
 // CREATE VENDOR BY ADMIN
 export const createVendorByAdminService = async (details) =>{
+  const auth = getAuthHeader();
   const response = await axios.post(
     USER_ENDPOINTS.ADMIN_CREATE_VENDOR,
     details,
-    getAuthHeader(),
+    {
+      headers: {
+        ...auth.headers,
+        "Content-Type": "multipart/form-data",
+      },
+    }
   );
   return response.data;
 }
@@ -755,6 +795,140 @@ export const viewSingleRewardByAdminService = async (id) => {
   );
   return response.data;
 }
+
+
+export const updateRewardByAdminService = async ({ id, formData }) => {
+  const response = await axios.put(
+    `${USER_ENDPOINTS.ADMIN_UPDATE_REWARD}/${id}`,
+    formData,
+    getAuthHeader()
+  );
+ 
+  return response.data;
+};
+export const deleteRewardByAdminService = async (id) => {
+  const response = await axios.delete(
+    `${USER_ENDPOINTS.ADMIN_DELETE_REWARD}/${id}`,
+    getAuthHeader()
+  );
+ 
+  return response.data;
+};
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// VENDORS API SERVICE
+
+//   VENDOR GET OWN PROFILE SERVICE
+
+export const getVendorOwnProfileService = async ()=>{
+  const response = await axios.get(
+    USER_ENDPOINTS.VENDOR_PROFILE,
+    getAuthHeader(),
+  );
+  return response.data;
+}
+
+
+// UPADATE PROFILE SERVICE (VENDOR)
+export const updateProfileByVendorService = async (details)=>{
+  const auth = getAuthHeader();
+
+  const response = await axios.put(
+    USER_ENDPOINTS.VENDOR_UPDATE_PROFILE,
+    details,
+    {
+      headers: {
+        ...auth.headers,
+        "Content-Type": "multipart/form-data",
+      }
+    }
+  );
+  return response.data;
+}
+
+// CHANGE PASSWORD SERVICE (SERVICE)
+export const changePasswordVendorService = async (data) => {
+  const response = await axios.put(
+    USER_ENDPOINTS.VENDOR_CHANGE_PASSWORD,
+    data,
+    getAuthHeader(),
+  );
+  return response.data;
+}
+
+// GET NOTIFICATION FOR VENDOR
+export const getNotificationVendorService = async()=>{
+  const response =  await axios.get(
+    USER_ENDPOINTS.VENDOR_NOTIFICATION,
+    getAuthHeader(),
+  );
+  return response.data;
+}
+
+// GET PRINTED CRADS
+export const getPrintedCardVendorService = async({limit = 10, page = 1})=>{
+  const response = await axios.get(
+    `${USER_ENDPOINTS.VENDOR_PRINTED_CARDS}?page=${page}&limit=${limit}`,
+    getAuthHeader(),
+  );
+  return response.data;
+}
+
+// update card Status 
+export const updateCardStatusVendorService = async (id,status) => {
+  const response = await axios.put(
+    `${USER_ENDPOINTS.VENDOR_UPDATE_CARD_STATUS}/${id}`,
+   { status},
+    getAuthHeader(),
+  );
+  return response.data;
+}
+
+// GET ALL REWARD VENDOR
+export const getAllRewardVendorService = async({limit = 10, page = 1})=>{
+  const response = await axios.get(
+    `${USER_ENDPOINTS.VENDOR_GET_ALL_REWARDS}?page=${page}&limit=${limit}`,
+    getAuthHeader(),
+  );
+  return response.data;
+}
+
+// VENDOR DASHBOARD 
+export const getVendorDashboardService = async() => {
+  const response = await axios.get(
+    USER_ENDPOINTS.VENDOR_DASHBOARD,
+    getAuthHeader(),
+  );
+  return response.data;
+}
+
+
+
+
 
 
 

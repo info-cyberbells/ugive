@@ -33,6 +33,10 @@ import ManageAdmins from "./pages/SuperAdmin/ManageAdmins/ManageAdmins";
 import ManageVendors from "./pages/SuperAdmin/ManageVendors/ManageVendors";
 import AdminManageVendors from "./pages/Admin/AdminVendors/AdminManageVendors";
 import AdminRewardsManage from "./pages/Admin/AdminRewards/AdminRewards";
+import VendorsDashboard from "./pages/VendorPages/VendorDashboard/VendorsDashboard";
+import RewardsByVendor from "./pages/VendorPages/RewardByVendor/RewardsByVendor";
+import CardsVendor from "./pages/VendorPages/CardsVendor/CardsVendor";
+import VendorRewards from "./pages/SuperAdmin/VendorRewards/VendorRewards";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -83,7 +87,9 @@ function App() {
                 <Navigate to="/student-dashboard" replace />
               ) : userRole === "admin" ? (
                 <Navigate to="/admin-dashboard" replace />
-              ) : (
+              ) : 
+              userRole === "vendor" ? ( <Navigate to="/vendor-dashboard" replace /> )  :
+              (
                 <Navigate to="/dashboard" replace />
               )
             ) : (
@@ -100,7 +106,9 @@ function App() {
                 <Navigate to="/student-dashboard" replace />
               ) : userRole === "admin" ? (
                 <Navigate to="/admin-dashboard" replace />
-              ) : (
+              ) : 
+              userRole === "vendor" ? ( <Navigate to="/vendor-dashboard" replace /> )  :
+              (
                 <Navigate to="/dashboard" replace />
               )
             ) : (
@@ -116,7 +124,9 @@ function App() {
                 <Navigate to="/student-dashboard" replace />
               ) : userRole === "admin" ? (
                 <Navigate to="/admin-dashboard" replace />
-              ) : (
+              ) : 
+              userRole === "vendor" ? ( <Navigate to="/vendor-dashboard" replace /> )  :
+              (
                 <Dashboard />
               )
             ) : (
@@ -157,6 +167,10 @@ function App() {
 
         <Route path="/manage-admins" element={isAuthenticated ? <ManageAdmins /> : <Navigate to="/" replace />} />
         <Route path="/manage-vendors" element={isAuthenticated ? <ManageVendors /> : <Navigate to="/" replace />} />
+        <Route
+          path="/vendor-rewards"
+          element={isAuthenticated ? <VendorRewards /> : <Navigate to="/" replace />}
+        />
 
         <Route
           path="/profile"
@@ -185,6 +199,10 @@ function App() {
 
         <Route path="/terms-and-conditions" element={<TermsAndCondition />} />
         <Route path="/contactus" element={<Contactus />} />
+
+        <Route path="/vendor-dashboard" element={isAuthenticated ? <VendorsDashboard /> : <Navigate to='/' replace />} />
+        <Route path="/vendor-reward" element={isAuthenticated ? <RewardsByVendor /> : <Navigate to='/' replace />} />
+        <Route path="/vendor-card" element={isAuthenticated ? <CardsVendor /> : <Navigate to='/' replace />} />
 
         <Route
           path="/rewards-catalog"
@@ -280,7 +298,9 @@ function App() {
                 <Navigate to="/student-dashboard" replace />
               ) : userRole === "admin" ? (
                 <Navigate to="/admin-dashboard" replace />
-              ) : (
+              ) :
+              userRole === "vendor" ? ( <Navigate to="/vendor-dashboard" replace /> )  :
+              (
                 <Navigate to="/dashboard" replace />
               )
             ) : (

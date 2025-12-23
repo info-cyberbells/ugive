@@ -16,6 +16,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { getColleges } from "../../features/studentSlice";
 import { changeAdminPassword, getAdminProfile, updateAdminProfile } from "../../features/adminSlice";
+import { changeVendorPassword, getVendorProfile, updateProfileByVendor } from "../../features/venderSlice";
 
 const ProfileSkeleton = () => {
   return (
@@ -68,6 +69,7 @@ const ProfileSettings = () => {
   const { adminProfile, isAdminLoading, isAdminSuccess } = useSelector(
     (state) => state.admin
   );
+  const {vendorProfile} = useSelector((state)=> state.vendor);
   const { colleges } = useSelector((state) => state.auth);
   const [showCurrentPass, setShowCurrentPass] = useState(false);
   const [showNewPass, setShowNewPass] = useState(false);
@@ -125,6 +127,9 @@ const ProfileSettings = () => {
     if (role == "admin") {
       dispatch(getAdminProfile());
     }
+    if(role == "vendor"){
+      dispatch(getVendorProfile());
+    }
   }, [dispatch, role]);
 
   useEffect(() => {
@@ -181,7 +186,24 @@ const ProfileSettings = () => {
       setInitialProfile(loaded);
       setImagePreview(adminProfile.profileImage || null);
     }
-  }, [role, profile, studentProfile, adminProfile]);
+
+    // vendor profile
+    if(role === "vendor" && vendorProfile){
+       const loaded = {
+        fullName: vendorProfile.name || "",
+        email: vendorProfile.email || "",
+        phoneNumber: vendorProfile.phoneNumber || "",
+        universityId:
+          vendorProfile.university?._id || vendorProfile.university || "",
+        universityName:
+          vendorProfile.university?.name || vendorProfile.university_name || "",
+        colleges: vendorProfile.colleges || [],
+      };
+      setFormData((prev) => ({ ...prev, ...loaded }));
+      setInitialProfile(loaded);
+      setImagePreview(vendorProfile.profileImage || null);
+    }
+  }, [role, profile, studentProfile, adminProfile, vendorProfile]);
 
   useEffect(() => {
     if (role === "student" && studentProfile?.university?._id) {
@@ -408,6 +430,25 @@ const ProfileSettings = () => {
           showToast("Failed to update profile", "error");
         });
     }
+
+     if (role === "vendor") {
+      dispatch(updateProfileByVendor(formDataToSend))
+        .unwrap()
+        .then((updatedUser) => {
+          showToast("Profile updated successfully!", "success");
+          const updated = {
+            fullName: updatedUser.name,
+            phoneNumber: updatedUser.phoneNumber,
+          };
+          setInitialProfile(updated);
+          setProfileImage(null);
+          dispatch(getVendorProfile());
+        })
+        .catch((err) => {
+          showToast("Failed to update profile!", "error");
+          console.error(err);
+        });
+    }
   };
 
   const handlePassChange = async () => {
@@ -452,6 +493,8 @@ const ProfileSettings = () => {
       action = changeStudentPassword({ currentPassword, newPassword });
     } else if (role === "admin") {
       action = changeAdminPassword({ currentPassword, newPassword });
+    } else if (role === "vendor"){
+      action = changeVendorPassword({ currentPassword, newPassword});
     }
 
     // If no valid role

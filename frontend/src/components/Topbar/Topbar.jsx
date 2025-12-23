@@ -19,6 +19,7 @@ import {
 } from "../../features/friendsSlice";
 import { useToast } from "../../context/ToastContext";
 import { getAdminProfile } from "../../features/adminSlice";
+import { getVendorProfile } from "../../features/venderSlice";
 
 const ProfileAvatar = ({ src, name }) =>
   src ? (
@@ -54,11 +55,12 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const { profile } = useSelector((state) => state.superadmin);
   const { studentProfile } = useSelector((state) => state.studentData);
   const {adminProfile} = useSelector((state)=> state.admin);
+  const {vendorProfile} = useSelector((state)=> state.vendor);
 
   const role =
-    profile?.role?.toLowerCase() || studentProfile?.role?.toLowerCase() ||  adminProfile?.role?.toLowerCase();
+    profile?.role?.toLowerCase() || studentProfile?.role?.toLowerCase() ||  adminProfile?.role?.toLowerCase() || vendorProfile?.role?.toLowerCase();
 
-  const userData = profile || studentProfile || adminProfile ||{};
+  const userData = profile || studentProfile || adminProfile || vendorProfile || {};
 
   // Cleanup debounce timer on unmount
   useEffect(() => {
@@ -76,6 +78,7 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
     if (storedRole === "super_admin") dispatch(fetchSuperAdminProfile());
     if (storedRole === "student") dispatch(fetchProfile());
     if (storedRole === "admin") dispatch(getAdminProfile());
+    if (storedRole === "vendor") dispatch(getVendorProfile());
   }, []);
 
   useEffect(() => {

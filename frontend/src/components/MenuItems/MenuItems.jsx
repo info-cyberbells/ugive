@@ -36,6 +36,7 @@ const ROLE_BASED_MENUS = {
     { id: "manage-admins", title: "Manage Admins", icon:  UserCog },
     { id: "manage-students", title: "Manage Students", icon: BookOpen },
     { id: "manage-vendors", title: "Manage Vendors", icon: Store },
+    { id: "vendor-rewards", title: "Vendor Rewards", icon: Trophy },
     { id: "manage-rewards", title: "Manage Rewards", icon: Gift },
     { id: "feedbacks", title: "Students Feedback", icon: MessageSquare },
     { id: "social", title: "Social", icon: Share2 },
@@ -58,6 +59,11 @@ const ROLE_BASED_MENUS = {
         { id: "contactus", title: "Contact Us" },
       ],
     },
+  ],
+  vendor: [
+        { id: "profile", title: "Manage Profile", icon: UserCircle },
+        { id: "vendor-reward", title: "Manage Rewards", icon: Gift },
+        { id: "vendor-card", title: "Cards", icon: Ticket },
   ],
   student: [
     // { id: "profile", title: "User Profile", icon: UserCircle },
@@ -114,7 +120,7 @@ const MenuItems = ({ setIsSidebarOpen }) => {
         <h2 className="text-[#00000066]">Dashboards</h2>
 
         <NavLink
-          to={ role === "student" ? "/student-dashboard" : role === "super_admin" ? "/dashboard" : role === "admin" ? "/admin-dashboard" : "/" }
+          to={ role === "student" ? "/student-dashboard" : role === "super_admin" ? "/dashboard" : role === "admin" ? "/admin-dashboard" : role === "vendor" ? "/vendor-dashboard" : "/" }
           onClick={() => setIsSidebarOpen(false)}
           className={({ isActive }) =>
             `flex items-center gap-2 px-2 py-1 rounded-md cursor-pointer

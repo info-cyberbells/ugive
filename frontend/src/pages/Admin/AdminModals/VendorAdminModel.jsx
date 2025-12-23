@@ -40,6 +40,7 @@ const VendorAdminModal = ({
     confirmPassword: "",
     phoneNumber: "",
     profileImage: "",
+    profileImageFile: null, 
   });
   const [errors, setErrors] = useState({});
 
@@ -175,93 +176,79 @@ const VendorAdminModal = ({
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (isViewMode || isLoading) return;
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (isViewMode || isLoading) return;
 
-    const newErrors = {};
-    const requiredFields = ["name", "email", "phoneNumber"];
+  const newErrors = {};
+  const requiredFields = ["name", "email", "phoneNumber"];
 
-    if (isAddMode) {
-      requiredFields.push("password", "confirmPassword");
+  if (isAddMode) {
+    requiredFields.push("password", "confirmPassword");
+  }
+
+  requiredFields.forEach((key) => {
+    if (!formData[key] || String(formData[key]).trim() === "") {
+      newErrors[key] = true;
     }
+  });
 
-    // REQUIRED FIELDS CHECK
-    requiredFields.forEach((key) => {
-      if (!formData[key] || String(formData[key]).trim() === "") {
-        newErrors[key] = true;
-      }
-    });
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    showToast("Please fill all required fields", "error");
+    return;
+  }
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      showToast("Please fill all required fields", "error");
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(formData.email)) {
+    setErrors((prev) => ({ ...prev, email: true }));
+    showToast("Valid email is required", "error");
+    return;
+  }
+
+  const cleanedPhone = formData.phoneNumber.replace(/\s/g, "");
+  if (!/^04\d{8}$/.test(cleanedPhone)) {
+    setErrors((prev) => ({ ...prev, phoneNumber: true }));
+    showToast("Phone number must be in format: 04XX XXX XXX", "error");
+    return;
+  }
+
+  if (isAddMode) {
+    if (formData.password.length < 6) {
+      setErrors((prev) => ({ ...prev, password: true }));
+      showToast("Password must be at least 6 characters", "error");
       return;
     }
 
-    // EMAIL FORMAT
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setErrors((prev) => ({ ...prev, email: true }));
-      showToast("Valid email is required", "error");
+    if (formData.password !== formData.confirmPassword) {
+      setErrors((prev) => ({
+        ...prev,
+        password: true,
+        confirmPassword: true,
+      }));
+      showToast("Passwords do not match", "error");
       return;
     }
+  }
 
-    // PHONE FORMAT
-    const cleanedPhone = formData.phoneNumber.replace(/\s/g, "");
-    if (!/^04\d{8}$/.test(cleanedPhone)) {
-      setErrors((prev) => ({ ...prev, phoneNumber: true }));
-      showToast("Phone number must be in format: 04XX XXX XXX", "error");
-      return;
-    }
+  // ✅ MULTIPART FORM DATA
+  const formDataToSend = new FormData();
 
-    // PASSWORD RULES (ADD MODE ONLY)
-    if (isAddMode) {
-      if (formData.password.length < 6) {
-        setErrors((prev) => ({ ...prev, password: true }));
-        showToast("Password must be at least 6 characters", "error");
-        return;
-      }
+  formDataToSend.append("name", formData.name);
+  formDataToSend.append("phoneNumber", cleanedPhone);
 
-      if (formData.password !== formData.confirmPassword) {
-        setErrors((prev) => ({
-          ...prev,
-          password: true,
-          confirmPassword: true,
-        }));
-        showToast("Passwords do not match", "error");
-        return;
-      }
-    }
+  if (isAddMode) {
+    formDataToSend.append("email", formData.email);
+    formDataToSend.append("password", formData.password);
+  }
 
-    // BUILD PAYLOAD
-    const { confirmPassword, profileImageFile, ...dataToSave } =
-      formData;
+  if (formData.profileImageFile) {
+    formDataToSend.append("profileImage", formData.profileImageFile);
+  }
 
-      
-      const payload = {
-          ...dataToSave,
-          phoneNumber: cleanedPhone,
-        };
-        if (isEditMode) {
-    delete payload.email;
-   }
+  onSave(formDataToSend); // ✅ correct
+};
 
-    // Remove empty profileImage for add mode, keep it for edit mode if it exists
-    if (isEditMode && payload.profileImage === null) {
-        payload.profileImage = null;
-        }
-
-        if (isAddMode && !payload.profileImage) {
-        delete payload.profileImage;
-        }
-
-    if (isEditMode && !payload.password) {
-      delete payload.password;
-    }
-
-    onSave(payload);
-  };
 
   if (!isOpen) return null;
 
@@ -359,47 +346,33 @@ const VendorAdminModal = ({
                 type="file"
                 accept="image/*"
                 className="hidden"
-                onChange={async (e) => {
-                  const file = e.target.files[0];
-                  if (!file) return;
+                    onChange={async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
 
-                   if (file.size > 1024 * 1024) {
-                    showToast("Please upload an image below 1MB", "error");
-                    e.target.value = "";
-                    return;
-                    }
+  const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+  if (!allowedTypes.includes(file.type)) {
+    showToast("Only JPG and PNG images are allowed", "error");
+    return;
+  }
 
-                  const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+  if (file.size > 1024 * 1024) {
+    showToast("Image must be under 1MB", "error");
+    return;
+  }
 
-                  if (!allowedTypes.includes(file.type)) {
-                    showToast("Only JPG and PNG images are allowed", "error");
-                    e.target.value = "";
-                    return;
-                  }
+  try {
+    const compressedFile = await compressImageBelow100KB(file);
 
-                  try {
-                    // Compress the image
-                    const compressedFile = await compressImageBelow100KB(file)
-                    // Convert compressed file to base64
-                    const base64 = await new Promise((resolve, reject) => {
-                      const reader = new FileReader();
-                      reader.onloadend = () => resolve(reader.result);
-                      reader.onerror = reject;
-                       reader.readAsDataURL(compressedFile);
-                    });
-
-                    // Update formData with compressed base64 image
-                    setFormData((prev) => ({
-                      ...prev,
-                      profileImage: base64,
-                      profileImageFile: null,
-                    }));
-
-                    showToast("Your image is ready", "success");
-                  } catch (err) {
-                    showToast("Image compression failed", "error");
-                  }
-                }}
+    setFormData((prev) => ({
+      ...prev,
+      profileImageFile: compressedFile, 
+      profileImage: URL.createObjectURL(compressedFile), 
+    }));
+  } catch (err) {
+    showToast(err.message || "Image processing failed", "error");
+  }
+}}
               />
             )}
           </div>

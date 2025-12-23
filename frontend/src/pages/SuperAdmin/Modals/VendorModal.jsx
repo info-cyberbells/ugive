@@ -43,6 +43,7 @@ const VendorModal = ({
     confirmPassword: "",
     phoneNumber: "",
     profileImage: "",
+    profileImageFile: null, 
     university: "",
   });
   const [errors, setErrors] = useState({});
@@ -200,88 +201,79 @@ const VendorModal = ({
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (isViewMode || isLoading) return;
+  e.preventDefault();
+  if (isViewMode || isLoading) return;
 
-    const newErrors = {};
-    const requiredFields = ["name", "email", "phoneNumber", "university"];
+  const newErrors = {};
+  const requiredFields = ["name", "email", "phoneNumber", "university"];
 
-    if (isAddMode) {
-      requiredFields.push("password", "confirmPassword");
+  if (isAddMode) {
+    requiredFields.push("password", "confirmPassword");
+  }
+
+  requiredFields.forEach((key) => {
+    if (!formData[key] || String(formData[key]).trim() === "") {
+      newErrors[key] = true;
     }
+  });
 
-    // REQUIRED FIELDS CHECK
-    requiredFields.forEach((key) => {
-      if (!formData[key] || String(formData[key]).trim() === "") {
-        newErrors[key] = true;
-      }
-    });
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    showToast("Please fill all required fields", "error");
+    return;
+  }
 
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      showToast("Please fill all required fields", "error");
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(formData.email)) {
+    setErrors((prev) => ({ ...prev, email: true }));
+    showToast("Valid email is required", "error");
+    return;
+  }
+
+  const cleanedPhone = formData.phoneNumber.replace(/\s/g, "");
+  if (!/^04\d{8}$/.test(cleanedPhone)) {
+    setErrors((prev) => ({ ...prev, phoneNumber: true }));
+    showToast("Phone number must be in format: 04XX XXX XXX", "error");
+    return;
+  }
+
+  if (isAddMode) {
+    if (formData.password.length < 6) {
+      setErrors((prev) => ({ ...prev, password: true }));
+      showToast("Password must be at least 6 characters", "error");
       return;
     }
 
-    // EMAIL FORMAT
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setErrors((prev) => ({ ...prev, email: true }));
-      showToast("Valid email is required", "error");
+    if (formData.password !== formData.confirmPassword) {
+      setErrors((prev) => ({
+        ...prev,
+        password: true,
+        confirmPassword: true,
+      }));
+      showToast("Passwords do not match", "error");
       return;
     }
+  }
 
-    // PHONE FORMAT
-    const cleanedPhone = formData.phoneNumber.replace(/\s/g, "");
-    if (!/^04\d{8}$/.test(cleanedPhone)) {
-      setErrors((prev) => ({ ...prev, phoneNumber: true }));
-      showToast("Phone number must be in format: 04XX XXX XXX", "error");
-      return;
-    }
+  //  MULTIPART FORM DATA
+  const formDataToSend = new FormData();
 
-    // PASSWORD RULES (ADD MODE ONLY)
-    if (isAddMode) {
-      if (formData.password.length < 6) {
-        setErrors((prev) => ({ ...prev, password: true }));
-        showToast("Password must be at least 6 characters", "error");
-        return;
-      }
+  formDataToSend.append("name", formData.name);
+  formDataToSend.append("phoneNumber", cleanedPhone);
+  formDataToSend.append("university", formData.university);
 
-      if (formData.password !== formData.confirmPassword) {
-        setErrors((prev) => ({
-          ...prev,
-          password: true,
-          confirmPassword: true,
-        }));
-        showToast("Passwords do not match", "error");
-        return;
-      }
-    }
+  if (isAddMode) {
+    formDataToSend.append("email", formData.email);
+    formDataToSend.append("password", formData.password);
+  }
 
-    // BUILD PAYLOAD
-    const { confirmPassword, profileImageFile, universityName, ...dataToSave } =
-      formData;
+  if (formData.profileImageFile) {
+    formDataToSend.append("profileImage", formData.profileImageFile);
+  }
 
-    const payload = {
-      ...dataToSave,
-      phoneNumber: cleanedPhone,
-    };
+  onSave(formDataToSend); 
+};
 
-    if(isEditMode){
-      delete payload.email;
-    }
-
-    // Remove empty profileImage for add mode, keep it for edit mode if it exists
-    if (!payload.profileImage || payload.profileImage.trim() === "") {
-      delete payload.profileImage;
-    }
-
-    if (isEditMode && !payload.password) {
-      delete payload.password;
-    }
-
-    onSave(payload);
-  };
 
   if (!isOpen) return null;
 
@@ -359,7 +351,11 @@ const VendorModal = ({
                 <button
                   type="button"
                   onClick={() =>
-                    setFormData((prev) => ({ ...prev, profileImage: "" }))
+                    setFormData((prev) => ({
+                      ...prev,
+                      profileImage: "",
+                      profileImageFile: null, 
+                    }))
                   }
                   className="absolute cursor-pointer -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow"
                 >
@@ -380,39 +376,29 @@ const VendorModal = ({
   if (!file) return;
 
   const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
-
   if (!allowedTypes.includes(file.type)) {
     showToast("Only JPG and PNG images are allowed", "error");
-    e.target.value = "";
     return;
   }
 
   if (file.size > 1024 * 1024) {
-    showToast("Please upload image below 1MB", "error");
-    e.target.value = "";
+    showToast("Image must be under 1MB", "error");
     return;
   }
 
   try {
     const compressedFile = await compressImageBelow100KB(file);
 
-    const base64 = await new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(compressedFile);
-    });
-
     setFormData((prev) => ({
       ...prev,
-      profileImage: base64,
+      profileImageFile: compressedFile, 
+      profileImage: URL.createObjectURL(compressedFile), 
     }));
-
-    showToast("Image compressed successfully", "success");
   } catch (err) {
-    showToast(err.message || "Image compression failed", "error");
+    showToast(err.message || "Image processing failed", "error");
   }
 }}
+
 
               />
             )}

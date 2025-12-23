@@ -17,6 +17,9 @@ import superadminAdminsReducer from "../features/superadminAdminSlice"
 import superadminVendorsReducer from "../features/superadminVendors"
 import adminVendorsReducer from "../features/adminVendorSlice"
 import adminRewardsReducer from '../features/adminRewardSlice'
+import vendorReducer from '../features/venderSlice'
+import vendorCardReducer from '../features/vendorCardSlice' 
+import vendorRewardReducer from '../features/vendorRewards'
 
 export const store = configureStore({
     reducer: {
@@ -38,6 +41,9 @@ export const store = configureStore({
         superadminVendors : superadminVendorsReducer,
         adminVendors: adminVendorsReducer,
         adminReward: adminRewardsReducer,
+        vendor: vendorReducer,
+        vendorCards: vendorCardReducer,
+        vendorReward: vendorRewardReducer,
     }
 })
 
