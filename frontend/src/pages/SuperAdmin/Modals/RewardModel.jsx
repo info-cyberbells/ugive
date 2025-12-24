@@ -43,6 +43,7 @@ const RewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) =
     rewardImage: "",
   });
   const [originalData, setOriginalData] = useState(null);
+  const [selectedRewardId, setSelectedRewardId] = useState("");
 
   const [errors, setErrors] = useState({});
 
@@ -352,10 +353,14 @@ const RewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) =
               <select
                 name="rewardId"
                 disabled={isViewMode}
+                // value={isEditMode || isViewMode ?
+                //   activeRewards.find(r => r.name === formData.name)?._id || ""
+                //   : ""
+                // }
                 value={isEditMode || isViewMode ?
-                  activeRewards.find(r => r.name === formData.name)?._id || ""
-                  : ""
-                }
+  activeRewards.find(r => r.name === formData.name)?._id || ""
+  : formData.name ? activeRewards.find(r => r.name === formData.name)?._id || "" : ""
+}
                 className={inputClasses("name")}
                 onChange={(e) => {
                   const selected = activeRewards.find(
