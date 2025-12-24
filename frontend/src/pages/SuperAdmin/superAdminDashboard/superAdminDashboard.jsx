@@ -45,8 +45,8 @@ const SuperAdminDashboard = () => {
         <div className="h-8 w-64 bg-gray-300 rounded mb-6 animate-pulse"></div>
 
         {/* Stats Cards Skeleton */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-          {[...Array(5)].map((_, i) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
+          {[...Array(6)].map((_, i) => (
             <div key={i} className="bg-white rounded-xl shadow-sm p-4">
               <div className="h-4 bg-gray-300 rounded w-24 mb-2 animate-pulse"></div>
               <div className="h-8 bg-gray-300 rounded w-16 mb-2 animate-pulse"></div>
