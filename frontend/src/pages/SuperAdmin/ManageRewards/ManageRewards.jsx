@@ -14,6 +14,8 @@ const ManageRewards = () => {
     const { showToast } = useToast();
     const { rewards, tableLoading, isLoading, isError, page, limit, totalPages, totalRewards } = useSelector((state) => state.reward);
 
+    const rewardsList = rewards || [];
+
     const [selectedRewardIds, setSelectedRewardIds] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentReward, setCurrentReward] = useState(null);
@@ -270,7 +272,7 @@ const ManageRewards = () => {
 
 
     return (
-        <div className="min-h-screen mt-14 lg:mt-14 lg:ml-56 font-[Inter] bg-gray-50 px-1 py-4 md:p-4 lg:p-8 ">
+        <div className="min-h-screen mt-14 lg:mt-14 lg:ml-56 font-[Inter] bg-gray-50 px-3 py-4 md:p-4 lg:p-8 ">
             <div className="max-w-8xl">
 
                 {/* Header Section */}
@@ -278,7 +280,7 @@ const ManageRewards = () => {
                     <h1 className="text-xl lg:text-2xl font-semibold text-gray-900">
                         Reward's List
                         <span className="text-sm text-gray-500 font-normal ml-3">
-                            {rewards.length} Reward's
+                            {totalRewards || 0} Reward's
                         </span>
                     </h1>
 
@@ -310,7 +312,7 @@ const ManageRewards = () => {
                             {/* Export Button - Disabled when no students are selected */}
                             <button
                                 onClick={handleExportCSV}
-                                className={`flex cursor-pointer items-center px-10 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${isAnySelected
+                                className={`flex cursor-pointer items-center justify-center px-10 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${isAnySelected
                                     ? 'text-gray-700 bg-white hover:bg-gray-50'
                                     : 'text-gray-400 bg-gray-100 cursor-not-allowed opacity-70'
                                     }`}
@@ -323,7 +325,7 @@ const ManageRewards = () => {
                             {/* Add New Student Button (Always active) */}
                             <button
                                 onClick={openModalForAdd}
-                                className="flex cursor-pointer items-center px-4 py-2 text-xs sm:text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md"
+                                className="flex cursor-pointer items-center justify-center sm:px-4 py-2 text-[10px] sm:text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md"
                             >
                                 <Plus className="h-5 w-5 mr-2 -ml-1 hidden sm:inline" />
                                 Add New Reward
@@ -355,7 +357,7 @@ const ManageRewards = () => {
                                             </th>
 
                                             <th scope="col"
-                                                className="sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                                                className="sm:px-6 py-3 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                                             >
                                                 <div className="flex items-center gap-1">
                                                     Reward Name
@@ -377,27 +379,7 @@ const ManageRewards = () => {
                                                     College
                                                 </div>
                                             </th>
-                                            {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 transition duration-150">
-                                                <div className="flex items-center gap-1">
-                                                    Phone Number
-                                                </div>
-                                            </th> */}
-                                            {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 transition duration-150">
-                                            <div className="flex items-center gap-1">
-                                                Status <ArrowUpDown size={14} />
-                                            </div> 
-                                        </th> */}
-                                            {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 transition duration-150">
-                                                <div className="flex items-center gap-1">
-                                                    Student Uni Id
-                                                </div>
-                                            </th> */}
-
-                                            {/* <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 transition duration-150">
-                                            <div className="flex items-center gap-1">
-                                                Reviews <ArrowUpDown size={14} />
-                                            </div>
-                                        </th> */}
+                           
                                             <th scope="col"
                                                 className="sm:px-6 py-1 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                             >
@@ -473,33 +455,12 @@ const ManageRewards = () => {
                                                     {reward.college?.name || 'N/A'}
                                                 </td>
 
-                                                {/* Phone Column */}
-                                                {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                                    {student.phoneNumber || 'N/A'}
-                                                </td> */}
-
-                                                {/* Status Column (Badge) */}
-                                                {/* <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                                <StatusBadge status={student.status} />
-                                            </td> */}
-                                                {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                                    {student.studentUniId || "N/A"}
-                                                </td> */}
-
-                                                {/* Reviews/Count Column (View Button) */}
-                                                {/* <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                                <button className="text-indigo-600 hover:text-indigo-900 font-medium">
-                                                    View ({student.reviews})
-                                                </button>
-                                            </td> */}
+                                              
 
                                                 {/* Action Column (View, Edit, Delete) */}
                                                 <td className="sm:px-6 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium space-x-1 sm:space-x-3">
                                                     <button
-                                                        // onClick={() => {
-                                                        //     setCurrentReward({ id: reward._id, mode: "view" });
-                                                        //     setIsModalOpen(true);
-                                                        // }}
+                                                       
 
                                                         onClick={() => openModalForView(reward)}
 
@@ -509,10 +470,7 @@ const ManageRewards = () => {
                                                     </button>
 
                                                     <button
-                                                        // onClick={() => {
-                                                        //     setCurrentReward({ id: reward._id, mode: "edit" });
-                                                        //     setIsModalOpen(true);
-                                                        // }}
+                                                       
 
                                                         onClick={() => openModalForEdit(reward)}
 

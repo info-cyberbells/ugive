@@ -251,7 +251,7 @@ const StudentModal = ({
     <div className="fixed inset-0 bg-black/30 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
       <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg mx-auto">
         {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b">
+        <div className="flex justify-between items-center p-3 sm:p-6 border-b">
           <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
           <button
             onClick={onClose}
@@ -262,7 +262,7 @@ const StudentModal = ({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-3 sm:p-6 space-y-2">
           {/* Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -422,9 +422,11 @@ const StudentModal = ({
                 className={inputClasses("studentUniId")}
               />
             </div>
+    </div>
 
             {isAddMode && (
               <>
+               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Password
@@ -482,9 +484,9 @@ const StudentModal = ({
                     </button>
                   </div>
                 </div>
+                </div> 
               </>
             )}
-          </div>
 
           {/* Actions */}
           <div className="pt-4 flex justify-end space-x-3">

@@ -286,7 +286,7 @@ const handleExportCSV = () => {
               {/* Add New Admin Button (Always active) */}
               <button
                 onClick={openModalForAdd}
-                className="flex cursor-pointer items-center px-4 py-2 text-xs sm:text-sm font-medium text-white bg-[#6955A5] hover:bg-[#533f8e] hover:scale-[1.02] transition duration-150 border border-transparent rounded-lg  shadow-md"
+                className="flex cursor-pointer items-center justify-center px-4 py-2 text-xs sm:text-sm font-medium text-white bg-[#6955A5] hover:bg-[#533f8e] hover:scale-[1.02] transition duration-150 border border-transparent rounded-lg  shadow-md"
               >
                 <Plus className="h-5 w-5 mr-2 -ml-1 hidden sm:inline" />
                 Add New 
@@ -377,7 +377,7 @@ const handleExportCSV = () => {
                         </td>
 
                         {/*  Name Column */}
-                        <td className="sm:px-6 py-2 sm:py-4 whitespace-nowrap text-xs sm:text-sm sm:font-medium text-gray-900">
+                        <td className="sm:px-6 py-4 whitespace-nowrap text-xs sm:text-sm sm:font-medium text-gray-900">
                           {vendor.name || "N/A"}
                         </td>
 
@@ -392,7 +392,7 @@ const handleExportCSV = () => {
                         </td> */}
 
                         {/* State Column */}
-                        <td className="hidden sm:table-cell sm:px-4 sm:py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="hidden sm:table-cell sm:px-6 sm:py-4 whitespace-nowrap text-sm text-gray-600">
                           {vendor.phoneNumber || "N/A"}
                         </td>
 

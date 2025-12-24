@@ -116,7 +116,7 @@
 
 .login-options {
   width: 90%;
-  font-size: 12px;
+  font-size: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -125,8 +125,18 @@
   gap: 10px;
 }
 
-.login-remember-me input {
+.login-remember-me{
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.login-remember-me input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin-left: 5px;
   accent-color: white;
+  cursor: pointer;
 }
 
 .login-forgot-password a {
@@ -219,6 +229,10 @@
 @media (min-width: 1024px) {
   .inner_container {
     flex-direction: row;
+    min-width: 900px;    
+    min-height: 400px;   
+    width: 100%;
+    /* max-width: 1200px; */
   }
 
   /* .login-image-section {

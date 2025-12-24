@@ -299,16 +299,20 @@ const VendorRewards = () => {
                                                 </td>
 
                                                 {/* Image */}
-                                                <div
-                                                    className="relative group cursor-pointer px-6 py-3"
-                                                    onClick={() => setPreviewImage(reward.rewardImage)}
-                                                >
-                                                    <img
-                                                        src={reward.rewardImage}
-                                                        alt={reward.name}
-                                                        className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl object-cover shadow-md border border-gray-200 group-hover:opacity-90 transition-all"
-                                                    />
-                                                </div>
+                                             
+                                            <td className="px-6 py-3">
+                                            <div
+                                                className="relative group cursor-pointer"
+                                                // onClick={() => setPreviewImage(reward.rewardImage)}
+                                            >
+                                                <img
+                                                src={reward.rewardImage}
+                                                alt={reward.name}
+                                                className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl object-cover shadow-md border border-gray-200 group-hover:opacity-90 transition-all"
+                                                />
+                                            </div>
+                                            </td>
+
 
                                                 {/* Stock Status */}
                                                 <td className="px-6 py-3">

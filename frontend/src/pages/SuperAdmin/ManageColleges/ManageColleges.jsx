@@ -237,7 +237,7 @@ const manageColleges = () => {
   };
 
   return (
-    <div className="min-h-screen mt-12 lg:mt-14 lg:ml-56 font-[Inter] bg-gray-50 px-1 py-4 md:p-4 lg:p-8">
+    <div className="min-h-screen mt-12 lg:mt-14 lg:ml-56 font-[Inter] bg-gray-50 px-3 py-4 md:p-4 lg:p-8">
       <div className="max-w-8xl ">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 w-full">
@@ -274,7 +274,7 @@ const manageColleges = () => {
               {/* Export Button - Disabled when no colleges are selected */}
               <button
                 onClick={handleExportCSV}
-                className={`flex cursor-pointer items-center px-10 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
+                className={`flex cursor-pointer items-center justify-center px-10 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
                   isAnySelected
                     ? "text-gray-700 bg-white hover:bg-gray-50"
                     : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
@@ -288,7 +288,7 @@ const manageColleges = () => {
               {/* Add New College Button (Always active) */}
               <button
                 onClick={openModalForAdd}
-                className="flex cursor-pointer items-center px-4 py-2 text-xs sm:text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md"
+                className="flex cursor-pointer items-center justify-center px-4 py-2 text-[10px] sm:text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 transition duration-150 shadow-md"
               >
                 <Plus className="h-5 w-5 mr-2 -ml-1 hidden sm:inline" />
                 Add New College
@@ -321,7 +321,7 @@ const manageColleges = () => {
 
                       <th
                         scope="col"
-                        className="sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                        className="sm:px-6 py-3 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
                           College Name
@@ -399,7 +399,7 @@ const manageColleges = () => {
                         </td>
 
                         {/* College Name Column */}
-                        <td className="sm:px-6 py-1 sm:py-4 whitespace-nowrap text-xs sm:text-sm sm:font-medium text-gray-900">
+                        <td className="sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm sm:font-medium text-gray-900">
                           {college.name || "N/A"}
                         </td>
 

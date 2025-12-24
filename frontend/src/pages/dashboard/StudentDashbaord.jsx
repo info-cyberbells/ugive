@@ -183,7 +183,7 @@ const StudentDashboard = () => {
         },
         {
           icon: Zap,
-          title: "Streak Days",
+          title: "Streak Weeks",
           value: studentDashboard.streakInfo.currentStreak,
           color: "text-yellow-300",
           route: "/streaks",
@@ -498,10 +498,9 @@ const StudentDashboard = () => {
               </div>
             </div>
 
-            <div className="w-full flex justify-center mb-14 md:mb-4">
+            {/* <div className="w-full flex justify-center mb-14 md:mb-4">
               <div className="w-[60%] h-40">
                 {" "}
-                {/* Adjust width & height here */}
                 <h3 className="text-sm font-semibold text-gray-700 mb-2 text-center">
                   Cards Sent vs Received (This Month)
                 </h3>
@@ -569,7 +568,7 @@ const StudentDashboard = () => {
                   </ResponsiveContainer>
                 )}
               </div>
-            </div>
+            </div> */}
           </div>
 
           <div className="bg-white p-3 sm:py-4 sm:px-0 rounded-xl shadow-sm">

@@ -164,6 +164,69 @@ const AdminColleges = () => {
     setCurrentCollege(null);
   };
 
+const handleExport = () => {
+  const selected =
+    selectedCollegeIds.length > 0
+      ? data.filter((college) =>
+          selectedCollegeIds.includes(college._id)
+        )
+      : data;
+
+  if (selected.length === 0) {
+    showToast("No College selected!", "error");
+    return;
+  }
+
+  const headers = [
+    "Name",
+    "Phone Number",
+    "University Name",
+    "Address",
+    "City",
+    "State",
+    "Post Code",
+  ];
+
+  const rows = selected.map((college) => [
+    college.name || "N/A",
+    college.phoneNumber || "N/A",
+    college.university?.name || "N/A",
+    college.address_line_1 || "N/A",
+    college.city || "N/A",
+    college.state || "N/A",
+    college.postcode || "N/A",
+  ]);
+
+  const escapeCSV = (value) => {
+    if (value === null || value === undefined) return "";
+    const str = String(value).replace(/"/g, '""');
+    return `"${str}"`;
+  };
+
+  const csvString =
+    headers.map(escapeCSV).join(",") +
+    "\n" +
+    rows.map((row) => row.map(escapeCSV).join(",")).join("\n");
+
+  const blob = new Blob([csvString], {
+    type: "text/csv;charset=utf-8;",
+  });
+
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  link.href = url;
+  link.download = "adminColleges.csv";
+  document.body.appendChild(link);
+  link.click();
+
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+
+  showToast("CSV exported successfully!", "success");
+};
+
+
+
   const TableSkeleton = () => (
     <>
       {/* Header Skeleton */}
@@ -242,7 +305,7 @@ const AdminColleges = () => {
                 onClick={openDeleteModalForBulk}
                 className={`flex items-center justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 ${
                   isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600"
+                    ? "text-gray-700 bg-white cursor-pointer hover:bg-red-50 hover:text-red-600"
                     : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
                 }`}
                 aria-label="Delete Selected"
@@ -254,9 +317,10 @@ const AdminColleges = () => {
 
               {/* Export Button */}
               <button
+              onClick={handleExport}
                 className={`flex items-center justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
                   isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-gray-50"
+                    ? "text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
                     : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
                 }`}
                 disabled={!isAnySelected}
@@ -334,7 +398,7 @@ const AdminColleges = () => {
                         </th>
                         <th
                           scope="col"
-                          className=" sm:px-6 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                          className=" px-6 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                         >
                           <div className="flex items-center gap-1">Actions</div>
                         </th>
@@ -364,7 +428,7 @@ const AdminColleges = () => {
 
                           {/* Name Column (Bold Text) */}
                           <td className="px-1 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {displayData(college.name)}
+                            {displayData(college.name) || "N/A"}
                           </td>
 
                           {/* Email Column */}
@@ -414,7 +478,7 @@ const AdminColleges = () => {
               <div className="flex justify-between items-center p-2 sm:p-4 bg-white border-t">
                 {/* Limit Dropdown */}
                 <div className="flex items-center gap-2">
-                  <span className="text-xs sm:text-sm text-gray-600">
+                  <span className="text-[10px] sm:text-sm text-gray-600">
                     Rows per page:
                   </span>
                   <select
