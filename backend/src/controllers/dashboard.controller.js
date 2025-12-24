@@ -305,9 +305,9 @@ export const getStudentDashboard = async (req, res) => {
     const [
       studentInfo,
       totalCardsSent,
-      totalGiftsSent,
       totalCardsReceived,
       totalCardsReceivedThisMonth,
+      totalGiftsSent,
       currentMonthCardsSent,
       currentMonthStreak,
       totalFriends,

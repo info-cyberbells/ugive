@@ -176,7 +176,7 @@ const CollegeModal = ({
         .unwrap()
         .then(() => {
           showToast("College updated successfully", "success");
-          dispatch(getAdminColleges());
+          dispatch(getAdminColleges({ page: 1, limit: 10 }));
           onClose();
         })
         .catch((error) => {
@@ -192,7 +192,7 @@ const CollegeModal = ({
         .unwrap()
         .then(() => {
           showToast("College added successfully", "success");
-          dispatch(getAdminColleges());
+          dispatch(getAdminColleges({ page: 1, limit: 10 }));
           onClose();
         })
         .catch((error) => {

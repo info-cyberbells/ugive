@@ -231,11 +231,10 @@ const VendorAdminModal = ({
     }
   }
 
-  // ✅ MULTIPART FORM DATA
   const formDataToSend = new FormData();
 
   formDataToSend.append("name", formData.name);
-  formDataToSend.append("phoneNumber", cleanedPhone);
+  formDataToSend.append("phoneNumber", formData.phoneNumber);
 
   if (isAddMode) {
     formDataToSend.append("email", formData.email);
@@ -246,7 +245,7 @@ const VendorAdminModal = ({
     formDataToSend.append("profileImage", formData.profileImageFile);
   }
 
-  onSave(formDataToSend); // ✅ correct
+  onSave(formDataToSend); 
 };
 
 
@@ -295,7 +294,7 @@ const VendorAdminModal = ({
         <form
           id="vendor-form"
           onSubmit={handleSubmit}
-          className="overflow-y-auto px-8 py-6 space-y-5"
+          className="overflow-y-auto px-8 py-6 space-y-2 sm:space-y-5"
         >
           {/* Profile Image Preview */}
           
@@ -505,7 +504,7 @@ const VendorAdminModal = ({
         </form>
 
         {/* Footer */}
-        <div className="px-8 py-6 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-3 shrink-0">
+        <div className=" p-4 sm:px-8 sm:py-6 bg-gray-50 border-t border-gray-100 flex items-center justify-end gap-3 shrink-0">
           <button
             type="button"
             onClick={onClose}

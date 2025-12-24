@@ -151,14 +151,14 @@ const Login = () => {
 
                 <div className="login-options">
                   <div className="login-remember-me">
-                    <input type="radio" id="rememberMe" />
-                    <label htmlFor="rememberMe" style={{ paddingLeft: "4px" }}>
+                    <input type="checkbox" id="rememberMe" />
+                    <label htmlFor="rememberMe" style={{ paddingLeft: "4px", paddingTop: "2px" }}>
                       Remember Me
                     </label>
                   </div>
                   <div className="login-forgot-password">
                     <button type="button"
-                    className="cursor-pointer hover:text-gray-900 transition "
+                    className="cursor-pointer pt-0.5 lg:pt-1 hover:text-gray-900 transition "
                      onClick={() => setOpen(true)}
                     >Forgot Password</button>
                   </div>

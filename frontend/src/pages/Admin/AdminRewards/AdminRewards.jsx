@@ -95,6 +95,10 @@ const AdminRewardsManage = () => {
 
         formData.append("totalPoints", data.totalPoints);
 
+         if (data.college && data.college.trim() !== "") {
+        formData.append("college", data.college);
+    }
+
         if (data.rewardImage) {
             formData.append("rewardImage", data.rewardImage);
         } else if (data.rewardImagePath) {
@@ -296,10 +300,10 @@ const AdminRewardsManage = () => {
                             {/* Add New Student Button (Always active) */}
                             <button
                                 onClick={openModalForAdd}
-                className="flex cursor-pointer items-center px-4 py-2 text-xs sm:text-sm font-medium text-white bg-[#6955A5] hover:bg-[#533f8e] hover:scale-[1.02] transition duration-150 border border-transparent rounded-lg  shadow-md"
+                className="flex cursor-pointer items-center justify-center px-4 py-2 text-xs sm:text-sm font-medium text-white bg-[#6955A5] hover:bg-[#533f8e] hover:scale-[1.02] transition duration-150 border border-transparent rounded-lg  shadow-md"
                             >
                                 <Plus className="h-5 w-5 mr-2 -ml-1 hidden sm:inline" />
-                                Add New Reward
+                                Add New 
                             </button>
                         </div>
 
@@ -446,33 +450,13 @@ const AdminRewardsManage = () => {
                                                     {reward.college?.name || 'N/A'}
                                                 </td>
 
-                                                {/* Phone Column */}
-                                                {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                                    {student.phoneNumber || 'N/A'}
-                                                </td> */}
 
-                                                {/* Status Column (Badge) */}
-                                                {/* <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                                <StatusBadge status={student.status} />
-                                            </td> */}
-                                                {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                                    {student.studentUniId || "N/A"}
-                                                </td> */}
-
-                                                {/* Reviews/Count Column (View Button) */}
-                                                {/* <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                                <button className="text-indigo-600 hover:text-indigo-900 font-medium">
-                                                    View ({student.reviews})
-                                                </button>
-                                            </td> */}
+                                               
 
                                                 {/* Action Column (View, Edit, Delete) */}
                                                 <td className="sm:px-6 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium space-x-1 sm:space-x-3">
                                                     <button
-                                                        // onClick={() => {
-                                                        //     setCurrentReward({ id: reward._id, mode: "view" });
-                                                        //     setIsModalOpen(true);
-                                                        // }}
+                                                      
 
                                                         onClick={() => openModalForView(reward)}
 
@@ -482,10 +466,7 @@ const AdminRewardsManage = () => {
                                                     </button>
 
                                                     <button
-                                                        // onClick={() => {
-                                                        //     setCurrentReward({ id: reward._id, mode: "edit" });
-                                                        //     setIsModalOpen(true);
-                                                        // }}
+                                                   
 
                                                         onClick={() => openModalForEdit(reward)}
 

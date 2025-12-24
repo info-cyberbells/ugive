@@ -257,7 +257,7 @@ const StudentAdminModal = ({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
           {/* Name */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -376,7 +376,7 @@ const StudentAdminModal = ({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-2 gap-2 sm:gap-4">
             {/* Phone */}
             <div>
               <label className="block text-sm font-medium text-gray-700">
@@ -412,6 +412,7 @@ const StudentAdminModal = ({
 
             {isAddMode && (
               <>
+              
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Password
@@ -469,12 +470,13 @@ const StudentAdminModal = ({
                     </button>
                   </div>
                 </div>
+               
               </>
             )}
           </div>
 
           {/* Actions */}
-          <div className="pt-4 flex justify-end space-x-3">
+          <div className="sm:pt-4 flex justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}

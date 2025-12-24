@@ -230,12 +230,13 @@ const VendorModal = ({
     return;
   }
 
-  const cleanedPhone = formData.phoneNumber.replace(/\s/g, "");
-  if (!/^04\d{8}$/.test(cleanedPhone)) {
-    setErrors((prev) => ({ ...prev, phoneNumber: true }));
-    showToast("Phone number must be in format: 04XX XXX XXX", "error");
-    return;
-  }
+ const cleanedPhone = formData.phoneNumber.replace(/\s/g, "");
+if (!/^04\d{8}$/.test(cleanedPhone)) {
+  setErrors((prev) => ({ ...prev, phoneNumber: true }));
+  showToast("Phone number must be in format: 04XX XXX XXX", "error");
+  return;
+}
+
 
   if (isAddMode) {
     if (formData.password.length < 6) {
@@ -259,7 +260,7 @@ const VendorModal = ({
   const formDataToSend = new FormData();
 
   formDataToSend.append("name", formData.name);
-  formDataToSend.append("phoneNumber", cleanedPhone);
+  formDataToSend.append("phoneNumber", formData.phoneNumber);
   formDataToSend.append("university", formData.university);
 
   if (isAddMode) {

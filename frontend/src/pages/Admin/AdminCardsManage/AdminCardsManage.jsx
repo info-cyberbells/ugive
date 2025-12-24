@@ -163,6 +163,72 @@ const AdminManageCards = () => {
     });
   };
 
+  const handleExport = () => {
+  const selected =
+    selectedCardIds.length > 0
+      ? data.filter((card) => selectedCardIds.includes(card._id))
+      : data;
+
+  if (selected.length === 0) {
+    showToast("No cards selected!", "error");
+    return;
+  }
+
+  const headers = [
+    "Sender Name",
+    "Sender Email",
+    "Receiver Name",
+    "Receiver Email",
+    "College",
+    "Reward",
+    "Message",
+    "Status",
+    "Sent At",
+  ];
+
+  const rows = selected.map((card) => [
+    card.sender_name || "N/A",
+    card.sender?.email || "N/A",
+    `${card.recipient_name || ""} ${card.recipient_last_name || ""}`.trim() ||
+      "N/A",
+    card.recipient_email || "N/A",
+    card.college_name || "N/A",
+    card.reward?.name || "N/A",
+    card.message || "N/A",
+    card.status || "N/A",
+    card.sent_at
+      ? new Date(card.sent_at).toLocaleString()
+      : "N/A",
+  ]);
+
+  const escapeCSV = (value) => {
+    if (value === null || value === undefined) return "";
+    return `"${String(value).replace(/"/g, '""')}"`;
+  };
+
+  const csvContent =
+    headers.map(escapeCSV).join(",") +
+    "\n" +
+    rows.map((row) => row.map(escapeCSV).join(",")).join("\n");
+
+  const blob = new Blob([csvContent], {
+    type: "text/csv;charset=utf-8;",
+  });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "admin_cards.csv";
+  document.body.appendChild(link);
+  link.click();
+
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+
+  showToast("Cards exported successfully!", "success");
+};
+
+
   const TableSkeleton = () => (
     <>
       <thead>
@@ -239,7 +305,7 @@ const AdminManageCards = () => {
                   setIsDeleteModalOpen(true);
                 }}
                 className={`flex items-center justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 ${isAnySelected
-                  ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600"
+                  ? "text-gray-700 bg-white cursor-pointer hover:bg-red-50 hover:text-red-600"
                   : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
                   }`}
                 aria-label="Delete Selected"
@@ -251,8 +317,9 @@ const AdminManageCards = () => {
 
               {/* Export Button */}
               <button
+              onClick={handleExport}
                 className={`flex items-center justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${isAnySelected
-                  ? "text-gray-700 bg-white hover:bg-gray-50"
+                  ? "text-gray-700 bg-white cursor-pointer hover:bg-gray-50"
                   : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
                   }`}
                 disabled={!isAnySelected}
@@ -432,7 +499,7 @@ const AdminManageCards = () => {
               <div className="flex justify-between items-center p-2 sm:p-4 bg-white border-t">
                 {/* Limit Dropdown */}
                 <div className="flex items-center gap-2">
-                  <span className="text-xs sm:text-sm text-gray-600">
+                  <span className="text-[10px] sm:text-sm text-gray-600">
                     Rows per page:
                   </span>
                   <select

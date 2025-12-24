@@ -2,21 +2,37 @@ import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useToast } from "../../../context/ToastContext";
 import { useDispatch, useSelector } from "react-redux";
-import { getUniversities, getColleges, getActiveRewards } from "../../../features/studentSlice";
-import { updateRewardByAdmin, getAllRewardsByAdmin } from '../../../features/adminRewardSlice';
+import {
+  getUniversities,
+  getColleges,
+  getActiveRewards,
+} from "../../../features/studentSlice";
+import {
+  updateRewardByAdmin,
+  getAllRewardsByAdmin,
+} from "../../../features/adminRewardSlice";
 
-
-
-const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => {
-
+const AdminRewardModal = ({
+  isOpen,
+  onClose,
+  rewardId,
+  onSave,
+  mode,
+  page,
+  limit,
+}) => {
   const dispatch = useDispatch();
-  const { universities, colleges, activeRewards } = useSelector((state) => state.auth);
+  const { universities, colleges, activeRewards } = useSelector(
+    (state) => state.auth
+  );
+  const universityId = localStorage.getItem("universityId");
+
   const { showToast } = useToast();
   const [rewardImage, setRewardImage] = useState(null);
   const [rewardImagePreview, setRewardImagePreview] = useState(null);
   const { selectedReward } = useSelector((state) => state.adminReward);
+  const [selectedRewardId, setSelectedRewardId] = useState("");
   const [selectedRewardImagePath, setSelectedRewardImagePath] = useState("");
-
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
@@ -25,7 +41,6 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
     setRewardImage(file);
     setRewardImagePreview(URL.createObjectURL(file)); // preview
   };
-
 
   const isViewMode = mode === "view";
   const isEditMode = mode === "edit";
@@ -51,22 +66,24 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
   const title = isViewMode
     ? "View Reward Details"
     : isEditMode
-      ? "Edit Reward Details"
-      : "Add New Reward";
+    ? "Edit Reward Details"
+    : "Add New Reward";
 
   useEffect(() => {
     if (!isOpen) return;
 
-    dispatch(getUniversities());
     dispatch(getActiveRewards());
 
-  }, [isOpen, isViewMode, dispatch]);
-
-  useEffect(() => {
-    if (isOpen && (isEditMode || isViewMode) && selectedReward?.university?._id) {
-      dispatch(getColleges(selectedReward.university._id));
+    if (universityId) {
+      dispatch(getColleges(universityId));
     }
-  }, [isOpen, isEditMode, isViewMode, selectedReward?.university?._id, dispatch]);
+  }, [isOpen, universityId, dispatch]);
+
+  // useEffect(() => {
+  //   if (isOpen && (isEditMode || isViewMode) && selectedReward?.university?._id) {
+  //     dispatch(getColleges(selectedReward.university._id));
+  //   }
+  // }, [isOpen, isEditMode, isViewMode, selectedReward?.university?._id, dispatch]);
 
   useEffect(() => {
     if (isOpen && (isEditMode || isViewMode) && selectedReward) {
@@ -77,40 +94,44 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
         name: selectedReward.name || "",
         totalPoints: selectedReward.totalPoints || "",
         rewardDescription: selectedReward.rewardDescription || "",
-        university: typeof selectedReward.university === 'string'
-          ? selectedReward.university
-          : selectedReward.university?._id || "",
-        college: typeof selectedReward.college === 'string'
-          ? selectedReward.college
-          : selectedReward.college?._id || "",
+        // university: typeof selectedReward.university === 'string'
+        //   ? selectedReward.university
+        //   : selectedReward.university?._id || "",
+        college:
+          typeof selectedReward.college === "string"
+            ? selectedReward.college
+            : selectedReward.college?._id || "",
       });
 
       if (selectedReward.rewardImage) {
         setRewardImagePreview(selectedReward.rewardImage);
         setSelectedRewardImagePath(selectedReward.rewardImage);
       }
+      setSelectedRewardId(
+        activeRewards.find((r) => r.name === selectedReward.name)?._id || ""
+      );
     }
-  }, [isOpen, selectedReward, isEditMode, isViewMode]);
+  }, [isOpen, selectedReward, isEditMode, isViewMode, activeRewards]);
 
-  const handleUniversityChange = (e) => {
-    const universityId = e.target.value;
+  // const handleUniversityChange = (e) => {
+  //   const universityId = e.target.value;
 
-    setFormData((prev) => ({
-      ...prev,
-      university: universityId,
-      college: "",
-    }));
+  //   setFormData((prev) => ({
+  //     ...prev,
+  //     university: universityId,
+  //     college: "",
+  //   }));
 
-    if (universityId) {
-      dispatch(getColleges(universityId));
-    }
-  };
+  //   if (universityId) {
+  //     dispatch(getColleges(universityId));
+  //   }
+  // };
 
   const resetForm = () => {
     setFormData({
       name: "",
       totalPoints: "",
-      university: "",
+      // university: "",
       rewardDescription: "",
       college: "",
       rewardImage: "",
@@ -120,14 +141,16 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
     setSelectedRewardImagePath("");
     setErrors({});
   };
+
   if (!isOpen) return null;
 
   const inputClasses = (field) =>
     `mt-1 block w-full rounded-lg border shadow-sm sm:text-sm p-2 transition duration-150
-        ${errors[field]
-      ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-      : "border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
-    }`;
+        ${
+          errors[field]
+            ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+            : "border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+        }`;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -147,7 +170,7 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
     const requiredFields = [
       "name",
       "totalPoints",
-      "university",
+      // "university",
       "rewardDescription",
     ];
 
@@ -167,17 +190,15 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
       return;
     }
 
-
     const payload = { ...formData, id: rewardId };
 
     if (isEditMode) {
-
       const updatedForm = new FormData();
 
       updatedForm.append("name", formData.name);
       updatedForm.append("rewardDescription", formData.rewardDescription);
       updatedForm.append("totalPoints", formData.totalPoints);
-      updatedForm.append("university", formData.university);
+      // updatedForm.append("university", formData.university);
       if (formData.college && formData.college.trim() !== "") {
         updatedForm.append("college", formData.college);
       }
@@ -201,12 +222,11 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
       return;
     }
 
-
     const saveData = {
       name: formData.name,
       rewardDescription: formData.rewardDescription,
       totalPoints: formData.totalPoints,
-      university: formData.university,
+      // university: formData.university,
     };
 
     if (rewardImage) {
@@ -226,9 +246,9 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
 
   return (
     <div className="fixed inset-0 bg-black/30 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
-      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg mx-auto">
+      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg lg:min-w-[520px] mx-auto max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b">
+        <div className="flex justify-between items-center px-6 py-3 border-b">
           <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
           <button
             onClick={onClose}
@@ -239,8 +259,8 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div>
+        <form onSubmit={handleSubmit} className="px-6 py-3 space-y-2">
+          {/* <div>
             <label className="block text-sm font-medium text-gray-700">
               University
             </label>
@@ -267,7 +287,6 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
                   ))}
                 </select>
 
-                {/* Custom Dropdown Arrow */}
                 <svg
                   className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
                   fill="none"
@@ -283,7 +302,7 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
                 </svg>
               </div>
             )}
-          </div>
+          </div> */}
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -292,7 +311,8 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
 
             {isViewMode ? (
               <div className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 shadow-sm sm:text-sm p-2">
-                {colleges.find(c => c._id === formData.college)?.name || "N/A"}
+                {colleges.find((c) => c._id === formData.college)?.name ||
+                  "N/A"}
               </div>
             ) : (
               <div className="relative">
@@ -301,19 +321,10 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
                   value={formData.college || ""}
                   onChange={handleChange}
                   className={`${inputClasses("college")} appearance-none pr-10`}
-                  disabled={!formData.university}
                 >
-                  {!formData.university && (
-                    <option value="">Select a university first</option>
-                  )}
-
-                  {formData.university && colleges.length === 0 && (
-                    <option value="">
-                      No colleges found for this university
-                    </option>
-                  )}
-
-                  {formData.university && colleges.length > 0 && (
+                  {colleges.length === 0 ? (
+                    <option value="">No colleges available</option>
+                  ) : (
                     <>
                       <option value="">Select your college</option>
                       {colleges.map((c) => (
@@ -350,16 +361,26 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
             {!isViewMode && activeRewards.length === 0 ? (
               <div className="mt-1 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <p className="text-sm text-yellow-800">
-                  No active rewards found. Please ask the vendor to add rewards first or add them in the audit rewards list.
+                  No active rewards found. Please ask the vendor to add rewards
+                  first or add them in the audit rewards list.
                 </p>
               </div>
             ) : (
               <select
                 name="rewardId"
                 disabled={isViewMode}
-                value={isEditMode || isViewMode ?
-                  activeRewards.find(r => r.name === formData.name)?._id || ""
-                  : ""
+                // value={isEditMode || isViewMode ?
+                //   activeRewards.find(r => r.name === formData.name)?._id || ""
+                //   : ""
+                // }
+                value={
+                  isEditMode || isViewMode
+                    ? activeRewards.find((r) => r.name === formData.name)
+                        ?._id || ""
+                    : formData.name
+                    ? activeRewards.find((r) => r.name === formData.name)
+                        ?._id || ""
+                    : ""
                 }
                 className={inputClasses("name")}
                 onChange={(e) => {
@@ -436,7 +457,11 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
                   onChange={handleImageChange}
                   className={`block w-full text-sm text-gray-700 file:mr-3 file:py-2
                  file:px-4 file:rounded-md file:border-0
-                 ${errors.rewardImage ? "file:bg-red-100 file:text-red-600 " : "file:bg-indigo-50 file:text-indigo-600"}
+                 ${
+                   errors.rewardImage
+                     ? "file:bg-red-100 file:text-red-600 "
+                     : "file:bg-indigo-50 file:text-indigo-600"
+                 }
                  hover:file:bg-indigo-100 cursor-pointer`}
                 />
               )}
@@ -449,36 +474,34 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
                     className="h-16 w-16 rounded-lg object-cover"
                   />
 
-                  {!isViewMode && <button
-                    type="button"
-                    onClick={() => {
-                      setRewardImage(null);
-                      setRewardImagePreview(null);
-                      setFormData((prev) => ({ ...prev, rewardImage: "" }));
-                    }}
-                    className="absolute -top-2 -right-2 bg-red-100 text-black rounded-full
+                  {!isViewMode && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRewardImage(null);
+                        setRewardImagePreview(null);
+                        setFormData((prev) => ({ ...prev, rewardImage: "" }));
+                      }}
+                      className="absolute -top-2 -right-2 bg-red-100 text-black rounded-full
                    w-5 h-5 flex items-center justify-center text-sm shadow-md
                    hover:bg-red-300 cursor-pointer"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>}
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
                 </div>
               )}
             </div>
-
           </div>
 
-
-
           {/* Actions */}
-          <div className="pt-4 flex justify-end space-x-3">
+          <div className="pt-2 flex justify-end space-x-3">
             <button
               type="button"
               onClick={() => {
                 resetForm();
                 onClose();
               }}
-
               className="px-4 py-2 text-sm font-medium text-gray-700 cursor-pointer bg-white border border-gray-300 rounded-lg hover:bg-gray-50 shadow-sm transition"
             >
               Cancel
@@ -494,7 +517,6 @@ const AdminRewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit
           </div>
         </form>
       </div>
-
     </div>
   );
 };

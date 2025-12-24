@@ -221,7 +221,7 @@ const RewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) =
 
   return (
     <div className="fixed inset-0 bg-black/30 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
-      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg mx-auto">
+<div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg lg:min-w-[520px] mx-auto max-h-[90vh] overflow-y-auto">        
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b">
           <h3 className="text-lg font-semibold text-gray-900">{title}</h3>

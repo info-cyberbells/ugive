@@ -148,7 +148,10 @@ export const getSingleVendor = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            data: vendor
+              data: {
+        ...vendor.toObject(),
+        profileImage: buildImageUrl(req, vendor.profileImage),
+    }
         });
 
     } catch (error) {

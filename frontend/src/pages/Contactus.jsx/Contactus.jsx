@@ -40,9 +40,9 @@ const Contactus = () => {
   };
 
   return (
-    <div className="bg-gray-50 lg:ml-60 mt-14 min-h-screen px-6 pt-2 mx-auto font-[Poppins]">
+    <div className="bg-gray-50 lg:ml-60 mt-14 min-h-screen px-2 sm:px-6 pt-2 mx-auto font-[Poppins]">
       <h2 className="p-4 text-2xl font-semibold text-[#6955A5]">Support</h2>
-      <div className="bg-white p-8 rounded-3xl max-w-4xl">
+      <div className="bg-white p-4 sm:p-8 rounded-3xl max-w-4xl">
         <div className="border-b border-gray-200 mb-2">
           <h2 className="text-[#6955A5] font-medium text-sm border-b-2 border-[#6955A5] w-fit pb-1">
             Contact Us
