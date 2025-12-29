@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 import { useToast } from '../../../context/ToastContext';
 import { getUniversities } from '../../../features/studentSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { createCollege, updateCollege } from '../../../features/collegesSlice';
+import { createCollege, getCollegesData, updateCollege } from '../../../features/collegesSlice';
 
 const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
 
@@ -163,6 +163,8 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
                 .unwrap()
                 .then(() => {
                     showToast("College info updated successfully!", "success");
+                        dispatch(getCollegesData({ limit: 10, page: 1 }));
+                    
                     setFormData({
                         name: "",
                         universityId: "",
@@ -185,6 +187,7 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
             .unwrap()
             .then(() => {
                 showToast("College added successfully!", "success");
+                    dispatch(getCollegesData({ limit: 10, page: 1 }));
                 setFormData({
                     name: "",
                     universityId: "",

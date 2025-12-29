@@ -181,7 +181,7 @@ const VendorsDashboard = () => {
   }
 
   return (
-    <div className=" lg:ml-60 mt-14 p-6 font-[Poppins] bg-gray-50 min-h-[calc(100vh-56px)] grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <div className=" lg:ml-60 mt-14 p-2 sm:p-6 font-[Poppins] bg-gray-50 min-h-[calc(100vh-56px)] grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div className="lg:col-span-8 bg-white p-6 rounded-xl lg:max-h-[250px] shadow-md">
         <header className="flex justify-between items-center">
           <div>
@@ -393,9 +393,8 @@ const VendorsDashboard = () => {
         </div>
       </div>
 
-      {/* --- IMPROVED RECENT CARDS PANEL --- */}
-      <div className="lg:col-span-6 bg-white p-6 rounded-xl shadow-lg">
-        <h2 className="text-xl text-[#05004E] font-semibold mb-6">
+      <div className="lg:col-span-6 bg-white sm:p-6 rounded-xl shadow-lg">
+        <h2 className="text-xl text-[#05004E] px-3 py-2 sm:px-0 sm:py-0 font-semibold mb-6">
           Recent Delivered Cards{" "}
         </h2>
 

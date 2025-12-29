@@ -180,7 +180,7 @@ const handleExportCSV = () => {
     "Email",
     "Phone Number",
     "University Name",
-    "Colleges",
+    // "Colleges",
 
   ];
 
@@ -189,7 +189,7 @@ const handleExportCSV = () => {
     vendor.email,
     vendor.phoneNumber,
     vendor.university?.name || "",
-    vendor.colleges?.map(college => college.name).join("; ") || "",
+    // vendor.colleges?.map(college => college.name).join("; ") || "",
 
   ]);
 
@@ -257,9 +257,9 @@ const handleExportCSV = () => {
             <div className="grid grid-cols-3 gap-3 sm:flex sm:space-x-3 w-full sm:w-auto">
               <button
                 onClick={openDeleteModalForBulk}
-                className={`flex cursor-pointer items-center px-6 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
+                className={`flex items-center px-6 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
                   isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600"
+                    ? "text-gray-700 cursor-pointer bg-white hover:bg-red-50 hover:text-red-600"
                     : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
                 }`}
                 aria-label="Delete Selected"
@@ -278,9 +278,9 @@ const handleExportCSV = () => {
               {/* Export Button - Disabled when no colleges are selected */}
               <button
                 onClick={handleExportCSV}
-                className={`flex cursor-pointer items-center px-10 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
+                className={`flex items-center px-10 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
                   isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-gray-50"
+                    ? "text-gray-700 cursor-pointer  bg-white hover:bg-gray-50"
                     : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
                 }`}
                 disabled={!isAnySelected}

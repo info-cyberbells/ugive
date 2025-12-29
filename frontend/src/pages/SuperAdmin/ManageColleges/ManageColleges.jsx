@@ -40,7 +40,7 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-const manageColleges = () => {
+const ManageColleges = () => {
   const dispatch = useDispatch();
   const { showToast } = useToast();
 
@@ -169,47 +169,61 @@ const manageColleges = () => {
     closeDeleteModal();
   };
 
-  const handleExportCSV = () => {
-    const selected = data.filter((col) => selectedCollegeIds.includes(col._id));
+const handleExportCSV = () => {
+  if (!selectedCollegeIds || selectedCollegeIds.length === 0) {
+    showToast("Please select at least one college to export!", "error");
+    return;
+  }
 
-    if (selected.length === 0) {
-      showToast("No colleges selected!", "error");
-      return;
-    }
+  const selectedData = data.filter((col) =>
+    selectedCollegeIds.includes(col._id)
+  );
 
-    const headers = [
-      "College Name",
-      "University Name",
-      "Address Line 1",
-      "State",
-    ];
+  if (selectedData.length === 0) {
+    showToast("Selected colleges not found!", "error");
+    return;
+  }
 
-    const rows = selected.map((col) => [
-      col.name,
-      col.university?.name,
-      col.address_line_1,
-      col.state,
-    ]);
+  const headers = [
+    "College Name",
+    "University Name",
+    "Address Line 1",
+    "City",
+    "State",
+    "Postcode",
+    "Phone Number",
+  ];
 
-    const escapeCSV = (value) => {
-      if (value === null || value === undefined) return "";
-      const str = String(value).replace(/"/g, '""');
-      return `"${str}"`;
-    };
+  const rows = selectedData.map((col) => [
+    col.name || "",
+    col.university?.name || "",
+    col.address_line_1 || "",
+    col.city || "",
+    col.state || "",
+    col.postcode || "",
+    col.phoneNumber || "",
+  ]);
 
-    const csvContent =
-      "data:text/csv;charset=utf-8," +
-      [headers, ...rows].map((row) => row.map(escapeCSV).join(",")).join("\n");
+  const escapeCSV = (value) =>
+    `"${String(value).replace(/"/g, '""')}"`;
 
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "colleges_export.csv");
-    document.body.appendChild(link);
-    link.click();
+  const csvContent =
+    "data:text/csv;charset=utf-8," +
+    [headers, ...rows]
+      .map((row) => row.map(escapeCSV).join(","))
+      .join("\n");
 
-    showToast("CSV exported successfully!", "success");
-  };
+  const link = document.createElement("a");
+  link.href = encodeURI(csvContent);
+  link.download = "selected_colleges_export.csv";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  showToast("Selected colleges exported successfully!", "success");
+};
+
+
 
   const SkeletonTable = () => {
     return (
@@ -253,9 +267,9 @@ const manageColleges = () => {
             <div className="grid grid-cols-3 gap-3 sm:flex sm:space-x-3 w-full sm:w-auto">
               <button
                 onClick={openDeleteModalForBulk}
-                className={`flex cursor-pointer items-center px-6 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
+                className={`flex items-center px-6 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
                   isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600"
+                    ? "text-gray-700 bg-white cursor-pointer hover:bg-red-50 hover:text-red-600"
                     : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
                 }`}
                 aria-label="Delete Selected"
@@ -274,9 +288,9 @@ const manageColleges = () => {
               {/* Export Button - Disabled when no colleges are selected */}
               <button
                 onClick={handleExportCSV}
-                className={`flex cursor-pointer items-center justify-center px-10 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
+                className={`flex items-center justify-center px-10 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
                   isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-gray-50"
+                    ? "text-gray-700 cursor-pointer bg-white hover:bg-gray-50"
                     : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
                 }`}
                 disabled={!isAnySelected}
@@ -573,4 +587,4 @@ const manageColleges = () => {
   );
 };
 
-export default manageColleges;
+export default ManageColleges;

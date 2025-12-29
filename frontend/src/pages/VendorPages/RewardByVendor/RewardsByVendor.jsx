@@ -288,7 +288,7 @@ const RewardsByVendor = () => {
               {/* Add New Student Button (Always active) */}
               <button
                 onClick={openModalForAdd}
-                className="flex cursor-pointer items-center justify-center px-4 py-2 text-sm font-medium text-white bg-[#6955A5] border border-transparent rounded-lg hover:bg-[#533f8e] hover:scale-[1.02] transition duration-150 shadow-md"
+                className="flex cursor-pointer items-center justify-center px-4 py-2 text-[10px] sm:text-sm font-medium text-white bg-[#6955A5] border border-transparent rounded-lg hover:bg-[#533f8e] hover:scale-[1.02] transition duration-150 shadow-md"
               >
                 <Plus className="h-5 w-5 mr-2 -ml-1 hidden sm:inline" />
                 Add New Reward
@@ -315,13 +315,13 @@ const RewardsByVendor = () => {
                           type="checkbox"
                           checked={isAllSelected}
                           onChange={handleSelectAll}
-                          className="form-checkbox cursor-pointer h-2 w-2 sm:h-4 sm:w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
+                          className="form-checkbox cursor-pointer h-3 w-2 sm:h-4 sm:w-4 text-indigo-600 transition duration-150 ease-in-out border-gray-300 rounded focus:ring-indigo-500"
                         />
                       </th>
 
                       <th
                         scope="col"
-                        className="sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
+                        className="sm:px-6 py-3 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                       >
                         <div className="flex items-center gap-1">
                           Reward Name

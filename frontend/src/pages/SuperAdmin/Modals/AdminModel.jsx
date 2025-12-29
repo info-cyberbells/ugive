@@ -206,10 +206,10 @@ const AdminModal = ({
     });
 
     // Check if at least one college is selected
-    if (!formData.colleges || formData.colleges.length === 0) {
-      newErrors.colleges = true;
-      showToast("Please select at least one college", "error");
-    }
+    // if (!formData.colleges || formData.colleges.length === 0) {
+    //   newErrors.colleges = true;
+    //   showToast("Please select at least one college", "error");
+    // }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
