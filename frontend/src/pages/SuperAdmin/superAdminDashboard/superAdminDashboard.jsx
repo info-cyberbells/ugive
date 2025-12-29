@@ -219,10 +219,11 @@ const SuperAdminDashboard = () => {
             </p>
           </div>
           <ResponsiveContainer width="100%" height={280}>
-            <LineChart data={cardTrendData}>
+            <LineChart data={cardTrendData}  >
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis
                 dataKey="name"
+                 padding={{ right: 30 }}
                 tick={{ fill: "#6B7280", fontSize: 12 }}
                 axisLine={{ stroke: "#e5e7eb" }}
                 tickLine={false}

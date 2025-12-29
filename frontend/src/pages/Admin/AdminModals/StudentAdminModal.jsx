@@ -35,11 +35,26 @@ const StudentAdminModal = ({
 
   const isViewMode = mode === "view";
   const isEditMode = mode === "edit";
-  const isAddMode = !studentId;
+  const isAddMode = mode === "add";
 
   useEffect(() => {
     if (isOpen) {
+       setErrors({});
       // When modal opens
+      if (isAddMode) {
+      setFormData({
+        name: "",
+        email: "",
+        phoneNumber: "",
+        college: "",
+        studentUniId: "",
+        password: "",
+        confirmPassword: "",
+      });
+      setOriginalData(null);
+      setShowPassword(false);
+      setShowConfirmPassword(false);
+    }
       setErrors({});
     } else {
       // When modal closes
@@ -228,6 +243,11 @@ const StudentAdminModal = ({
       delete payload.password;
       delete payload.confirmPassword;
     }
+
+    if (!payload.college || payload.college.trim() === "") {
+      delete payload.college;
+    }
+
 
     if (isEditMode) {
       const { password, confirmPassword, ...currentValues } = formData;

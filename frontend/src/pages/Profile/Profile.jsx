@@ -540,7 +540,7 @@ const ProfileSettings = () => {
       {Loading ? (
         <ProfileSkeleton />
       ) : (
-        <div className="bg-[#F5F5F5] mt-10 lg:mt-14 lg:ml-58 p-6 min-h-screen mx-auto font-[Inter]">
+        <div className="bg-[#F5F5F5] mt-14 lg:ml-58 sm:p-6 min-h-screen mx-auto font-[Inter]">
           <div className="w-full bg-white max-w-4xl rounded-2xl shadow-sm p-6">
             {/* --- Section 1: Tabs --- */}
             <div className="flex border-b border-gray-200 mb-6">

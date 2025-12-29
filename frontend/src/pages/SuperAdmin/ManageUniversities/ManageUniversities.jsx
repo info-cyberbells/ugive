@@ -125,14 +125,15 @@ const ManageUniversities = () => {
 
     if (selected.length === 0) return;
 
-    const headers = ["Name", "Address Line 1", "City", "State", "Postcode"];
+    const headers = ["Name", "Phone Number" , "Address Line 1", "City", "State", "Postcode"];
 
     const rows = selected.map((uni) => [
-      uni.name,
-      uni.address_line_1,
-      uni.city,
-      uni.state,
-      uni.postcode,
+      uni.name || "N/A",
+      uni.phoneNumber || "N/A",
+      uni.address_line_1 || "N/A",
+      uni.city || "N/A",
+      uni.state || "N/A",
+      uni.postcode || "N/A",
     ]);
 
     const escapeCSV = (value) => {
@@ -197,13 +198,11 @@ const ManageUniversities = () => {
           </h1>
 
           <div className="grid gap-3 sm:flex sm:w-auto w-full">
-            {/* Action Buttons Group */}
             <div className="grid grid-cols-3 gap-3 sm:flex sm:space-x-3 w-full sm:w-auto">
-              {/* Delete Button - Disabled when no universities are selected */}
               <button
                 onClick={openDeleteModalForBulk}
-                className={`flex cursor-pointer items-center px-6 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 ${isAnySelected
-                  ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600"
+                className={`flex  items-center px-6 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 ${isAnySelected
+                  ? "text-gray-700 bg-white hover:bg-red-50 cursor-pointer hover:text-red-600"
                   : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
                   }`}
                 aria-label="Delete Selected"
@@ -222,8 +221,8 @@ const ManageUniversities = () => {
               {/* Export Button - Disabled when no universities are selected */}
               <button
                 onClick={handleExportCSV}
-                className={`flex cursor-pointer items-center justify-center sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150  ${isAnySelected
-                  ? "text-gray-700 bg-white hover:bg-gray-50"
+                className={`flex items-center justify-center sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150  ${isAnySelected
+                  ? "text-gray-700 bg-white cursor-pointer hover:bg-gray-50"
                   : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
                   }`}
                 disabled={!isAnySelected}
