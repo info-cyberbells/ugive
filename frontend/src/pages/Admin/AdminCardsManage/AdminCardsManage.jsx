@@ -179,7 +179,7 @@ const AdminManageCards = () => {
     "Sender Email",
     "Receiver Name",
     "Receiver Email",
-    "College",
+    "College House",
     "Reward",
     "Message",
     "Status",

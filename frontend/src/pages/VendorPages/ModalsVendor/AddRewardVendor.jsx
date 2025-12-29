@@ -186,7 +186,11 @@ const AddVendorReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit 
         <div className="flex justify-between items-center p-6 border-b">
           <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
           <button
-            onClick={onClose}
+            // onClick={onClose}
+             onClick={() => {
+                resetForm();
+                onClose();
+              }}
             className="text-gray-400 hover:text-gray-600 rounded-full p-1 transition cursor-pointer"
           >
             <X className="w-5 h-5" />

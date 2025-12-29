@@ -247,9 +247,9 @@ const NotificationPage = () => {
   }
 
   return (
-    <main className="mt-14 lg:ml-56 font-[Inter] min-h-screen bg-gray-50 p-8">
+    <main className="mt-14 lg:ml-56 font-[Inter] min-h-screen bg-gray-50 lg:p-8">
       <div className="flex gap-6">
-        <div className="w-full bg-white rounded-2xl shadow-sm p-8">
+        <div className="w-full bg-white rounded-2xl shadow-sm p-4 mb-8 sm:p-8">
           {/* Header with Back Button */}
           <div className="flex items-center mb-6">
             <button
@@ -270,7 +270,7 @@ const NotificationPage = () => {
                 />
               </svg>
             </button>
-            <h2 className="font-[Inter] text-[#303030] text-2xl font-semibold">
+            <h2 className="font-[Inter] text-[#303030] sm:text-2xl font-semibold">
               {userRole === "super_admin" || userRole === "admin"
                 ? "Notification & Activities"
                 : "Notifications"}

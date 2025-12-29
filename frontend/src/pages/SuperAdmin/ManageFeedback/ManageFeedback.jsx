@@ -248,18 +248,18 @@ const Feedback = () => {
           {/* Modal Body */}
           <div className="p-6 space-y-6">
             {/* Feedback Title */}
-            <div className="pb-2 border-b border-gray-200">
+            {/* <div className="pb-2 border-b border-gray-200">
               <h3 className="text-2xl font-semibold text-gray-900 leading-tight">
-                {data.subject || "Student Feedback"}
+                {data.subject || "Feedback"}
               </h3>
-            </div>
+            </div> */}
 
             {/* Info Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {/* Student Name */}
+              {/*  Name */}
               <dl className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
                 <dt className="text-xs font-medium text-gray-700 uppercase tracking-wider flex items-center gap-1">
-                  <User size={14} className="text-indigo-500" /> Student
+                  <User size={14} className="text-indigo-500" /> Name
                 </dt>
                 <dd className="text-base text-gray-900 font-semibold mt-1 truncate">
                   {data.user?.name || "Unknown"}
@@ -334,7 +334,7 @@ const Feedback = () => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 w-full">
           <h1 className="text-xl lg:text-2xl font-semibold text-gray-900">
             {/* <MessageSquare className="h-6 w-6 mt-1 text-indigo-600 mr-2" /> */}
-            Students Feedback
+            Feedback List
             <span className="text-sm mt-2 text-gray-500 font-normal ml-3">
               {total} Feedbacks
             </span>
@@ -345,9 +345,9 @@ const Feedback = () => {
             <div className="flex justify-around space-x-3 w-full sm:w-auto">
               <button
                 className={`flex items-center px-4 py-2 text-sm font-medium border border-gray-300
-          rounded-lg transition cursor-pointer duration-150 shadow-sm
+          rounded-lg transition duration-150 shadow-sm
           ${isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600 cursor-pointer"
+                    ? "text-gray-700 cursor-pointer bg-white hover:bg-red-50 hover:text-red-600 cursor-pointer"
                     : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
                   }`}
                 disabled={!isAnySelected}
@@ -361,9 +361,9 @@ const Feedback = () => {
               <button
                 onClick={handleExportFeedbackCSV}
                 className={`flex items-center px-4 py-2 text-sm font-medium border border-gray-300
-          rounded-lg transition cursor-pointer duration-150 shadow-sm
+          rounded-lg transition duration-150 shadow-sm
           ${isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
+                    ? "text-gray-700 cursor-pointer bg-white hover:bg-gray-50 cursor-pointer"
                     : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
                   }`}
                 disabled={!isAnySelected}
@@ -402,7 +402,7 @@ const Feedback = () => {
                       scope="col"
                       className="sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                     >
-                      Student
+                      Name
                     </th>
 
                     {/* Email */}
@@ -505,7 +505,7 @@ const Feedback = () => {
                 No feedback entries
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                No students have submitted feedback yet.
+                No user have submitted feedback yet.
               </p>
             </div>
           )}

@@ -12,7 +12,7 @@ import { getAllRewards, createReward, deleteReward, updateReward, getSingleRewar
 const ManageRewards = () => {
     const dispatch = useDispatch();
     const { showToast } = useToast();
-    const { rewards, tableLoading, isLoading, isError, page, limit, totalPages, totalRewards } = useSelector((state) => state.reward);
+    const { rewards = [], tableLoading, isLoading, isError, page, limit, totalPages, totalRewards } = useSelector((state) => state.reward);
 
     const rewardsList = rewards || [];
 
@@ -22,7 +22,7 @@ const ManageRewards = () => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [rewardToDelete, setRewardToDelete] = useState(null);
     const [isBulkDelete, setIsBulkDelete] = useState(false);
-    const isAllSelected = selectedRewardIds.length === rewards.length && rewards.length > 0;
+    const isAllSelected = rewards.length > 0 && selectedRewardIds.length === rewards.length ;
     const isAnySelected = selectedRewardIds.length > 0;
     const [previewImage, setPreviewImage] = useState(null);
 
@@ -290,8 +290,8 @@ const ManageRewards = () => {
 
                             <button
                                 onClick={openDeleteModalForBulk}
-                                className={`flex cursor-pointer items-center px-6 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${isAnySelected
-                                    ? 'text-gray-700 bg-white hover:bg-red-50 hover:text-red-600'
+                                className={`flex items-center px-6 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${isAnySelected
+                                    ? 'text-gray-700 cursor-pointer  bg-white hover:bg-red-50 hover:text-red-600'
                                     : 'text-gray-400 bg-gray-100 cursor-not-allowed opacity-70'
                                     }`}
                                 aria-label="Delete Selected"
@@ -312,8 +312,8 @@ const ManageRewards = () => {
                             {/* Export Button - Disabled when no students are selected */}
                             <button
                                 onClick={handleExportCSV}
-                                className={`flex cursor-pointer items-center justify-center px-10 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${isAnySelected
-                                    ? 'text-gray-700 bg-white hover:bg-gray-50'
+                                className={`flex items-center justify-center px-10 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${isAnySelected
+                                    ? 'text-gray-700 cursor-pointer  bg-white hover:bg-gray-50'
                                     : 'text-gray-400 bg-gray-100 cursor-not-allowed opacity-70'
                                     }`}
                                 disabled={!isAnySelected}

@@ -247,7 +247,7 @@ const AdminRewardsManage = () => {
 
 
     return (
-        <div className="min-h-screen mt-14 lg:mt-14 lg:ml-56 font-[Inter] bg-gray-50 px-1 py-4 md:p-4 lg:p-8 ">
+        <div className="min-h-screen mt-14 lg:ml-56 font-[Inter] bg-gray-50 p-4 sm:p-8 ">
             <div className="max-w-8xl">
 
                 {/* Header Section */}

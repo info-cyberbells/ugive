@@ -307,7 +307,7 @@ const StudentModal = ({
                 name="university"
                 value={formData.university || ""}
                 onChange={handleUniversityChange}
-                disabled={isViewMode}
+                disabled={isViewMode || isEditMode}
                 className={`${inputClasses(
                   "university"
                 )} appearance-none pr-10`}

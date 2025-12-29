@@ -25,6 +25,7 @@ const initialState = {
   totalPages: 1,
   notifications: [],
   isLoading: false,
+  singleLoading: false,
   isError: false,
   isSuccess: false,
   message: "",
@@ -236,6 +237,7 @@ const studentDataSlice = createSlice({
       state.total = 0;
       state.totalPages = 1;
       state.isLoading = false;
+      state.singleLoading = false;
       state.isError = false;
       state.isSuccess = false;
       state.message = "";
@@ -264,14 +266,14 @@ const studentDataSlice = createSlice({
 
       /* ------- GET SINGLE studdent data ------- */
       .addCase(getSingleStudent.pending, (state) => {
-        state.isLoading = true;
+        state.singleLoading = true;
       })
       .addCase(getSingleStudent.fulfilled, (state, action) => {
-        state.isLoading = false;
+        state.singleLoading = false;
         state.singleStudent = action.payload.data;
       })
       .addCase(getSingleStudent.rejected, (state, action) => {
-        state.isLoading = false;
+        state.singleLoading = false;
         state.isError = true;
         state.message = action.payload;
       })

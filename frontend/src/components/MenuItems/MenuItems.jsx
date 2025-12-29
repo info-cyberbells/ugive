@@ -39,7 +39,7 @@ const ROLE_BASED_MENUS = {
     { id: "manage-vendors", title: "Manage Vendors", icon: Store },
     { id: "vendor-rewards", title: "Vendor Rewards", icon: Trophy },
     { id: "manage-rewards", title: "Manage Rewards", icon: Gift },
-    { id: "feedbacks", title: "Students Feedback", icon: MessageSquare },
+    { id: "feedbacks", title: "Manage Feedbacks", icon: MessageSquare },
     { id: "social", title: "Social", icon: Share2 },
   ],
 

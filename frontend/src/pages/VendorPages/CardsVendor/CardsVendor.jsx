@@ -250,22 +250,6 @@ const CardsVendor = () => {
           <div className="grid gap-3 sm:flex sm:w-auto w-full">
             {/* Action Buttons Group */}
             <div className="grid grid-cols-3 gap-3 sm:flex sm:space-x-3 w-full sm:w-auto">
-              {/* <button
-                onClick={() => {
-                  setDeleteMode("bulk");
-                  setIsDeleteModalOpen(true);
-                }}
-                className={`flex items-center justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 ${
-                  isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600"
-                    : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
-                }`}
-                aria-label="Delete Selected"
-                disabled={!isAnySelected}
-              >
-                Delete ({selectedCardIds.length})
-                <Trash2 className="h-5 w-5 ml-2 hidden sm:inline" />
-              </button> */}
 
               {/* Export Button */}
               <button

@@ -185,47 +185,52 @@ const ManageAdmins = () => {
     closeDeleteModal();
   };
 
-  //   const handleExportCSV = () => {
-  //     const selected = data.filter((col) => selectedCollegeIds.includes(col._id));
+  const handleExportCSV = () => {
+    const selected = data.filter((admin) =>
+      selectedAdminIds.includes(admin._id)
+    );
 
-  //     if (selected.length === 0) {
-  //       showToast("No colleges selected!", "error");
-  //       return;
-  //     }
+    if (selected.length === 0) {
+      showToast("No admin selected!", "error");
+      return;
+    }
 
-  //     const headers = [
-  //       "College Name",
-  //       "University Name",
-  //       "Address Line 1",
-  //       "State",
-  //     ];
+    const headers = [
+      "Name",
+      "Phone Number",
+      "Email",
+      "University Name",
+      "College Names",
+    ];
 
-  //     const rows = selected.map((col) => [
-  //       col.name,
-  //       col.university?.name,
-  //       col.address_line_1,
-  //       col.state,
-  //     ]);
+    const rows = selected.map((admin) => [
+      admin.name || "",
+      admin.phoneNumber || "",
+      admin.email || "",
+      admin.university?.name || "",
+      admin.colleges && admin.colleges.length > 0
+        ? admin.colleges.map((c) => c.name).join(" , ")
+        : "N/A",
+    ]);
 
-  //     const escapeCSV = (value) => {
-  //       if (value === null || value === undefined) return "";
-  //       const str = String(value).replace(/"/g, '""');
-  //       return `"${str}"`;
-  //     };
+    const escapeCSV = (value) => {
+      if (value === null || value === undefined) return "";
+      return `"${String(value).replace(/"/g, '""')}"`;
+    };
 
-  //     const csvContent =
-  //       "data:text/csv;charset=utf-8," +
-  //       [headers, ...rows].map((row) => row.map(escapeCSV).join(",")).join("\n");
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers, ...rows].map((row) => row.map(escapeCSV).join(",")).join("\n");
 
-  //     const encodedUri = encodeURI(csvContent);
-  //     const link = document.createElement("a");
-  //     link.setAttribute("href", encodedUri);
-  //     link.setAttribute("download", "colleges_export.csv");
-  //     document.body.appendChild(link);
-  //     link.click();
+    const link = document.createElement("a");
+    link.href = encodeURI(csvContent);
+    link.download = "admin_export.csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
-  //     showToast("CSV exported successfully!", "success");
-  //   };
+    showToast("CSV exported successfully!", "success");
+  };
 
   const SkeletonTable = () => {
     return (
@@ -260,8 +265,7 @@ const ManageAdmins = () => {
           <h1 className="text-xl lg:text-2xl font-semibold text-gray-900">
             Admin's List
             <span className="text-sm text-gray-500 font-normal ml-3">
-              {total} {" "}
-              Admins
+              {total} Admins
             </span>
           </h1>
 
@@ -270,9 +274,9 @@ const ManageAdmins = () => {
             <div className="grid grid-cols-3 gap-3 sm:flex sm:space-x-3 w-full sm:w-auto">
               <button
                 onClick={openDeleteModalForBulk}
-                className={`flex cursor-pointer items-center px-6 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
+                className={`flex items-center px-6 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
                   isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600"
+                    ? "text-gray-700 cursor-pointer bg-white hover:bg-red-50 hover:text-red-600"
                     : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
                 }`}
                 aria-label="Delete Selected"
@@ -290,10 +294,10 @@ const ManageAdmins = () => {
 
               {/* Export Button - Disabled when no colleges are selected */}
               <button
-                // onClick={handleExportCSV}
-                className={`flex cursor-pointer items-center px-10 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
+                onClick={handleExportCSV}
+                className={`flex items-center px-10 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
                   isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-gray-50"
+                    ? "text-gray-700 cursor-pointer bg-white hover:bg-gray-50"
                     : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
                 }`}
                 disabled={!isAnySelected}
@@ -356,7 +360,7 @@ const ManageAdmins = () => {
                       >
                         <div className="flex items-center gap-1">Email</div>
                       </th>
-                  
+
                       <th
                         scope="col"
                         className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
@@ -365,7 +369,7 @@ const ManageAdmins = () => {
                           Phone Number
                         </div>
                       </th>
-                    
+
                       <th
                         scope="col"
                         className="sm:px-6 py-1 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -411,7 +415,7 @@ const ManageAdmins = () => {
                         </td>
 
                         {/* State Column */}
-                        <td className="hidden sm:table-cell sm:px-4 sm:py-4 whitespace-nowrap text-sm text-gray-600">
+                        <td className="hidden sm:table-cell sm:px-6 sm:py-4 whitespace-nowrap text-sm text-gray-600">
                           {admin.phoneNumber || "N/A"}
                         </td>
 
