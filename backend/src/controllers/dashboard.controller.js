@@ -173,6 +173,19 @@ export const getAdminDashboard = async (req, res) => {
     const universityId = req.user.university;
     const adminCollegeIds = req.user.colleges || [];
 
+    const studentFilter = {
+      role: "student",
+      university: universityId,
+      isDeleted: { $ne: true }
+    };
+
+    if (adminCollegeIds.length > 0) {
+      studentFilter.college = { $in: adminCollegeIds };
+    } else {
+      studentFilter.college = null;
+    }
+
+
     // Dates
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -181,7 +194,6 @@ export const getAdminDashboard = async (req, res) => {
     const thirtyDaysAgo = new Date(today);
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    // 1️⃣ Get student IDs of this university
     const studentIds = await User.find({
       role: "student",
       university: universityId,
@@ -201,11 +213,7 @@ export const getAdminDashboard = async (req, res) => {
       recentCards,
       recentStudents
     ] = await Promise.all([
-      User.countDocuments({
-        role: "student",
-        university: universityId,
-        isDeleted: { $ne: true }
-      }),
+      User.countDocuments(studentFilter),
 
       College.countDocuments({
         _id: { $in: adminCollegeIds }
