@@ -90,6 +90,9 @@ export const getAllVendors = async (req, res) => {
             role: "vendor",
             isDeleted: { $ne: true }
         };
+        if (req.user.role === "admin") {
+            query.university = req.user.university;
+        }
 
         const total = await User.countDocuments(query);
 
@@ -148,10 +151,10 @@ export const getSingleVendor = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-              data: {
-        ...vendor.toObject(),
-        profileImage: buildImageUrl(req, vendor.profileImage),
-    }
+            data: {
+                ...vendor.toObject(),
+                profileImage: buildImageUrl(req, vendor.profileImage),
+            }
         });
 
     } catch (error) {
