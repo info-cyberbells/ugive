@@ -71,7 +71,7 @@ export const register = async (req, res) => {
 // Login
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
     if (user.isDeleted) {
@@ -84,10 +84,12 @@ export const login = async (req, res) => {
     const isMatch = await user.comparePassword(password);
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
+    const tokenExpiry = rememberMe ? "30d" : "1d";
+
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: tokenExpiry }
     );
 
     res.json({ message: "Login successful", token, user });
@@ -122,11 +124,6 @@ export const createAdmin = async (req, res) => {
       role: "admin"
     });
 
-    if (existingAdminForUniversity) {
-      return res.status(400).json({
-        message: "An admin already exists for this university"
-      });
-    }
 
     const existing = await User.findOne({ email });
     if (existing) {
@@ -159,7 +156,11 @@ export const createAdmin = async (req, res) => {
           message: "One or more colleges do not belong to the selected university"
         });
       }
+    } else {
+      const allColleges = await College.find({ university });
+      collegeIds = allColleges.map(college => college._id);
     }
+
 
 
     const admin = await User.create({
@@ -172,7 +173,6 @@ export const createAdmin = async (req, res) => {
       role: "admin"
     });
 
-    // ✅ Log activity
     await NotificationActivity.create({
       type: "activity",
       action: "admin_created",

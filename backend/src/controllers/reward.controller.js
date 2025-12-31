@@ -332,7 +332,14 @@ export const getStudentRewards = async (req, res) => {
         ]);
 
 
-        const rewards = await Reward.find({ university }).sort({ createdAt: -1 });
+        const rewards = await Reward.find({
+            university,
+            $or: [
+                { college: { $exists: false } },
+                { college: null },
+                { college: student.college }
+            ]
+        }).sort({ createdAt: -1 });
 
         const baseURL = `${req.protocol}://${req.get("host")}`;
 
@@ -794,6 +801,51 @@ export const getActiveVendorRewards = async (req, res) => {
 
     } catch (error) {
         console.error("Get active rewards error:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+
+
+export const getActiveVendorRewardsForAdmin = async (req, res) => {
+    try {
+        const baseURL = `${req.protocol}://${req.get("host")}`;
+        const admin = req.user;
+
+        // Safety check
+        if (!admin || admin.role !== "admin") {
+            return res.status(403).json({
+                success: false,
+                message: "Access denied"
+            });
+        }
+
+        const rewards = await VendorReward.find({
+            isActive: true,
+            university: admin.university
+        })
+            .select("name description rewardImage")
+            .sort({ createdAt: -1 });
+
+        const formatted = rewards.map(r => ({
+            _id: r._id,
+            name: r.name,
+            description: r.description,
+            stockStatus: r.stockStatus,
+            rewardImage: r.rewardImage
+                ? `${baseURL}${r.rewardImage}`
+                : null
+        }));
+
+        return res.status(200).json({
+            success: true,
+            data: formatted
+        });
+
+    } catch (error) {
+        console.error("Get admin rewards error:", error);
         return res.status(500).json({
             success: false,
             message: "Server error"

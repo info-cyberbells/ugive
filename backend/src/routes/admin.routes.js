@@ -10,6 +10,7 @@ import { getAdminDashboard, getAdminNotifications } from "../controllers/dashboa
 import { createFeedback } from "../controllers/feedback.controller.js";
 import { createVendorByUniversityAdmin, getAllVendors, getSingleVendor, getMyVendorProfile, updateVendor, deleteVendor } from "../controllers/vendor.controller.js";
 import { createRewardByUniversityAdmin, getRewardsByUniversityAdmin, getSingleRewardByUniversityAdmin, updateRewardByUniversityAdmin, deleteRewardByUniversityAdmin } from "../controllers/reward.controller.js";
+import { getActiveVendorRewardsForAdmin } from "../controllers/reward.controller.js";
 
 
 
@@ -69,6 +70,9 @@ router.get("/rewards", getRewardsByUniversityAdmin);
 router.get("/rewards/:id", getSingleRewardByUniversityAdmin);
 router.put("/update-rewards/:id", upload.single("rewardImage"), updateRewardByUniversityAdmin);
 router.delete("/delete-rewards/:id", deleteRewardByUniversityAdmin);
+
+router.get("/active-rewards", getActiveVendorRewardsForAdmin);
+
 
 
 
