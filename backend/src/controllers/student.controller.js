@@ -295,7 +295,7 @@ export const createStudentByAdmin = async (req, res) => {
             studentUniId
         } = req.body;
 
-        const university = admin.university; 
+        const university = admin.university;
 
         if (!university) {
             return res.status(400).json({
@@ -367,6 +367,7 @@ export const getAllStudentsByAdmin = async (req, res) => {
         const query = {
             role: "student",
             university: admin.university,
+            college: { $in: admin.colleges },
             isDeleted: { $ne: true }
         };
 
@@ -378,6 +379,15 @@ export const getAllStudentsByAdmin = async (req, res) => {
             .skip(skip)
             .limit(limit)
             .select("-password");
+        const baseURL = `${req.protocol}://${req.get("host")}`;
+
+        const formattedStudents = students.map(student => ({
+            ...student.toObject(),
+            profileImage: student.profileImage
+                ? `${baseURL}${student.profileImage}`
+                : null
+        }));
+
 
         return res.status(200).json({
             success: true,
@@ -386,7 +396,7 @@ export const getAllStudentsByAdmin = async (req, res) => {
             total,
             totalPages: Math.ceil(total / limit),
             count: students.length,
-            data: students
+            data: formattedStudents
         });
 
     } catch (error) {

@@ -171,6 +171,7 @@ export const getAdminDashboard = async (req, res) => {
     }
 
     const universityId = req.user.university;
+    const adminCollegeIds = req.user.colleges || [];
 
     // Dates
     const now = new Date();
@@ -206,8 +207,9 @@ export const getAdminDashboard = async (req, res) => {
         isDeleted: { $ne: true }
       }),
 
-      College.countDocuments({ university: universityId }),
-
+      College.countDocuments({
+        _id: { $in: adminCollegeIds }
+      }),
       Card.countDocuments({ sender: { $in: studentIds } }),
 
       Card.countDocuments({
