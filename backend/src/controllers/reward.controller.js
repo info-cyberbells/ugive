@@ -777,10 +777,20 @@ export const setVendorRewardActiveStatus = async (req, res) => {
 //show all active rewards 
 export const getActiveVendorRewards = async (req, res) => {
     try {
+        const { universityId } = req.query;
+
+        if (!universityId) {
+            return res.status(400).json({
+                success: false,
+                message: "University ID is required"
+            });
+        }
+
         const baseURL = `${req.protocol}://${req.get("host")}`;
 
         const rewards = await VendorReward.find({
-            isActive: true
+            isActive: true,
+            university: universityId
         })
             .select("name description rewardImage")
             .sort({ createdAt: -1 });
@@ -807,6 +817,7 @@ export const getActiveVendorRewards = async (req, res) => {
         });
     }
 };
+
 
 
 export const getActiveVendorRewardsForAdmin = async (req, res) => {
