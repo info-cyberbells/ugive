@@ -367,9 +367,17 @@ export const getAllStudentsByAdmin = async (req, res) => {
         const query = {
             role: "student",
             university: admin.university,
-            college: { $in: admin.colleges },
             isDeleted: { $ne: true }
         };
+
+        if (admin.colleges && admin.colleges.length > 0) {
+            query.college = { $in: admin.colleges };
+        }
+
+        else {
+            query.college = { $in: [null] };
+        }
+
 
         const total = await User.countDocuments(query);
 
