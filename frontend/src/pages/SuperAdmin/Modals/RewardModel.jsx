@@ -58,11 +58,11 @@ const RewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) =
 
     dispatch(getUniversities());
     const universityId =
-    selectedReward?.university?._id || formData.university;
+      selectedReward?.university?._id || formData.university;
 
-  if (universityId) {
-    dispatch(getActiveRewards(universityId));
-  }
+    if (universityId) {
+      dispatch(getActiveRewards(universityId));
+    }
 
   }, [isOpen, selectedReward?.university?._id, formData.university, dispatch]);
 
@@ -227,16 +227,16 @@ const RewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) =
 
   return (
     <div className="fixed inset-0 bg-black/30 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
-<div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg lg:min-w-[520px] mx-auto max-h-[90vh] overflow-y-auto">        
+      <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg lg:min-w-[520px] mx-auto max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b">
           <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
           <button
             // onClick={onClose}
             onClick={() => {
-                resetForm();
-                onClose();
-              }}
+              resetForm();
+              onClose();
+            }}
             className="text-gray-400 hover:text-gray-600 rounded-full p-1 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
@@ -352,7 +352,15 @@ const RewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) =
             <label className="block text-sm font-medium text-gray-700">
               Reward Name
             </label>
-            {!isViewMode && activeRewards.length === 0 ? (
+
+
+            {!formData.university ? (
+              <div className="mt-1 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  Please select a university first to check available rewards.
+                </p>
+              </div>
+            ) : !isViewMode && activeRewards.length === 0 ? (
               <div className="mt-1 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <p className="text-sm text-yellow-800">
                   No active rewards found. Please ask the vendor to add rewards first or add them in the audit rewards list.
@@ -367,9 +375,9 @@ const RewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) =
                 //   : ""
                 // }
                 value={isEditMode || isViewMode ?
-  activeRewards.find(r => r.name === formData.name)?._id || ""
-  : formData.name ? activeRewards.find(r => r.name === formData.name)?._id || "" : ""
-}
+                  activeRewards.find(r => r.name === formData.name)?._id || ""
+                  : formData.name ? activeRewards.find(r => r.name === formData.name)?._id || "" : ""
+                }
                 className={inputClasses("name")}
                 onChange={(e) => {
                   const selected = activeRewards.find(
