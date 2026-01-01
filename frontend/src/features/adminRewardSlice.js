@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { createRewardByAdminService, getAllRewardsByAdminService, viewSingleRewardByAdminService, updateRewardByAdminService, deleteRewardByAdminService, } from "../auth/authServices";
+import { createRewardByAdminService, getAllRewardsByAdminService, viewSingleRewardByAdminService, updateRewardByAdminService, deleteRewardByAdminService, getActiveRewardsAdminService, } from "../auth/authServices";
 
 
 const initialState = {
     adminRewards: [],
+    activeRewards: [],
     page: 1,
     limit: 10,
     totalPages: 1,
@@ -78,6 +79,19 @@ export const deleteRewardByAdmin = createAsyncThunk(
             return thunkAPI.rejectWithValue(
                 error.response?.data?.message || "Failed to delete reward"
             );
+        }
+    }
+);
+
+// GET ADMIN ACTIVE REWARDS THUNK
+export const getActiveRewardsAdmin = createAsyncThunk(
+    'reward/getActiveRewardsAdmin',
+    async(_, thunkAPI)=>{
+        try {
+            const response = await getActiveRewardsAdminService();
+            return response;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to Active rewards admin");
         }
     }
 );
@@ -200,9 +214,27 @@ const adminRewardSlice = createSlice({
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
-            });
+            })
 
-
+            // GET ADMIN ACTIVE REWRADS
+            .addCase(getActiveRewardsAdmin.pending, (state)=>{
+                state.isLoading = true;
+                state.isError = false;
+                state.isSuccess = false;
+                state.message = '';
+            })
+            .addCase(getActiveRewardsAdmin.fulfilled, (state, action)=>{
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.isError = false;
+                state.activeRewards = action.payload.data;
+            })
+            .addCase(getActiveRewardsAdmin.rejected, (state, action)=>{
+                state.isLoading = false;
+                state.isError =  true;
+                state.isSuccess = false;
+                state.message = action.payload;
+            })
 
 
     }

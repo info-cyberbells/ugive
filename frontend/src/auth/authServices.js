@@ -489,9 +489,9 @@ export const auditVendorRewardBySuperAdminService = async (id, payload) => {
  
  
 // GET ACTIVE PUBLIC REWARDS
-export const getActiveRewardsService = async () => {
+export const getActiveRewardsService = async (universityId) => {
   const response = await axios.get(
-    `${USER_ENDPOINTS.PUBLIC_ACTIVE_REWARDS}`
+    `${USER_ENDPOINTS.PUBLIC_ACTIVE_REWARDS}?universityId=${universityId}`
   );
   return response.data;
 };
@@ -815,8 +815,14 @@ export const deleteRewardByAdminService = async (id) => {
   return response.data;
 };
  
-
-
+// GET ACTIVE REWARDS BY ADMIN
+export const getActiveRewardsAdminService = async () => {
+  const response = await axios.get(
+    USER_ENDPOINTS.ADMIN_GET_ACTIVE_REWARD,
+    getAuthHeader(),
+  );
+  return response.data;
+}
 
 
 
@@ -951,7 +957,7 @@ export const viewSingleRewardByVendorService = async(id)=>{
   return response.data;
 }
 
-// UPDATE REWARD BY ADMIN
+// UPDATE REWARD BY Vendor
 export const updateRewardByVendorService = async ({id, formData})=>{
   const auth = getAuthHeader();
   const response = await axios.put(
