@@ -18,6 +18,7 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    rememberMe: false
   });
 
   const { user, isLoading, isError, isSuccess, message } = useSelector(
@@ -151,7 +152,7 @@ const Login = () => {
 
                 <div className="login-options">
                   <div className="login-remember-me">
-                    <input type="checkbox" id="rememberMe" />
+                    <input type="checkbox" id="rememberMe" checked={formData.rememberMe} onChange={(e)=> setFormData({...formData, rememberMe: e.target.checked})}/>
                     <label htmlFor="rememberMe" style={{ paddingLeft: "4px", paddingTop: "2px" }}>
                       Remember Me
                     </label>

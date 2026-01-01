@@ -148,9 +148,9 @@ export const deleteSocialLink = createAsyncThunk(
 // GET ACTIVE PUBLIC REWARDS
 export const getActiveRewards = createAsyncThunk(
     "auth/getActiveRewards",
-    async (_, thunkAPI) => {
+    async (universityId, thunkAPI) => {
         try {
-            return await getActiveRewardsService();
+            return await getActiveRewardsService(universityId);
         } catch (error) {
             return thunkAPI.rejectWithValue(
                 error.response?.data?.message || "Failed to fetch active rewards"

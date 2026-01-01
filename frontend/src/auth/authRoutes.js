@@ -142,6 +142,7 @@ export const USER_ENDPOINTS = {
     ADMIN_DELETE_VENDOR : `${API_BASE_URL}/admin/delete-vendor`,
 
     ADMIN_GET_ALL_REWARD : `${API_BASE_URL}/admin/rewards`,
+    ADMIN_GET_ACTIVE_REWARD : `${API_BASE_URL}/admin/active-rewards`,
     ADMIN_CREATE_REWARD : `${API_BASE_URL}/admin/create-reward`,
     ADMIN_VIEW_REWARD : `${API_BASE_URL}/admin/rewards`,
     ADMIN_UPDATE_REWARD : `${API_BASE_URL}/admin/update-rewards`,

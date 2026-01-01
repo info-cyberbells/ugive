@@ -108,7 +108,8 @@ const SuperAdminDashboard = () => {
     {
       title: "Total Students",
       value: overview.totalStudents,
-      subtitle: `+${userMetrics.newUsersLast30Days} this month`,
+      // subtitle: `+${userMetrics.newUsersLast30Days} this month`,
+      subtitle: "Registered",
       bgColor: "bg-[#E6C8FF]",
       link: "/manage-students",
     },
@@ -165,11 +166,11 @@ const SuperAdminDashboard = () => {
       cards: cardMetrics.cardsToday,
     },
     {
-      name: "This Week",
+      name: "Last 7 Days",
       cards: cardMetrics.cardsLast7Days,
     },
     {
-      name: "This Month",
+      name: "Last 30 Days",
       cards: cardMetrics.cardsLast30Days,
     },
   ];

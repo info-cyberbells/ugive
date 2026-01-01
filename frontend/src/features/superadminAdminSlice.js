@@ -190,6 +190,9 @@ const superadminAdminSlice = createSlice({
         state.adminsList = state.adminsList.filter(
           (admin) => admin._id !== action.payload.adminId
         );
+        if (state.total > 0) {
+            state.total -= 1;
+          }
       })
       .addCase(deleteAdminBySuperAdmin.rejected, (state, action) => {
         state.isLoading = false;

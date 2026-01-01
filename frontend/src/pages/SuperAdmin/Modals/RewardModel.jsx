@@ -57,9 +57,14 @@ const RewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) =
     if (!isOpen) return;
 
     dispatch(getUniversities());
-    dispatch(getActiveRewards());
+    const universityId =
+    selectedReward?.university?._id || formData.university;
 
-  }, [isOpen, isViewMode, dispatch]);
+  if (universityId) {
+    dispatch(getActiveRewards(universityId));
+  }
+
+  }, [isOpen, selectedReward?.university?._id, formData.university, dispatch]);
 
   useEffect(() => {
     if (isOpen && (isEditMode || isViewMode) && selectedReward?.university?._id) {

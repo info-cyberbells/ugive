@@ -10,6 +10,7 @@ import {
 import {
   updateRewardByAdmin,
   getAllRewardsByAdmin,
+  getActiveRewardsAdmin,
 } from "../../../features/adminRewardSlice";
 
 const AdminRewardModal = ({
@@ -22,7 +23,7 @@ const AdminRewardModal = ({
   limit,
 }) => {
   const dispatch = useDispatch();
-  const { universities, colleges, activeRewards } = useSelector(
+  const { universities, colleges } = useSelector(
     (state) => state.auth
   );
   const universityId = localStorage.getItem("universityId");
@@ -31,6 +32,7 @@ const AdminRewardModal = ({
   const [rewardImage, setRewardImage] = useState(null);
   const [rewardImagePreview, setRewardImagePreview] = useState(null);
   const { selectedReward } = useSelector((state) => state.adminReward);
+  const {activeRewards} = useSelector((state)=> state.adminReward)
   const [selectedRewardId, setSelectedRewardId] = useState("");
   const [selectedRewardImagePath, setSelectedRewardImagePath] = useState("");
 
@@ -72,7 +74,8 @@ const AdminRewardModal = ({
   useEffect(() => {
     if (!isOpen) return;
 
-    dispatch(getActiveRewards());
+    // dispatch(getActiveRewards());
+    dispatch(getActiveRewardsAdmin());
 
     if (universityId) {
       dispatch(getColleges(universityId));
