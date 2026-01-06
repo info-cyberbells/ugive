@@ -293,9 +293,8 @@ const CardForm = ({ onSubmit }) => {
                   value={formData.name}
                   onChange={handleChange}
                   placeholder="Enter your Name"
-                  className={`${inputClass} ${
-                    errors.name ? "border-red-500" : ""
-                  }`}
+                  className={`${inputClass} ${errors.name ? "border-red-500" : ""
+                    }`}
                 />
               </div>
 
@@ -310,9 +309,8 @@ const CardForm = ({ onSubmit }) => {
                   value={formData.recipientName}
                   onChange={handleChange}
                   placeholder="Enter Recipient's Name"
-                  className={`${inputClass} ${
-                    errors.recipientName ? "border-red-500" : ""
-                  }`}
+                  className={`${inputClass} ${errors.recipientName ? "border-red-500" : ""
+                    }`}
                 />
               </div>
 
@@ -327,9 +325,8 @@ const CardForm = ({ onSubmit }) => {
                   value={formData.recipientLastName}
                   onChange={handleChange}
                   placeholder="Enter Recipient's Email"
-                  className={`${inputClass} ${
-                    errors.recipientLastName ? "border-red-500" : ""
-                  }`}
+                  className={`${inputClass} ${errors.recipientLastName ? "border-red-500" : ""
+                    }`}
                 />
               </div>
 
@@ -344,9 +341,8 @@ const CardForm = ({ onSubmit }) => {
                   value={formData.recipientEmail}
                   onChange={handleChange}
                   placeholder="Enter Recipient's Email"
-                  className={`${inputClass} ${
-                    errors.recipientEmail ? "border-red-500" : ""
-                  }`}
+                  className={`${inputClass} ${errors.recipientEmail ? "border-red-500" : ""
+                    }`}
                 />
               </div>
 
@@ -361,9 +357,8 @@ const CardForm = ({ onSubmit }) => {
                   value={formData.collegeHouse}
                   onChange={handleChange}
                   placeholder="Enter Recipient's College House"
-                  className={`${inputClass} ${
-                    errors.collegeHouse ? "border-red-500" : ""
-                  }`}
+                  className={`${inputClass} ${errors.collegeHouse ? "border-red-500" : ""
+                    }`}
                 />
               </div>
 
@@ -377,9 +372,8 @@ const CardForm = ({ onSubmit }) => {
                     name="reward"
                     value={formData.reward}
                     onChange={handleChange}
-                    className={`${inputClass} appearance-none pr-10 ${
-                      errors.reward ? "border-red-500" : ""
-                    }`}
+                    className={`${inputClass} appearance-none pr-10 ${errors.reward ? "border-red-500" : ""
+                      }`}
                   >
                     <option value="">Select Reward</option>
 
@@ -388,15 +382,22 @@ const CardForm = ({ onSubmit }) => {
                         <option
                           key={reward.rewardId}
                           value={reward.rewardId}
-                          disabled={!reward.unlocked}
+                          disabled={!reward.claimed || reward.sent}
                           className={
-                            !reward.unlocked
-                              ? "text-gray-400 cursor-not-allowed"
-                              : ""
+                            reward.sent
+                              ? "text-red-500 cursor-not-allowed"
+                              : !reward.claimed
+                                ? "text-gray-400 cursor-not-allowed"
+                                : ""
                           }
                         >
-                          {reward.rewardName} {!reward.unlocked && "(Locked)"}
+                          {reward.rewardName}
+                          {!reward.unlocked && " (Locked)"}
+                          {reward.unlocked && !reward.claimed && !reward.sent && " (Not Claimed Yet)"}
+                          {reward.unlocked && reward.claimed && !reward.sent && " (✓ Ready to Send)"}
+                          {reward.sent && " (Already Sent)"}
                         </option>
+
                       ))
                     ) : (
                       <option key="no-rewards" value="">
@@ -434,9 +435,8 @@ const CardForm = ({ onSubmit }) => {
                 value={formData.message}
                 onChange={handleChange}
                 placeholder="Enter Your Message"
-                className={`${inputClass} ${
-                  errors.message ? "border-red-500" : ""
-                }`}
+                className={`${inputClass} ${errors.message ? "border-red-500" : ""
+                  }`}
               />
             </div>
 

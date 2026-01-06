@@ -68,6 +68,23 @@ const cardSchema = new mongoose.Schema(
       default: "pending",
     },
 
+    qrData: {
+      type: String,
+      default: null
+    },
+    qrHash: {
+      type: String,
+      default: null
+    },
+    qrVerified: {
+      type: Boolean,
+      default: false
+    },
+    qrVerifiedAt: {
+      type: Date,
+      default: null
+    }
+
   },
   { timestamps: true }
 );

@@ -3,6 +3,7 @@ import {
   deleteCardByAdminService,
   getUniversityCardsForAdminService,
   updateCardStatusByAdminService,
+  storeCardQRService
 } from "../auth/authServices";
 
 // admin get card of students
@@ -47,6 +48,20 @@ export const deleteCardByAdmin = createAsyncThunk(
     } catch (error) {
       return thunkAPI.rejectWithValue(
         error.response?.data?.message || "Failed to delete card"
+      );
+    }
+  }
+);
+
+export const storeCardQR = createAsyncThunk(
+  "adminCard/storeQR",
+  async ({ cardId, qrData }, { rejectWithValue }) => {
+    try {
+      const response = await storeCardQRService(cardId, qrData);
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to store QR data"
       );
     }
   }
@@ -136,6 +151,30 @@ const adminCardSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload || "Failed to delete card";
+      })
+
+      // store card QR data
+      .addCase(storeCardQR.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(storeCardQR.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        const index = state.adminCards.findIndex(
+          (card) => card._id === action.payload.cardId
+        );
+        if (index !== -1) {
+          state.adminCards[index].qrData = action.payload.qrData;
+          state.adminCards[index].qrHash = action.payload.qrHash;
+          state.adminCards[index].status = action.payload.status || state.adminCards[index].status;
+        }
+        state.message = "QR data saved successfully";
+      })
+      .addCase(storeCardQR.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
       });
   },
 });

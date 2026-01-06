@@ -36,8 +36,8 @@ export const USER_ENDPOINTS = {
     SUPERADMIN_GET_SINGLE_COLLEGE: `${API_BASE_URL}/super_admin/colleges`,
     SUPERADMIN_UPDATE_COLLEGE: `${API_BASE_URL}/super_admin/colleges`,
     SUPERADMIN_DELETE_COLLEGE: `${API_BASE_URL}/super_admin/colleges`,
-    
-    
+
+
     SUPERADMIN_GET_ADMINS: `${API_BASE_URL}/super_admin/admins`,
     SUPERADMIN_CREATE_ADMIN: `${API_BASE_URL}/super_admin/create-admin`,
     SUPERADMIN_VIEW_ADMIN: `${API_BASE_URL}/super_admin/admins`,
@@ -117,40 +117,44 @@ export const USER_ENDPOINTS = {
 
     ADMIN_DASHBOARD_DATA: `${API_BASE_URL}/admin/dashboard`,
 
-    ADMIN_GET_ALL_COLLEGES : `${API_BASE_URL}/admin/colleges`,
-    ADMIN_GET_SINGLE_UNIVERSITY : `${API_BASE_URL}/admin/universities`,
-    ADMIN_ADD_COLLEGE : `${API_BASE_URL}/admin/colleges`,
-    ADMIN_VIEW_SINGLE_COLLEGE : `${API_BASE_URL}/admin/colleges`,
-    ADMIN_UPDATE_COLLEGE : `${API_BASE_URL}/admin/colleges`,
-    ADMIN_DELETE_COLLEGE : `${API_BASE_URL}/admin/colleges`,
+    ADMIN_GET_ALL_COLLEGES: `${API_BASE_URL}/admin/colleges`,
+    ADMIN_GET_SINGLE_UNIVERSITY: `${API_BASE_URL}/admin/universities`,
+    ADMIN_ADD_COLLEGE: `${API_BASE_URL}/admin/colleges`,
+    ADMIN_VIEW_SINGLE_COLLEGE: `${API_BASE_URL}/admin/colleges`,
+    ADMIN_UPDATE_COLLEGE: `${API_BASE_URL}/admin/colleges`,
+    ADMIN_DELETE_COLLEGE: `${API_BASE_URL}/admin/colleges`,
 
 
-    ADMIN_GET_UNI_CARDS : `${API_BASE_URL}/admin/cards`,
-    ADMIN_UPDATE_CARD_STATUS : `${API_BASE_URL}/admin/cards`,
-    ADMIN_DELETE_CARD : `${API_BASE_URL}/admin/cards`,
-    
-    ADMIN_GET_ALL_STUDENTS : `${API_BASE_URL}/admin/students`,
-    ADMIN_CREATE_STUDENT : `${API_BASE_URL}/admin/students`,
-    ADMIN_GET_SINGLE_STUDENT : `${API_BASE_URL}/admin/students`,
-    ADMIN_UPDATE_STUDENT : `${API_BASE_URL}/admin/students`,
-    ADMIN_DELETE_STUDENT : `${API_BASE_URL}/admin/students`,
+    ADMIN_GET_UNI_CARDS: `${API_BASE_URL}/admin/cards`,
+    ADMIN_UPDATE_CARD_STATUS: `${API_BASE_URL}/admin/cards`,
+    ADMIN_DELETE_CARD: `${API_BASE_URL}/admin/cards`,
 
-    ADMIN_GET_ALL_VENDORS : `${API_BASE_URL}/admin/vendors`,
-    ADMIN_CREATE_VENDOR : `${API_BASE_URL}/admin/create-vendor`,
-    ADMIN_GET_VENDOR : `${API_BASE_URL}/admin/vendors`,
-    ADMIN_UPDATE_VENDOR : `${API_BASE_URL}/admin/update-vendor`,
-    ADMIN_DELETE_VENDOR : `${API_BASE_URL}/admin/delete-vendor`,
+    ADMIN_GET_ALL_STUDENTS: `${API_BASE_URL}/admin/students`,
+    ADMIN_CREATE_STUDENT: `${API_BASE_URL}/admin/students`,
+    ADMIN_GET_SINGLE_STUDENT: `${API_BASE_URL}/admin/students`,
+    ADMIN_UPDATE_STUDENT: `${API_BASE_URL}/admin/students`,
+    ADMIN_DELETE_STUDENT: `${API_BASE_URL}/admin/students`,
 
-    ADMIN_GET_ALL_REWARD : `${API_BASE_URL}/admin/rewards`,
-    ADMIN_GET_ACTIVE_REWARD : `${API_BASE_URL}/admin/active-rewards`,
-    ADMIN_CREATE_REWARD : `${API_BASE_URL}/admin/create-reward`,
-    ADMIN_VIEW_REWARD : `${API_BASE_URL}/admin/rewards`,
-    ADMIN_UPDATE_REWARD : `${API_BASE_URL}/admin/update-rewards`,
-    ADMIN_DELETE_REWARD : `${API_BASE_URL}/admin/delete-rewards`,
+    ADMIN_GET_ALL_VENDORS: `${API_BASE_URL}/admin/vendors`,
+    ADMIN_CREATE_VENDOR: `${API_BASE_URL}/admin/create-vendor`,
+    ADMIN_GET_VENDOR: `${API_BASE_URL}/admin/vendors`,
+    ADMIN_UPDATE_VENDOR: `${API_BASE_URL}/admin/update-vendor`,
+    ADMIN_DELETE_VENDOR: `${API_BASE_URL}/admin/delete-vendor`,
 
-    ADMIN_GET_NOTIFICATIONS : `${API_BASE_URL}/admin/get-notifications`,
-    ADMIN_SEND_FEEDBACK : `${API_BASE_URL}/admin/sent-feedback`,
+    ADMIN_GET_ALL_REWARD: `${API_BASE_URL}/admin/rewards`,
+    ADMIN_GET_ACTIVE_REWARD: `${API_BASE_URL}/admin/active-rewards`,
+    ADMIN_CREATE_REWARD: `${API_BASE_URL}/admin/create-reward`,
+    ADMIN_VIEW_REWARD: `${API_BASE_URL}/admin/rewards`,
+    ADMIN_UPDATE_REWARD: `${API_BASE_URL}/admin/update-rewards`,
+    ADMIN_DELETE_REWARD: `${API_BASE_URL}/admin/delete-rewards`,
 
+    ADMIN_STORE_CARD_QR: `${API_BASE_URL}/admin/cards/store-qr`,
+
+    ADMIN_GET_NOTIFICATIONS: `${API_BASE_URL}/admin/get-notifications`,
+    ADMIN_SEND_FEEDBACK: `${API_BASE_URL}/admin/sent-feedback`,
+
+
+    //vendor endpoints
     VENDOR_PROFILE: `${API_BASE_URL}/vendor/profile`,
     VENDOR_UPDATE_PROFILE: `${API_BASE_URL}/vendor/update-profile`,
     VENDOR_CHANGE_PASSWORD: `${API_BASE_URL}/vendor/change-password`,
@@ -167,9 +171,11 @@ export const USER_ENDPOINTS = {
     VENDOR_PRINTED_CARDS: `${API_BASE_URL}/vendor/printed-reward-cards`,
     VENDOR_UPDATE_CARD_STATUS: `${API_BASE_URL}/vendor/cards`,
 
+    VENDOR_VERIFY_QR: `${API_BASE_URL}/vendor/cards/verify-qr`,
+
 
     VENDOR_NOTIFICATION: `${API_BASE_URL}/vendor/notifications-and-activities`,
-    
+
 
 
 };

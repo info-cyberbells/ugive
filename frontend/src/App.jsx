@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import {} from "react-router-dom";
+import { } from "react-router-dom";
 import Login from "./pages/Login/Login";
 import Signup from "./pages/Signup/Signup";
 import Dashboard from "./pages/superAdmin/superAdminDashboard/superAdminDashboard";
@@ -37,6 +37,7 @@ import VendorsDashboard from "./pages/VendorPages/VendorDashboard/VendorsDashboa
 import RewardsByVendor from "./pages/VendorPages/RewardByVendor/RewardsByVendor";
 import CardsVendor from "./pages/VendorPages/CardsVendor/CardsVendor";
 import VendorRewards from "./pages/SuperAdmin/VendorRewards/VendorRewards";
+import ChildSafetyPolicy from "./pages/TermsAndConditions/child-safety-policy.jsx";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -87,11 +88,11 @@ function App() {
                 <Navigate to="/student-dashboard" replace />
               ) : userRole === "admin" ? (
                 <Navigate to="/admin-dashboard" replace />
-              ) : 
-              userRole === "vendor" ? ( <Navigate to="/vendor-dashboard" replace /> )  :
-              (
-                <Navigate to="/dashboard" replace />
-              )
+              ) :
+                userRole === "vendor" ? (<Navigate to="/vendor-dashboard" replace />) :
+                  (
+                    <Navigate to="/dashboard" replace />
+                  )
             ) : (
               <Login />
             )
@@ -106,11 +107,11 @@ function App() {
                 <Navigate to="/student-dashboard" replace />
               ) : userRole === "admin" ? (
                 <Navigate to="/admin-dashboard" replace />
-              ) : 
-              userRole === "vendor" ? ( <Navigate to="/vendor-dashboard" replace /> )  :
-              (
-                <Navigate to="/dashboard" replace />
-              )
+              ) :
+                userRole === "vendor" ? (<Navigate to="/vendor-dashboard" replace />) :
+                  (
+                    <Navigate to="/dashboard" replace />
+                  )
             ) : (
               <Signup />
             )
@@ -124,11 +125,11 @@ function App() {
                 <Navigate to="/student-dashboard" replace />
               ) : userRole === "admin" ? (
                 <Navigate to="/admin-dashboard" replace />
-              ) : 
-              userRole === "vendor" ? ( <Navigate to="/vendor-dashboard" replace /> )  :
-              (
-                <Dashboard />
-              )
+              ) :
+                userRole === "vendor" ? (<Navigate to="/vendor-dashboard" replace />) :
+                  (
+                    <Dashboard />
+                  )
             ) : (
               <Navigate to="/" replace />
             )
@@ -196,6 +197,7 @@ function App() {
         />
 
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/child-safety-policy" element={<ChildSafetyPolicy />} />
 
         <Route path="/terms-and-conditions" element={<TermsAndCondition />} />
         <Route path="/contactus" element={<Contactus />} />
@@ -299,10 +301,10 @@ function App() {
               ) : userRole === "admin" ? (
                 <Navigate to="/admin-dashboard" replace />
               ) :
-              userRole === "vendor" ? ( <Navigate to="/vendor-dashboard" replace /> )  :
-              (
-                <Navigate to="/dashboard" replace />
-              )
+                userRole === "vendor" ? (<Navigate to="/vendor-dashboard" replace />) :
+                  (
+                    <Navigate to="/dashboard" replace />
+                  )
             ) : (
               <Navigate to="/" replace />
             )

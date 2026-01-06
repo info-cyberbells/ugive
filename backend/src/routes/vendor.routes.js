@@ -3,8 +3,8 @@ import { authenticate } from "../middleware/auth.middleware.js";
 import { authorizeRoles } from "../middleware/role.middleware.js";
 import { getMyVendorProfile, updateMyVendorProfile } from "../controllers/vendor.controller.js";
 import upload from "../middleware/upload.middleware.js";
-import {changePassword } from "../controllers/profile.controller.js";
-import { updateCardStatus, getPrintedRewardCardsForVendor } from "../controllers/card.controller.js";
+import { changePassword } from "../controllers/profile.controller.js";
+import { updateCardStatus, getPrintedRewardCardsForVendor, verifyCardQR } from "../controllers/card.controller.js";
 import { getVendorDashboard, getVendorNotifications } from "../controllers/dashboard.controller.js";
 import { createVendorReward, getSingleVendorReward, getMyVendorRewards, updateVendorReward, deleteVendorReward } from "../controllers/vendorReward.controller.js";
 
@@ -34,6 +34,9 @@ router.get("/notifications-and-activities", getVendorNotifications);
 router.get("/dashboard", getVendorDashboard);
 
 router.get("/printed-reward-cards", getPrintedRewardCardsForVendor);
+
+router.post("/cards/verify-qr", verifyCardQR);
+
 
 router.put("/change-password", changePassword);
 

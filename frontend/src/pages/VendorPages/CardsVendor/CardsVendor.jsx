@@ -7,6 +7,9 @@ import {
   getPrintedCards,
   updateCardStatusByVendor,
 } from "../../../features/vendorCardSlice";
+import { Camera } from "lucide-react";
+import ScanQRModal from "./ScanQRModal";
+import { verifyCardQR } from "../../../features/vendorCardSlice";
 
 const CardsVendor = () => {
   const [selectedCardIds, setSelectedCardIds] = useState([]);
@@ -27,6 +30,7 @@ const CardsVendor = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteMode, setDeleteMode] = useState("single");
   const [cardToDelete, setCardToDelete] = useState(null);
+  const [isScanModalOpen, setIsScanModalOpen] = useState(false);
 
   const {
     printedCards,
@@ -54,7 +58,7 @@ const CardsVendor = () => {
   //   dispatch(updateCardStatusByVendor({ id, status }));
   // };
 
-  const handleConfirmDelete = async () => {};
+  const handleConfirmDelete = async () => { };
 
   const handlePageChange = (newPage) => {
     if (newPage < 1 || newPage > totalPages) return;
@@ -100,6 +104,30 @@ const CardsVendor = () => {
         return [...prevSelected, _id];
       }
     });
+  };
+
+
+  const handleScanSuccess = async (scannedData) => {
+    try {
+      await dispatch(verifyCardQR(scannedData)).unwrap();
+
+      // Success - show completion
+      showToast("Card verified and marked as delivered!", "success");
+      setIsScanModalOpen(false);
+      dispatch(getPrintedCards({ page, limit }));
+
+    } catch (error) {
+      const errorMsg = error || "Failed to verify QR code";
+
+      if (errorMsg.toLowerCase().includes("qr already used") ||
+        errorMsg.toLowerCase().includes("already used")) {
+        showToast("This QR code has already been scanned", "info");
+      } else {
+        showToast(errorMsg, "error");
+      }
+
+      setIsScanModalOpen(false);
+    }
   };
 
   const handleStatusChange = (id, newStatus, currentStatus) => {
@@ -148,8 +176,7 @@ const CardsVendor = () => {
     const rows = selected.map((card) => [
       card.sender_name,
       card.sender?.email || "",
-      `${card.recipient_name}${
-        card.recipient_last_name ? ` ${card.recipient_last_name}` : ""
+      `${card.recipient_name}${card.recipient_last_name ? ` ${card.recipient_last_name}` : ""
       }`,
       card.recipient_email,
       card.reward?.name || "",
@@ -222,19 +249,6 @@ const CardsVendor = () => {
     </>
   );
 
-  if (isError) {
-    return (
-      <main className="mt-14 lg:ml-60 font-[Inter] min-h-screen bg-gray-50 p-8">
-        <div className="flex justify-center items-center h-64">
-          <p className="text-red-500">
-            Error:{" "}
-            {typeof message === "string" ? message : "Failed to load data"}
-          </p>
-        </div>
-      </main>
-    );
-  }
-
   return (
     <div className="min-h-screen lg:ml-60 mt-14 font-[Inter] bg-gray-50 p-4 sm:p-8 ">
       <div className="max-w-7xl mx-auto">
@@ -254,15 +268,23 @@ const CardsVendor = () => {
               {/* Export Button */}
               <button
                 onClick={handleExport}
-                className={`flex items-center justify-center cursor-pointer px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
-                  isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-gray-50"
-                    : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
-                }`}
+                className={`flex items-center justify-center cursor-pointer px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${isAnySelected
+                  ? "text-gray-700 bg-white hover:bg-gray-50"
+                  : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
+                  }`}
                 disabled={!isAnySelected}
               >
                 Export
                 <Download className="h-4 w-4 ml-2 hidden sm:inline" />
+              </button>
+
+              {/* Scan QR Button */}
+              <button
+                onClick={() => setIsScanModalOpen(true)}
+                className="flex items-center justify-center cursor-pointer px-4 py-2 text-sm font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-150 shadow-sm"
+              >
+                <Camera className="h-4 w-4 mr-2" />
+                Scan QR
               </button>
             </div>
           </div>
@@ -322,11 +344,10 @@ const CardsVendor = () => {
                       {data.map((card) => (
                         <tr
                           key={card._id}
-                          className={`transition duration-150 ${
-                            selectedCardIds.includes(card._id)
-                              ? "bg-indigo-50 hover:bg-indigo-100"
-                              : "hover:bg-gray-50"
-                          }`}
+                          className={`transition duration-150 ${selectedCardIds.includes(card._id)
+                            ? "bg-indigo-50 hover:bg-indigo-100"
+                            : "hover:bg-gray-50"
+                            }`}
                         >
                           {/* Individual Selection Checkbox */}
                           <td className="px-2 sm:px-6 sm:py-4 whitespace-nowrap w-4">
@@ -354,34 +375,22 @@ const CardsVendor = () => {
                           </td>
 
                           {/* Print Status */}
-                          <td className=" sm:px-6 py-4 whitespace-nowrap text-sm">
-                            <select
-                              value={card.status}
-                              disabled={card.status === "delivered"}
-                              onChange={(e) =>
-                                handleStatusChange(
-                                  card._id,
-                                  e.target.value,
-                                  card.status
-                                )
-                              }
-                              className={`px-2 py-1 border rounded-md text-sm bg-white focus:outline-none focus:ring-1
-    ${
-      card.status === "delivered"
-        ? "cursor-not-allowed bg-gray-100 text-gray-500"
-        : "focus:ring-indigo-500"
-    }`}
+                          <td className="sm:px-6 py-4 whitespace-nowrap text-sm">
+                            <span
+                              className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${card.status === "delivered"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-yellow-100 text-yellow-800"
+                                }`}
                             >
-                              <option value="printed" disabled>
-                                Printed
-                              </option>
-                              <option value="delivered">Delivered</option>
-                            </select>
+                              {card.status === "delivered" ? "Delivered" : "Printed"}
+                            </span>
                           </td>
 
                           {/* Description */}
-                          <td className="px-6 py-4 hidden lg:table-cell whitespace-nowrap text-sm text-gray-600">
-                            {card.message || "N/A"}
+                          <td className="px-6 py-4 hidden lg:table-cell text-sm text-gray-600 max-w-xs">
+                            <div className="truncate" title={card.message || "N/A"}>
+                              {card.message || "N/A"}
+                            </div>
                           </td>
                           <td className="sm:px-6 py-4 space-x-2 whitespace-nowrap text-sm">
                             <button
@@ -435,11 +444,10 @@ const CardsVendor = () => {
                     onClick={() => handlePageChange(page - 1)}
                     disabled={page === 1}
                     className={`px-3 py-1 text-xs sm:text-sm border rounded 
-                ${
-                  page === 1
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-white hover:bg-gray-50"
-                }
+                ${page === 1
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-white hover:bg-gray-50"
+                      }
             `}
                   >
                     Prev
@@ -454,11 +462,10 @@ const CardsVendor = () => {
                     onClick={() => handlePageChange(page + 1)}
                     disabled={page === totalPages}
                     className={`px-3 py-1 text-xs sm:text-sm border rounded 
-                ${
-                  page === totalPages
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-white hover:bg-gray-50"
-                }
+                ${page === totalPages
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-white hover:bg-gray-50"
+                      }
             `}
                   >
                     Next
@@ -538,6 +545,11 @@ const CardsVendor = () => {
           </div>
         </div>
       )}
+      <ScanQRModal
+        isOpen={isScanModalOpen}
+        onClose={() => setIsScanModalOpen(false)}
+        onScanSuccess={handleScanSuccess}
+      />
     </div>
   );
 };

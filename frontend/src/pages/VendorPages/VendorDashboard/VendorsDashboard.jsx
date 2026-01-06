@@ -222,7 +222,7 @@ const VendorsDashboard = () => {
               {todayStats?.cardsPrintedToday ?? 0}
             </h3>
             <p className="text-sm text-[#166534] font-medium">
-              Cards Printed 
+              Cards Printed
             </p>
           </div>
 
@@ -373,9 +373,10 @@ const VendorsDashboard = () => {
                       <Users size={14} className="inline mr-2 text-gray-400" />
                       {card.recipient_name || "-"}
                     </td>
-                    <td className="px-6 py-4 text-sm truncate text-gray-500 hidden md:table-cell">
+                    <td className="px-6 py-4 text-sm text-gray-500 hidden md:table-cell max-w-[220px] truncate">
                       {card.message || "—"}
                     </td>
+
                     <td className="px-6 py-4 text-sm text-gray-500">
                       {new Date(card.updatedAt).toLocaleDateString() || "-"}
                     </td>

@@ -61,13 +61,31 @@ export const getStudentStreakAndRewards = async (req, res) => {
 
         let currentStreak = 0;
         let bestStreak = 0;
+        let tempStreak = 0;
+        let streakStarted = false;
+
 
         for (let i = lifetimeWeeks.length - 1; i >= 0; i--) {
-            if (lifetimeWeeks[i].cardsSent > 0) {
+            const week = lifetimeWeeks[i];
+
+            if (week.cardsSent > 0) {
+                streakStarted = true;
                 currentStreak++;
-                bestStreak = Math.max(bestStreak, currentStreak);
             } else {
+                if (!streakStarted) {
+                    continue;
+                }
                 break;
+            }
+        }
+
+
+        for (let i = 0; i < lifetimeWeeks.length; i++) {
+            if (lifetimeWeeks[i].cardsSent > 0) {
+                tempStreak++;
+                bestStreak = Math.max(bestStreak, tempStreak);
+            } else {
+                tempStreak = 0;
             }
         }
 

@@ -5,6 +5,7 @@ import {
   deleteCardByAdmin,
   getAdminStudentCards,
   updateCardStatusByAdmin,
+  storeCardQR
 } from "../../../features/adminCardSlice";
 import ConfirmationModal from "../AdminModals/DeleteModalAdmin";
 import ViewCardModal from "../AdminModals/ViewSentCardDetails";
@@ -164,69 +165,69 @@ const AdminManageCards = () => {
   };
 
   const handleExport = () => {
-  const selected =
-    selectedCardIds.length > 0
-      ? data.filter((card) => selectedCardIds.includes(card._id))
-      : data;
+    const selected =
+      selectedCardIds.length > 0
+        ? data.filter((card) => selectedCardIds.includes(card._id))
+        : data;
 
-  if (selected.length === 0) {
-    showToast("No cards selected!", "error");
-    return;
-  }
+    if (selected.length === 0) {
+      showToast("No cards selected!", "error");
+      return;
+    }
 
-  const headers = [
-    "Sender Name",
-    "Sender Email",
-    "Receiver Name",
-    "Receiver Email",
-    "College House",
-    "Reward",
-    "Message",
-    "Status",
-    "Sent At",
-  ];
+    const headers = [
+      "Sender Name",
+      "Sender Email",
+      "Receiver Name",
+      "Receiver Email",
+      "College House",
+      "Reward",
+      "Message",
+      "Status",
+      "Sent At",
+    ];
 
-  const rows = selected.map((card) => [
-    card.sender_name || "N/A",
-    card.sender?.email || "N/A",
-    `${card.recipient_name || ""} ${card.recipient_last_name || ""}`.trim() ||
+    const rows = selected.map((card) => [
+      card.sender_name || "N/A",
+      card.sender?.email || "N/A",
+      `${card.recipient_name || ""} ${card.recipient_last_name || ""}`.trim() ||
       "N/A",
-    card.recipient_email || "N/A",
-    card.college_name || "N/A",
-    card.reward?.name || "N/A",
-    card.message || "N/A",
-    card.status || "N/A",
-    card.sent_at
-      ? new Date(card.sent_at).toLocaleString()
-      : "N/A",
-  ]);
+      card.recipient_email || "N/A",
+      card.college_name || "N/A",
+      card.reward?.name || "N/A",
+      card.message || "N/A",
+      card.status || "N/A",
+      card.sent_at
+        ? new Date(card.sent_at).toLocaleString()
+        : "N/A",
+    ]);
 
-  const escapeCSV = (value) => {
-    if (value === null || value === undefined) return "";
-    return `"${String(value).replace(/"/g, '""')}"`;
+    const escapeCSV = (value) => {
+      if (value === null || value === undefined) return "";
+      return `"${String(value).replace(/"/g, '""')}"`;
+    };
+
+    const csvContent =
+      headers.map(escapeCSV).join(",") +
+      "\n" +
+      rows.map((row) => row.map(escapeCSV).join(",")).join("\n");
+
+    const blob = new Blob([csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "admin_cards.csv";
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    showToast("Cards exported successfully!", "success");
   };
-
-  const csvContent =
-    headers.map(escapeCSV).join(",") +
-    "\n" +
-    rows.map((row) => row.map(escapeCSV).join(",")).join("\n");
-
-  const blob = new Blob([csvContent], {
-    type: "text/csv;charset=utf-8;",
-  });
-
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "admin_cards.csv";
-  document.body.appendChild(link);
-  link.click();
-
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-
-  showToast("Cards exported successfully!", "success");
-};
 
 
   const TableSkeleton = () => (
@@ -317,7 +318,7 @@ const AdminManageCards = () => {
 
               {/* Export Button */}
               <button
-              onClick={handleExport}
+                onClick={handleExport}
                 className={`flex items-center justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${isAnySelected
                   ? "text-gray-700 bg-white cursor-pointer hover:bg-gray-50"
                   : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
@@ -424,34 +425,61 @@ const AdminManageCards = () => {
                       </td> */}
 
                           {/* Print Status */}
-                          {/* Print Status */}
                           <td className="sm:px-6 py-4 whitespace-nowrap text-sm">
                             <div className="flex items-center gap-2">
                               <select
                                 value={card.status}
-                                disabled={card.status === "delivered" || card.status === "printed"}
+                                disabled={card.status === "printed"}
                                 onChange={(e) =>
                                   handleStatusChangeClick(card, e.target.value)
                                 }
                                 className={`px-2 py-1 border rounded-md text-sm
     bg-white focus:outline-none focus:ring-1
     focus:ring-indigo-500
-    ${card.status === "delivered" || card.status === "printed" ? "bg-gray-100 cursor-not-allowed" : ""}
+    ${card.status === "printed" ? "bg-gray-100 cursor-not-allowed" : ""}
   `}
                               >
                                 <option value="pending">Pending</option>
-                                {card.reward && card.reward !== null && (
-                                  <option value="printed">Printed</option>
-                                )}
-                                <option value="delivered">Delivered</option>
+                                <option value="printed">Printed</option>
+
                               </select>
 
                               {/* Print Button - Only show if status is "printed" */}
                               {(card.status === "printed" || card.status === "delivered") && (
                                 <button
-                                  onClick={() => {
-                                    setCardToPrint(card);
-                                    setIsPrintPreviewOpen(true);
+                                  onClick={async () => {
+                                    try {
+                                      // Check if QR already exists
+                                      if (!card.qrHash) {
+                                        const qrData = JSON.stringify({
+                                          cardId: card._id,
+                                          recipientName: card.recipient_name,
+                                          senderName: card.sender_name,
+                                          reward: card.reward?.name || 'No Reward',
+                                          status: card.status,
+                                          sentAt: card.sent_at
+                                        });
+
+                                        await dispatch(storeCardQR({
+                                          cardId: card._id,
+                                          qrData
+                                        })).unwrap();
+
+                                        showToast("QR data saved successfully", "success");
+
+                                        dispatch(getAdminStudentCards({ page, limit }));
+
+                                      } else {
+                                        showToast("QR already generated for this card", "info");
+                                      }
+
+                                      setCardToPrint(card);
+                                      setIsPrintPreviewOpen(true);
+
+                                    } catch (error) {
+                                      console.error("Failed to store QR:", error);
+                                      showToast(error || "Failed to save QR data", "error");
+                                    }
                                   }}
                                   className="px-3 py-1 bg-indigo-600 text-white rounded-md text-xs font-medium hover:bg-indigo-700 transition flex items-center gap-1 cursor-pointer"
                                   title="Print Card"
@@ -465,8 +493,10 @@ const AdminManageCards = () => {
 
 
                           {/* Description */}
-                          <td className="px-6 py-4 hidden lg:table-cell whitespace-nowrap text-sm text-gray-600">
-                            {card.message || "N/A"}
+                          <td className="px-6 py-4 hidden lg:table-cell text-sm text-gray-600 max-w-xs">
+                            <div className="truncate" title={card.message || "N/A"}>
+                              {card.message || "N/A"}
+                            </div>
                           </td>
                           <td className="sm:px-6 py-4 space-x-2 whitespace-nowrap text-sm">
                             <button

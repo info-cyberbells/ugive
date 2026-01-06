@@ -366,6 +366,7 @@ export const getStudentRewards = async (req, res) => {
 
                 unlocked: completed >= reward.totalPoints,
                 claimed: progress ? progress.claimed : false,
+                sent: progress ? progress.sent : false,
                 rewardImage: reward.rewardImage
                     ? `${baseURL}${reward.rewardImage}`
                     : null,
@@ -398,43 +399,94 @@ export const claimReward = async (req, res) => {
         const studentId = req.user.id;
         const { rewardId } = req.body;
 
+        // 1️⃣ Validate reward
         const reward = await Reward.findById(rewardId);
         if (!reward) {
             return res.status(404).json({
                 success: false,
-                message: "Reward not found",
+                message: "Reward not found"
             });
         }
 
+        // 2️⃣ Get progress of this reward
         const progress = await StudentRewardProgress.findOne({
             student: studentId,
-            reward: rewardId,
+            reward: rewardId
         });
 
         if (!progress) {
             return res.status(400).json({
                 success: false,
-                message: "You haven't started progress on this reward",
-            });
-        }
-
-        if (progress.completedPoints < reward.totalPoints) {
-            return res.status(400).json({
-                success: false,
-                message: "Reward is not unlocked yet. Complete more cards to unlock it.",
+                message: "You haven't started progress on this reward"
             });
         }
 
         if (progress.claimed) {
             return res.status(400).json({
                 success: false,
-                message: "You have already claimed this reward",
+                message: "You have already claimed this reward"
             });
         }
 
+        // 🔥 3️⃣ TRUE SOURCE OF POINTS = CARDS
+        const totalEarnedPoints = await Card.countDocuments({
+            sender: studentId
+        });
+
+        const claimedRewards = await StudentRewardProgress.find({
+            student: studentId,
+            claimed: true
+        }).populate("reward", "totalPoints");
+
+        const pointsAlreadyUsed = claimedRewards.reduce(
+            (sum, r) => sum + r.reward.totalPoints,
+            0
+        );
+
+        const availablePoints = totalEarnedPoints - pointsAlreadyUsed;
+
+        if (availablePoints < reward.totalPoints) {
+            return res.status(400).json({
+                success: false,
+                message: "Not enough points to claim this reward"
+            });
+        }
+
+        // 5️⃣ Claim current reward
         progress.claimed = true;
+        progress.completedPoints = reward.totalPoints; // lock used points
         progress.claimedAt = new Date();
         await progress.save();
+
+        // 6️⃣ Redistribute remaining points
+        let pointsLeft = availablePoints - reward.totalPoints;
+
+        // Reset all other unclaimed rewards
+        await StudentRewardProgress.updateMany(
+            {
+                student: studentId,
+                reward: { $ne: rewardId },
+                claimed: false
+            },
+            { $set: { completedPoints: 0 } }
+        );
+
+        // Assign leftover points progressively
+        const otherRewards = await StudentRewardProgress.find({
+            student: studentId,
+            reward: { $ne: rewardId },
+            claimed: false
+        }).populate("reward", "totalPoints");
+
+        for (const r of otherRewards) {
+            if (pointsLeft <= 0) break;
+
+            const assign = Math.min(pointsLeft, r.reward.totalPoints);
+            r.completedPoints = assign;
+            await r.save();
+
+            pointsLeft -= assign;
+        }
 
         return res.status(200).json({
             success: true,
@@ -443,14 +495,15 @@ export const claimReward = async (req, res) => {
                 rewardId: reward._id,
                 rewardName: reward.name,
                 claimed: true,
-                claimedAt: progress.claimedAt,
-            },
+                claimedAt: progress.claimedAt
+            }
         });
+
     } catch (error) {
         console.error("Error claiming reward:", error);
         return res.status(500).json({
             success: false,
-            message: "Server error",
+            message: "Server error"
         });
     }
 };

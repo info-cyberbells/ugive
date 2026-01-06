@@ -364,7 +364,7 @@ export const deleteFeedbackService = async (id) => {
 
 // GET ALL ADMINS BY SUPERADMIN
 
-export const getAllAdminsBySuperAdminService = async ({page = 1, limit = 10}) => {
+export const getAllAdminsBySuperAdminService = async ({ page = 1, limit = 10 }) => {
   const response = await axios.get(
     `${USER_ENDPOINTS.SUPERADMIN_GET_ADMINS}?page=${page}&limit=${limit}`,
     getAuthHeader(),
@@ -413,7 +413,7 @@ export const deleteAdminService = async (adminId) => {
 
 
 // GET ALL VENDORS (SUPER ADMIN)
-export const getAllVendorsSuperadminService = async ({page = 1, limit = 10}) => {
+export const getAllVendorsSuperadminService = async ({ page = 1, limit = 10 }) => {
   const response = await axios.get(
     `${USER_ENDPOINTS.SUPERADMIN_GET_ALL_VENDORS}?page=${page}&limit=${limit}`,
     getAuthHeader(),
@@ -438,7 +438,7 @@ export const createVendorBySuperAdminService = async (details) => {
 }
 
 // VIEW VENDOR PROFILE
-export const viewVendorProfileBySuperAdmin = async (id) =>{
+export const viewVendorProfileBySuperAdmin = async (id) => {
   const response = await axios.get(
     `${USER_ENDPOINTS.SUPERADMIN_GET_SINGLE_VENDOR}/${id}`,
     getAuthHeader(),
@@ -447,7 +447,7 @@ export const viewVendorProfileBySuperAdmin = async (id) =>{
 }
 
 // UPDATE VENDORS PROFILE
-export const updateVendorsProfileBySuperAdminService = async (id, details)=>{
+export const updateVendorsProfileBySuperAdminService = async (id, details) => {
   const response = await axios.put(
     `${USER_ENDPOINTS.SUPERADMIN_UPDATE_VENDOR}/${id}`,
     details,
@@ -476,7 +476,7 @@ export const getVendorRewardsBySuperAdminService = async (params = {}) => {
   );
   return response.data;
 };
- 
+
 // PUT audit vendor reward (approve / reject / update)
 export const auditVendorRewardBySuperAdminService = async (id, payload) => {
   const response = await axios.put(
@@ -486,8 +486,8 @@ export const auditVendorRewardBySuperAdminService = async (id, payload) => {
   );
   return response.data;
 };
- 
- 
+
+
 // GET ACTIVE PUBLIC REWARDS
 export const getActiveRewardsService = async (universityId) => {
   const response = await axios.get(
@@ -612,9 +612,9 @@ export const deleteCollegeAdminService = async (id) => {
 };
 
 // GET CARDS TO ADMIN ON BASES OF UNIVERSITY
-export const getUniversityCardsForAdminService = async ({page = 1,limit = 10,}) => {
-  
-    const response = await axios.get(
+export const getUniversityCardsForAdminService = async ({ page = 1, limit = 10, }) => {
+
+  const response = await axios.get(
     `${USER_ENDPOINTS.ADMIN_GET_UNI_CARDS}?page=${page}&limit=${limit}`,
     getAuthHeader()
   );
@@ -623,27 +623,27 @@ export const getUniversityCardsForAdminService = async ({page = 1,limit = 10,}) 
 };
 
 // UPDATE CARD STATUS BY ADMIN
-export const updateCardStatusByAdminService = async ({cardId, status}) => {
-    const response =  await axios.put(
-        `${USER_ENDPOINTS.ADMIN_UPDATE_CARD_STATUS}/${cardId}`,
-        {status},
-        getAuthHeader(),
-    );
-    return response.data;
+export const updateCardStatusByAdminService = async ({ cardId, status }) => {
+  const response = await axios.put(
+    `${USER_ENDPOINTS.ADMIN_UPDATE_CARD_STATUS}/${cardId}`,
+    { status },
+    getAuthHeader(),
+  );
+  return response.data;
 }
 
 // DELETE CARD BY ADMIN 
 export const deleteCardByAdminService = async (cardId) => {
-    const response = await axios.delete(
-        `${USER_ENDPOINTS.ADMIN_DELETE_CARD}/${cardId}`,
-        getAuthHeader(),
-    );
-    return response.data;
+  const response = await axios.delete(
+    `${USER_ENDPOINTS.ADMIN_DELETE_CARD}/${cardId}`,
+    getAuthHeader(),
+  );
+  return response.data;
 }
 
 // GET ALL STUDENTS SERVICE FOR ADMIN
 
-export const getAllStudentsForAdminService = async ({page=1, limit=10})=>{
+export const getAllStudentsForAdminService = async ({ page = 1, limit = 10 }) => {
   const response = await axios.get(
     `${USER_ENDPOINTS.ADMIN_GET_ALL_STUDENTS}?page=${page}&limit=${limit}`,
     getAuthHeader(),
@@ -652,7 +652,7 @@ export const getAllStudentsForAdminService = async ({page=1, limit=10})=>{
 }
 
 // CRETAE STUDENT BY ADMIN SERVICE
-export const createStudentByAdminService = async (studentData)=>{
+export const createStudentByAdminService = async (studentData) => {
   const response = await axios.post(
     USER_ENDPOINTS.ADMIN_CREATE_STUDENT,
     studentData,
@@ -662,7 +662,7 @@ export const createStudentByAdminService = async (studentData)=>{
 };
 
 //GET SINGLE STUDENT DETAILS BY ADMIN SERVICE
-export const getSingleStudentDetailsByAdminService = async (studentId)=>{
+export const getSingleStudentDetailsByAdminService = async (studentId) => {
   const response = await axios.get(
     `${USER_ENDPOINTS.ADMIN_GET_SINGLE_STUDENT}/${studentId}`,
     getAuthHeader(),
@@ -672,7 +672,7 @@ export const getSingleStudentDetailsByAdminService = async (studentId)=>{
 
 //UPDATE SINGLE STUDENT DETAILS BY ADMIN SERVICE
 
-export const updateStudentDetailsByAdminService = async ({studentId, studentData})=>{
+export const updateStudentDetailsByAdminService = async ({ studentId, studentData }) => {
   const response = await axios.put(
     `${USER_ENDPOINTS.ADMIN_UPDATE_STUDENT}/${studentId}`,
     studentData,
@@ -682,7 +682,7 @@ export const updateStudentDetailsByAdminService = async ({studentId, studentData
 }
 
 // DELETE STUDENT BY ADMIN SERVICE
-export const deleteStudentByAdminService = async (studentId)=>{
+export const deleteStudentByAdminService = async (studentId) => {
   const response = await axios.delete(
     `${USER_ENDPOINTS.ADMIN_DELETE_STUDENT}/${studentId}`,
     getAuthHeader(),
@@ -701,10 +701,10 @@ export const getAdminNotificationsService = async () => {
 }
 
 // SEND FEEDBACK BY ADMIN SERVICE
-export const sendFeedbackByAdminService = async (feedback)=> {
+export const sendFeedbackByAdminService = async (feedback) => {
   const response = await axios.post(
     USER_ENDPOINTS.ADMIN_SEND_FEEDBACK,
-    {feedback},
+    { feedback },
     getAuthHeader(),
   );
   return response.data;
@@ -712,7 +712,7 @@ export const sendFeedbackByAdminService = async (feedback)=> {
 
 
 // GET ALL VENDORS BY ADMIN
-export const getAllVendorsByAdminService = async ({limit = 10, page = 1})=>{
+export const getAllVendorsByAdminService = async ({ limit = 10, page = 1 }) => {
   const response = await axios.get(
     `${USER_ENDPOINTS.ADMIN_GET_ALL_VENDORS}?page=${page}&limit=${limit}`,
     getAuthHeader(),
@@ -721,7 +721,7 @@ export const getAllVendorsByAdminService = async ({limit = 10, page = 1})=>{
 }
 
 // CREATE VENDOR BY ADMIN
-export const createVendorByAdminService = async (details) =>{
+export const createVendorByAdminService = async (details) => {
   const auth = getAuthHeader();
   const response = await axios.post(
     USER_ENDPOINTS.ADMIN_CREATE_VENDOR,
@@ -743,10 +743,10 @@ export const viewVendorProfileByAdminService = async (id) => {
     getAuthHeader(),
   );
   return response.data;
-} 
+}
 
 // UPDATE VENDOR PROFILE BY ADMIN
-export const updateVendorProfileByAdminService = async(id, payload) =>{
+export const updateVendorProfileByAdminService = async (id, payload) => {
   const response = await axios.put(
     `${USER_ENDPOINTS.ADMIN_UPDATE_VENDOR}/${id}`,
     payload,
@@ -756,7 +756,7 @@ export const updateVendorProfileByAdminService = async(id, payload) =>{
 }
 
 //DELETE VENDOR PROFILE BY ADMIN
-export const deleteVendorProfileByAdminService = async(id)=>{
+export const deleteVendorProfileByAdminService = async (id) => {
   const response = await axios.delete(
     `${USER_ENDPOINTS.ADMIN_DELETE_VENDOR}/${id}`,
     getAuthHeader(),
@@ -765,10 +765,10 @@ export const deleteVendorProfileByAdminService = async(id)=>{
 }
 
 // GET ALL REWARDS (ADMIN)
-export const getAllRewardsByAdminService = async ({page = 1, limit = 10 }) =>{
+export const getAllRewardsByAdminService = async ({ page = 1, limit = 10 }) => {
   const response = await axios.get(
     `${USER_ENDPOINTS.ADMIN_GET_ALL_REWARD}?page=${page}&limit=${limit}`,
-      getAuthHeader(),
+    getAuthHeader(),
   );
   return response.data;
 }
@@ -779,10 +779,12 @@ export const createRewardByAdminService = async (payload) => {
   const response = await axios.post(
     USER_ENDPOINTS.ADMIN_CREATE_REWARD,
     payload,
-    { headers:{
-      ...auth.headers,
+    {
+      headers: {
+        ...auth.headers,
         "Content-Type": "multipart/form-data",
-    }},
+      }
+    },
   );
   return response.data;
 }
@@ -803,7 +805,7 @@ export const updateRewardByAdminService = async ({ id, formData }) => {
     formData,
     getAuthHeader()
   );
- 
+
   return response.data;
 };
 export const deleteRewardByAdminService = async (id) => {
@@ -811,10 +813,21 @@ export const deleteRewardByAdminService = async (id) => {
     `${USER_ENDPOINTS.ADMIN_DELETE_REWARD}/${id}`,
     getAuthHeader()
   );
- 
+
   return response.data;
 };
- 
+
+
+// Store QR code data in admin
+export const storeCardQRService = async (cardId, qrData) => {
+  const response = await axios.post(
+    `${USER_ENDPOINTS.ADMIN_STORE_CARD_QR}`,
+    { cardId, qrData },
+    getAuthHeader()
+  );
+  return response.data;
+};
+
 // GET ACTIVE REWARDS BY ADMIN
 export const getActiveRewardsAdminService = async () => {
   const response = await axios.get(
@@ -850,7 +863,7 @@ export const getActiveRewardsAdminService = async () => {
 
 //   VENDOR GET OWN PROFILE SERVICE
 
-export const getVendorOwnProfileService = async ()=>{
+export const getVendorOwnProfileService = async () => {
   const response = await axios.get(
     USER_ENDPOINTS.VENDOR_PROFILE,
     getAuthHeader(),
@@ -860,7 +873,7 @@ export const getVendorOwnProfileService = async ()=>{
 
 
 // UPADATE PROFILE SERVICE (VENDOR)
-export const updateProfileByVendorService = async (details)=>{
+export const updateProfileByVendorService = async (details) => {
   const auth = getAuthHeader();
 
   const response = await axios.put(
@@ -887,8 +900,8 @@ export const changePasswordVendorService = async (data) => {
 }
 
 // GET NOTIFICATION FOR VENDOR
-export const getNotificationVendorService = async()=>{
-  const response =  await axios.get(
+export const getNotificationVendorService = async () => {
+  const response = await axios.get(
     USER_ENDPOINTS.VENDOR_NOTIFICATION,
     getAuthHeader(),
   );
@@ -896,7 +909,7 @@ export const getNotificationVendorService = async()=>{
 }
 
 // GET PRINTED CRADS
-export const getPrintedCardVendorService = async({limit = 10, page = 1})=>{
+export const getPrintedCardVendorService = async ({ limit = 10, page = 1 }) => {
   const response = await axios.get(
     `${USER_ENDPOINTS.VENDOR_PRINTED_CARDS}?page=${page}&limit=${limit}`,
     getAuthHeader(),
@@ -905,17 +918,17 @@ export const getPrintedCardVendorService = async({limit = 10, page = 1})=>{
 }
 
 // update card Status 
-export const updateCardStatusVendorService = async (id,status) => {
+export const updateCardStatusVendorService = async (id, status) => {
   const response = await axios.put(
     `${USER_ENDPOINTS.VENDOR_UPDATE_CARD_STATUS}/${id}`,
-   { status},
+    { status },
     getAuthHeader(),
   );
   return response.data;
 }
 
 // GET ALL REWARD VENDOR
-export const getAllRewardVendorService = async({limit = 10, page = 1})=>{
+export const getAllRewardVendorService = async ({ limit = 10, page = 1 }) => {
   const response = await axios.get(
     `${USER_ENDPOINTS.VENDOR_GET_ALL_REWARDS}?page=${page}&limit=${limit}`,
     getAuthHeader(),
@@ -923,8 +936,19 @@ export const getAllRewardVendorService = async({limit = 10, page = 1})=>{
   return response.data;
 }
 
+// Verify QR code
+export const verifyCardQRService = async (qrData) => {
+
+  const response = await axios.post(
+    `${USER_ENDPOINTS.VENDOR_VERIFY_QR}`,
+    { qrData },
+    getAuthHeader()
+  );
+  return response.data;
+};
+
 // VENDOR DASHBOARD 
-export const getVendorDashboardService = async() => {
+export const getVendorDashboardService = async () => {
   const response = await axios.get(
     USER_ENDPOINTS.VENDOR_DASHBOARD,
     getAuthHeader(),
@@ -933,13 +957,13 @@ export const getVendorDashboardService = async() => {
 }
 
 // CREATE REWARD BY VENDOR
-export const createRewardByVendorService = async (formData)=>{
+export const createRewardByVendorService = async (formData) => {
   const auth = getAuthHeader();
   const response = await axios.post(
     USER_ENDPOINTS.VENDOR_CREATE_REWARD,
     formData,
     {
-      headers:{
+      headers: {
         ...auth.headers,
         "Content-Type": "multipart/form-data"
       },
@@ -949,7 +973,7 @@ export const createRewardByVendorService = async (formData)=>{
 }
 
 // VIEW REWARD BY VENDOR
-export const viewSingleRewardByVendorService = async(id)=>{
+export const viewSingleRewardByVendorService = async (id) => {
   const response = await axios.get(
     `${USER_ENDPOINTS.VENDOR_VIEW_REWARD}/${id}`,
     getAuthHeader(),
@@ -958,15 +982,15 @@ export const viewSingleRewardByVendorService = async(id)=>{
 }
 
 // UPDATE REWARD BY Vendor
-export const updateRewardByVendorService = async ({id, formData})=>{
+export const updateRewardByVendorService = async ({ id, formData }) => {
   const auth = getAuthHeader();
   const response = await axios.put(
     `${USER_ENDPOINTS.VENDOR_UPDATE_REWARD}/${id}`,
     formData,
     {
-      headers:{
+      headers: {
         ...auth.headers,
-        "Content-Type":"multipart/form-data"
+        "Content-Type": "multipart/form-data"
       },
     },
   );
@@ -974,13 +998,13 @@ export const updateRewardByVendorService = async ({id, formData})=>{
 }
 
 // DELETE REWARD BY VENDOR
-export const deleterewardByVendorService = async (id)=>{
+export const deleterewardByVendorService = async (id) => {
   const response = await axios.delete(
     `${USER_ENDPOINTS.VENDOR_DELETE_REWARD}/${id}`,
     getAuthHeader(),
   );
   return response.data;
-} 
+}
 
 
 

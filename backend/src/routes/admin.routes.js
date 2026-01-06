@@ -4,7 +4,7 @@ import { authorizeRoles } from "../middleware/role.middleware.js";
 import { getProfile, updateProfile, changePassword } from "../controllers/profile.controller.js";
 import upload from "../middleware/upload.middleware.js";
 import { createUniversity, createCollege, getSingleUniversity, getAllAdminColleges, getSingleCollege, getAllAdminUniversities, updateUniversity, updateCollege, deleteUniversity, deleteCollege } from "../controllers/university.controller.js";
-import { getUniversityCardsForAdmin, updateCardStatus, deleteCardByAdmin } from "../controllers/card.controller.js";
+import { getUniversityCardsForAdmin, updateCardStatus, deleteCardByAdmin, storeCardQR } from "../controllers/card.controller.js";
 import { createStudentByAdmin, getAllStudentsByAdmin, getSingleStudentByAdmin, updateStudentByAdmin, deleteStudentByAdmin } from "../controllers/student.controller.js";
 import { getAdminDashboard, getAdminNotifications } from "../controllers/dashboard.controller.js";
 import { createFeedback } from "../controllers/feedback.controller.js";
@@ -56,6 +56,9 @@ router.delete("/students/:id", deleteStudentByAdmin);
 router.get("/cards", getUniversityCardsForAdmin);
 router.put("/cards/:cardId", updateCardStatus);
 router.delete("/cards/:cardId", deleteCardByAdmin);
+
+router.post("/cards/store-qr", storeCardQR);
+
 
 
 router.get("/dashboard", getAdminDashboard);

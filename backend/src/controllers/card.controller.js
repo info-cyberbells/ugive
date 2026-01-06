@@ -1,8 +1,16 @@
+import crypto from "crypto";
 import Card from "../models/card.model.js";
 import User from "../models/user.model.js";
 import { Reward } from "../models/reward.model.js";
 import { StudentRewardProgress } from "../models/studentRewardProgress.model.js";
 import NotificationActivity from "../models/notificationActivity.model.js";
+
+const createQRHash = (qrData) => {
+  return crypto
+    .createHmac("sha256", process.env.QR_SECRET)
+    .update(qrData)
+    .digest("hex");
+};
 
 export const getCurrentWeekRange = () => {
   const now = new Date();
@@ -127,14 +135,26 @@ export const createCard = async (req, res) => {
           student: studentId,
           reward: rewardItem._id,
           completedPoints: 1,
-          claimed: false
+          claimed: false,
+          sent: false
         });
       }
       else if (progress.completedPoints < rewardItem.totalPoints) {
         progress.completedPoints += 1;
         await progress.save();
       }
-      // If completed → do nothing
+    }
+
+    if (reward) {
+      const rewardProgress = await StudentRewardProgress.findOne({
+        student: studentId,
+        reward: reward
+      });
+
+      if (rewardProgress && rewardProgress.claimed && !rewardProgress.sent) {
+        rewardProgress.sent = true;
+        await rewardProgress.save();
+      }
     }
 
 
@@ -541,7 +561,7 @@ export const getPrintedRewardCardsForVendor = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const filter = {
-       status: { $in: ["printed", "delivered"] },
+      status: { $in: ["printed", "delivered"] },
       reward: { $ne: null }
     };
 
@@ -576,5 +596,90 @@ export const getPrintedRewardCardsForVendor = async (req, res) => {
     });
   }
 };
+
+
+export const storeCardQR = async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const { cardId, qrData } = req.body;
+
+    const card = await Card.findById(cardId);
+    if (!card) {
+      return res.status(404).json({ message: "Card not found" });
+    }
+
+    if (card.qrHash) {
+      return res.status(400).json({
+        message: "QR already generated for this card"
+      });
+    }
+
+    const qrHash = createQRHash(qrData);
+
+    card.qrData = qrData;
+    card.qrHash = qrHash;
+
+    await card.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "QR saved successfully"
+    });
+
+  } catch (error) {
+    console.error("Store QR error:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+export const verifyCardQR = async (req, res) => {
+  try {
+    if (req.user.role !== "vendor") {
+      return res.status(403).json({ message: "Vendor only" });
+    }
+
+    const { qrData } = req.body;
+
+    const qrHash = createQRHash(qrData);
+
+    const card = await Card.findOne({ qrHash });
+
+    if (!card) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid QR code"
+      });
+    }
+
+    if (card.qrVerified) {
+      return res.status(400).json({
+        success: false,
+        message: "QR already used"
+      });
+    }
+
+    card.qrVerified = true;
+    card.qrVerifiedAt = new Date();
+    card.status = "delivered";
+
+    await card.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "QR verified successfully",
+      card
+    });
+
+  } catch (error) {
+    console.error("Verify QR error:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+
 
 

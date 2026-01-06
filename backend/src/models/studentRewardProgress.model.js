@@ -21,6 +21,10 @@ const studentRewardProgressSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    sent: {
+        type: Boolean,
+        default: false
+    },
     claimedAt: { type: Date, default: null },
 }, { timestamps: true });
 
