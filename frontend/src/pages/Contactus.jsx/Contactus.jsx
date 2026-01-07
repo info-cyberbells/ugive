@@ -54,15 +54,6 @@ const Contactus = () => {
 
           <div className="space-y-2">
             <p className="text-sm text-[#232323]">
-              📞 <span className="font-medium">Phone:</span>{" "}
-              <a
-                href="tel:0412345678"
-                className="text-[#6955A5] hover:underline"
-              >
-                0412 345 678
-              </a>
-            </p>
-            <p className="text-sm text-[#232323]">
               ✉️ <span className="font-medium">Email:</span>{" "}
               <a
                 href="mailto:ugive@gmail.com"

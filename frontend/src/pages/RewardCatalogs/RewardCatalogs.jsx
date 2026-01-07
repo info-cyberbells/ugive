@@ -26,24 +26,23 @@ const RewardBadge = ({
   const segmentSize = 86;
   const gapSize = 4;
 
-  
- const gradientStops = `
+
+  const gradientStops = `
   ${activeColor} 0deg ${percentage * 3.6}deg,
   ${inactiveColor} ${percentage * 3.6}deg 360deg
 `;
 
-const conicGradient = `conic-gradient(from 90deg, ${gradientStops})`;
+  const conicGradient = `conic-gradient(from 90deg, ${gradientStops})`;
 
   return (
     <div
       onClick={!claimed ? onClick : undefined}
       className={`group flex flex-col items-center p-4 rounded-2xl
     transition-all duration-300
-    ${
-      claimed
-        ? "cursor-not-allowed opacity-50 grayscale"
-        : "cursor-pointer hover:scale-[1.04] hover:-translate-y-2 hover:shadow-xl hover:shadow-purple-200"
-    }
+    ${claimed
+          ? "cursor-not-allowed opacity-50 grayscale"
+          : "cursor-pointer hover:scale-[1.04] hover:-translate-y-2 hover:shadow-xl hover:shadow-purple-200"
+        }
   `}
     >
       <div className="absolute top-full mt-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded-lg p-3 w-48 z-10 shadow-lg">
@@ -90,9 +89,8 @@ const conicGradient = `conic-gradient(from 90deg, ${gradientStops})`;
             <img
               src={rewardImage}
               alt={name}
-              className={`w-full h-full object-cover ${
-                claimed ? "grayscale opacity-60" : ""
-              }`}
+              className={`w-full h-full object-cover ${claimed ? "grayscale opacity-60" : ""
+                }`}
             />
           </div>
         </div>
@@ -201,7 +199,7 @@ const RewardCatalogs = () => {
     return (
       <div className="min-h-screen lg:ml-60 font-[Poppins] mt-14 bg-gray-50 p-6">
         <h1 className="text-2xl font-medium text-purple-700 mb-4">
-          Rewards Catalogue
+          Rewards
         </h1>
 
         {/* Skeleton for the 3-step instruction section */}
@@ -246,7 +244,7 @@ const RewardCatalogs = () => {
     return (
       <div className="min-h-screen lg:ml-60 font-[Poppins] mt-14 bg-gray-50 p-6">
         <h1 className="text-2xl font-medium text-purple-700 mb-0">
-          Rewards Catalogue
+          Rewards
         </h1>
         <div className="flex flex-col items-center justify-center py-20">
           <p className="text-xl text-gray-600">No rewards found</p>
@@ -259,7 +257,7 @@ const RewardCatalogs = () => {
   return (
     <div className="min-h-screen lg:ml-60 font-[Poppins] mt-14 bg-gray-50 p-6">
       <h1 className="text-2xl font-medium text-purple-700 mb-4">
-        Rewards Catalogue
+        Rewards
       </h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-6 text-sm text-gray-700">
         {/* Step 1 */}

@@ -149,46 +149,46 @@ const StudentDashboard = () => {
   );
   const { cardsProgress } = useSelector((state) => state.studentCard);
 
- useEffect(() => {
-   dispatch(getstudentDashboardData());
-   dispatch(remainingCardProgress());
-  dispatch(getSocialLinks());
-}, []);
+  useEffect(() => {
+    dispatch(getstudentDashboardData());
+    dispatch(remainingCardProgress());
+    dispatch(getSocialLinks());
+  }, []);
 
 
   const navigate = useNavigate();
 
   const pointsData = studentDashboard
     ? [
-        {
-          icon: Award,
-          title: "Total Cards Sent",
-          value: studentDashboard.cardStats.totalCardsSent,
-          color: "text-[#6955A5]",
-          route: "/my-cards",
-        },
-        {
-          icon: Star,
-          title: "Total Gift Sent",
-          value: studentDashboard.cardStats.totalGiftsSent,
-          color: "text-yellow-500",
-          route: "/rewards-catalog",
-        },
-        {
-          icon: User,
-          title: "Friends",
-          value: studentDashboard.friendStats.totalFriends,
-          color: "text-[#71ADE2]",
-          route: "/friends",
-        },
-        {
-          icon: Zap,
-          title: "Streak Weeks",
-          value: studentDashboard.streakInfo.currentStreak,
-          color: "text-yellow-300",
-          route: "/streaks",
-        },
-      ]
+      {
+        icon: Award,
+        title: "Total Cards Sent",
+        value: studentDashboard.cardStats.totalCardsSent,
+        color: "text-[#6955A5]",
+        route: "/my-cards",
+      },
+      {
+        icon: Star,
+        title: "Total Gifts Sent",
+        value: studentDashboard.cardStats.totalGiftsSent,
+        color: "text-yellow-500",
+        route: "/rewards-catalog",
+      },
+      {
+        icon: User,
+        title: "Friends",
+        value: studentDashboard.friendStats.totalFriends,
+        color: "text-[#71ADE2]",
+        route: "/friends",
+      },
+      {
+        icon: Zap,
+        title: "Streak Weeks",
+        value: studentDashboard.streakInfo.currentStreak,
+        color: "text-yellow-300",
+        route: "/streaks",
+      },
+    ]
     : [];
 
   const cardTrendData = [
@@ -201,7 +201,7 @@ const StudentDashboard = () => {
 
   const cardPercentage = cardsProgress?.currentReward?.percentage || 0;
 
- const cardsLeft =
+  const cardsLeft =
     cardsProgress?.currentReward
       ? Math.max(
         0,
@@ -262,19 +262,19 @@ const StudentDashboard = () => {
           <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
             {dasboardLoading
               ? [...Array(4)].map((_, i) => (
-                  <div key={i} className="p-5 bg-white rounded-xl shadow-sm">
-                    <div className="flex space-x-3">
-                      <SkeletonBox className="h-10 w-10 rounded-lg" />
-                      <div className="flex-1">
-                        <SkeletonBox className="h-3 w-20 mb-2" />
-                        <SkeletonBox className="h-4 w-16" />
-                      </div>
+                <div key={i} className="p-5 bg-white rounded-xl shadow-sm">
+                  <div className="flex space-x-3">
+                    <SkeletonBox className="h-10 w-10 rounded-lg" />
+                    <div className="flex-1">
+                      <SkeletonBox className="h-3 w-20 mb-2" />
+                      <SkeletonBox className="h-4 w-16" />
                     </div>
                   </div>
-                ))
+                </div>
+              ))
               : pointsData.map((data, index) => (
-                  <MetricCard key={index} {...data} />
-                ))}
+                <MetricCard key={index} {...data} />
+              ))}
           </div>
 
           {dasboardLoading ? (
@@ -331,7 +331,7 @@ const StudentDashboard = () => {
           ) : (
             <div className="bg-white lg:col-span-2 p-6 sm:p-8 rounded-xl shadow-sm mt-8">
               <div className="flex flex-col md:flex-row items-center justify-between sm:gap-8">
-               
+
                 <div className="flex-1 text-center  px-4">
                   {cardsProgress?.message === "No rewards found" ? (
                     <>
@@ -432,7 +432,7 @@ const StudentDashboard = () => {
                         label={false}
                         labelLine={false}
                         outerRadius={85}
-                        // label
+                      // label
                       >
                         <Cell fill="#7C3AED" /> {/* Purple */}
                         <Cell fill="#F59E0B" /> {/* Amber */}
@@ -631,7 +631,7 @@ const StudentDashboard = () => {
                     </div>
                   ))
                 ) : studentDashboard?.recentActivity?.recentCardsReceived
-                    ?.length > 0 ? (
+                  ?.length > 0 ? (
                   studentDashboard.recentActivity.recentCardsReceived
                     .slice(0, 5)
                     .map((card) => (

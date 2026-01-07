@@ -68,7 +68,7 @@ const ROLE_BASED_MENUS = {
   ],
   student: [
     // { id: "profile", title: "User Profile", icon: UserCircle },
-    { id: "rewards-catalog", title: "Rewards Catalog", icon: Gift },
+    { id: "rewards-catalog", title: "Rewards", icon: Gift },
     { id: "streaks", title: "Streaks", icon: Flame },
     { id: "my-cards", title: "Sent Cards", icon: Ticket },
     { id: "friends", title: "Friends", icon: Users },

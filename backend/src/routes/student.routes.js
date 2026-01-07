@@ -4,7 +4,7 @@ import { authenticate } from "../middleware/auth.middleware.js";
 import { authorizeRoles } from "../middleware/role.middleware.js";
 import { getProfile, updateProfile, changePassword } from "../controllers/profile.controller.js";
 import { createCard, getCardsByCollege, getCardProgress, checkCardEligibility, getSentCards } from "../controllers/card.controller.js";
-import { sendFriendRequest, acceptFriendRequest, deleteFriendRequest, unfriendUser, getSentRequests, getReceivedRequests, getMyFriends } from "../controllers/manageFriends.controller.js";
+import { sendFriendRequest, acceptFriendRequest, deleteFriendRequest, unfriendUser, getSentRequests, getReceivedRequests, getMyFriends, getMyCollegeUsers } from "../controllers/manageFriends.controller.js";
 import { getStudentRewards, claimReward } from "../controllers/reward.controller.js";
 import { deleteMyAccount } from "../controllers/student.controller.js";
 import { createFeedback, getMyFeedback } from "../controllers/feedback.controller.js";
@@ -35,6 +35,9 @@ router.post("/friend/send", sendFriendRequest);
 router.post("/friend/accept", acceptFriendRequest);
 router.post("/friend/delete", deleteFriendRequest);
 router.post("/friend/unfriend", unfriendUser);
+
+router.get("/friend/college-friends", getMyCollegeUsers);
+
 
 router.get("/friend/sent", getSentRequests);
 router.get("/friend/received", getReceivedRequests);

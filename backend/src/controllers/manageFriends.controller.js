@@ -1,6 +1,7 @@
+import mongoose from 'mongoose';
 import FriendRequest from "../models/friendRequest.model.js";
 import NotificationActivity from "../models/notificationActivity.model.js";
-
+import User from "../models/user.model.js";
 
 
 export const sendFriendRequest = async (req, res) => {
@@ -312,6 +313,156 @@ export const getMyFriends = async (req, res) => {
 
   } catch (err) {
     console.error("Get friends error:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
+export const getMyCollegeUsers = async (req, res) => {
+  try {
+    const userId = new mongoose.Types.ObjectId(req.user.id);
+    const collegeId = req.user.college;
+    const { search = "", page = 1, limit = 20 } = req.query;
+
+    if (!collegeId) {
+      return res.status(200).json({
+        success: true,
+        total: 0,
+        results: [],
+      });
+    }
+
+    const pageNum = Math.max(1, Number(page));
+    const pageSize = Math.min(50, Number(limit));
+
+    const matchStage = {
+      college: new mongoose.Types.ObjectId(collegeId),
+      _id: { $ne: userId },
+    };
+
+    if (search) {
+      matchStage.name = { $regex: `^${search}`, $options: "i" };
+    }
+
+    const pipeline = [
+      { $match: matchStage },
+
+      {
+        $lookup: {
+          from: "friendrequests",
+          let: { targetUserId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $or: [
+                    {
+                      $and: [
+                        { $eq: ["$sender", userId] },
+                        { $eq: ["$receiver", "$$targetUserId"] },
+                      ],
+                    },
+                    {
+                      $and: [
+                        { $eq: ["$receiver", userId] },
+                        { $eq: ["$sender", "$$targetUserId"] },
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+          as: "relation",
+        },
+      },
+
+      {
+        $addFields: {
+          friendshipStatus: {
+            $cond: [
+              { $eq: [{ $size: "$relation" }, 0] },
+              "none",
+              {
+                $switch: {
+                  branches: [
+                    {
+                      case: {
+                        $and: [
+                          { $eq: [{ $arrayElemAt: ["$relation.status", 0] }, "accepted"] },
+                        ],
+                      },
+                      then: "friends",
+                    },
+                    {
+                      case: {
+                        $and: [
+                          { $eq: [{ $arrayElemAt: ["$relation.status", 0] }, "pending"] },
+                          { $eq: [{ $arrayElemAt: ["$relation.sender", 0] }, userId] },
+                        ],
+                      },
+                      then: "pending_sent",
+                    },
+                    {
+                      case: {
+                        $and: [
+                          { $eq: [{ $arrayElemAt: ["$relation.status", 0] }, "pending"] },
+                          { $eq: [{ $arrayElemAt: ["$relation.receiver", 0] }, userId] },
+                        ],
+                      },
+                      then: "pending_received",
+                    },
+                  ],
+                  default: "none",
+                },
+              },
+            ],
+          },
+        },
+      },
+
+      {
+        $facet: {
+          data: [
+            { $skip: (pageNum - 1) * pageSize },
+            { $limit: pageSize },
+            {
+              $project: {
+                name: 1,
+                email: 1,
+                friendshipStatus: 1,
+                profileImage: {
+                  $cond: [
+                    { $ifNull: ["$profileImage", false] },
+                    {
+                      $concat: [
+                        `${req.protocol}://${req.get("host")}`,
+                        "$profileImage",
+                      ],
+                    },
+                    null,
+                  ],
+                },
+              },
+            },
+          ],
+          total: [{ $count: "count" }],
+        },
+      },
+    ];
+
+    const result = await User.aggregate(pipeline);
+
+    return res.status(200).json({
+      success: true,
+      total: result[0].total[0]?.count || 0,
+      page: pageNum,
+      limit: pageSize,
+      results: result[0].data,
+    });
+
+  } catch (err) {
+    console.error("College users error:", err);
     return res.status(500).json({ success: false, message: "Server error" });
   }
 };

@@ -14,20 +14,6 @@ const TermsAndCondition = () => {
 
       {/* Header Section */}
       <div className="mb-8">
-        {/* Logo Section */}
-        <div className=" p-6 flex justify-center rounded-t-lg">
-          <img
-            src="/Highlands.svg"
-            alt="Highlands Church"
-            className="h-16"
-          />
-        </div>
-
-        {/* Contact Info Section */}
-        <div className="bg-purple-700 text-white py-4 text-center">
-          <p className="text-sm">505-513 Hume St, Toowoomba • (07) 4617 6555</p>
-          <p className="text-sm">www.highlandschurch.org.au/campus</p>
-        </div>
 
       </div>
 
