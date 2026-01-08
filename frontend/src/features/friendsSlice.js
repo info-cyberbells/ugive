@@ -318,7 +318,7 @@ const friendsSlice = createSlice({
             })
             .addCase(getCollegePeople.rejected, (state, action)=>{
                 state.collegePeopleLoading = false;
-                state.error = payload.action;
+                state.error = action.payload;
             })
     },
 });

@@ -450,8 +450,7 @@ const StudentDashboard = () => {
                   <div className="h-56 w-full">
                     <SkeletonBox className="h-56 w-full" />
                   </div>
-                ) : studentDashboard?.cardStats?.totalCardsSent === 0 &&
-                  studentDashboard?.cardStats?.totalCardsReceived === 0 ? (
+                ) : studentDashboard?.cardStats?.totalCardsSent === 0 ? (
                   <div className="border h-56 w-full flex justify-center items-center border-gray-100 rounded-md">
                     <Frown className="w-4 h-4 text-gray-400" />
                     <p className="text-center text-xs text-gray-400">
@@ -546,7 +545,7 @@ const StudentDashboard = () => {
                 )}
               </div>
 
-              
+
             </div>
           </div>
         </div>
