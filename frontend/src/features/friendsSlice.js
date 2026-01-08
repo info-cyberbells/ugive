@@ -8,6 +8,7 @@ import {
     unfriendService,
     getSentRequestsService,
     getReceivedRequestsService,
+    getStudentCollegePeopleService,
 } from "../auth/authServices";
 
 // Async Thunks
@@ -123,12 +124,27 @@ export const sendFriendRequest = createAsyncThunk(
     }
 );
 
+// GET COLLEGE FRIENDS THUNK
+export const getCollegePeople = createAsyncThunk(
+    'friends/getCollegeFriends',
+    async(_, thunkAPI)=>{
+        try {
+            const response = await getStudentCollegePeopleService();
+            return response;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to fetch");
+        }
+    }
+); 
+
 // Initial State
 const initialState = {
     friends: [],
     searchResults: [],
     sentRequests: [],
     receivedRequests: [],
+    collegePeople: [],
+    collegePeopleLoading: false,
     loading: false,
     searchLoading: false,
     sendRequestLoading: false,
@@ -289,7 +305,21 @@ const friendsSlice = createSlice({
             .addCase(getReceivedRequests.rejected, (state, action) => {
                 state.receivedRequestsLoading = false;
                 state.error = action.payload;
-            });
+            })
+
+            // get college friends
+            .addCase(getCollegePeople.pending, (state)=>{
+                state.collegePeopleLoading = true;
+                state.error = false;
+            })
+            .addCase(getCollegePeople.fulfilled, (state, action)=>{
+                state.collegePeopleLoading = false;
+                state.collegePeople = action.payload;
+            })
+            .addCase(getCollegePeople.rejected, (state, action)=>{
+                state.collegePeopleLoading = false;
+                state.error = payload.action;
+            })
     },
 });
 

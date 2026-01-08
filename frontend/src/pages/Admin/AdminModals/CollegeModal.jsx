@@ -28,6 +28,7 @@ const CollegeModal = ({
     universityId: "",
     name: "",
     phoneNumber: "",
+    contactName: "",
     address_line_1: "",
     city: "",
     state: "",
@@ -45,6 +46,7 @@ const CollegeModal = ({
         universityId: storedUniversityId || "",
         name: "",
         address_line_1: "",
+        contactName: "",
         phoneNumber: "",
         city: "",
         state: "",
@@ -60,6 +62,7 @@ const CollegeModal = ({
         universityId: initialData?.university?._id || "",
         name: initialData?.name || "",
         address_line_1: initialData?.address_line_1 || "",
+        contactName: initialData?.contactName || "",
         phoneNumber: initialData?.phoneNumber || "",
         city: initialData?.city || "",
         state: initialData?.state || "",
@@ -73,11 +76,10 @@ const CollegeModal = ({
 
   const inputClasses = (field) =>
     `mt-1 block w-full rounded-lg border px-3 py-2 text-sm transition
-   ${
-     errors[field]
-       ? "border-red-500 focus:ring-red-500"
-       : "bg-white border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"
-   }`;
+   ${errors[field]
+      ? "border-red-500 focus:ring-red-500"
+      : "bg-white border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"
+    }`;
 
   const handlePhoneFormat = (e) => {
     let value = e.target.value;
@@ -133,6 +135,7 @@ const CollegeModal = ({
       "name",
       "universityId",
       "address_line_1",
+      "contactName",
       "phoneNumber",
       "city",
       "state",
@@ -163,6 +166,7 @@ const CollegeModal = ({
       name: formData.name,
       universityId: formData.universityId,
       address_line_1: formData.address_line_1,
+      contactName: formData.contactName,
       phoneNumber: formData.phoneNumber,
       city: formData.city,
       state: formData.state,
@@ -215,8 +219,8 @@ const CollegeModal = ({
             {mode === "add"
               ? "Add College"
               : mode === "edit"
-              ? "Edit College"
-              : "View College"}
+                ? "Edit College"
+                : "View College"}
           </h3>
           <button onClick={onClose}>
             <X className="w-5 h-5 cursor-pointer text-gray-500" />
@@ -248,6 +252,17 @@ const CollegeModal = ({
               disabled={isViewMode}
               onChange={handleChange}
               className={inputClasses("address_line_1")}
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium">Contact Name</label>
+            <input
+              name="contactName"
+              placeholder="Will Jacks"
+              value={formData.contactName}
+              disabled={isViewMode}
+              onChange={handleChange}
+              className={inputClasses("contactName")}
             />
           </div>
 

@@ -158,13 +158,13 @@ export const getCollegesByUniversity = async (req, res) => {
 // Create University
 export const createUniversity = async (req, res) => {
   try {
-    const { name, address_line_1, phoneNumber, city, state, postcode } = req.body;
+    const { name, address_line_1, contactName, phoneNumber, city, state, postcode } = req.body;
     const existingUni = await University.findOne({ name });
     if (existingUni) {
       return res.status(400).json({ success: false, message: "University already exists with this name" });
     }
 
-    const university = await University.create({ name, address_line_1, phoneNumber, city, state, postcode });
+    const university = await University.create({ name, address_line_1, contactName ,phoneNumber, city, state, postcode });
     res.status(201).json({ success: true, data: university });
   } catch (err) {
     console.error(err);
@@ -183,13 +183,13 @@ export const createUniversity = async (req, res) => {
 // Create College under University
 export const createCollege = async (req, res) => {
   try {
-    const { name, universityId, address_line_1, phoneNumber, city, state, postcode } = req.body;
+    const { name, universityId, address_line_1, contactName, phoneNumber, city, state, postcode } = req.body;
     const university = await University.findById(universityId);
     if (!university) {
       return res.status(404).json({ success: false, message: "University not found" });
     }
 
-    const college = await College.create({ name, university: universityId, address_line_1, phoneNumber, city, state, postcode });
+    const college = await College.create({ name, university: universityId, address_line_1, contactName,phoneNumber, city, state, postcode });
     res.status(201).json({ success: true, data: college });
   } catch (err) {
     console.error(err);
@@ -218,7 +218,7 @@ export const updateUniversity = async (req, res) => {
     }
 
     // Update only allowed fields
-    const allowedFields = ["name", "address_line_1", "phoneNumber", "city", "state", "postcode", "shipping_address_name", "semester_length"];
+    const allowedFields = ["name", "address_line_1", "contactName","phoneNumber", "city", "state", "postcode", "shipping_address_name", "semester_length"];
     Object.keys(updates).forEach(key => {
       if (allowedFields.includes(key)) {
         university[key] = updates[key];
@@ -251,7 +251,7 @@ export const updateCollege = async (req, res) => {
     }
 
     // Update only allowed fields
-    const allowedFields = ["name", "address_line_1", "phoneNumber", "city", "state", "postcode"];
+    const allowedFields = ["name", "address_line_1", "contactName","phoneNumber", "city", "state", "postcode"];
     Object.keys(updates).forEach(key => {
       if (allowedFields.includes(key)) {
         college[key] = updates[key];

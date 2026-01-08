@@ -1259,3 +1259,13 @@ export const checkBanWordsService = async (message) => {
   );
   return response.data;
 };
+
+
+// GET COLLEGE FRIENDS
+export const getStudentCollegePeopleService = async()=>{
+  const response = await axios.get(
+    USER_ENDPOINTS.COLLEGE_PEOPLE,
+    getAuthHeader(),
+  );
+  return response.data;
+}

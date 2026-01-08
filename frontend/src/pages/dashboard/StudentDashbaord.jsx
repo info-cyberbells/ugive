@@ -347,7 +347,7 @@ const StudentDashboard = () => {
                         Your reward has unlocked!
                       </span>
                       <span className="text-purple-400 text-sm font-medium mt-2">
-                        Please visit the reward catalog to claim your reward.
+                        Please visit the rewards section to claim your reward.
                       </span>
                     </div>
                   ) : (
@@ -463,7 +463,7 @@ const StudentDashboard = () => {
                     <BarChart
                       data={[
                         {
-                          name: "All Time",
+                          name: "Cards Sent",
                           Sent:
                             studentDashboard?.cardStats?.totalCardsSent || 0,
                           Received:
@@ -475,9 +475,9 @@ const StudentDashboard = () => {
                     >
                       <XAxis dataKey="name" />
                       <YAxis allowDecimals={false} />
-                      <Tooltip />
+                      {/* <Tooltip /> */}
                       {/* <Legend /> */}
-                      <Legend wrapperStyle={{ fontSize: "10px" }} />
+                      {/* <Legend wrapperStyle={{ fontSize: "10px" }} /> */}
 
                       <Bar
                         dataKey="Sent"
@@ -486,105 +486,34 @@ const StudentDashboard = () => {
                         radius={[6, 6, 0, 0]}
                       />
 
-                      <Bar
+                      {/* <Bar
                         dataKey="Received"
                         name="Cards Received"
                         fill="#F87171" // Red
                         radius={[6, 6, 0, 0]}
-                      />
+                      /> */}
                     </BarChart>
                   </ResponsiveContainer>
                 )}
               </div>
             </div>
 
-            {/* <div className="w-full flex justify-center mb-14 md:mb-4">
-              <div className="w-[60%] h-40">
-                {" "}
-                <h3 className="text-sm font-semibold text-gray-700 mb-2 text-center">
-                  Cards Sent vs Received (This Month)
-                </h3>
-                {dasboardLoading ? (
-                  <div className="flex justify-center">
-                    <SkeletonBox className="h-40 w-[60%]" />
-                  </div>
-                ) : cardTrendData[0]?.sent === 0 &&
-                  cardTrendData[0]?.received === 0 ? (
-                  <div className="border h-40 w-full flex justify-center items-center border-gray-100 rounded-md">
-                    <Frown className="w-4 h-4 text-gray-400" />
-                    <p className="text-center text-xs text-gray-400">
-                      No monthly Card Activity Available
-                    </p>
-                  </div>
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={cardTrendData} barGap={12}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-
-                      <XAxis
-                        dataKey="name"
-                        tick={{ fill: "#6B7280", fontSize: 12 }}
-                        axisLine={{ stroke: "#e5e7eb" }}
-                        tickLine={false}
-                      />
-
-                      <YAxis
-                        tick={{ fill: "#9CA3AF", fontSize: 12 }}
-                        axisLine={{ stroke: "#e5e7eb" }}
-                        tickLine={false}
-                        allowDecimals={false}
-                      />
-
-                      <Tooltip
-                        contentStyle={{
-                          backgroundColor: "#fff",
-                          border: "1px solid #e5e7eb",
-                          borderRadius: "8px",
-                          fontSize: "12px",
-                        }}
-                      />
-
-                      <Legend
-                        layout="horizontal"
-                        verticalAlign="bottom"
-                        align="center"
-                        wrapperStyle={{ fontSize: "10px", marginTop: 8 }}
-                      />
-
-                      <Bar
-                        dataKey="sent"
-                        name="Cards Sent"
-                        fill="#6366F1"
-                        radius={[6, 6, 0, 0]}
-                      />
-
-                      <Bar
-                        dataKey="received"
-                        name="Cards Received"
-                        fill="#F59E0B"
-                        radius={[6, 6, 0, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                )}
-              </div>
-            </div> */}
           </div>
 
           <div className="bg-white p-3 sm:py-4 sm:px-0 rounded-xl shadow-sm">
             <h2 className="text-xl px-4 font-semibold text-[#05004E] mb-1">
               Recent Activity Feed
             </h2>
-            <div className="grid grid-cols-2 sm:pl-4">
+            <div className="sm:pl-4">
               {/* NOTIFICATIONS LIST */}
-              <div className="pl-4 mt-3">
+              <div className="pl-4 pr-4 mt-3">
                 <h2 className="font-medium text-sm">Recent Card Sent</h2>
                 {dasboardLoading ? (
                   [...Array(4)].map((_, i) => (
                     <div key={i} className="flex gap-3 py-2">
                       <SkeletonBox className="h-6 w-6 rounded" />
                       <div className="flex-1">
-                        <SkeletonBox className="h-3 w-32 mb-2" />
+                        <SkeletonBox className="h-3 w-50 md:w-100 mb-2" />
                         <SkeletonBox className="h-2 w-20" />
                       </div>
                     </div>
@@ -596,11 +525,11 @@ const StudentDashboard = () => {
                     .map((card) => (
                       <div
                         key={card._id}
-                        className="flex items-start gap-3 py-2"
+                        className="flex items-start gap-3 py-2 pr-4"
                       >
                         <MessageSquare className="w-5 h-5 text-purple-600 mt-1" />
                         <div>
-                          <p className="text-xs truncate max-w-[100px] sm:max-w-[240px] lg:max-w-[180px] text-[#05004E]">
+                          <p className="text-xs truncate max-w-[250px] md:max-w-[400px] lg:max-w-[400px] text-[#05004E]">
                             {card.message}
                           </p>
                           <p className="text-[11px] text-gray-400 mt-1">
@@ -617,53 +546,7 @@ const StudentDashboard = () => {
                 )}
               </div>
 
-              <div className="pr-4 mt-3">
-                <h2 className="font-medium text-sm">Recent Received Card</h2>
-
-                {dasboardLoading ? (
-                  [...Array(4)].map((_, i) => (
-                    <div key={i} className="flex gap-3 py-2">
-                      <SkeletonBox className="h-6 w-6 rounded" />
-                      <div className="flex-1">
-                        <SkeletonBox className="h-3 w-32 mb-2" />
-                        <SkeletonBox className="h-2 w-20" />
-                      </div>
-                    </div>
-                  ))
-                ) : studentDashboard?.recentActivity?.recentCardsReceived
-                  ?.length > 0 ? (
-                  studentDashboard.recentActivity.recentCardsReceived
-                    .slice(0, 5)
-                    .map((card) => (
-                      <div
-                        key={card._id}
-                        className="flex items-start gap-3 py-2"
-                      >
-                        {/* Icon */}
-                        <MessageSquare className="w-5 h-5 text-blue-600 mt-1" />
-
-                        <div>
-                          <p className="text-xs truncate max-w-[100px] sm:max-w-[240px] lg:max-w-[180px] text-[#05004E]">
-                            {card.message}
-                          </p>
-
-                          <p className="text-[11px] text-gray-400">
-                            From: {card.sender?.name}
-                          </p>
-
-                          {/* <p className="text-[11px] text-gray-400">
-          {new Date(card.sent_at).toLocaleString()}
-        </p> */}
-                        </div>
-                      </div>
-                    ))
-                ) : (
-                  <p className="text-gray-400 text-xs py-2 flex items-center gap-2">
-                    <Frown className="w-4 h-4 text-gray-400" />
-                    No cards received yet.
-                  </p>
-                )}
-              </div>
+              
             </div>
           </div>
         </div>

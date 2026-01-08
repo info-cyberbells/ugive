@@ -336,7 +336,7 @@ const Feedback = () => {
             {/* <MessageSquare className="h-6 w-6 mt-1 text-indigo-600 mr-2" /> */}
             Feedback List
             <span className="text-sm mt-2 text-gray-500 font-normal ml-3">
-              {total} Feedbacks
+              {total} Feedback
             </span>
           </h1>
 

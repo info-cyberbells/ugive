@@ -152,7 +152,7 @@ const cardsLeft =
                         Your reward has unlocked!
                       </span>
                       <span className="text-purple-400 text-sm font-medium mt-2">
-                        Please visit the reward catalog to claim your reward.
+                        Please visit the rewards section to claim your reward.
                       </span>
                     </div>
                   ) : (

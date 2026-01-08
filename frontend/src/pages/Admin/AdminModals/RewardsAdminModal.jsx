@@ -267,49 +267,7 @@ const AdminRewardModal = ({
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="px-6 py-3 space-y-2">
-          {/* <div>
-            <label className="block text-sm font-medium text-gray-700">
-              University
-            </label>
-
-            {isViewMode ? (
-              <div className="mt-1 block w-full rounded-lg border border-gray-300 bg-gray-50 shadow-sm sm:text-sm p-2">
-                {universities.find(u => u._id === formData.university)?.name || "N/A"}
-              </div>
-            ) : (
-              <div className="relative">
-                <select
-                  name="university"
-                  value={formData.university || ""}
-                  onChange={handleUniversityChange}
-                  className={`${inputClasses(
-                    "university"
-                  )} appearance-none pr-10`}
-                >
-                  <option value="">Select University</option>
-                  {universities.map((u) => (
-                    <option key={u._id} value={u._id}>
-                      {u.name}
-                    </option>
-                  ))}
-                </select>
-
-                <svg
-                  className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
-            )}
-          </div> */}
+          
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -427,7 +385,7 @@ const AdminRewardModal = ({
               type="text"
               name="rewardDescription"
               value={formData.rewardDescription}
-              disabled={true}
+              
               onChange={handleChange}
               placeholder="Award for good performance"
               autoComplete="off"

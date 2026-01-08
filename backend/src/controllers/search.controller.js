@@ -1,6 +1,8 @@
 import User from "../models/user.model.js";
 import FriendRequest from "../models/friendRequest.model.js";
 import mongoose from "mongoose";
+import collegeModel from "../models/college.model.js";
+import universityModel from "../models/university.model.js";
 
 /**
  * GET /api/search
@@ -16,7 +18,7 @@ export const searchStudents = async (req, res) => {
             return res.status(401).json({ success: false, message: "Unauthorized" });
         }
 
-        const { name, page = 1, limit = 20 } = req.query;
+        const { name, university, college,page = 1, limit = 20 } = req.query;
         const pageNum = Math.max(1, parseInt(page, 10));
         const pageSize = Math.min(100, Math.max(1, parseInt(limit, 10)));
 
@@ -41,6 +43,71 @@ export const searchStudents = async (req, res) => {
                 ]
             });
         }
+
+       // Search by university name (optional)
+        if (university && university.trim()) {
+            const safeUniversity = university
+                .trim()
+                .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+            const universities = await universityModel.find({
+                name: { $regex: safeUniversity, $options: "i" }
+            }).select("_id");
+
+            if (!universities.length) {
+                return res.status(200).json({
+                    success: true,
+                    total: 0,
+                    page: pageNum,
+                    limit: pageSize,
+                    results: []
+                });
+            }
+
+            const universityIds = universities.map(u => u._id);
+
+            // Always filter by university
+            conditions.push({
+                university: { $in: universityIds }
+            });
+
+            // If college is NOT provided → only students WITHOUT college
+            if (!college || !college.trim()) {
+                conditions.push({
+                    $or: [
+                        { college: { $exists: false } },
+                        { college: null }
+                    ]
+                });
+            }
+        }
+
+
+
+        // Search by college name (optional)
+        if (college && college.trim()) {
+            const safeCollege = college.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+            const colleges = await collegeModel.find({
+                name: { $regex: safeCollege, $options: "i" }
+            }).select("_id");
+
+            if (colleges.length) {
+                conditions.push({
+                    college: { $in: colleges.map(c => c._id) }
+                });
+            } else {
+                // No college matched → no results
+                return res.status(200).json({
+                    success: true,
+                    total: 0,
+                    page: pageNum,
+                    limit: pageSize,
+                    results: []
+                });
+            }
+        }
+
 
         const query = { $and: conditions };
 

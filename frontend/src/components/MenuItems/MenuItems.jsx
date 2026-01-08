@@ -31,7 +31,7 @@ import { adminreset } from "../../features/adminSlice";
 
 const ROLE_BASED_MENUS = {
   super_admin: [
-    { id: "profile", title: "Manage Profile", icon: UserCircle },
+    // { id: "profile", title: "Manage Profile", icon: UserCircle },
     { id: "manage-universities", title: "Manage Universities", icon: School },
     { id: "manage-colleges", title: "Manage Colleges", icon: GraduationCap },
     { id: "manage-admins", title: "Manage Admins", icon:  UserCog },
@@ -39,12 +39,12 @@ const ROLE_BASED_MENUS = {
     { id: "manage-vendors", title: "Manage Vendors", icon: Store },
     { id: "vendor-rewards", title: "Vendor Rewards", icon: Trophy },
     { id: "manage-rewards", title: "Manage Rewards", icon: Gift },
-    { id: "feedbacks", title: "Manage Feedbacks", icon: MessageSquare },
+    { id: "feedbacks", title: "Manage Feedback", icon: MessageSquare },
     { id: "social", title: "Social", icon: Share2 },
   ],
 
   admin: [
-    { id: "profile", title: "User Profile", icon: UserCircle },
+    // { id: "profile", title: "User Profile", icon: UserCircle },
     { id: "admin-students", title: "Students", icon: BookOpen },
     { id: "admin-colleges", title: "Colleges", icon: GraduationCap },
     { id: "admin-vendors", title: "Vendors", icon: Store },

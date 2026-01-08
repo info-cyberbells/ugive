@@ -191,97 +191,7 @@ const CardForm = ({ onSubmit }) => {
         <div className="bg-white p-6 rounded-2xl">
           <form onSubmit={handleSubmit} className="space-y-6 sm:pr-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-6">
-              {/* UNIVERSITY FIELD */}
-              {/* <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  University
-                </label>
-
-                <div className="relative">
-                  <select
-                    name="university"
-                    value={formData.university || ""}
-                    onChange={handleUniversityChange}
-                    className={`${inputClass} appearance-none pr-10 ${
-                      errors.university ? "border-red-500" : ""
-                    }`}
-                  >
-                    <option value="">Select University</option>
-                    {universities.map((u) => (
-                      <option key={u._id} value={u._id}>
-                        {u.name}
-                      </option>
-                    ))}
-                  </select>
-
-                  <svg
-                    className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </div>
-              </div> */}
-
-              {/* COLLEGE FIELD */}
-              {/* <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  College
-                </label>
-
-                <div className="relative">
-                  <select
-                    name="college"
-                    value={formData.college || ""}
-                    onChange={handleChange}
-                    className={`${inputClass} appearance-none pr-10 ${
-                      errors.college ? "border-red-500" : ""
-                    }`}
-                    disabled={!formData.university}
-                  >
-                    {!formData.university && (
-                      <option value="">Select a university first</option>
-                    )}
-
-                    {formData.university && colleges.length === 0 && (
-                      <option value="">No colleges available</option>
-                    )}
-
-                    {formData.university && colleges.length > 0 && (
-                      <>
-                        <option value="">Select College</option>
-                        {colleges.map((c) => (
-                          <option key={c._id} value={c._id}>
-                            {c.name}
-                          </option>
-                        ))}
-                      </>
-                    )}
-                  </select>
-
-                  <svg
-                    className="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </div>
-              </div> */}
-
+             
               <div>
                 <label htmlFor="name" className={labelClass}>
                   Your Name
@@ -300,7 +210,7 @@ const CardForm = ({ onSubmit }) => {
 
               <div>
                 <label htmlFor="recipientName" className={labelClass}>
-                  Recipient's Name
+                  Recipient's First Name
                 </label>
                 <input
                   type="text"
@@ -308,7 +218,7 @@ const CardForm = ({ onSubmit }) => {
                   name="recipientName"
                   value={formData.recipientName}
                   onChange={handleChange}
-                  placeholder="Enter Recipient's Name"
+                  placeholder="Enter Recipient's First Name"
                   className={`${inputClass} ${errors.recipientName ? "border-red-500" : ""
                     }`}
                 />
@@ -324,7 +234,7 @@ const CardForm = ({ onSubmit }) => {
                   name="recipientLastName"
                   value={formData.recipientLastName}
                   onChange={handleChange}
-                  placeholder="Enter Recipient's Email"
+                  placeholder="Enter Recipient's Last Name"
                   className={`${inputClass} ${errors.recipientLastName ? "border-red-500" : ""
                     }`}
                 />
@@ -348,7 +258,7 @@ const CardForm = ({ onSubmit }) => {
 
               <div className="">
                 <label htmlFor="collegeHouse" className={labelClass}>
-                  Recipients’s College House
+                  Recipients’s College/House
                 </label>
                 <input
                   type="text"
@@ -356,7 +266,7 @@ const CardForm = ({ onSubmit }) => {
                   name="collegeHouse"
                   value={formData.collegeHouse}
                   onChange={handleChange}
-                  placeholder="Enter Recipient's College House"
+                  placeholder="Enter Recipient's College/House"
                   className={`${inputClass} ${errors.collegeHouse ? "border-red-500" : ""
                     }`}
                 />

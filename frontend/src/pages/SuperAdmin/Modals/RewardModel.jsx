@@ -417,7 +417,7 @@ const RewardModal = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) =
               type="text"
               name="rewardDescription"
               value={formData.rewardDescription}
-              disabled={true}
+              // disabled={true}
               onChange={handleChange}
               placeholder="Award for good performance"
               autoComplete="off"

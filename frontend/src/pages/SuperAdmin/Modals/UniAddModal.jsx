@@ -13,6 +13,7 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
         name: '',
         address_line_1: '',
         phoneNumber: '',
+        contactName: '',
         city: '',
         state: '',
         postcode: '',
@@ -31,6 +32,7 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
         const data = {
             name: university?.name || "",
             address_line_1: university?.address_line_1 || "",
+            contactName: university?.contactName || "",
             phoneNumber: university?.phoneNumber || "",
             city: university?.city || "",
             state: university?.state || "",
@@ -45,6 +47,7 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
         setFormData({
             name: university?.name || '',
             address_line_1: university?.address_line_1 || '',
+            contactName: university?.contactName || "",
             phoneNumber: university?.phoneNumber || '',
             city: university?.city || '',
             state: university?.state || '',
@@ -118,6 +121,7 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
             "name",
             "address_line_1",
             "city",
+            'contactName',
             'phoneNumber',
             "state",
             "postcode",
@@ -216,6 +220,19 @@ const UniversityModal = ({ isOpen, onClose, university, isViewMode }) => {
                             className={inputClasses("address_line_1")}
                         />
                     </div>
+                    <div>
+                            <label className="block text-sm font-medium text-gray-700">Contact Name</label>
+                            <input
+                                disabled={isViewMode}
+                                type="text"
+                                name="contactName"
+                                placeholder="Thomas"
+                                autoComplete="off"
+                                value={formData.contactName}
+                                onChange={handleChange}
+                                className={inputClasses("contactName")}
+                            />
+                        </div>
 
                     {/* City / State / Postcode */}
                     <div className="grid grid-cols-2 gap-4">

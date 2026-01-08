@@ -16,6 +16,11 @@ const collegeSchema = new mongoose.Schema({
     required: [true, "Address line 1 is required"],
     trim: true,
   },
+  contactName: {
+    type: String,
+    required: [true, "Contact Name is required"],
+    trim: true,
+  },
    phoneNumber: {
     type: String,
     required: [true, "Phone number is required"],

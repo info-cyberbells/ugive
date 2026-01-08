@@ -89,6 +89,12 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   }, []);
 
   const handleProfileClick = () => {
+    if(role == "super_admin"){
+      navigate("/profile");
+    }
+    if(role === "admin"){
+      navigate("/profile");
+    }
     if (role === "student") {
       navigate("/my-profile");
     }

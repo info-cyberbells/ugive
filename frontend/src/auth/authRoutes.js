@@ -106,6 +106,7 @@ export const USER_ENDPOINTS = {
     UNFRIEND: `${API_BASE_URL}/student/friend/unfriend`,
     GET_SENT_REQUESTS: `${API_BASE_URL}/student/friend/sent`,
     GET_RECEIVED_REQUESTS: `${API_BASE_URL}/student/friend/received`,
+    COLLEGE_PEOPLE: `${API_BASE_URL}/student/friend/college-friends`,
 
     GET_STUDENT_NOTIFICATIONS: `${API_BASE_URL}/student/get-my-notifications`,
 

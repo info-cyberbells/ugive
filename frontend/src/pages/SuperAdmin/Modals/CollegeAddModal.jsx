@@ -19,6 +19,7 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
         name: '',
         universityId: '',
         address_line_1: '',
+        contactName: "",
         phoneNumber: '',
         city: '',
         state: '',
@@ -43,6 +44,7 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
                 name: college?.name || "",
                 universityId: college?.university?._id || "",
                 address_line_1: college?.address_line_1 || "",
+                contactName: college?.contactName || "",
                 phoneNumber: college?.phoneNumber || "",
                 city: college?.city || "",
                 state: college?.state || "",
@@ -56,6 +58,7 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
                 name: "",
                 universityId: "",
                 address_line_1: "",
+                contactName: "",
                 phoneNumber: "",
                 city: "",
                 state: "",
@@ -130,7 +133,7 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
 
         const newErrors = {};
 
-        const requiredFields = ['name', 'universityId', 'address_line_1','phoneNumber' ,'city', 'state', 'postcode'];
+        const requiredFields = ['name', 'universityId', 'address_line_1', 'contactName','phoneNumber' ,'city', 'state', 'postcode'];
 
         requiredFields.forEach((key) => {
             if (!formData[key] || String(formData[key]).trim() === '') {
@@ -192,6 +195,7 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
                     name: "",
                     universityId: "",
                     address_line_1: "",
+                    contactName: "",
                     phoneNumber:"",
                     city: "",
                     state: "",
@@ -219,7 +223,7 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
                 </div>
 
                 {/* Form */}
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <form onSubmit={handleSubmit} className="p-6 space-y-3">
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700">
@@ -287,6 +291,19 @@ const CollegeModal = ({ isOpen, onClose, college, onSave, isViewMode }) => {
                             value={formData.address_line_1}
                             onChange={handleChange}
                             className={inputClasses("address_line_1")}
+                        />
+                    </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700">Contact Name</label>
+                        <input
+                            type="text"
+                            name="contactName"
+                            placeholder='Will Jacks'
+                            disabled={isViewMode}
+                            value={formData.contactName}
+                            onChange={handleChange}
+                            className={inputClasses("contactName")}
                         />
                     </div>
 
