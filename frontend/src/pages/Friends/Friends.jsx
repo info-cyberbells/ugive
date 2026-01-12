@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Search,
   ChevronDown,
@@ -281,8 +281,8 @@ const Friends = () => {
     receivedRequestsLoading,
     sentRequestsLoading,
     searchError,
-     collegePeople,
-  collegePeopleLoading,
+    collegePeople,
+    collegePeopleLoading,
   } = useSelector((state) => state.friends);
 
   const [viewMode, setViewMode] = useState("friends");
@@ -297,6 +297,10 @@ const Friends = () => {
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [showUnfriendModal, setShowUnfriendModal] = useState(false);
   const [friendToUnfriend, setFriendToUnfriend] = useState(null);
+  const [filterMode, setFilterMode] = useState("global")
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const filterRef = useRef(null);
+
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -323,10 +327,24 @@ const Friends = () => {
   }, [dispatch]);
 
   useEffect(() => {
-  if (viewMode === "college") {
-    dispatch(getCollegePeople());
-  }
-}, [viewMode, dispatch]);
+    const handleClickOutside = (event) => {
+      if (filterRef.current && !filterRef.current.contains(event.target)) {
+        setShowFilterDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+
+  useEffect(() => {
+    if (viewMode === "college") {
+      dispatch(getCollegePeople());
+    }
+  }, [viewMode, dispatch]);
 
   // Cleanup debounce timer on unmount
   useEffect(() => {
@@ -337,6 +355,7 @@ const Friends = () => {
     };
   }, [debounceTimer]);
 
+  // Handle search input change with debouncing
   // Handle search input change with debouncing
   const handleSearchChange = (e) => {
     const value = e.target.value;
@@ -353,7 +372,24 @@ const Friends = () => {
     }
 
     const timer = setTimeout(() => {
-      dispatch(searchUsers({ name: value, email: "" }));
+      // Build search params based on filter mode
+      const searchParams = { filterMode };
+
+      if (filterMode === "college") {
+        searchParams.college = value;
+        searchParams.name = "";
+        searchParams.email = "";
+      } else if (filterMode === "university") {
+        searchParams.university = value;
+        searchParams.name = "";
+        searchParams.email = "";
+      } else {
+        // Global search - search by name
+        searchParams.name = value;
+        searchParams.email = "";
+      }
+
+      dispatch(searchUsers(searchParams));
       setShowSearchResults(true);
     }, 500);
 
@@ -498,64 +534,63 @@ const Friends = () => {
   };
 
   const CollegePeopleContent = ({ people, loading, onSend }) => {
-  if (loading) {
+    if (loading) {
+      return (
+        <div className="space-y-1">
+          {[1, 2, 3].map((i) => (
+            <FriendSkeleton key={i} />
+          ))}
+        </div>
+      );
+    }
+
+    if (!people || people.length === 0) {
+      return (
+        <div className="text-center py-10 text-gray-500">
+          No college people found
+        </div>
+      );
+    }
+
     return (
       <div className="space-y-1">
-        {[1, 2, 3].map((i) => (
-          <FriendSkeleton key={i} />
+        {(Array.isArray(people?.results) ? people.results : []).map((user) => (
+          <div
+            key={user.id || user._id}
+            className="p-2 flex items-center justify-between hover:bg-gray-50 rounded-lg transition"
+          >
+            <div className="flex items-center gap-4">
+              <ProfileAvatar src={user.profileImage} name={user.name} />
+              <div>
+                <h2 className="text-md font-semibold text-gray-800">
+                  {user.name}
+                </h2>
+                <p className="text-sm text-gray-500">{user.email}</p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => onSend(user.id || user._id)}
+              disabled={user.friendshipStatus === "pending_sent" || "friends"}
+              className={`px-4 py-1.5 rounded-full text-sm transition
+              ${user.friendshipStatus === "friends"
+                  ? "bg-gray-300 text-gray-700 cursor-default"
+                  : user.friendshipStatus === "pending_sent"
+                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                    : "bg-[#F3B11C] text-white hover:bg-yellow-500 cursor-pointer"
+                }`}
+            >
+              {user.friendshipStatus === "friends"
+                ? "Friend"
+                : user.friendshipStatus === "pending_sent"
+                  ? "Requested"
+                  : "Add Friend"}
+            </button>
+          </div>
         ))}
       </div>
     );
-  }
-
-  if (!people || people.length === 0) {
-    return (
-      <div className="text-center py-10 text-gray-500">
-        No college people found
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-1">
-     {(Array.isArray(people?.results) ? people.results : []).map((user) => (
-        <div
-          key={user.id || user._id}
-          className="p-2 flex items-center justify-between hover:bg-gray-50 rounded-lg transition"
-        >
-          <div className="flex items-center gap-4">
-            <ProfileAvatar src={user.profileImage} name={user.name} />
-            <div>
-              <h2 className="text-md font-semibold text-gray-800">
-                {user.name}
-              </h2>
-              <p className="text-sm text-gray-500">{user.email}</p>
-            </div>
-          </div>
-
-          <button
-            onClick={() => onSend(user.id || user._id)}
-           disabled={user.friendshipStatus === "pending_sent" || "friends"}
-            className={`px-4 py-1.5 rounded-full text-sm transition
-              ${
-                user.friendshipStatus === "friends"
-                  ? "bg-gray-300 text-gray-700 cursor-default"
-                  : user.friendshipStatus === "pending_sent"
-                  ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                  : "bg-[#F3B11C] text-white hover:bg-yellow-500 cursor-pointer"
-              }`}
-          >
-            {user.friendshipStatus === "friends"
-              ? "Friend"
-              : user.friendshipStatus === "pending_sent"
-              ? "Requested"
-              : "Add Friend"}
-          </button>
-        </div>
-      ))}
-    </div>
-  );
-};
+  };
 
 
   return (
@@ -567,42 +602,130 @@ const Friends = () => {
           {/* Search Input with Results Dropdown */}
           <div className="relative flex gap-4 w-full sm:w-auto min-w-0">
             <div className="relative w-[22rem] max-w-full">
+              {/* Filter Button - positioned on the right */}
+
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 z-10">
+                <button
+                  onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-gradient-to-r from-yellow-400 to-yellow-500 text-white border-2 border-white rounded-full hover:from-yellow-500 hover:to-yellow-600 transition-all duration-200 shadow-md hover:shadow-lg"
+                >
+                  <Filter className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">
+                    {filterMode === "global" ? "Global" : filterMode === "college" ? "College" : "University"}
+                  </span>
+                </button>
+
+                {/* Filter Dropdown */}
+                {showFilterDropdown && (
+                  <div ref={filterRef}
+                    className="absolute top-full mt-2 right-0 bg-white rounded-xl shadow-2xl border-2 border-gray-200 z-50 w-40 overflow-hidden">
+                    <button
+                      onClick={() => {
+                        setFilterMode("global");
+                        setShowFilterDropdown(false);
+                      }}
+                      className={`w-full text-left px-4 py-3 text-sm font-medium transition-all duration-150 ${filterMode === "global"
+                        ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-white"
+                        : "hover:bg-gray-50 text-gray-700"
+                        }`}
+                    >
+                      Global Search
+                    </button>
+                    <button
+                      onClick={() => {
+                        setFilterMode("college");
+                        setShowFilterDropdown(false);
+                      }}
+                      className={`w-full text-left px-4 py-3 text-sm font-medium transition-all duration-150 ${filterMode === "college"
+                        ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-white"
+                        : "hover:bg-gray-50 text-gray-700"
+                        }`}
+                    >
+                      College
+                    </button>
+                    <button
+                      onClick={() => {
+                        setFilterMode("university");
+                        setShowFilterDropdown(false);
+                      }}
+                      className={`w-full text-left px-4 py-3 text-sm font-medium transition-all duration-150 ${filterMode === "university"
+                        ? "bg-gradient-to-r from-yellow-400 to-yellow-500 text-white"
+                        : "hover:bg-gray-50 text-gray-700"
+                        }`}
+                    >
+                      University
+                    </button>
+                  </div>
+                )}
+              </div>
+
               <input
                 type="text"
                 value={searchQuery}
                 onChange={handleSearchChange}
                 placeholder={
-                  viewMode === "friends" ? "Search friends" : "Search requests"
+                  filterMode === "global"
+                    ? "Search users by name.."
+                    : filterMode === "college"
+                      ? "Search by college name.."
+                      : "Search by university name.."
                 }
-                className="w-full pl-4 pr-10 py-2 border border-gray-200 rounded-3xl 
-                 focus:ring-yellow-500 focus:border-yellow-500 text-gray-800 
-                 transition bg-[#ECE6F0]"
+                className="w-full pl-10 pr-24 py-2.5 border-2 border-gray-300 rounded-3xl 
+    focus:ring-2 focus:ring-yellow-400 focus:border-yellow-400 text-gray-800 
+    transition-all duration-200 bg-white placeholder:text-[10px] sm:placeholder:text-sm shadow-sm
+    hover:border-gray-400"
               />
+
               {searchLoading ? (
-                <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600 animate-spin" />
+                <Loader2 className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600 animate-spin" />
               ) : (
-                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600 pointer-events-none" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600 pointer-events-none" />
+              )}
+              {searchQuery && !searchLoading && (
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setShowSearchResults(false);
+                    dispatch(clearSearchResults());
+                  }}
+                  className="absolute right-28 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition cursor-pointer"
+                >
+                  ✕
+                </button>
               )}
 
               {/* Search Results Dropdown */}
               {showSearchResults && searchResults.length > 0 && (
-                // <div className="absolute top-full mt-2 w-full bg-white shadow-xl rounded-lg border border-gray-200 z-50 max-h-96 overflow-y-auto">
-                <div className="absolute top-full mt-2 left-0 bg-white shadow-xl rounded-lg border border-gray-200 z-50 max-h-96 overflow-y-auto min-w-[22rem] sm:min-w-[30rem]">
+                <div className="absolute top-full mt-2 left-0 bg-white shadow-xl rounded-lg border border-gray-200 z-50 max-h-96 overflow-y-auto min-w-[22rem] sm:min-w-[35rem]">
                   {searchResults.map((user) => (
                     <div
                       key={user.id || user._id}
                       className="p-3 flex justify-between items-center hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 flex-1">
                         <ProfileAvatar
                           src={user.profileImage}
                           name={user.name}
                         />
-                        <div>
+                        <div className="flex-1 min-w-0">
                           <p className="font-medium text-gray-800">
                             {user.name}
                           </p>
-                          <p className="text-sm text-gray-500">{user.email}</p>
+                          <p className="text-sm text-gray-500 truncate">{user.email}</p>
+
+                          {/* College and University Info - THIS IS NEW */}
+                          <div className="flex flex-wrap gap-2 mt-2">
+                            {user.college?.name && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 truncate max-w-[150px]">
+                                {user.college.name}
+                              </span>
+                            )}
+                            {user.university?.name && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 truncate max-w-[150px]">
+                                {user.university.name}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <button
@@ -614,15 +737,14 @@ const Friends = () => {
                         }
                         className={`
     px-4 py-1.5 rounded-full transition flex items-center gap-2
-    ${
-      sendingToUserId === (user.id || user._id)
-        ? "bg-[#F3B11C] text-white cursor-wait"
-        : user.friendshipStatus === "connected"
-        ? "bg-gray-300 text-gray-700 cursor-default"
-        : user.friendshipStatus === "requested_by_me"
-        ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-        : "bg-[#F3B11C] text-white hover:bg-yellow-500 cursor-pointer"
-    }
+    ${sendingToUserId === (user.id || user._id)
+                            ? "bg-[#F3B11C] text-white cursor-wait"
+                            : user.friendshipStatus === "connected"
+                              ? "bg-gray-300 text-gray-700 cursor-default"
+                              : user.friendshipStatus === "requested_by_me"
+                                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                                : "bg-[#F3B11C] text-white hover:bg-yellow-500 cursor-pointer"
+                          }
   `}
                       >
                         {sendingToUserId === (user.id || user._id) ? (
@@ -659,42 +781,39 @@ const Friends = () => {
                 </div>
               )}
             </div>
-             <button
+            <button
               onClick={() => setViewMode("college")}
-              className={`px-4 py-2 text-[10px] sm:text-sm font-semibold  bg-gray-100 p-1 shadow-inner rounded-full transition duration-300 ${
-                viewMode === "college"
-                  ? "bg-yellow-600 text-white shadow-md"
-                  : "text-gray-600 hover:bg-white/50 cursor-pointer"
-              }`}
+              className={`px-4 py-2 text-[10px] sm:text-sm font-semibold  bg-gray-100 p-1 shadow-inner rounded-full transition duration-300 ${viewMode === "college"
+                ? "bg-yellow-600 text-white shadow-md"
+                : "text-gray-600 hover:bg-white/50 cursor-pointer"
+                }`}
             >
-              College Mates
+              College Friends
             </button>
           </div>
 
-            <div className="flex items-center sm:gap-6 gap-2">
-          {/* View Mode Toggle */}
-          <div className="flex-shrink-0 flex bg-gray-100 rounded-full p-1 shadow-inner">
-            <button
-              onClick={() => setViewMode("friends")}
-              className={`px-4 py-2 text-sm font-semibold tracking-wider rounded-full transition duration-300 ${
-                viewMode === "friends"
+          <div className="flex items-center sm:gap-6 gap-2">
+            {/* View Mode Toggle */}
+            <div className="flex-shrink-0 flex bg-gray-100 rounded-full p-1 shadow-inner">
+              <button
+                onClick={() => setViewMode("friends")}
+                className={`px-4 py-2 text-sm font-semibold tracking-wider rounded-full transition duration-300 ${viewMode === "friends"
                   ? "bg-yellow-600 text-white shadow-md"
                   : "text-gray-600 hover:bg-white/50 cursor-pointer"
-              }`}
-            >
-              Friend List
-            </button>
-            <button
-              onClick={() => setViewMode("requests")}
-              className={`px-4 py-2 text-sm font-semibold rounded-full transition duration-300 ${
-                viewMode === "requests"
+                  }`}
+              >
+                Friend List
+              </button>
+              <button
+                onClick={() => setViewMode("requests")}
+                className={`px-4 py-2 text-sm font-semibold rounded-full transition duration-300 ${viewMode === "requests"
                   ? "bg-yellow-600 text-white shadow-md"
                   : "text-gray-600 hover:bg-white/50 cursor-pointer"
-              }`}
-            >
-              Friend Requests ({receivedRequests.length})
-            </button>
-            {/* <button
+                  }`}
+              >
+                Friend Requests ({receivedRequests.length})
+              </button>
+              {/* <button
               onClick={() => setViewMode("sent")}
               className={`px-4 py-2 text-sm font-semibold rounded-full transition duration-300 ${
                 viewMode === "sent"
@@ -704,73 +823,69 @@ const Friends = () => {
             >
               Sent Requests
             </button> */}
-          </div>
-
-          <div className="flex space-x-2 flex-shrink-0">
-            <div className="relative">
-              <button
-                onClick={() => setShowFilterMenu(!showFilterMenu)}
-                className="flex items-center px-2 sm:px-4 py-2 text-sm cursor-pointer font-semibold text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition"
-              >
-                <Filter className="h-4 w-4 sm:mr-2" />
-                <span className="hidden text-sm sm:inline">Filter</span>
-                <ChevronDown className="h-4 w-4 ml-1" />
-              </button>
-
-              {showFilterMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                  <button
-                    onClick={() => {
-                      setSortOrder("newest");
-                      setShowFilterMenu(false);
-                    }}
-                    className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${
-                      sortOrder === "newest"
-                        ? "bg-yellow-50 text-yellow-700"
-                        : ""
-                    }`}
-                  >
-                    Oldest First
-                  </button>
-                  <button
-                    onClick={() => {
-                      setSortOrder("oldest");
-                      setShowFilterMenu(false);
-                    }}
-                    className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${
-                      sortOrder === "oldest"
-                        ? "bg-yellow-50 text-yellow-700"
-                        : ""
-                    }`}
-                  >
-                    Newest First
-                  </button>
-                  <button
-                    onClick={() => {
-                      setSortOrder("a-z");
-                      setShowFilterMenu(false);
-                    }}
-                    className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${
-                      sortOrder === "a-z" ? "bg-yellow-50 text-yellow-700" : ""
-                    }`}
-                  >
-                    A-Z
-                  </button>
-                  <button
-                    onClick={() => {
-                      setSortOrder("z-a");
-                      setShowFilterMenu(false);
-                    }}
-                    className={`w-full text-left px-4 py-2 hover:bg-gray-50 rounded-b-lg ${
-                      sortOrder === "z-a" ? "bg-yellow-50 text-yellow-700" : ""
-                    }`}
-                  >
-                    Z-A
-                  </button>
-                </div>
-              )}
             </div>
-          </div>
+
+            <div className="flex space-x-2 flex-shrink-0">
+              <div className="relative">
+                <button
+                  onClick={() => setShowFilterMenu(!showFilterMenu)}
+                  className="flex items-center px-2 sm:px-4 py-2 text-sm cursor-pointer font-semibold text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 transition"
+                >
+                  <Filter className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden text-sm sm:inline">Sort</span>
+                  <ChevronDown className="h-4 w-4 ml-1" />
+                </button>
+
+                {showFilterMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                    <button
+                      onClick={() => {
+                        setSortOrder("newest");
+                        setShowFilterMenu(false);
+                      }}
+                      className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${sortOrder === "newest"
+                        ? "bg-yellow-50 text-yellow-700"
+                        : ""
+                        }`}
+                    >
+                      Oldest First
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSortOrder("oldest");
+                        setShowFilterMenu(false);
+                      }}
+                      className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${sortOrder === "oldest"
+                        ? "bg-yellow-50 text-yellow-700"
+                        : ""
+                        }`}
+                    >
+                      Newest First
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSortOrder("a-z");
+                        setShowFilterMenu(false);
+                      }}
+                      className={`w-full text-left px-4 py-2 hover:bg-gray-50 ${sortOrder === "a-z" ? "bg-yellow-50 text-yellow-700" : ""
+                        }`}
+                    >
+                      A-Z
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSortOrder("z-a");
+                        setShowFilterMenu(false);
+                      }}
+                      className={`w-full text-left px-4 py-2 hover:bg-gray-50 rounded-b-lg ${sortOrder === "z-a" ? "bg-yellow-50 text-yellow-700" : ""
+                        }`}
+                    >
+                      Z-A
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -791,18 +906,18 @@ const Friends = () => {
               acceptingId={acceptingId}
               deletingId={deletingId}
             />
-          ): viewMode === "sent" ? (
+          ) : viewMode === "sent" ? (
             <SentRequestsContent
               requests={sentRequests}
               loading={sentRequestsLoading}
             />
           ) : viewMode === "college" ? (
-   <CollegePeopleContent
-     people={collegePeople}
-     loading={collegePeopleLoading}
-     onSend={handleSendRequest}
-   />
- ) : null}
+            <CollegePeopleContent
+              people={collegePeople}
+              loading={collegePeopleLoading}
+              onSend={handleSendRequest}
+            />
+          ) : null}
         </div>
       </div>
       <UnfriendModal />

@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { X, Printer } from 'lucide-react';
+import { X, Printer, Gift } from 'lucide-react';
 import QRCode from 'react-qr-code';
 
 const PrintPreviewModal = ({ isOpen, onClose, card }) => {
@@ -22,97 +22,211 @@ const PrintPreviewModal = ({ isOpen, onClose, card }) => {
       font-family: Arial, sans-serif;
       padding: 0;
       margin: 0;
-      background: white;
+ background: #6955A5;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
     }
     
-    .print-container { 
-      max-width: 700px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 30px;
+   .print-container { 
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+padding: 180px 50px;
+  background: white;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  position: relative;
+  overflow: hidden;
+}
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 0 20px 0;
     }
     
+    .logo-text {
+      font-size: 42px;
+      font-weight: bold;
+      color: #F59E0B;
+      margin-bottom: 40px;
+      letter-spacing: -1px;
+    }
+    
+    .dear-text {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #000;
+    }
+    
+    .message-text {
+      font-size: 16px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+      color: #333;
+    }
+    
+    .from-text {
+      font-size: 18px;
+      margin-bottom: 40px;
+      color: #000;
+    }
+    
+    .reward-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #FEFCE8; /* yellow-50 */
+  border: 1px solid #FDE68A; /* yellow-200 */
+}
+
+.reward-box svg {
+  width: 16px;
+  height: 16px;
+  color: #CA8A04; /* yellow-600 */
+}
+
+.reward-box span {
+  font-size: 14px;
+  color: #374151; /* gray-700 */
+}
+
+.reward-box span span {
+  font-weight: 600;
+}
+
+  .qr-container {
+  text-align: right;
+  margin-top: 40px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 12px;
+}
+    .qr-label {
+      font-size: 14px;
+      color: #F59E0B;
+      font-weight: bold;
+      margin-bottom: 8px;
+      text-align: right;
+    }
+    
+    svg {
+      max-width: 120px;
+      max-height: 120px;
+      display: inline-block;
+    }
+    
+    img {
+  max-width: 150px !important;
+  margin-left: 70px;
+}
+  .text-center img {
+  max-width: 150px !important;
+  margin-left: 30px !important;
+  margin-bottom: 0 !important;
+}
+
     @page {
       size: A4 portrait;
-      margin: 15mm;
+      margin: 0;
     }
     
-    @media print {
-      body { 
-        margin: 0;
-        padding: 0;
-        display: block;
-      }
+  @media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+  
+  body { 
+    margin: 0;
+    padding: 0;
+    display: flex;
+    background: #6955A5 !important;
+  }
       
       .print-container {
-        max-width: 100%;
+        max-width: 700px;
         margin: 0 auto;
-        padding: 20px;
+     padding: 180px 50px;
         page-break-inside: avoid;
+        background: white;
+        box-shadow: none;
       }
       
-      h1 { 
-        font-size: 32px !important;
-        margin-bottom: 8px !important;
-        text-align: center;
+      .logo {
+        width: 80px;
+        height: 80px;
+        margin: 0 0 20px 0;
       }
       
-      h3 { 
-        font-size: 16px !important;
-        margin-bottom: 10px !important;
-      }
-      
-      .section {
-        padding: 15px !important;
-        margin-bottom: 12px !important;
-        page-break-inside: avoid;
-      }
-      
-      .info-row {
-        display: flex;
-        margin-bottom: 8px;
-      }
-      
-      .info-label {
+      .logo-text {
+        font-size: 42px;
         font-weight: bold;
-        min-width: 120px;
+        color: #F59E0B;
+        margin-bottom: 40px;
       }
       
-      .qr-section {
-        padding: 20px !important;
-        margin-top: 15px !important;
-        text-align: center;
-      }
-      
-      canvas, svg {
-        max-width: 200px !important;
-        max-height: 200px !important;
-        margin: 0 auto;
-        display: block;
-      }
-      
-      .header-section {
-        text-align: center;
+      .dear-text {
+        font-size: 18px;
         margin-bottom: 20px;
-        padding-bottom: 15px;
-        border-bottom: 4px solid #4F46E5;
+          margin-top: 20px;
       }
       
-      .footer-section {
-        text-align: center;
-        margin-top: 20px;
-        padding-top: 15px;
-        border-top: 1px solid #E5E7EB;
+      .message-text {
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 30px;
       }
+      
+      .from-text {
+        font-size: 18px;
+        margin-bottom: 40px;
+      }
+      
+     .qr-container {
+  text-align: right;
+  margin-top: 80px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: 12px;
+}
+      .qr-label {
+        font-size: 14px;
+        color: #F59E0B;
+        font-weight: bold;
+        margin-bottom: 8px;
+        text-align: right;
+      }
+      
+      svg {
+        max-width: 120px;
+        max-height: 120px;
+        display: inline-block;
+      }
+        img {
+  max-width: 150px !important;
+  margin-left: 70px;
+}
+  .text-center img {
+  max-width: 150px !important;
+  margin-left: 50px !important;
+  margin-bottom: 0 !important;
+    margin-top: -110px !important;
+}
     }
   `);
         printWindow.document.write('</style></head><body>');
+        printWindow.document.write('<div style="background: #6955A5; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 48px; position: relative;">');
+        printWindow.document.write('<div style="position: absolute; top: 215px; left: 10%; transform: translate(-50%, -50%) rotate(-30deg); z-index: 10;"><img src="/card.svg" alt="Card Icon" style="width: 100px; height: auto;" /></div>');
         printWindow.document.write('<div class="print-container">');
         printWindow.document.write(printContent.innerHTML);
+        printWindow.document.write('</div>');
         printWindow.document.write('</div>');
         printWindow.document.write('</body></html>');
 
@@ -147,118 +261,56 @@ const PrintPreviewModal = ({ isOpen, onClose, card }) => {
                 </div>
 
                 {/* Preview Content - Scrollable */}
-                <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
-                    <div ref={printRef} className="bg-white p-6 rounded-lg shadow-sm">
-                        {/* Header */}
-                        <div className="header-section text-center mb-6 border-b-4 border-indigo-600 pb-4">
-                            <h1 className="text-4xl font-bold text-indigo-600 mb-2">
-                                Reward Card
-                            </h1>
-                            <p className="text-sm text-gray-500 font-mono">
-                                Card ID: {card._id}
-                            </p>
+                <div className="flex-1 overflow-y-auto p-12 bg-[#6955A5] relative">
+                    <div className="absolute top-19 left-[25.5%] -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none">
+                        <img
+                            src="/card.svg"
+                            alt="Card Icon"
+                            style={{ width: '120px', height: 'auto', transform: 'rotate(-30deg)' }}
+                        />
+                    </div>
+                    <div ref={printRef} className="bg-white p-10 max-w-[500px] mx-auto shadow-2xl relative overflow-hidden">
+                        {/* UGive Logo Image - Centered */}
+                        <div className="text-center mt-4 mb-16">
+                            <img
+                                src="/uGive_purple.png"
+                                alt="UGive"
+                                className="mx-auto"
+                                style={{ maxWidth: '200px', height: 'auto' }}
+                            />
                         </div>
 
-                        {/* Sender Info */}
-                        <div className="section bg-gray-50 p-5 rounded-lg mb-4">
-                            <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                                <span className="w-2 h-2 bg-indigo-600 rounded-full"></span>
-                                Sender Information
-                            </h3>
-                            <div className="space-y-2">
-                                <div className="info-row flex">
-                                    <span className="info-label font-semibold text-gray-700 w-32">Name:</span>
-                                    <span className="text-gray-900">{card.sender_name}</span>
-                                </div>
-                                <div className="info-row flex">
-                                    <span className="info-label font-semibold text-gray-700 w-32">Email:</span>
-                                    <span className="text-gray-900">{card.sender?.email || 'N/A'}</span>
-                                </div>
-                            </div>
+                        {/* Dear Recipient */}
+                        <div className="dear-text mb-6">
+                            Dear {card.recipient_name}
                         </div>
-
-                        {/* Recipient Info */}
-                        <div className="section bg-gray-50 p-5 rounded-lg mb-4">
-                            <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                                <span className="w-2 h-2 bg-indigo-600 rounded-full"></span>
-                                Recipient Information
-                            </h3>
-                            <div className="space-y-2">
-                                <div className="info-row flex">
-                                    <span className="info-label font-semibold text-gray-700 w-32">Name:</span>
-                                    <span className="text-gray-900">
-                                        {card.recipient_name} {card.recipient_last_name || ''}
-                                    </span>
-                                </div>
-                                <div className="info-row flex">
-                                    <span className="info-label font-semibold text-gray-700 w-32">Email:</span>
-                                    <span className="text-gray-900">{card.recipient_email || 'N/A'}</span>
-                                </div>
-                                <div className="info-row flex">
-                                    <span className="info-label font-semibold text-gray-700 w-32">College:</span>
-                                    <span className="text-gray-900">{card.college_name || 'N/A'}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Reward Info */}
-                        {card.reward && (
-                            <div className="section bg-indigo-50 p-5 rounded-lg mb-4 border-2 border-indigo-200">
-                                <h3 className="text-lg font-semibold text-indigo-800 mb-3 flex items-center gap-2">
-                                    <span className="w-2 h-2 bg-indigo-600 rounded-full"></span>
-                                    Reward Details
-                                </h3>
-                                <div className="info-row flex">
-                                    <span className="info-label font-semibold text-indigo-700 w-32">Reward:</span>
-                                    <span className="text-indigo-900 font-medium">{card.reward?.name || 'N/A'}</span>
-                                </div>
-                            </div>
-                        )}
 
                         {/* Message */}
-                        {card.message && (
-                            <div className="section bg-amber-50 p-5 rounded-lg mb-4 border-2 border-amber-200">
-                                <h3 className="text-lg font-semibold text-amber-800 mb-3 flex items-center gap-2">
-                                    <span className="w-2 h-2 bg-amber-600 rounded-full"></span>
-                                    Message
-                                </h3>
-                                <p className="text-gray-900 whitespace-pre-wrap leading-relaxed">
-                                    {card.message}
-                                </p>
+                        <div className="message-text mb-8">
+                            {card.message || 'No message provided'}
+                        </div>
+
+                        {/* From Sender */}
+                        <div className="from-text mb-10">
+                            From {card.sender_name}
+                        </div>
+                        {card.reward?.name && (
+                            <div className="reward-box flex items-center gap-2 mb-6 px-3 py-2 rounded-lg bg-yellow-50 border border-yellow-200">
+                                <Gift className="w-4 h-4 text-yellow-600" />
+                                <span className="text-sm text-gray-700">
+                                    <span className="font-semibold">Reward:</span> {card.reward.name}
+                                </span>
                             </div>
                         )}
 
-                        {/* Status & Date */}
-                        <div className="flex justify-between items-center p-4 bg-gray-100 rounded-lg mb-4">
-                            <div>
-                                <span className="font-semibold text-gray-700">Status: </span>
-                                <span className={`px-3 py-1 rounded-full text-sm font-semibold ${card.status === 'printed'
-                                    ? 'bg-green-100 text-green-800'
-                                    : card.status === 'delivered'
-                                        ? 'bg-blue-100 text-blue-800'
-                                        : 'bg-yellow-100 text-yellow-800'
-                                    }`}>
-                                    {card.status.charAt(0).toUpperCase() + card.status.slice(1)}
-                                </span>
-                            </div>
-                            <div>
-                                <span className="font-semibold text-gray-700">Sent: </span>
-                                <span className="text-gray-900">
-                                    {new Date(card.sent_at).toLocaleDateString('en-US', {
-                                        year: 'numeric',
-                                        month: 'short',
-                                        day: 'numeric'
-                                    })}
-                                </span>
-                            </div>
-                        </div>
 
-                        {/* QR Code Section */}
-                        <div className="qr-section text-center p-6 bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-dashed border-gray-300 rounded-lg">
-                            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-                                Scan QR Code for Verification
-                            </h3>
-                            <div className="inline-block p-4 bg-white rounded-lg shadow-md">
+
+                        {/* QR Code */}
+                        <div className="qr-container flex items-end gap-3 justify-end">
+                            <div className="qr-label mb-2 text-[#F59E0B]">
+                                Scan the QR code to<br />send your own message!
+                            </div>
+                            <div className="inline-block">
                                 <QRCode
                                     value={JSON.stringify({
                                         cardId: card._id,
@@ -268,25 +320,10 @@ const PrintPreviewModal = ({ isOpen, onClose, card }) => {
                                         status: card.status,
                                         sentAt: card.sent_at
                                     })}
-                                    size={200}
+                                    size={120}
                                     level="H"
-                                    style={{ height: "auto", maxWidth: "100%", width: "100%", display: "block", margin: "0 auto" }}
                                 />
                             </div>
-                            <p className="mt-3 text-xs text-gray-500 font-mono">
-                                {card._id}
-                            </p>
-                        </div>
-
-                        {/* Footer */}
-                        <div className="footer-section mt-6 pt-4 border-t border-gray-200 text-center text-sm text-gray-500">
-                            <p className="font-semibold text-base">University Rewards System</p>
-                            <p className="text-xs mt-1">
-                                Printed on: {new Date().toLocaleString('en-US', {
-                                    dateStyle: 'medium',
-                                    timeStyle: 'short'
-                                })}
-                            </p>
                         </div>
                     </div>
                 </div>

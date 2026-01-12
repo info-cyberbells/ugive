@@ -1137,10 +1137,17 @@ export const claimRewardStudentService = async (rewardId) => {
   return response.data;
 };
 // Search users
-export const searchUsersService = async (name, email) => {
+export const searchUsersService = async (name, email, college, university, filterMode = "global") => {
   const params = new URLSearchParams();
-  if (name) params.append("name", name);
-  if (email) params.append("email", email);
+
+  if (filterMode === "college" && college) {
+    params.append("college", college);
+  } else if (filterMode === "university" && university) {
+    params.append("university", university);
+  } else {
+    if (name) params.append("name", name);
+    if (email) params.append("email", email);
+  }
 
   const response = await axios.get(
     `${USER_ENDPOINTS.SEARCH_USERS}?${params.toString()}`,
@@ -1262,7 +1269,7 @@ export const checkBanWordsService = async (message) => {
 
 
 // GET COLLEGE FRIENDS
-export const getStudentCollegePeopleService = async()=>{
+export const getStudentCollegePeopleService = async () => {
   const response = await axios.get(
     USER_ENDPOINTS.COLLEGE_PEOPLE,
     getAuthHeader(),

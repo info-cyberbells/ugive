@@ -4,7 +4,7 @@ import {
   Filter,
   Download,
   Plus,
-  
+
 } from "lucide-react";
 import ConfirmationModal from "../AdminModals/DeleteModalAdmin";
 import { useDispatch, useSelector } from "react-redux";
@@ -102,12 +102,12 @@ const AdminManageVendors = () => {
             payload,
           })
         ).unwrap();
-        dispatch(getAllVendorsByAdmin({page, limit}));
+        dispatch(getAllVendorsByAdmin({ page, limit }));
         showToast("Vendor updated successfully", "success");
       } else {
         await dispatch(createVendorByAdmin(payload)).unwrap();
         showToast("Vendor created successfully", "success");
-        dispatch(getAllVendorsByAdmin({page, limit}));
+        dispatch(getAllVendorsByAdmin({ page, limit }));
       }
 
       closeModal();
@@ -137,78 +137,78 @@ const AdminManageVendors = () => {
   };
 
   const confirmDelete = async () => {
-  try {
-    if (isBulkDelete) {
-      await Promise.all(
-        selectedVendorIds.map((id) =>
-          dispatch(deleteVendorByAdmin(id)).unwrap()
-        )
-      );
-      setSelectedVendorIds([]);
-      showToast("Selected vendors deleted successfully!", "success");
-    } else if (vendorToDelete) {
-      await dispatch(
-        deleteVendorByAdmin(vendorToDelete._id)
-      ).unwrap();
+    try {
+      if (isBulkDelete) {
+        await Promise.all(
+          selectedVendorIds.map((id) =>
+            dispatch(deleteVendorByAdmin(id)).unwrap()
+          )
+        );
+        setSelectedVendorIds([]);
+        showToast("Selected vendors deleted successfully!", "success");
+      } else if (vendorToDelete) {
+        await dispatch(
+          deleteVendorByAdmin(vendorToDelete._id)
+        ).unwrap();
 
-      showToast("Vendor deleted successfully!", "success");
+        showToast("Vendor deleted successfully!", "success");
+      }
+    } catch (err) {
+      showToast(err || "Failed to delete vendor", "error");
+    } finally {
+      closeDeleteModal();
     }
-  } catch (err) {
-    showToast(err || "Failed to delete vendor", "error");
-  } finally {
-    closeDeleteModal();
-  }
-};
-
-
-const handleExportCSV = () => {
-  const selected = data.filter((vendor) => selectedVendorIds.includes(vendor._id));
-
-  if (selected.length === 0) {
-    showToast("No vendors selected!", "error");
-    return;
-  }
-
-  const headers = [
-    "Vendor Name",
-    "Email",
-    "Phone Number",
-    "University Name",
-    // "Colleges",
-
-  ];
-
-  const rows = selected.map((vendor) => [
-    vendor.name,
-    vendor.email,
-    vendor.phoneNumber,
-    vendor.university?.name || "",
-    // vendor.colleges?.map(college => college.name).join("; ") || "",
-
-  ]);
-
-  const escapeCSV = (value) => {
-    if (value === null || value === undefined) return "";
-    const str = String(value).replace(/"/g, '""');
-    return `"${str}"`;
   };
 
-  const csvContent =
-    "data:text/csv;charset=utf-8," +
-    [headers, ...rows].map((row) => row.map(escapeCSV).join(",")).join("\n");
 
-  const encodedUri = encodeURI(csvContent);
-  const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", `vendors_export_${new Date().toISOString().split('T')[0]}.csv`);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  const handleExportCSV = () => {
+    const selected = data.filter((vendor) => selectedVendorIds.includes(vendor._id));
 
-  showToast(`${selected.length} vendor(s) exported successfully!`, "success");
-};
+    if (selected.length === 0) {
+      showToast("No vendors selected!", "error");
+      return;
+    }
 
-  
+    const headers = [
+      "Vendor Name",
+      "Email",
+      "Phone Number",
+      "University Name",
+      // "Colleges",
+
+    ];
+
+    const rows = selected.map((vendor) => [
+      vendor.name,
+      vendor.email,
+      vendor.phoneNumber,
+      vendor.university?.name || "",
+      // vendor.colleges?.map(college => college.name).join("; ") || "",
+
+    ]);
+
+    const escapeCSV = (value) => {
+      if (value === null || value === undefined) return "";
+      const str = String(value).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [headers, ...rows].map((row) => row.map(escapeCSV).join(",")).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `vendors_export_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    showToast(`${selected.length} vendor(s) exported successfully!`, "success");
+  };
+
+
   const SkeletonTable = () => {
     return (
       <div className="animate-pulse p-4">
@@ -251,11 +251,10 @@ const handleExportCSV = () => {
             <div className="grid grid-cols-3 gap-3 sm:flex sm:space-x-3 w-full sm:w-auto">
               <button
                 onClick={openDeleteModalForBulk}
-                className={`flex cursor-pointer items-center px-6 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
-                  isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600"
-                    : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
-                }`}
+                className={`flex cursor-pointer items-center px-6 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${isAnySelected
+                  ? "text-gray-700 bg-white hover:bg-red-50 hover:text-red-600"
+                  : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
+                  }`}
                 aria-label="Delete Selected"
                 disabled={!isAnySelected}
               >
@@ -272,11 +271,10 @@ const handleExportCSV = () => {
               {/* Export Button - Disabled when no colleges are selected */}
               <button
                 onClick={handleExportCSV}
-                className={`flex cursor-pointer items-center px-10 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
-                  isAnySelected
-                    ? "text-gray-700 bg-white hover:bg-gray-50"
-                    : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
-                }`}
+                className={`flex cursor-pointer items-center px-10 sm:px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${isAnySelected
+                  ? "text-gray-700 bg-white hover:bg-gray-50"
+                  : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
+                  }`}
                 disabled={!isAnySelected}
               >
                 Export
@@ -289,7 +287,7 @@ const handleExportCSV = () => {
                 className="flex cursor-pointer items-center justify-center px-4 py-2 text-xs sm:text-sm font-medium text-white bg-[#6955A5] hover:bg-[#533f8e] hover:scale-[1.02] transition duration-150 border border-transparent rounded-lg  shadow-md"
               >
                 <Plus className="h-5 w-5 mr-2 -ml-1 hidden sm:inline" />
-                Add New 
+                Add New
               </button>
             </div>
           </div>
@@ -331,8 +329,8 @@ const handleExportCSV = () => {
                           University Name
                         </div>
                       </th>
-                    
-                      
+
+
                       <th
                         scope="col"
                         className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
@@ -341,7 +339,7 @@ const handleExportCSV = () => {
                           Phone Number
                         </div>
                       </th>
-                    
+
                       <th
                         scope="col"
                         className="sm:px-6 py-1 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -356,11 +354,10 @@ const handleExportCSV = () => {
                     {data.map((vendor) => (
                       <tr
                         key={vendor._id}
-                        className={`transition duration-150 ${
-                          selectedVendorIds.includes(vendor._id)
-                            ? "bg-indigo-50 hover:bg-indigo-100"
-                            : "hover:bg-gray-50"
-                        }`}
+                        className={`transition duration-150 ${selectedVendorIds.includes(vendor._id)
+                          ? "bg-indigo-50 hover:bg-indigo-100"
+                          : "hover:bg-gray-50"
+                          }`}
                       >
                         <td className="px-2 sm:px-6 sm:py-3 w-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           <input
@@ -381,7 +378,7 @@ const handleExportCSV = () => {
                           {vendor.university.name || "N/A"}
                         </td>
 
-                        
+
 
                         {/* State Column */}
                         <td className="hidden sm:table-cell sm:px-6 sm:py-4 whitespace-nowrap text-sm text-gray-600">
@@ -430,12 +427,12 @@ const handleExportCSV = () => {
                             Edit
                           </button>
 
-                          <button
+                          {/* <button
                             onClick={() => openDeleteModalForSingle(vendor)}
                             className="cursor-pointer text-red-600 hover:text-red-900"
                           >
                             Delete
-                          </button>
+                          </button> */}
                         </td>
                       </tr>
                     ))}
@@ -466,11 +463,10 @@ const handleExportCSV = () => {
                     onClick={() => handlePageChange(page - 1)}
                     disabled={page === 1}
                     className={`px-3 py-1 text-xs sm:text-sm border rounded 
-                ${
-                  page === 1
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-white hover:bg-gray-50"
-                }
+                ${page === 1
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-white hover:bg-gray-50"
+                      }
             `}
                   >
                     Prev
@@ -485,11 +481,10 @@ const handleExportCSV = () => {
                     onClick={() => handlePageChange(page + 1)}
                     disabled={page === totalPages}
                     className={`px-3 py-1 text-xs sm:text-sm border rounded 
-                ${
-                  page === totalPages
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-white hover:bg-gray-50"
-                }
+                ${page === totalPages
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-white hover:bg-gray-50"
+                      }
             `}
                   >
                     Next
@@ -529,7 +524,7 @@ const handleExportCSV = () => {
           )}
         </div>
       </div>
-      
+
       <VendorAdminModal
         isOpen={isModalOpen}
         onClose={closeModal}

@@ -504,12 +504,12 @@ if (isError) {
                             >
                               Edit
                             </button>
-                            <button
+                        {/* <button
                                 onClick={() => openSingleDelete(student)}
                               className="cursor-pointer text-red-600 hover:text-red-900"
                             >
                               Delete
-                            </button>
+                            </button> */}
                           </td>
                     </tr>
                   ))}

@@ -14,9 +14,9 @@ import {
 // Async Thunks
 export const searchUsers = createAsyncThunk(
     "friends/searchUsers",
-    async ({ name, email }, { rejectWithValue }) => {
+    async ({ name, email, college, university, filterMode = "global" }, { rejectWithValue }) => {
         try {
-            const response = await searchUsersService(name, email);
+            const response = await searchUsersService(name, email, college, university, filterMode);
             return response;
         } catch (error) {
             return rejectWithValue(
@@ -25,7 +25,6 @@ export const searchUsers = createAsyncThunk(
         }
     }
 );
-
 export const getFriendsList = createAsyncThunk(
     "friends/getFriendsList",
     async (_, { rejectWithValue }) => {
@@ -127,7 +126,7 @@ export const sendFriendRequest = createAsyncThunk(
 // GET COLLEGE FRIENDS THUNK
 export const getCollegePeople = createAsyncThunk(
     'friends/getCollegeFriends',
-    async(_, thunkAPI)=>{
+    async (_, thunkAPI) => {
         try {
             const response = await getStudentCollegePeopleService();
             return response;
@@ -135,7 +134,7 @@ export const getCollegePeople = createAsyncThunk(
             return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to fetch");
         }
     }
-); 
+);
 
 // Initial State
 const initialState = {
@@ -308,15 +307,15 @@ const friendsSlice = createSlice({
             })
 
             // get college friends
-            .addCase(getCollegePeople.pending, (state)=>{
+            .addCase(getCollegePeople.pending, (state) => {
                 state.collegePeopleLoading = true;
                 state.error = false;
             })
-            .addCase(getCollegePeople.fulfilled, (state, action)=>{
+            .addCase(getCollegePeople.fulfilled, (state, action) => {
                 state.collegePeopleLoading = false;
                 state.collegePeople = action.payload;
             })
-            .addCase(getCollegePeople.rejected, (state, action)=>{
+            .addCase(getCollegePeople.rejected, (state, action) => {
                 state.collegePeopleLoading = false;
                 state.error = action.payload;
             })

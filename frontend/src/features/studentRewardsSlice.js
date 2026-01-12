@@ -17,16 +17,16 @@ export const getStudentRewards = createAsyncThunk(
 // STUDENT CLAIM REWARD
 
 export const claimReward = createAsyncThunk(
-  "studentRewards/claimReward",
-  async (rewardId, { rejectWithValue }) => {
-    try {
-      return await claimRewardStudentService(rewardId);
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || "Failed to claim reward"
-      );
+    "studentRewards/claimReward",
+    async (rewardId, { rejectWithValue }) => {
+        try {
+            return await claimRewardStudentService(rewardId);
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || "Failed to claim reward"
+            );
+        }
     }
-  }
 );
 
 const rewardSlice = createSlice({
@@ -36,14 +36,27 @@ const rewardSlice = createSlice({
         isLoading: false,
         isError: false,
         message: "",
+        stats: {
+            totalCardsSent: 0,
+            totalGiftsSent: 0,
+            incomingFriendRequests: 0,
+            currentStreak: 0,
+        },
     },
     reducers: {
         resetRewardsState: (state) => {
             state.rewards = [];
+            state.stats = {
+                totalCardsSent: 0,
+                totalGiftsSent: 0,
+                incomingFriendRequests: 0,
+                currentStreak: 0,
+            };
             state.isLoading = false;
             state.isError = false;
             state.message = "";
         },
+
     },
     extraReducers: (builder) => {
         builder
@@ -53,6 +66,16 @@ const rewardSlice = createSlice({
             .addCase(getStudentRewards.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.rewards = action.payload.data;
+                if (action.payload?.stats) {
+                    state.stats = {
+                        totalCardsSent: action.payload.stats?.totalCardsSent ?? state.stats.totalCardsSent,
+                        totalGiftsSent: action.payload.stats?.totalGiftsSent ?? state.stats.totalGiftsSent,
+                        incomingFriendRequests: action.payload.stats?.incomingFriendRequests ?? state.stats.incomingFriendRequests,
+                        currentStreak: action.payload.stats?.currentStreak ?? state.stats.currentStreak,
+                    };
+                }
+
+                state.message = action.payload.message;
             })
             .addCase(getStudentRewards.rejected, (state, action) => {
                 state.isLoading = false;

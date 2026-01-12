@@ -164,66 +164,66 @@ const AdminColleges = () => {
     setCurrentCollege(null);
   };
 
-const handleExport = () => {
-  const selected =
-    selectedCollegeIds.length > 0
-      ? data.filter((college) =>
+  const handleExport = () => {
+    const selected =
+      selectedCollegeIds.length > 0
+        ? data.filter((college) =>
           selectedCollegeIds.includes(college._id)
         )
-      : data;
+        : data;
 
-  if (selected.length === 0) {
-    showToast("No College selected!", "error");
-    return;
-  }
+    if (selected.length === 0) {
+      showToast("No College selected!", "error");
+      return;
+    }
 
-  const headers = [
-    "Name",
-    "Phone Number",
-    "University Name",
-    "Address",
-    "City",
-    "State",
-    "Post Code",
-  ];
+    const headers = [
+      "Name",
+      "Phone Number",
+      "University Name",
+      "Address",
+      "City",
+      "State",
+      "Post Code",
+    ];
 
-  const rows = selected.map((college) => [
-    college.name || "N/A",
-    college.phoneNumber || "N/A",
-    college.university?.name || "N/A",
-    college.address_line_1 || "N/A",
-    college.city || "N/A",
-    college.state || "N/A",
-    college.postcode || "N/A",
-  ]);
+    const rows = selected.map((college) => [
+      college.name || "N/A",
+      college.phoneNumber || "N/A",
+      college.university?.name || "N/A",
+      college.address_line_1 || "N/A",
+      college.city || "N/A",
+      college.state || "N/A",
+      college.postcode || "N/A",
+    ]);
 
-  const escapeCSV = (value) => {
-    if (value === null || value === undefined) return "";
-    const str = String(value).replace(/"/g, '""');
-    return `"${str}"`;
+    const escapeCSV = (value) => {
+      if (value === null || value === undefined) return "";
+      const str = String(value).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const csvString =
+      headers.map(escapeCSV).join(",") +
+      "\n" +
+      rows.map((row) => row.map(escapeCSV).join(",")).join("\n");
+
+    const blob = new Blob([csvString], {
+      type: "text/csv;charset=utf-8;",
+    });
+
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = "adminColleges.csv";
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    showToast("CSV exported successfully!", "success");
   };
-
-  const csvString =
-    headers.map(escapeCSV).join(",") +
-    "\n" +
-    rows.map((row) => row.map(escapeCSV).join(",")).join("\n");
-
-  const blob = new Blob([csvString], {
-    type: "text/csv;charset=utf-8;",
-  });
-
-  const link = document.createElement("a");
-  const url = URL.createObjectURL(blob);
-  link.href = url;
-  link.download = "adminColleges.csv";
-  document.body.appendChild(link);
-  link.click();
-
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-
-  showToast("CSV exported successfully!", "success");
-};
 
 
 
@@ -273,16 +273,16 @@ const handleExport = () => {
   );
 
   if (isError) {
-  return (
-    <main className="mt-14 lg:ml-60 font-[Inter] min-h-screen bg-gray-50 p-8">
-      <div className="flex justify-center items-center h-64">
-        <p className="text-red-500">
-          Error: Failed to load colleges
-        </p>
-      </div>
-    </main>
-  );
-}
+    return (
+      <main className="mt-14 lg:ml-60 font-[Inter] min-h-screen bg-gray-50 p-8">
+        <div className="flex justify-center items-center h-64">
+          <p className="text-red-500">
+            Error: Failed to load colleges
+          </p>
+        </div>
+      </main>
+    );
+  }
 
 
   return (
@@ -303,11 +303,10 @@ const handleExport = () => {
               {/* Delete Button */}
               <button
                 onClick={openDeleteModalForBulk}
-                className={`flex items-center justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 ${
-                  isAnySelected
+                className={`flex items-center justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 ${isAnySelected
                     ? "text-gray-700 bg-white cursor-pointer hover:bg-red-50 hover:text-red-600"
                     : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
-                }`}
+                  }`}
                 aria-label="Delete Selected"
                 disabled={!isAnySelected}
               >
@@ -317,12 +316,11 @@ const handleExport = () => {
 
               {/* Export Button */}
               <button
-              onClick={handleExport}
-                className={`flex items-center justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${
-                  isAnySelected
+                onClick={handleExport}
+                className={`flex items-center justify-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg transition duration-150 shadow-sm ${isAnySelected
                     ? "text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
                     : "text-gray-400 bg-gray-100 cursor-not-allowed opacity-70"
-                }`}
+                  }`}
                 disabled={!isAnySelected}
               >
                 Export
@@ -410,11 +408,10 @@ const handleExport = () => {
                       {data.map((college) => (
                         <tr
                           key={college._id}
-                          className={`transition duration-150 ${
-                            selectedCollegeIds.includes(college._id)
+                          className={`transition duration-150 ${selectedCollegeIds.includes(college._id)
                               ? "bg-indigo-50 hover:bg-indigo-100"
                               : "hover:bg-gray-50"
-                          }`}
+                            }`}
                         >
                           {/* Individual Selection Checkbox */}
                           <td className="px-2 sm:px-6 sm:py-4 whitespace-nowrap w-4">
@@ -458,12 +455,12 @@ const handleExport = () => {
                             >
                               Edit
                             </button>
-                            <button
+                            {/* <button
                               onClick={() => openDeleteModalForSingle(college)}
                               className="cursor-pointer text-red-600 hover:text-red-900"
                             >
                               Delete
-                            </button>
+                            </button> */}
                           </td>
 
                           {/* <td className="px-6 py-4 hidden lg:table-cell whitespace-nowrap text-sm font-medium space-x-3">
@@ -499,11 +496,10 @@ const handleExport = () => {
                     onClick={() => handlePageChange(page - 1)}
                     disabled={page === 1}
                     className={`px-3 py-1 text-xs sm:text-sm border rounded 
-                ${
-                  page === 1
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-white hover:bg-gray-50"
-                }
+                ${page === 1
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-white hover:bg-gray-50"
+                      }
             `}
                   >
                     Prev
@@ -518,11 +514,10 @@ const handleExport = () => {
                     onClick={() => handlePageChange(page + 1)}
                     disabled={page === totalPages}
                     className={`px-3 py-1 text-xs sm:text-sm border rounded 
-                ${
-                  page === totalPages
-                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    : "bg-white hover:bg-gray-50"
-                }
+                ${page === totalPages
+                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                        : "bg-white hover:bg-gray-50"
+                      }
             `}
                   >
                     Next

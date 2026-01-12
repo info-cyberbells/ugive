@@ -4,8 +4,11 @@ import {
   claimReward,
   getStudentRewards,
 } from "../../features/studentRewardsSlice";
-import { Gift, Send, Sparkles } from "lucide-react";
 import { useToast } from "../../context/ToastContext";
+import { useNavigate } from "react-router-dom";
+import { Heart, Gift, Users, Flame } from "lucide-react";
+
+
 
 const RewardBadge = ({
   name,
@@ -161,7 +164,11 @@ const ClaimRewardModal = ({ open, onClose, onConfirm, rewardName }) => {
 
 const RewardCatalogs = () => {
   const dispatch = useDispatch();
-  const { rewards, isLoading } = useSelector((state) => state.studentReward);
+  const navigate = useNavigate();
+  const { rewards, stats, isLoading } = useSelector(
+    (state) => state.studentReward
+  );
+
 
   const { showToast } = useToast();
 
@@ -176,6 +183,7 @@ const RewardCatalogs = () => {
     setSelectedReward(reward);
     setIsModalOpen(true);
   };
+
 
   const claimRewardHandler = () => {
     if (!selectedReward) return;
@@ -198,54 +206,93 @@ const RewardCatalogs = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen lg:ml-60 font-[Poppins] mt-14 bg-gray-50 p-6">
-        <h1 className="text-2xl font-medium text-purple-700 mb-4">
-          Rewards
-        </h1>
+        <div className="flex items-start justify-between mb-4 mt-2">
+          {/* Left side */}
+          <div>
+            {/* Title */}
+            <h1 className="text-2xl font-medium text-purple-700">
+              Rewards
+            </h1>
 
-        {/* Skeleton for the 3-step instruction section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="flex items-start gap-3 animate-pulse">
-              <div className="p-2 rounded-xl bg-gray-300 w-10 h-10"></div>
-              <div className="flex flex-col gap-2">
-                <div className="h-4 w-32 bg-gray-300 rounded"></div>
-                <div className="h-3 w-44 bg-gray-200 rounded"></div>
-              </div>
+            {/* Stats skeleton row */}
+            <div className="flex flex-wrap gap-4 mb-4 mt-3">
+              {[1, 2, 3, 4].map((i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-2 bg-white rounded-xl px-4 py-2 shadow-sm animate-pulse"
+                >
+                  <div className="w-4 h-4 rounded-full bg-gray-300"></div>
+                  <div className="h-3 w-12 bg-gray-200 rounded"></div>
+                  <div className="h-4 w-4 bg-gray-300 rounded"></div>
+                </div>
+              ))}
             </div>
-          ))}
+
+            {/* Description text skeleton */}
+            <div className="space-y-2 max-w-2xl">
+              <div className="h-3 w-full bg-gray-200 rounded animate-pulse"></div>
+              <div className="h-3 w-3/4 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+          </div>
+
+          {/* Right side: Send Card skeleton */}
+          <div className="flex flex-col items-end">
+            <div className="h-9 w-28 bg-gray-300 rounded-xl animate-pulse"></div>
+            <div className="h-2 w-32 bg-gray-200 rounded mt-2 animate-pulse"></div>
+          </div>
         </div>
 
-        {/* Skeleton for reward cards */}
+        {/* Skeleton for reward cards (keep as-is) */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl w-full p-2 rounded-3xl mt-6">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
               className="flex flex-col items-center p-4 animate-pulse"
             >
-              {/* Circle + star badge */}
               <div className="relative w-32 h-32 mb-4">
                 <div className="w-full h-full rounded-full bg-gray-300"></div>
-
                 <div className="absolute bottom-0 left-3/4 transform -translate-x-1/4 translate-y-1/8">
                   <div className="w-12 h-12 rounded-full bg-gray-400"></div>
                 </div>
               </div>
-
-              {/* Reward name placeholder */}
               <div className="h-5 w-24 bg-gray-300 rounded"></div>
             </div>
           ))}
         </div>
       </div>
+
     );
   }
 
   if (rewards.length === 0) {
     return (
       <div className="min-h-screen lg:ml-60 font-[Poppins] mt-14 bg-gray-50 p-6">
-        <h1 className="text-2xl font-medium text-purple-700 mb-0">
-          Rewards
-        </h1>
+        <div className="flex items-start justify-between mb-4 mt-2">
+          <div>
+            <h1 className="text-2xl font-medium text-purple-700">
+              Rewards
+            </h1>
+            <p className="mt-2 text-sm text-gray-600 max-w-2xl">
+              When you send the number of cards for each reward shown below,
+              you will receive a reward which you can then gift to a friend
+              with your next card.
+            </p>
+          </div>
+
+          <div className="flex flex-col items-end">
+            <button
+              onClick={() => navigate("/write-card")}
+              className="px-4 py-2 rounded-xl bg-[#6955A5] text-white text-sm font-medium cursor-pointer
+                 hover:bg-[#5a4791] transition"
+            >
+              Send Card
+            </button>
+            <span className="mt-1 text-xs text-gray-500">
+              Send cards to unlock rewards
+            </span>
+          </div>
+        </div>
+
         <div className="flex flex-col items-center justify-center py-20">
           <p className="text-xl text-gray-600">No rewards found</p>
           <p className="text-gray-500 mt-2">Check back later</p>
@@ -256,49 +303,82 @@ const RewardCatalogs = () => {
 
   return (
     <div className="min-h-screen lg:ml-60 font-[Poppins] mt-14 bg-gray-50 p-6">
-      <h1 className="text-2xl font-medium text-purple-700 mb-4">
-        Rewards
-      </h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-6 text-sm text-gray-700">
-        {/* Step 1 */}
-        <div className="flex items-start gap-3">
-          <div className="p-2 rounded-xl bg-purple-100 text-purple-700">
-            <Gift size={22} strokeWidth={1.8} />
+      <div className="flex items-start justify-between mb-4 mt-2">
+        {/* Left: Title + Sub-heading */}
+        <div>
+          <h1 className="text-2xl font-medium text-purple-700">
+            Rewards
+          </h1>
+
+          {/* Compact stats row */}
+          <div className="flex flex-wrap gap-4 mb-4 mt-3">
+            <div className="flex items-center gap-2 bg-white rounded-xl px-4 py-2 shadow-sm">
+              <Heart size={16} className="text-purple-600" />
+              <span className="text-xs text-gray-500">Cards</span>
+              <span className="text-sm font-semibold">
+                {stats?.totalCardsSent ?? 0}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 bg-white rounded-xl px-4 py-2 shadow-sm">
+              <Gift size={16} className="text-yellow-500" />
+              <span className="text-xs text-gray-500">Gifts</span>
+              <span className="text-sm font-semibold">
+                {stats?.totalGiftsSent ?? 0}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 bg-white rounded-xl px-4 py-2 shadow-sm">
+              <Users size={16} className="text-blue-500" />
+              <span className="text-xs text-gray-500">Requests</span>
+              <span className="text-sm font-semibold">
+                {stats?.incomingFriendRequests ?? 0}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 bg-white rounded-xl px-4 py-2 shadow-sm">
+              <Flame size={16} className="text-orange-500" />
+              <span className="text-xs text-gray-500">Streak</span>
+              <span className="text-sm font-semibold">
+                {stats?.currentStreak ?? 0}
+              </span>
+            </div>
           </div>
-          <div>
-            <p className="font-semibold">Receive Your Reward Card</p>
-            <p className="text-gray-600">
-              You’ll get a reward card assigned to your profile.
+
+
+          {/* Client sub-heading */}
+
+          <div className="mt-3 max-w-2xl flex items-start gap-2 rounded-xl bg-gray-50 px-4 py-3">
+            <span className="text-purple-600">ℹ️</span>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              Send cards to unlock rewards. When you complete the required number
+              of cards for a reward shown below, you’ll receive it and can gift
+              it to a friend with your next card.
             </p>
           </div>
+
         </div>
 
-        {/* Step 2 */}
-        <div className="flex items-start gap-3">
-          <div className="p-2 rounded-xl bg-blue-100 text-blue-700">
-            <Send size={22} strokeWidth={1.8} />
-          </div>
-          <div>
-            <p className="font-semibold">Send the Card to Friends</p>
-            <p className="text-gray-600">
-              Share your card with friends to complete the activity.
-            </p>
-          </div>
-        </div>
+        {/* Right: Button + small text */}
+        <div className="flex flex-col items-end">
+          <button
+            onClick={() => {
+              navigate("/write-card");
+            }}
+            className="px-4 py-2 rounded-xl bg-[#6955A5] text-white text-sm font-medium cursor-pointer
+                 hover:bg-[#5a4791] transition"
+          >
+            Send Card
+          </button>
 
-        {/* Step 3 */}
-        <div className="flex items-start gap-3">
-          <div className="p-2 rounded-xl bg-green-100 text-green-700">
-            <Sparkles size={22} strokeWidth={1.8} />
-          </div>
-          <div>
-            <p className="font-semibold">Claim Your Reward</p>
-            <p className="text-gray-600">
-              After sending all cards, instantly claim your reward.
-            </p>
-          </div>
+          {/* Small helper text */}
+          <span className="mt-1 text-xs text-gray-500">
+            Send cards to unlock rewards
+          </span>
         </div>
       </div>
+
+
 
       <div
         className="

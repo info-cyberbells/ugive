@@ -54,11 +54,11 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
   const { profile } = useSelector((state) => state.superadmin);
   const { studentProfile } = useSelector((state) => state.studentData);
-  const {adminProfile} = useSelector((state)=> state.admin);
-  const {vendorProfile} = useSelector((state)=> state.vendor);
+  const { adminProfile } = useSelector((state) => state.admin);
+  const { vendorProfile } = useSelector((state) => state.vendor);
 
   const role =
-    profile?.role?.toLowerCase() || studentProfile?.role?.toLowerCase() ||  adminProfile?.role?.toLowerCase() || vendorProfile?.role?.toLowerCase();
+    profile?.role?.toLowerCase() || studentProfile?.role?.toLowerCase() || adminProfile?.role?.toLowerCase() || vendorProfile?.role?.toLowerCase();
 
   const userData = profile || studentProfile || adminProfile || vendorProfile || {};
 
@@ -89,10 +89,10 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   }, []);
 
   const handleProfileClick = () => {
-    if(role == "super_admin"){
+    if (role == "super_admin") {
       navigate("/profile");
     }
-    if(role === "admin"){
+    if (role === "admin") {
       navigate("/profile");
     }
     if (role === "student") {
@@ -311,9 +311,12 @@ const Topbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
               {" "}
               {userData?.name || "user"}
             </h5>
-            <h6 className="text-xs lg:text-sm text-gray-500">
-              {role?.replace("_", " ") || "role"}
-            </h6>
+            {role !== "student" && (
+              <h6 className="text-xs lg:text-sm text-gray-500">
+                {role?.replace("_", " ")}
+              </h6>
+            )}
+
           </div>
         </div>
 
