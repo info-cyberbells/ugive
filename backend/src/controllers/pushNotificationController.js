@@ -1,4 +1,5 @@
 import PushNotification from "../models/PushNotification.js";
+import User from "../models/user.model.js";
 
 
 export const createPushNotification = async (req, res) => {
@@ -12,12 +13,23 @@ export const createPushNotification = async (req, res) => {
             });
         }
 
+        const user = await User.findById(req.user.id).select("university");
+
+        if (!user || !user.university) {
+            return res.status(400).json({
+                success: false,
+                message: "User university not found",
+            });
+        }
+
         const notification = await PushNotification.create({
             title,
             message,
             scheduledAt,
+            universityId: user.university,
             createdBy: req.user.id,
         });
+
 
         res.status(201).json({
             success: true,

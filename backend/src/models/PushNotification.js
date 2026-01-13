@@ -36,6 +36,13 @@ const pushNotificationSchema = new mongoose.Schema(
             default: true,
         },
 
+        universityId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "University",
+            required: true,
+        },
+
+
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Admin",
