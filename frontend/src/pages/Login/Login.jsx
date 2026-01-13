@@ -94,7 +94,7 @@ const Login = () => {
               <p>Make a difference in someone's life</p>
 
               <form autoComplete="off" onSubmit={handleSubmit}>
-                <input
+                {/* <input
                   type="text"
                   name="fakeusernameremembered"
                   style={{ display: "none" }}
@@ -103,7 +103,7 @@ const Login = () => {
                   type="password"
                   name="fakepasswordremembered"
                   style={{ display: "none" }}
-                />
+                /> */}
 
                 <div className="login-form-group">
                   <label htmlFor="email">Email</label>
@@ -113,7 +113,7 @@ const Login = () => {
                     type="email"
                     className={`login-input ${errors.email ? "input-error" : ""
                       }`}
-                    autoComplete="off"
+                    autoComplete="username"
                     placeholder="john.doe@usq.edu.au"
                     value={formData.email}
                     onChange={handleChange}
@@ -129,7 +129,7 @@ const Login = () => {
                       type={showPassword ? "text" : "password"}
                       className={`login-input ${errors.password ? "input-error" : ""
                         }`}
-                      autoComplete="new-password"
+                      autoComplete="current-password"
                       placeholder="Password@123"
                       value={formData.password}
                       onChange={handleChange}
@@ -152,15 +152,15 @@ const Login = () => {
 
                 <div className="login-options">
                   <div className="login-remember-me">
-                    <input type="checkbox" id="rememberMe" checked={formData.rememberMe} onChange={(e)=> setFormData({...formData, rememberMe: e.target.checked})}/>
+                    <input type="checkbox" id="rememberMe" checked={formData.rememberMe} onChange={(e) => setFormData({ ...formData, rememberMe: e.target.checked })} />
                     <label htmlFor="rememberMe" style={{ paddingLeft: "4px", paddingTop: "2px" }}>
                       Remember Me
                     </label>
                   </div>
                   <div className="login-forgot-password">
                     <button type="button"
-                    className="cursor-pointer pt-0.5 lg:pt-1 hover:text-gray-900 transition "
-                     onClick={() => setOpen(true)}
+                      className="cursor-pointer pt-0.5 lg:pt-1 hover:text-gray-900 transition "
+                      onClick={() => setOpen(true)}
                     >Forgot Password</button>
                   </div>
                 </div>
@@ -177,7 +177,7 @@ const Login = () => {
 
               <div className="login-signup-link">
                 <p>
-                  Don't have an Account?{" "}
+                  Don't have an account?{" "}
                   <button
                     style={{
                       background: "none",
@@ -209,8 +209,8 @@ const Login = () => {
         </div>
       </div>
       <ForgotPassword
-      isOpen={open}
-      onClose={()=> setOpen(false)}
+        isOpen={open}
+        onClose={() => setOpen(false)}
       />
     </div>
   );

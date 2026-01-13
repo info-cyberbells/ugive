@@ -18,8 +18,10 @@ import superadminVendorsReducer from "../features/superadminVendors"
 import adminVendorsReducer from "../features/adminVendorSlice"
 import adminRewardsReducer from '../features/adminRewardSlice'
 import vendorReducer from '../features/venderSlice'
-import vendorCardReducer from '../features/vendorCardSlice' 
+import vendorCardReducer from '../features/vendorCardSlice'
 import vendorRewardReducer from '../features/vendorRewards'
+import notificationReducer from "../features/notificationSlice";
+
 
 export const store = configureStore({
     reducer: {
@@ -35,15 +37,16 @@ export const store = configureStore({
         feedback: feedbackReducer,
         admin: adminReducer,
         adminColleges: adminCollegesReducer,
-        adminCard:  adminCardReducer,
+        adminCard: adminCardReducer,
         adminStudents: adminStudentsReducer,
-        superadminAdmins : superadminAdminsReducer,
-        superadminVendors : superadminVendorsReducer,
+        superadminAdmins: superadminAdminsReducer,
+        superadminVendors: superadminVendorsReducer,
         adminVendors: adminVendorsReducer,
         adminReward: adminRewardsReducer,
         vendor: vendorReducer,
         vendorCards: vendorCardReducer,
         vendorReward: vendorRewardReducer,
+        notification: notificationReducer,
     }
 })
 

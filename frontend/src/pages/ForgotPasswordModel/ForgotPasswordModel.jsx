@@ -34,7 +34,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
 
     const emailRegex = /^[^\s@]+@usq\.edu\.au$/;
 
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(email.trim().toLowerCase())) {
       setError("Only @usq.edu.au email is allowed.");
       return;
     }
@@ -42,7 +42,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
     try {
       setLoading(true);
 
-      const res = await dispatch(sendResetCode(email)).unwrap();
+      const res = await dispatch(sendResetCode(email.trim().toLowerCase())).unwrap();
       setSuccessMsg(res.message);
       setStep(2);
 
@@ -68,7 +68,6 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
     try {
       setLoading(true);
       setSuccessMsg("Code verified. Set your new password.");
-      setStep(3);
     } catch (err) {
       setError("Invalid verification code.");
     } finally {
@@ -79,6 +78,11 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
   const handleResetPassword = async (e) => {
     e.preventDefault();
     resetMessages();
+
+    if (!code || code.length !== 6) {
+      setError("Please enter a valid 6-digit verification code.");
+      return;
+    }
 
     if (!password || !confirmPassword) {
       setError("Please fill all password fields.");
@@ -99,7 +103,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
       setLoading(true);
       const res = await dispatch(
         verifyAndReset({
-          email,
+          email: email.trim().toLowerCase(),
           code,
           newPassword: password
         })
@@ -141,11 +145,11 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
         <h2 className="mb-1 text-xl font-semibold text-gray-900">
           Forgot Password
         </h2>
-        <p className="mb-4 text-sm text-gray-500">Step {step} of 3</p>
+        <p className="mb-4 text-sm text-gray-500">Step {step} of 2</p>
 
         {/* Progress bar */}
         <div className="mb-4 flex gap-2">
-          {[1, 2, 3].map((s) => (
+          {[1, 2].map((s) => (
             <div
               key={s}
               className={`h-1 flex-1 rounded-full ${step >= s ? "bg-purple-500" : "bg-gray-200"
@@ -194,7 +198,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
 
         {/* Step 2: Code */}
         {step === 2 && (
-          <form onSubmit={handleVerifyCode} className="space-y-4 mt-2">
+          <form onSubmit={handleResetPassword} className="space-y-4 mt-2">
             <div className="text-xs text-gray-500">
               We have sent a verification code to{" "}
               <span className="font-semibold text-gray-700">{email}</span>
@@ -211,7 +215,7 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
                     key={index}
                     type="text"
                     maxLength={1}
-                    className="w-10 h-12 text-center text-lg rounded-lg border border-gray-300 
+                    className="w-10 h-12 text-center text-lg rounded-lg border border-gray-300
                    focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
                     value={code[index] || ""}
                     onChange={(e) => {
@@ -242,28 +246,6 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between space-x-2">
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="rounded-lg cursor-pointer border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-              >
-                Back
-              </button>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex-1 cursor-pointer rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                {loading ? "Verifying..." : "Verify Code"}
-              </button>
-            </div>
-          </form>
-        )}
-
-        {step === 3 && (
-          <form onSubmit={handleResetPassword} className="space-y-4 mt-2">
             <div>
               <label className="mb-1 block text-sm font-medium text-gray-700">
                 New Password
@@ -317,7 +299,89 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
               </div>
             </div>
 
-            {/* Buttons */}
+            <div className="flex items-center justify-between space-x-2">
+              {/* <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="rounded-lg cursor-pointer border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Back
+              </button> */}
+
+              {/* <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 cursor-pointer rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {loading ? "Verifying..." : "Verify Code"}
+              </button> */}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 cursor-pointer rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {loading ? "Saving..." : "Reset Password"}
+              </button>
+
+            </div>
+          </form>
+        )}
+
+        {/* {step === 3 && (
+          <form onSubmit={handleResetPassword} className="space-y-4 mt-2">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                New Password
+              </label>
+ 
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  placeholder="Enter new password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+ 
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? <Eye className="cursor-pointer" size={18} /> : <EyeOff className="cursor-pointer" size={18} />}
+                </button>
+              </div>
+            </div>
+ 
+            <div>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Confirm New Password
+              </label>
+ 
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  placeholder="Re-enter new password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                />
+ 
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showConfirmPassword ? (
+                    <Eye className="cursor-pointer" size={18} />
+                  ) : (
+                    <EyeOff className="cursor-pointer" size={18} />
+                  )}
+                </button>
+              </div>
+            </div>
+ 
             <div className="flex items-center justify-between space-x-2">
               <button
                 type="submit"
@@ -328,7 +392,8 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
               </button>
             </div>
           </form>
-        )}
+        )} */}
+
       </div>
     </div>
   );

@@ -130,7 +130,15 @@ const TermsAndCondition = () => {
             <h2 className="text-2xl font-medium text-[#6955A5] mb-4">11. Contact</h2>
             <p className="mb-2">For questions about these Terms or the operation of the App, please contact:</p>
             <p className="font-semibold">UGive Support</p>
-            <p>hello@ugive.com.au</p>
+            <p>
+              <a
+                href="mailto:hello@ugive.com.au"
+                className="text-purple-700 font-medium hover:underline hover:text-purple-600 transition-colors cursor-pointer"
+              >
+                hello@ugive.com.au
+              </a>
+            </p>
+
           </div>
 
           <div className="mt-8 p-4 bg-purple-50 border-l-4 border-[#6955A5] rounded">

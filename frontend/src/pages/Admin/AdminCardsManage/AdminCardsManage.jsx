@@ -429,57 +429,73 @@ const AdminManageCards = () => {
                             <div className="flex items-center gap-2">
                               <select
                                 value={card.status}
-                                disabled={card.status === "printed"}
                                 onChange={(e) =>
                                   handleStatusChangeClick(card, e.target.value)
                                 }
                                 className={`px-2 py-1 border rounded-md text-sm
-    bg-white focus:outline-none focus:ring-1
-    focus:ring-indigo-500
-    ${card.status === "printed" ? "bg-gray-100 cursor-not-allowed" : ""}
-  `}
+    bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500`}
                               >
                                 <option value="pending">Pending</option>
                                 <option value="printed">Printed</option>
+                                <option value="delivered">Delivered</option>
 
                               </select>
 
                               {/* Print Button - Only show if status is "printed" */}
                               {(card.status === "printed" || card.status === "delivered") && (
+
+                                //for  generating QR code thrugh api and store in db                                
+
+                                // <button
+                                //   onClick={async () => {
+                                //     try {
+                                //       // Check if QR already exists
+                                //       if (!card.qrHash) {
+                                //         const qrData = JSON.stringify({
+                                //           cardId: card._id,
+                                //           recipientName: card.recipient_name,
+                                //           senderName: card.sender_name,
+                                //           reward: card.reward?.name || 'No Reward',
+                                //           status: card.status,
+                                //           sentAt: card.sent_at
+                                //         });
+
+                                //         await dispatch(storeCardQR({
+                                //           cardId: card._id,
+                                //           qrData
+                                //         })).unwrap();
+
+                                //         showToast("QR data saved successfully", "success");
+
+                                //         dispatch(getAdminStudentCards({ page, limit }));
+
+                                //       } else {
+                                //         showToast("QR already generated for this card", "info");
+                                //       }
+
+                                //       setCardToPrint(card);
+                                //       setIsPrintPreviewOpen(true);
+
+                                //     } catch (error) {
+                                //       console.error("Failed to store QR:", error);
+                                //       showToast(error || "Failed to save QR data", "error");
+                                //     }
+                                //   }}
+                                //   className="px-3 py-1 bg-indigo-600 text-white rounded-md text-xs font-medium hover:bg-indigo-700 transition flex items-center gap-1 cursor-pointer"
+                                //   title="Print Card"
+                                // >
+                                //   <Printer className="w-3 h-3" />
+                                //   Print
+                                // </button>
+
+
+                                //end of code for storing code
+
                                 <button
-                                  onClick={async () => {
-                                    try {
-                                      // Check if QR already exists
-                                      if (!card.qrHash) {
-                                        const qrData = JSON.stringify({
-                                          cardId: card._id,
-                                          recipientName: card.recipient_name,
-                                          senderName: card.sender_name,
-                                          reward: card.reward?.name || 'No Reward',
-                                          status: card.status,
-                                          sentAt: card.sent_at
-                                        });
-
-                                        await dispatch(storeCardQR({
-                                          cardId: card._id,
-                                          qrData
-                                        })).unwrap();
-
-                                        showToast("QR data saved successfully", "success");
-
-                                        dispatch(getAdminStudentCards({ page, limit }));
-
-                                      } else {
-                                        showToast("QR already generated for this card", "info");
-                                      }
-
-                                      setCardToPrint(card);
-                                      setIsPrintPreviewOpen(true);
-
-                                    } catch (error) {
-                                      console.error("Failed to store QR:", error);
-                                      showToast(error || "Failed to save QR data", "error");
-                                    }
+                                  onClick={() => {
+                                    showToast("Card created successfully", "success");
+                                    setCardToPrint(card);
+                                    setIsPrintPreviewOpen(true);
                                   }}
                                   className="px-3 py-1 bg-indigo-600 text-white rounded-md text-xs font-medium hover:bg-indigo-700 transition flex items-center gap-1 cursor-pointer"
                                   title="Print Card"
@@ -487,6 +503,7 @@ const AdminManageCards = () => {
                                   <Printer className="w-3 h-3" />
                                   Print
                                 </button>
+
                               )}
                             </div>
                           </td>

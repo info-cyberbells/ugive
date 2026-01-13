@@ -210,7 +210,7 @@ const authSlice = createSlice({
 
                     localStorage.setItem("user", JSON.stringify(minimalUser));
 
-                    if (user.role === "admin" && user.university) {
+                    if ((user.role === "admin" || user.role === "student") && user.university) {
                         localStorage.setItem("universityId", user.university);
                     }
 

@@ -51,7 +51,7 @@ const RewardBadge = ({
       <div className="absolute top-full mt-2 hidden group-hover:block bg-gray-800 text-white text-xs rounded-lg p-3 w-48 z-10 shadow-lg">
         <div className="space-y-1">
           <p>
-            <span className="font-semibold">Total Points:</span> {totalPoints}
+            <span className="font-semibold">Total Cards Sent:</span> {totalPoints}
           </p>
           <p>
             <span className="font-semibold">Completed:</span> {completedPoints}

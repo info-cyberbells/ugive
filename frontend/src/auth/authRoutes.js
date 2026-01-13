@@ -155,6 +155,14 @@ export const USER_ENDPOINTS = {
     ADMIN_SEND_FEEDBACK: `${API_BASE_URL}/admin/sent-feedback`,
 
 
+    // Push Notifications
+    ADMIN_CREATE_NOTIFICATION: `${API_BASE_URL}/admin/create-notifications`,
+    ADMIN_GET_ALL_NOTIFICATIONS: `${API_BASE_URL}/admin/get-all-notifications`,
+    ADMIN_TOGGLE_NOTIFICATION: `${API_BASE_URL}/admin/notifications/toggle`,
+    ADMIN_UPDATE_NOTIFICATION: `${API_BASE_URL}/admin/notifications`,
+    ADMIN_DELETE_NOTIFICATION: `${API_BASE_URL}/admin/notifications`,
+
+
     //vendor endpoints
     VENDOR_PROFILE: `${API_BASE_URL}/vendor/profile`,
     VENDOR_UPDATE_PROFILE: `${API_BASE_URL}/vendor/update-profile`,

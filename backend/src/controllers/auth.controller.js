@@ -29,7 +29,10 @@ export const register = async (req, res) => {
           message: `Invalid email domain. Only official student emails (${allowedDomain}) are allowed.`,
         });
       }
+      const checkUniqueStudentUniID = await User.findOne({ studentUniId });
+      if (checkUniqueStudentUniID) return res.status(400).json({ message: "Student with this ID already exists. Please enter a unique ID." });
     }
+
 
     // Prevent role escalation
     if (role === "admin" || role === "super_admin") {
@@ -547,8 +550,9 @@ export const verifyResetCodeAndChangePassword = async (req, res) => {
       });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(newPassword, salt);
+    // const salt = await bcrypt.genSalt(10);
+    // user.password = await bcrypt.hash(newPassword, salt);
+    user.password = newPassword;
 
     user.resetCode = undefined;
     user.resetCodeExpires = undefined;

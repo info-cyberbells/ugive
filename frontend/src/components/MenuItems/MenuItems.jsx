@@ -16,14 +16,14 @@ import {
   Flame,
   Store,
   Users,
-  Bell,
+  BellRing,
   Settings,
   HelpCircle,
   MessageSquare,
   Ticket,
-   UserCog,
-   Trophy,
-   BadgePercent
+  UserCog,
+  Trophy,
+  BadgePercent
 } from "lucide-react";
 import { resetStudentState } from "../../features/studentDataSlice";
 import { clearProfile } from "../../features/superadminProfileSlice";
@@ -34,7 +34,7 @@ const ROLE_BASED_MENUS = {
     // { id: "profile", title: "Manage Profile", icon: UserCircle },
     { id: "manage-universities", title: "Manage Universities", icon: School },
     { id: "manage-colleges", title: "Manage Colleges", icon: GraduationCap },
-    { id: "manage-admins", title: "Manage Admins", icon:  UserCog },
+    { id: "manage-admins", title: "Manage Admins", icon: UserCog },
     { id: "manage-students", title: "Manage Students", icon: BookOpen },
     { id: "manage-vendors", title: "Manage Vendors", icon: Store },
     { id: "vendor-rewards", title: "Vendor Rewards", icon: Trophy },
@@ -50,6 +50,7 @@ const ROLE_BASED_MENUS = {
     { id: "admin-vendors", title: "Vendors", icon: Store },
     { id: "admin-rewards", title: "Rewards", icon: Gift },
     { id: "admin-cards", title: "Cards", icon: Ticket },
+    { id: "push-notifications", title: "Push Notifications", icon: BellRing },
     {
       id: "support",
       title: "Support",
@@ -62,9 +63,9 @@ const ROLE_BASED_MENUS = {
     },
   ],
   vendor: [
-        { id: "profile", title: "Manage Profile", icon: UserCircle },
-        { id: "vendor-reward", title: "Manage Rewards", icon: Gift },
-        { id: "vendor-card", title: "Cards", icon: Ticket },
+    { id: "profile", title: "Manage Profile", icon: UserCircle },
+    { id: "vendor-reward", title: "Manage Rewards", icon: Gift },
+    { id: "vendor-card", title: "Cards", icon: Ticket },
   ],
   student: [
     // { id: "profile", title: "User Profile", icon: UserCircle },
@@ -122,15 +123,14 @@ const MenuItems = ({ setIsSidebarOpen }) => {
         <h2 className="text-[#00000066]">Dashboards</h2>
 
         <NavLink
-          to={ role === "student" ? "/student-dashboard" : role === "super_admin" ? "/dashboard" : role === "admin" ? "/admin-dashboard" : role === "vendor" ? "/vendor-dashboard" : "/" }
+          to={role === "student" ? "/student-dashboard" : role === "super_admin" ? "/dashboard" : role === "admin" ? "/admin-dashboard" : role === "vendor" ? "/vendor-dashboard" : "/"}
           onClick={() => setIsSidebarOpen(false)}
           className={({ isActive }) =>
             `flex items-center gap-2 px-2 py-1 rounded-md cursor-pointer
-     ${
-       isActive
-         ? "bg-[#0000000A] font-semibold text-black"
-         : "hover:bg-[#0000000A]"
-     }`
+     ${isActive
+              ? "bg-[#0000000A] font-semibold text-black"
+              : "hover:bg-[#0000000A]"
+            }`
           }
         >
           <LayoutDashboard className="w-5 h-5" />
@@ -153,11 +153,10 @@ const MenuItems = ({ setIsSidebarOpen }) => {
                   )
                 }
                 className={`w-full flex items-center gap-3 py-2 px-2 rounded-lg cursor-pointer
-      ${
-        openDropdown === section.id
-          ? "bg-[#0000000A] font-semibold text-black"
-          : "hover:bg-[#0000000A]"
-      }`}
+      ${openDropdown === section.id
+                    ? "bg-[#0000000A] font-semibold text-black"
+                    : "hover:bg-[#0000000A]"
+                  }`}
               >
                 <section.icon className="w-5 h-5" />
                 <p className="text-sm flex-1">{section.title}</p>
@@ -175,11 +174,10 @@ const MenuItems = ({ setIsSidebarOpen }) => {
                 onClick={() => setIsSidebarOpen(false)}
                 className={({ isActive }) =>
                   `w-full flex items-center gap-3 py-2 lg:py-1.5 2xl:py-2 px-2 rounded-lg cursor-pointer
-        ${
-          isActive
-            ? "bg-[#0000000A] font-semibold text-black"
-            : "hover:bg-[#0000000A]"
-        }`
+        ${isActive
+                    ? "bg-[#0000000A] font-semibold text-black"
+                    : "hover:bg-[#0000000A]"
+                  }`
                 }
               >
                 <section.icon className="w-5 h-5" />

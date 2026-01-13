@@ -11,6 +11,9 @@ import {
   checkCardEligibility,
   checkBanWords,
 } from "../../features/studentCardSlice";
+import {
+  getFriendsList,
+} from "../../features/friendsSlice";
 import { getAllRewards } from "../../features/rewardSlice";
 import { getStudentRewards } from "../../features/studentRewardsSlice";
 
@@ -22,10 +25,17 @@ const CardForm = ({ onSubmit }) => {
 
   const { universities, colleges } = useSelector((state) => state.auth);
   const { rewards } = useSelector((state) => state.studentReward);
+  const { friends } = useSelector((state) => state.friends);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isFromFriendsList, setIsFromFriendsList] = useState(false);
 
   useEffect(() => {
-    dispatch(getUniversities());
     dispatch(getStudentRewards());
+    dispatch(getFriendsList()); const universityId = localStorage.getItem("universityId");
+    if (universityId) {
+      dispatch(getColleges(universityId));
+    }
   }, [dispatch]);
 
   // State to hold form data
@@ -55,6 +65,42 @@ const CardForm = ({ onSubmit }) => {
     setErrors((prev) => ({ ...prev, [name]: false }));
   };
 
+  const handleRecipientNameChange = (e) => {
+    const value = e.target.value;
+
+    setFormData((prev) => ({ ...prev, recipientName: value }));
+    setErrors((prev) => ({ ...prev, recipientName: false }));
+
+    if (isFromFriendsList && value.trim() === '') {
+      setIsFromFriendsList(false);
+    }
+
+    if (value.trim().length > 0) {
+      const filtered = friends.filter(friend =>
+        friend.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setSuggestions(filtered);
+      setShowSuggestions(filtered.length > 0);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      setIsFromFriendsList(false);
+    }
+  };
+
+
+  const handleSelectFriend = (friend) => {
+    setFormData({
+      ...formData,
+      recipientName: friend.name.split(' ')[0],
+      recipientLastName: friend.name.split(' ').slice(1).join(' '),
+      recipientEmail: friend.email,
+      collegeHouse: friend.college?.name || '',
+    });
+    setShowSuggestions(false);
+    setSuggestions([]);
+    setIsFromFriendsList(true);
+  };
   const handleUniversityChange = (e) => {
     const value = e.target.value;
 
@@ -97,6 +143,13 @@ const CardForm = ({ onSubmit }) => {
       showToast("Please fill all required fields!", "error");
       return;
     }
+
+    if (formData.message.length < 150 || formData.message.length > 600) {
+      setErrors((prev) => ({ ...prev, message: true }));
+      showToast("Message must be between 150 and 600 characters.", "error");
+      return;
+    }
+
 
     const email = formData.recipientEmail;
     const emailRegex = /^[^\s@]+@usq\.edu\.au$/;
@@ -191,7 +244,7 @@ const CardForm = ({ onSubmit }) => {
         <div className="bg-white p-6 rounded-2xl">
           <form onSubmit={handleSubmit} className="space-y-6 sm:pr-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-6">
-             
+
               <div>
                 <label htmlFor="name" className={labelClass}>
                   Your Name
@@ -208,20 +261,74 @@ const CardForm = ({ onSubmit }) => {
                 />
               </div>
 
-              <div>
+              <div className="relative">
                 <label htmlFor="recipientName" className={labelClass}>
                   Recipient's First Name
                 </label>
-                <input
-                  type="text"
-                  id="recipientName"
-                  name="recipientName"
-                  value={formData.recipientName}
-                  onChange={handleChange}
-                  placeholder="Enter Recipient's First Name"
-                  className={`${inputClass} ${errors.recipientName ? "border-red-500" : ""
-                    }`}
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="recipientName"
+                    name="recipientName"
+                    value={formData.recipientName}
+                    onChange={handleRecipientNameChange}
+                    placeholder="Start typing friend's name..."
+                    className={`${inputClass} ${errors.recipientName ? "border-red-500" : ""}`}
+                  />
+
+                  {formData.recipientName && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      {isFromFriendsList ? (
+                        <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
+                          From Friends
+                        </span>
+                      ) : (
+                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full font-medium">
+                          Manual Entry
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="absolute z-10 w-90 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                    {suggestions.map((friend) => (
+                      <div
+                        key={friend.id}
+                        onClick={() => handleSelectFriend(friend)}
+                        className="p-2.5 hover:bg-indigo-50 cursor-pointer border-b last:border-b-0 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                            {friend.profileImage ? (
+                              <img src={friend.profileImage} alt="" className="w-10 h-10 rounded-full object-cover" />
+                            ) : (
+                              <span className="text-indigo-600 font-semibold text-sm">
+                                {friend.name.charAt(0).toUpperCase()}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-gray-900 truncate">{friend.name}</div>
+                            <div className="text-xs text-gray-500 truncate">{friend.email}</div>
+                            <div className="text-xs text-gray-400 truncate">{friend.college?.name}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {formData.recipientName && !isFromFriendsList && !showSuggestions && (
+                  <p className="text-xs text-amber-600 mt-1 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                    Not in your friends list - enter details manually
+                  </p>
+                )}
+
               </div>
 
               <div className="">
@@ -260,7 +367,7 @@ const CardForm = ({ onSubmit }) => {
                 <label htmlFor="collegeHouse" className={labelClass}>
                   Recipients’s College/House
                 </label>
-                <input
+                {/* <input
                   type="text"
                   id="collegeHouse"
                   name="collegeHouse"
@@ -269,7 +376,28 @@ const CardForm = ({ onSubmit }) => {
                   placeholder="Enter Recipient's College/House"
                   className={`${inputClass} ${errors.collegeHouse ? "border-red-500" : ""
                     }`}
-                />
+                /> */}
+
+                <select
+                  id="collegeHouse"
+                  name="collegeHouse"
+                  value={formData.collegeHouse}
+                  onChange={handleChange}
+                  className={`${inputClass} ${errors.collegeHouse ? "border-red-500" : ""}`}
+                >
+                  <option value="">Select College / House</option>
+
+                  {colleges && colleges.length > 0 ? (
+                    colleges.map((college) => (
+                      <option key={college._id} value={college.name}>
+                        {college.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled>No colleges found</option>
+                  )}
+                </select>
+
               </div>
 
               <div>
@@ -345,9 +473,28 @@ const CardForm = ({ onSubmit }) => {
                 value={formData.message}
                 onChange={handleChange}
                 placeholder="Enter Your Message"
+                maxLength={600}
                 className={`${inputClass} ${errors.message ? "border-red-500" : ""
                   }`}
               />
+              <div className="mt-1 flex justify-between text-sm">
+                <span
+                  className={
+                    formData.message.length < 150
+                      ? "text-red-500"
+                      : "text-green-600"
+                  }
+                >
+                  {formData.message.length < 150
+                    ? `${150 - formData.message.length} characters needed`
+                    : "Minimum reached"}
+                </span>
+
+                <span className="text-gray-500">
+                  {formData.message.length} / 600
+                </span>
+              </div>
+
             </div>
 
             <div className="flex justify-center pt-8 relative z-10">
@@ -358,7 +505,7 @@ const CardForm = ({ onSubmit }) => {
               />
               <button
                 type="submit"
-                className="w-full md:w-50 h-14 bg-[#6955A59A] text-gray-100 cursor-pointer font-semibold text-lg rounded-full hover:bg-[#6955A5] transition duration-300 transform hover:scale-[1.01] active:scale-[0.99]"
+                className="w-full md:w-50 h-14 bg-[#8573bb] text-gray-100 cursor-pointer font-semibold text-lg rounded-full hover:bg-[#6955A5] transition duration-300 transform hover:scale-[1.01] active:scale-[0.99]"
               >
                 Submit
               </button>

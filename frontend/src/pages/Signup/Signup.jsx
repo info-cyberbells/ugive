@@ -30,9 +30,10 @@ const Signup = () => {
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
+    const value = e.target.name === "email" ? e.target.value.toLowerCase() : e.target.value;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: value,
     });
     setErrors((prev) => ({
       ...prev,
@@ -62,7 +63,7 @@ const Signup = () => {
         backendErrors.phoneNumber = true;
       if (message?.toLowerCase().includes("university"))
         backendErrors.university = true;
-      if (message?.toLowerCase().includes("student"))
+      if (message?.toLowerCase().includes("studentuniid"))
         backendErrors.studentUniId = true;
       if (message?.toLowerCase().includes("password"))
         backendErrors.password = true;
@@ -157,6 +158,7 @@ const Signup = () => {
     }
 
     setFormData({ ...formData, phoneNumber: formatted });
+    setErrors((prev) => ({ ...prev, phoneNumber: false }));
   };
 
 
@@ -396,7 +398,7 @@ const Signup = () => {
 
               <div className="signup-login-link">
                 <p>
-                  Already Have an account?{" "}
+                  Already have an account?{" "}
                   <button
                     style={{
                       background: "none",

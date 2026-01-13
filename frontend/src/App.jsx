@@ -38,6 +38,7 @@ import RewardsByVendor from "./pages/VendorPages/RewardByVendor/RewardsByVendor"
 import CardsVendor from "./pages/VendorPages/CardsVendor/CardsVendor";
 import VendorRewards from "./pages/SuperAdmin/VendorRewards/VendorRewards";
 import ChildSafetyPolicy from "./pages/TermsAndConditions/child-safety-policy.jsx";
+import PushNotifications from "./pages/Admin/PushNotifications/PushNotifications.jsx";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -165,6 +166,14 @@ function App() {
             isAuthenticated ? <ManageColleges /> : <Navigate to="/" replace />
           }
         />
+
+        <Route
+          path="/push-notifications"
+          element={
+            isAuthenticated ? <PushNotifications /> : <Navigate to="/" replace />
+          }
+        />
+
 
         <Route path="/manage-admins" element={isAuthenticated ? <ManageAdmins /> : <Navigate to="/" replace />} />
         <Route path="/manage-vendors" element={isAuthenticated ? <ManageVendors /> : <Navigate to="/" replace />} />

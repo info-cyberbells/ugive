@@ -30,7 +30,7 @@ const CardReadingPage = () => {
 
   return (
     <div className="min-h-screen lg:ml-60 mt-14 font-[Poppins] bg-gray-50 p-8">
-      <div className=" w-full max-w-6xl">
+      <div className=" w-full">
         <div className="flex justify-between items-center mb-4 text-indigo-800">
           <div className="flex items-center">
             <button
@@ -58,13 +58,13 @@ const CardReadingPage = () => {
           <div>
             <button
               onClick={() => navigate('/write-card')}
-              className=" px-6 py-2 bg-[#7f63e6]  cursor-pointer text-white text-sm font-medium rounded-4xl hover:bg-violet-700 transition duration-150 shadow-lg ">
+              className="px-6 py-2 bg-[#7f63e6]  cursor-pointer text-white text-sm font-medium rounded-4xl hover:bg-violet-700 hover:scale-[1.02] transition duration-150 shadow-lg">
               Write Card
             </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-6xl items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6 w-full items-start">
           {isLoading &&
             [1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <div

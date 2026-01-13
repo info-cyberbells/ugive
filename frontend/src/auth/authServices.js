@@ -1276,3 +1276,49 @@ export const getStudentCollegePeopleService = async () => {
   );
   return response.data;
 }
+
+
+
+// Push Notification Services
+export const createNotificationService = async (data) => {
+  const response = await axios.post(
+    USER_ENDPOINTS.ADMIN_CREATE_NOTIFICATION,
+    data,
+    getAuthHeader()
+  );
+  return response.data;
+};
+
+export const getAllNotificationsService = async () => {
+  const response = await axios.get(
+    USER_ENDPOINTS.ADMIN_GET_ALL_NOTIFICATIONS,
+    getAuthHeader()
+  );
+  return response.data;
+};
+
+export const toggleNotificationService = async (id) => {
+  const response = await axios.patch(
+    `${USER_ENDPOINTS.ADMIN_TOGGLE_NOTIFICATION}/${id}`,
+    {},
+    getAuthHeader()
+  );
+  return response.data;
+};
+
+export const updateNotificationService = async (id, data) => {
+  const response = await axios.put(
+    `${USER_ENDPOINTS.ADMIN_UPDATE_NOTIFICATION}/${id}`,
+    data,
+    getAuthHeader()
+  );
+  return response.data;
+};
+
+export const deleteNotificationService = async (id) => {
+  const response = await axios.delete(
+    `${USER_ENDPOINTS.ADMIN_DELETE_NOTIFICATION}/${id}`,
+    getAuthHeader()
+  );
+  return response.data;
+};

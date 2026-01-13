@@ -13,7 +13,7 @@ import { useToast } from '../../context/ToastContext';
 const MyStudentProfile = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const {showToast} = useToast();
+    const { showToast } = useToast();
     const [showProfileInfo, setShowProfileInfo] = useState(false);
     const [showDeleteAccount, setShowDeleteAccount] = useState(false);
     const [selectedReason, setSelectedReason] = useState('');
@@ -25,15 +25,6 @@ const MyStudentProfile = () => {
         }
     }, [])
 
-
-    const deleteReasons = [
-        "I'm not using the app anymore",
-        "I have privacy concerns",
-        "I found a better alternative",
-        "Too many notifications",
-        "Technical issues",
-        "Other"
-    ];
 
     const handleBack = () => {
         if (showDeleteAccount) {
@@ -66,17 +57,17 @@ const MyStudentProfile = () => {
     };
 
     const handleConfirmDelete = async () => {
-    if (!selectedReason) return;
-    try {
-        await dispatch(deleteStudentAccount()).unwrap(); 
-        showToast("Account deleted successfully", "success");
-        
-        handleLogout();
+        if (!selectedReason) return;
+        try {
+            await dispatch(deleteStudentAccount()).unwrap();
+            showToast("Account deleted successfully", "success");
 
-    } catch (error) {
-        showToast(error || "Failed to delete account", "error");
-    }
-};
+            handleLogout();
+
+        } catch (error) {
+            showToast(error || "Failed to delete account", "error");
+        }
+    };
 
 
     const handleLogout = () => {
@@ -93,7 +84,7 @@ const MyStudentProfile = () => {
     if (showDeleteAccount) {
         return (
             <div className="min-h-screen lg:ml-60 mt-14 bg-gray-50 p-8">
-                <div className="w-full max-w-4xl">
+                <div className="w-full">
 
                     {/* Back Button */}
                     <div className="mb-5 text-indigo-800">
@@ -109,59 +100,42 @@ const MyStudentProfile = () => {
 
                     {/* Delete Account Content */}
                     <div className="max-w-md mx-auto">
-                        <div className="text-center mb-8">
+                        <div className="text-center mb-4">
                             <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <svg className="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                 </svg>
                             </div>
                             <h2 className="text-2xl font-semibold text-gray-800 mb-2">Delete Account</h2>
-                            <p className="text-gray-600 text-sm">We're sorry to see you go. Please tell us why you want to delete your account.</p>
+                            <h3 className='text-center text-gray-500 text-base mt-2'>Are you sure you want to remove your account.</h3>
+                            <p className="text-center text-gray-500 text-sm mt-1">
+                                This action cannot be undone.
+                            </p>
                         </div>
 
-                        {/* Reasons Selection */}
-                        <div className="space-y-3 mb-8">
-                            {deleteReasons.map((reason, index) => (
-                                <div
-                                    key={index}
-                                    onClick={() => setSelectedReason(reason)}
-                                    className={`p-4 rounded-lg border-2 cursor-pointer transition transform hover:scale-[1.02] ${selectedReason === reason
-                                        ? 'border-[#E9B243] bg-amber-50'
-                                        : 'border-gray-200 bg-white hover:border-gray-300'
-                                        }`}
-                                >
-                                    <div className="flex items-center">
-                                        <div className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${selectedReason === reason
-                                            ? 'border-[#E9B243] bg-[#E9B243]'
-                                            : 'border-gray-300'
-                                            }`}>
-                                            {selectedReason === reason && (
-                                                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                                </svg>
-                                            )}
-                                        </div>
-                                        <span className="text-gray-700 font-medium">{reason}</span>
-                                    </div>
-                                </div>
-                            ))}
+
+                        <div className='flex gap-4 justify-center'>
+                            {/* Confirm Button */}
+                            <button
+                                onClick={handleConfirmDelete}
+
+                                className={`px-8 py-3 rounded-full font-medium transition transform hover:scale-[1.02] bg-green-500 hover:bg-green-600 text-white cursor-pointer`}
+                            >
+                                Yes
+                            </button>
+
+                            <button
+                                onClick={handleBack}
+                                className={`px-8 py-3 rounded-full font-medium transition transform hover:scale-[1.02] bg-red-500 hover:bg-red-600 text-white cursor-pointer`}
+
+                            >
+                                No
+                            </button>
+
                         </div>
+                        {/* <p className="text-gray-600 text-sm">We're sorry to see you go.  All your data will be permanently deleted.</p> */}
 
-                        {/* Confirm Button */}
-                        <button
-                            onClick={handleConfirmDelete}
-                            disabled={!selectedReason}
-                            className={`w-full py-3 rounded-full font-medium transition transform hover:scale-[1.02] ${selectedReason
-                                ? 'bg-red-500 hover:bg-red-600 text-white cursor-pointer'
-                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                }`}
-                        >
-                            Confirm Delete Account
-                        </button>
 
-                        <p className="text-center text-gray-500 text-xs mt-4">
-                            This action cannot be undone. All your data will be permanently deleted.
-                        </p>
                     </div>
 
                 </div>
@@ -173,7 +147,7 @@ const MyStudentProfile = () => {
     if (showProfileInfo) {
         return (
             <div className="min-h-screen lg:ml-60 mt-14 bg-gray-50 p-8">
-                <div className="w-full max-w-4xl">
+                <div className="w-full">
 
                     {/* Back Button */}
                     <div className="mb-5 text-indigo-800">
@@ -259,7 +233,7 @@ const MyStudentProfile = () => {
     // Main Profile Screen
     return (
         <div className="min-h-screen lg:ml-60 mt-14 bg-gray-50 p-8">
-            <div className="w-full max-w-4xl">
+            <div className="w-full ">
 
                 {/* Back Button */}
                 <div className="mb-8 text-indigo-800">

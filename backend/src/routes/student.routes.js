@@ -10,6 +10,8 @@ import { deleteMyAccount } from "../controllers/student.controller.js";
 import { createFeedback, getMyFeedback } from "../controllers/feedback.controller.js";
 import { getStudentStreakAndRewards } from "../controllers/getStudentStreakAndRewards.controller.js";
 import { getStudentDashboard, getStudentNotifications } from "../controllers/dashboard.controller.js";
+import { getStudentPushNotifications } from "../controllers/pushNotificationController.js";
+
 
 
 const router = express.Router();
@@ -65,6 +67,10 @@ router.get("/streak-summary", getStudentStreakAndRewards);
 
 router.get("/student-dashboard", getStudentDashboard);
 router.get("/get-my-notifications", getStudentNotifications);
+
+
+router.get("/get-student-notifications", getStudentPushNotifications);
+
 
 
 
