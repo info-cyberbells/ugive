@@ -77,6 +77,9 @@ export const login = async (req, res) => {
     const { email, password, rememberMe } = req.body;
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "Invalid credentials" });
+    if (user.role === "vendor") {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
     if (user.isDeleted) {
       return res.status(403).json({
         success: false,
