@@ -1,29 +1,12 @@
 import React, { useEffect } from "react";
 import {
-  Download,
-  FileDown,
-  DollarSign,
-  ShoppingCart,
-  PackageCheck,
-  Users, School, CreditCard, Calendar,  Send,
-  MessageSquare,Printer,
+  Users, School, CreditCard, Calendar, Send,
+  MessageSquare, Printer,
 } from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  LineChart,
-  Line,
-  ResponsiveContainer,
-  Legend,
-  Area,
-  AreaChart,PieChart, Pie
-} from "recharts";
 import { useDispatch, useSelector } from "react-redux";
 import { getAdminDashboardData } from "../../../features/adminSlice";
+import { useNavigate } from "react-router-dom";
+
 
 
 
@@ -65,106 +48,107 @@ const activityGraphData = [
 const AdminDashboard = () => {
 
   const dispatch = useDispatch()
+  const navigate = useNavigate();
 
   const { adminDashboard, isAdminLoading } = useSelector((state) => state.admin);
-  
-  useEffect(()=>{
+
+  useEffect(() => {
     dispatch(getAdminDashboardData());
-  },[dispatch])
+  }, [dispatch])
 
   const overview = adminDashboard?.overview;
   const cardStats = adminDashboard?.cardStats;
   const recentCards = adminDashboard?.recentActivity?.recentCards || [];
   const recentStudents = adminDashboard?.recentActivity?.recentStudents || [];
 
- 
 
 
 
- const weeklySummary = [
-  {
-    title: "Total Students",
-    value: overview?.totalStudents ?? 0,
-    diff: "",
-    color: "bg-[#FFE2E5]",
-    icon: Users,
-  },
-  {
-    title: "Total Colleges",
-    value: overview?.totalColleges ?? 0,
-    diff: "",
-    color: "bg-[#FFF4DE]",
-    icon: School,
-  },
-  {
-    title: "Total Cards",
-    value: overview?.totalCards ?? 0,
-    diff: "",
-    color: "bg-[#DCFCE7]",
-    icon: CreditCard,
-  },
-  {
-    title: "Cards (Last 7 Days)",
-    value: cardStats?.cardsLast7Days ?? 0,
-    diff: "",
-    color: "bg-[#F3E8FF]",
-    icon: Calendar,
-  },
-];
 
-const AdminDashboardSkeleton = () => (
-  <div className="lg:ml-60 mt-14 p-6 min-h-screen bg-gray-50 grid grid-cols-1 lg:grid-cols-12 gap-6 animate-pulse">
-    
-    {/* Overview */}
-    <div className="lg:col-span-12 bg-white p-6 rounded-xl shadow-md">
-      <div className="h-5 w-32 bg-gray-200 rounded mb-4" />
-      <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="p-4 rounded-xl bg-gray-100">
-            <div className="h-6 w-6 bg-gray-300 rounded mb-3" />
-            <div className="h-6 w-12 bg-gray-300 rounded mb-2" />
-            <div className="h-4 w-28 bg-gray-200 rounded" />
-          </div>
-        ))}
-      </div>
-    </div>
+  const weeklySummary = [
+    {
+      title: "Total Students",
+      value: overview?.totalStudents ?? 0,
+      diff: "",
+      color: "bg-[#FFE2E5]",
+      icon: Users,
+    },
+    {
+      title: "Total Colleges",
+      value: overview?.totalColleges ?? 0,
+      diff: "",
+      color: "bg-[#FFF4DE]",
+      icon: School,
+    },
+    {
+      title: "Total Cards",
+      value: overview?.totalCards ?? 0,
+      diff: "",
+      color: "bg-[#DCFCE7]",
+      icon: CreditCard,
+    },
+    {
+      title: "Cards (Last 7 Days)",
+      value: cardStats?.cardsLast7Days ?? 0,
+      diff: "",
+      color: "bg-[#F3E8FF]",
+      icon: Calendar,
+    },
+  ];
 
-    {/* Recent Students */}
-    <div className="lg:col-span-8 bg-white p-6 rounded-xl shadow-lg">
-      <div className="h-5 w-40 bg-gray-200 rounded mb-6" />
-      <div className="space-y-4">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="flex justify-between items-center">
-            <div className="h-4 w-40 bg-gray-200 rounded" />
-            <div className="h-4 w-48 bg-gray-200 rounded hidden md:block" />
-            <div className="h-4 w-24 bg-gray-200 rounded" />
-          </div>
-        ))}
-      </div>
-    </div>
+  const AdminDashboardSkeleton = () => (
+    <div className="lg:ml-60 mt-14 p-6 min-h-screen bg-gray-50 grid grid-cols-1 lg:grid-cols-12 gap-6 animate-pulse">
 
-    {/* Recent Cards Sent */}
-    <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow-lg">
-      <div className="h-5 w-36 bg-gray-200 rounded mb-6" />
-      <div className="space-y-4">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="p-4 bg-gray-100 rounded-xl">
-            <div className="flex justify-between mb-2">
-              <div className="h-4 w-32 bg-gray-300 rounded" />
-              <div className="h-3 w-16 bg-gray-300 rounded" />
+      {/* Overview */}
+      <div className="lg:col-span-12 bg-white p-6 rounded-xl shadow-md">
+        <div className="h-5 w-32 bg-gray-200 rounded mb-4" />
+        <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="p-4 rounded-xl bg-gray-100">
+              <div className="h-6 w-6 bg-gray-300 rounded mb-3" />
+              <div className="h-6 w-12 bg-gray-300 rounded mb-2" />
+              <div className="h-4 w-28 bg-gray-200 rounded" />
             </div>
-            <div className="h-3 w-full bg-gray-200 rounded" />
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
+
+      {/* Recent Students */}
+      <div className="lg:col-span-8 bg-white p-6 rounded-xl shadow-lg">
+        <div className="h-5 w-40 bg-gray-200 rounded mb-6" />
+        <div className="space-y-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="flex justify-between items-center">
+              <div className="h-4 w-40 bg-gray-200 rounded" />
+              <div className="h-4 w-48 bg-gray-200 rounded hidden md:block" />
+              <div className="h-4 w-24 bg-gray-200 rounded" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Recent Cards Sent */}
+      <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow-lg">
+        <div className="h-5 w-36 bg-gray-200 rounded mb-6" />
+        <div className="space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="p-4 bg-gray-100 rounded-xl">
+              <div className="flex justify-between mb-2">
+                <div className="h-4 w-32 bg-gray-300 rounded" />
+                <div className="h-3 w-16 bg-gray-300 rounded" />
+              </div>
+              <div className="h-3 w-full bg-gray-200 rounded" />
+            </div>
+          ))}
+        </div>
+      </div>
+
     </div>
+  );
 
-  </div>
-);
-
-if (isAdminLoading) {
-  return <AdminDashboardSkeleton />;
-}
+  if (isAdminLoading) {
+    return <AdminDashboardSkeleton />;
+  }
 
 
   return (
@@ -191,7 +175,13 @@ if (isAdminLoading) {
             return (
               <div
                 key={index}
-                className={`p-4 rounded-xl shadow-sm ${card.color}`}
+                onClick={() => {
+                  if (card.title === "Total Students") navigate("/admin-students");
+                  if (card.title === "Total Colleges") navigate("/admin-colleges");
+                  if (card.title === "Total Cards") navigate("/admin-cards");
+                  if (card.title === "Cards (Last 7 Days)") navigate("/admin-cards");
+                }}
+                className={`p-4 rounded-xl cursor-pointer shadow-sm ${card.color}`}
               >
                 <Icon size={28} className="mb-2 text-[#3E3E3E]" />
                 <h2 className="text-xl font-semibold">{card.value}</h2>
@@ -209,7 +199,7 @@ if (isAdminLoading) {
 
       {/* Active Streaks */}
       <div className="lg:col-span-4 bg-white p-6 rounded-xl shadow-md">
-              <h2 className="text-lg font-semibold mb-4">Cards Stats</h2>
+        <h2 className="text-lg font-semibold mb-4">Cards Stats</h2>
 
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-[#DCFCE7] rounded-xl p-4">
@@ -218,7 +208,7 @@ if (isAdminLoading) {
               {cardStats?.printedCards ?? 0}
             </h3>
             <p className="text-sm text-[#166534] font-medium">
-              Cards Printed 
+              Cards Printed
             </p>
           </div>
 
@@ -228,11 +218,11 @@ if (isAdminLoading) {
               {cardStats?.deliveredCards ?? 0}
             </h3>
             <p className="text-sm text-[#6B21A8] font-medium">
-              Cards Delivered 
+              Cards Delivered
             </p>
           </div>
+        </div>
       </div>
-</div>
       {/* University Participation */}
       {/* <div className="lg:col-span-8 bg-white p-6 rounded-xl shadow-md">
         <h2 className="text-lg font-semibold mb-4">University Participation</h2>
@@ -435,7 +425,7 @@ if (isAdminLoading) {
         </div>
       </div> */}
       {/* Recent Students Table */}
- <div className="lg:col-span-8 bg-white sm:p-6 rounded-xl shadow-lg">
+      <div className="lg:col-span-8 bg-white sm:p-6 rounded-xl shadow-lg">
         <h2 className="text-xl text-[#05004E] px-3 py-2 sm:px-0 sm:py-0 font-semibold sm:mb-6">Recent Students</h2>
 
         <div className="overflow-x-auto">
@@ -449,14 +439,14 @@ if (isAdminLoading) {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {recentStudents.length > 0 ? (
-                recentStudents.slice(0,5).map((student) => (
+                recentStudents.slice(0, 5).map((student) => (
                   <tr
                     key={student._id}
                     className="text-gray-800 transition-colors duration-150 hover:bg-[#F9F7FF] hover:shadow-sm" // Highlight hover
                   >
                     <td className="px-6 py-4 font-medium text-[#05004E] flex items-center">
-                        <Users size={16} className="text-gray-400 mr-2" />
-                        {student.name}
+                      <Users size={16} className="text-gray-400 mr-2" />
+                      {student.name}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-500 hidden md:table-cell">{student.email}</td>
                     <td className="px-6 py-4 text-sm text-gray-500">
@@ -466,7 +456,7 @@ if (isAdminLoading) {
                 ))
               ) : (
                 <tr>
-                    <td colSpan="3" className="text-center py-6 text-gray-500">No recent student records available.</td>
+                  <td colSpan="3" className="text-center py-6 text-gray-500">No recent student records available.</td>
                 </tr>
               )}
             </tbody>
@@ -480,21 +470,21 @@ if (isAdminLoading) {
 
         <div className="space-y-4">
           {recentCards.length > 0 ? (
-            recentCards.slice(0,3).map((card) => (
+            recentCards.slice(0, 3).map((card) => (
               <div
                 key={card._id}
                 className="bg-gray-50 rounded-xl p-4 text-sm transition duration-200 hover:shadow-lg hover:border-b-4 hover:border-[#8B78D0] border-2 border-gray-100" // Added more distinct styling
               >
                 <div className="flex justify-between items-start mb-2">
-                    <p className="font-semibold text-gray-800 flex items-center">
-                        <Send size={14} className="text-[#8B78D0] mr-2" />
-                        {card.sender?.name || 'Anonymous'} → {card.recipient_name}
-                    </p>
-                    <p className="text-xs text-gray-400 whitespace-nowrap">
-                        {new Date(card.sent_at).toLocaleDateString()}
-                    </p>
+                  <p className="font-semibold text-gray-800 flex items-center">
+                    <Send size={14} className="text-[#8B78D0] mr-2" />
+                    {card.sender?.name || 'Anonymous'} → {card.recipient_name}
+                  </p>
+                  <p className="text-xs text-gray-400 whitespace-nowrap">
+                    {new Date(card.sent_at).toLocaleDateString()}
+                  </p>
                 </div>
-                
+
                 <p className="text-gray-700 italic truncate text-sm border-t pt-2 border-gray-200">
                   <MessageSquare size={12} className="inline-block mr-1 text-gray-500 mb-1" />
                   “{card.message}”
