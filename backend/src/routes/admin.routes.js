@@ -12,6 +12,8 @@ import { createVendorByUniversityAdmin, getAllVendors, getSingleVendor, getMyVen
 import { createRewardByUniversityAdmin, getRewardsByUniversityAdmin, getSingleRewardByUniversityAdmin, updateRewardByUniversityAdmin, deleteRewardByUniversityAdmin } from "../controllers/reward.controller.js";
 import { getActiveVendorRewardsForAdmin } from "../controllers/reward.controller.js";
 import { createPushNotification, getAllPushNotifications, togglePushNotification, updatePushNotification, deletePushNotification } from "../controllers/pushNotificationController.js";
+import { createVendorReward, getSingleVendorReward, getVendorRewards, updateVendorReward, deleteVendorReward } from "../controllers/vendorReward.controller.js";
+
 
 
 
@@ -85,6 +87,14 @@ router.get("/get-all-notifications", getAllPushNotifications);
 router.patch("/notifications/toggle/:id", togglePushNotification);
 router.put("/notifications/:id", updatePushNotification);
 router.delete("/notifications/:id", deletePushNotification);
+
+
+
+router.post("/create-vendor-reward", upload.single("rewardImage"), createVendorReward);
+router.get("/added-reward/:id", getSingleVendorReward);
+router.get("/added-rewards", getVendorRewards);
+router.put("/update-vendor-reward/:id", upload.single("rewardImage"), updateVendorReward);
+router.delete("/delete-vendor-reward/:id", deleteVendorReward);
 
 
 

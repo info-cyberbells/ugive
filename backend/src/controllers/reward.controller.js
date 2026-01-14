@@ -750,7 +750,6 @@ export const getAllVendorRewardsForSuperAdmin = async (req, res) => {
         const total = await VendorReward.countDocuments();
 
         const rewards = await VendorReward.find()
-            .populate("vendor", "name email")
             .populate("university", "name")
             .sort({ createdAt: -1 })
             .skip(skip)

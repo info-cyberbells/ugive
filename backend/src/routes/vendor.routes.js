@@ -6,7 +6,7 @@ import upload from "../middleware/upload.middleware.js";
 import { changePassword } from "../controllers/profile.controller.js";
 import { updateCardStatus, getPrintedRewardCardsForVendor, verifyCardQR } from "../controllers/card.controller.js";
 import { getVendorDashboard, getVendorNotifications } from "../controllers/dashboard.controller.js";
-import { createVendorReward, getSingleVendorReward, getMyVendorRewards, updateVendorReward, deleteVendorReward } from "../controllers/vendorReward.controller.js";
+import { createVendorReward, getSingleVendorReward, getVendorRewards, updateVendorReward, deleteVendorReward } from "../controllers/vendorReward.controller.js";
 
 
 const router = express.Router();
@@ -22,7 +22,7 @@ router.put("/update-profile", upload.single("profileImage"), updateMyVendorProfi
 
 router.post("/create-reward", upload.single("rewardImage"), createVendorReward);
 router.get("/reward/:id", getSingleVendorReward);
-router.get("/rewards", getMyVendorRewards);
+router.get("/rewards", getVendorRewards);
 router.put("/update-reward/:id", upload.single("rewardImage"), updateVendorReward);
 router.delete("/delete-reward/:id", deleteVendorReward);
 

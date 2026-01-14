@@ -11,6 +11,8 @@ import { getAllFeedback, updateFeedback, deleteFeedback } from "../controllers/f
 import { getSuperAdminDashboard, getSuperAdminEvents } from "../controllers/dashboard.controller.js";
 import { createAdmin, getAllAdmins, getSingleAdmin, updateAdmin, deleteAdmin } from "../controllers/auth.controller.js";
 import { createVendor, getAllVendors, getSingleVendor, getMyVendorProfile, updateVendor, deleteVendor } from "../controllers/vendor.controller.js";
+import { createVendorReward, getSingleVendorReward, getVendorRewards, updateVendorReward, deleteVendorReward } from "../controllers/vendorReward.controller.js";
+
 
 
 
@@ -84,6 +86,14 @@ router.get("/notifications-and-activities", getSuperAdminEvents);
 router.get("/vendor-rewards", getAllVendorRewardsForSuperAdmin);
 
 router.put("/vendor-rewards/:id", setVendorRewardActiveStatus);
+
+
+//create reward
+router.post("/create-vendor-reward", upload.single("rewardImage"), createVendorReward);
+router.get("/added-reward/:id", getSingleVendorReward);
+router.get("/added-rewards", getVendorRewards);
+router.put("/update-vendor-reward/:id", upload.single("rewardImage"), updateVendorReward);
+router.delete("/delete-vendor-reward/:id", deleteVendorReward);
 
 
 

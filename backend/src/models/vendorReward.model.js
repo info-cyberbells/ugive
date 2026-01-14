@@ -25,11 +25,11 @@ const vendorRewardSchema = new mongoose.Schema(
             default: "in_stock"
         },
 
-        vendor: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            required: true
-        },
+        // vendor: {
+        //     type: mongoose.Schema.Types.ObjectId,
+        //     ref: "User",
+        //     required: true
+        // },
 
         university: {
             type: mongoose.Schema.Types.ObjectId,
