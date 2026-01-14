@@ -8,8 +8,9 @@ import {
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useToast } from "../../../context/ToastContext";
-import { getVendorRewardsBySuperAdmin, auditVendorRewardBySuperAdmin, deleteRewardBySuperAdmin } from "../../../features/superadminVendors";
+import { getVendorRewardsBySuperAdmin, auditVendorRewardBySuperAdmin, deleteRewardBySuperAdmin, resetDeleteRewardState } from "../../../features/superadminVendors";
 import AddReward from "../Modals/AddRewardModal";
+import ConfirmationModal from "../Modals/deleteModal";
 
 
 
@@ -33,6 +34,10 @@ const VendorRewards = () => {
     const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
     const [selectedReward, setSelectedReward] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [rewardToDelete, setRewardToDelete] = useState(null);
+
 
 
     useEffect(() => {
@@ -86,6 +91,51 @@ const VendorRewards = () => {
         setIsModalOpen(false);
     }
 
+      useEffect(() => {
+        return () => {
+            dispatch(resetDeleteRewardState());
+        };
+    }, [dispatch]);
+
+     useEffect(() => {
+        if (!deleteSuccess && !deleteError) return;
+ 
+        if (deleteSuccess) {
+            showToast("Reward deleted successfully", "success");
+            dispatch(resetDeleteRewardState());
+        }
+ 
+        if (deleteError) {
+            showToast(deleteError, "error");
+            dispatch(resetDeleteRewardState());
+        }
+    }, [deleteSuccess, deleteError, dispatch]);
+
+
+    const openDeleteModal = (reward) => {
+        setRewardToDelete(reward);
+        setIsDeleteModalOpen(true);
+    };
+
+    const closeDeleteModal = () => {
+        setRewardToDelete(null);
+        setIsDeleteModalOpen(false);
+    };
+
+    const confirmDelete = async () => {
+        if (!rewardToDelete) return;
+
+        try {
+            await dispatch(deleteRewardBySuperAdmin(rewardToDelete._id)).unwrap();
+            // showToast("Reward deleted successfully", "success");
+            dispatch(getVendorRewardsBySuperAdmin({ page, limit }));
+        } catch (error) {
+            showToast(error || "Failed to delete reward", "error");
+        } finally {
+            closeDeleteModal();
+        }
+    };
+
 
     const handleAudit = async (status) => {
         try {
@@ -124,7 +174,6 @@ const VendorRewards = () => {
         const headers = [
             "Reward Name",
             "Description",
-            "Stock Status",
             // "University",
             "Active Status",
         ];
@@ -133,7 +182,6 @@ const VendorRewards = () => {
         const rows = selected.map((reward) => [
             reward.name,
             reward.description || "",
-            reward.stockStatus,
             // reward.university?.name || "",
             // new Date(reward.createdAt).toLocaleDateString(),
             reward.isActive || "",
@@ -287,11 +335,6 @@ const VendorRewards = () => {
                                             </th>
 
                                             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                                Stock Status
-                                            </th>
-
-
-                                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                                 Created At
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">
@@ -352,20 +395,6 @@ const VendorRewards = () => {
                                                     </div>
                                                 </td>
 
-
-                                                {/* Stock Status */}
-                                                <td className="px-6 py-3">
-                                                    <span
-                                                        className={`px-3 py-1 rounded-full text-xs font-semibold ${reward.stockStatus === "in_stock"
-                                                            ? "bg-green-100 text-green-700"
-                                                            : "bg-red-100 text-red-700"
-                                                            }`}
-                                                    >
-                                                        {reward.stockStatus}
-                                                    </span>
-                                                </td>
-
-
                                                 {/* Created At */}
                                                 <td className="px-6 py-3 text-sm text-gray-500">
                                                     {new Date(reward.createdAt).toLocaleDateString()}
@@ -400,7 +429,8 @@ const VendorRewards = () => {
 
                                                 <td className="px-6 py-3 text-sm font-medium">
                                                     <button
-                                                        onClick={() => handleDeleteReward(reward._id)}
+                                                        // onClick={() => handleDeleteReward(reward._id)}
+                                                      onClick={() => openDeleteModal(reward)}
                                                         disabled={isDeleting}
                                                         className={`transition duration-150 ${isDeleting
                                                             ? "text-gray-400 cursor-not-allowed"
@@ -525,17 +555,6 @@ const VendorRewards = () => {
                                 <p className="font-medium">{selectedReward.name}</p>
                             </div>
 
-                            <div>
-                                <p className="text-sm text-gray-500">Stock Status</p>
-                                <span
-                                    className={`px-3 py-1 rounded-full text-xs font-semibold ${selectedReward.stockStatus === "in_stock"
-                                        ? "bg-green-100 text-green-700"
-                                        : "bg-red-100 text-red-700"
-                                        }`}
-                                >
-                                    {selectedReward.stockStatus}
-                                </span>
-                            </div>
 
                             <div className="md:col-span-2">
                                 <p className="text-sm text-gray-500">Description</p>
@@ -598,12 +617,17 @@ const VendorRewards = () => {
             <AddReward
                 isOpen={isModalOpen}
                 onClose={closeModal}
-            // rewardId={currentReward?._id}
-            // mode={currentReward?.mode}
-            // onSave={handleSave}
-            // page={currentPage}
-            // limit={currentLimit}
+            
             />
+
+            <ConfirmationModal
+                     isOpen={isDeleteModalOpen}
+                    onClose={closeDeleteModal}
+                    onConfirm={confirmDelete}
+                    count={1}
+                    entity="reward"
+                    itemName={rewardToDelete?.name}
+                  />
 
 
         </div>

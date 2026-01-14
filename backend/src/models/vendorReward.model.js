@@ -19,12 +19,6 @@ const vendorRewardSchema = new mongoose.Schema(
             default: null
         },
 
-        stockStatus: {
-            type: String,
-            enum: ["in_stock", "out_of_stock"],
-            default: "in_stock"
-        },
-
         // vendor: {
         //     type: mongoose.Schema.Types.ObjectId,
         //     ref: "User",

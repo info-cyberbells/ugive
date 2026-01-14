@@ -2,7 +2,7 @@ import VendorReward from "../models/vendorReward.model.js";
 
 export const createVendorReward = async (req, res) => {
     try {
-        const { name, description, stockStatus, university } = req.body;
+        const { name, description, university } = req.body;
 
         if (!name) {
             return res.status(400).json({
@@ -34,7 +34,6 @@ export const createVendorReward = async (req, res) => {
         const reward = await VendorReward.create({
             name,
             description,
-            stockStatus: stockStatus || "in_stock",
             rewardImage,
             university: universityId,
             createdBy: req.user.id
@@ -166,7 +165,6 @@ export const updateVendorReward = async (req, res) => {
 
         if (updates.name) reward.name = updates.name;
         if (updates.description) reward.description = updates.description;
-        if (updates.stockStatus) reward.stockStatus = updates.stockStatus;
 
         if (req.file) {
             reward.rewardImage = `/uploads/profile-images/${req.file.filename}`;
