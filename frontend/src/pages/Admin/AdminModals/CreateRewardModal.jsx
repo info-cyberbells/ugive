@@ -139,23 +139,23 @@ const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) 
       updatedForm.append("name", formData.name);
       updatedForm.append("stockStatus", formData.stockStatus);
       updatedForm.append("description", formData.rewardDescription);
-   
+
 
       if (rewardImage) {
         updatedForm.append("rewardImage", rewardImage);
       }
 
-    //   dispatch(updateRewardByVendor({ id: rewardId, formData: updatedForm }))
-    //     .unwrap()
-    //     .then(() => {
-    //       showToast("Reward updated successfully!", "success");
-    //       dispatch(getAllVendorRewards({ page, limit }));
-    //       resetForm();
-    //       onClose();
-    //     })
-    //     .catch((err) => {
-    //       showToast(err || "Failed to update reward", "error");
-    //     });
+      //   dispatch(updateRewardByVendor({ id: rewardId, formData: updatedForm }))
+      //     .unwrap()
+      //     .then(() => {
+      //       showToast("Reward updated successfully!", "success");
+      //       dispatch(getAllVendorRewards({ page, limit }));
+      //       resetForm();
+      //       onClose();
+      //     })
+      //     .catch((err) => {
+      //       showToast(err || "Failed to update reward", "error");
+      //     });
 
       return;
     }
@@ -187,10 +187,10 @@ const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) 
           <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
           <button
             // onClick={onClose}
-             onClick={() => {
-                resetForm();
-                onClose();
-              }}
+            onClick={() => {
+              resetForm();
+              onClose();
+            }}
             className="text-gray-400 hover:text-gray-600 rounded-full p-1 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
@@ -199,7 +199,7 @@ const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) 
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          
+
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -218,29 +218,29 @@ const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) 
           </div>
 
           <div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">
-    Stock Status
-  </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Stock Status
+            </label>
 
-  <select
-    name="stockStatus"
-    value={formData.stockStatus}
-    disabled={isViewMode}
-    onChange={handleChange}
-    className={`mt-1 block w-full rounded-lg border p-2 text-sm bg-white
+            <select
+              name="stockStatus"
+              value={formData.stockStatus}
+              disabled={isViewMode}
+              onChange={handleChange}
+              className={`mt-1 block w-full rounded-lg border p-2 text-sm bg-white
       ${formData.stockStatus === "in_stock"
-        ? "text-green-600 border-green-500"
-        : "text-red-600 border-red-500"
-      }`}
-  >
-    <option value="in_stock" className="text-green-600">
-      In Stock
-    </option>
-    <option value="out_of_stock" className="text-red-600">
-      Out of Stock
-    </option>
-  </select>
-</div>
+                  ? "text-green-600 border-green-500"
+                  : "text-red-600 border-red-500"
+                }`}
+            >
+              <option value="in_stock" className="text-green-600">
+                In Stock
+              </option>
+              <option value="out_of_stock" className="text-red-600">
+                Out of Stock
+              </option>
+            </select>
+          </div>
 
 
           <div>

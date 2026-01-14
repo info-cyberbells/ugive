@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useToast } from "../../../context/ToastContext";
-import { getVendorRewardsBySuperAdmin, auditVendorRewardBySuperAdmin } from "../../../features/superadminVendors";
+import { getVendorRewardsBySuperAdmin, auditVendorRewardBySuperAdmin, deleteRewardBySuperAdmin } from "../../../features/superadminVendors";
 import AddReward from "../Modals/AddRewardModal";
 
 
@@ -24,6 +24,9 @@ const VendorRewards = () => {
         totalPages,
         limit,
         page,
+        isDeleting,
+        deleteSuccess,
+        deleteError,
     } = useSelector((state) => state.superadminVendors);
 
     const [selectedVendorIds, setSelectedVendorIds] = useState([]);
@@ -75,13 +78,13 @@ const VendorRewards = () => {
     };
 
     const openModalForAdd = () => {
-    // setCurrentReward(null);
-    setIsModalOpen(true);
-  };
+        // setCurrentReward(null);
+        setIsModalOpen(true);
+    };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-  }
+    const closeModal = () => {
+        setIsModalOpen(false);
+    }
 
 
     const handleAudit = async (status) => {
@@ -122,8 +125,6 @@ const VendorRewards = () => {
             "Reward Name",
             "Description",
             "Stock Status",
-            "Vendor Name",
-            "Vendor Email",
             // "University",
             "Active Status",
         ];
@@ -133,8 +134,6 @@ const VendorRewards = () => {
             reward.name,
             reward.description || "",
             reward.stockStatus,
-            reward.vendor?.name || "",
-            reward.vendor?.email || "",
             // reward.university?.name || "",
             // new Date(reward.createdAt).toLocaleDateString(),
             reward.isActive || "",
@@ -158,7 +157,7 @@ const VendorRewards = () => {
         link.setAttribute("href", encodedUri);
         link.setAttribute(
             "download",
-            `vendor_rewards_${new Date().toISOString().split("T")[0]}.csv`
+            `rewards_${new Date().toISOString().split("T")[0]}.csv`
         );
 
         document.body.appendChild(link);
@@ -168,6 +167,26 @@ const VendorRewards = () => {
         showToast(`${selected.length} reward(s) exported successfully!`, "success");
     };
 
+
+    useEffect(() => {
+        if (deleteSuccess) {
+            showToast("Reward deleted successfully", "success");
+        }
+        if (deleteError) {
+            showToast(deleteError, "error");
+        }
+    }, [deleteSuccess, deleteError]);
+
+    const handleDeleteReward = async (rewardId) => {
+        try {
+            await dispatch(deleteRewardBySuperAdmin(rewardId)).unwrap();
+            showToast("Reward deleted successfully", "success");
+            // Refresh the rewards list
+            dispatch(getVendorRewardsBySuperAdmin({ page, limit }));
+        } catch (error) {
+            showToast(error || "Failed to delete reward", "error");
+        }
+    };
 
 
     const SkeletonTable = () => {
@@ -201,7 +220,7 @@ const VendorRewards = () => {
                 {/* Header Section */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 w-full">
                     <h1 className="text-xl lg:text-2xl font-semibold text-gray-900">
-                        Vendor's Rewards List
+                        Create Rewards
                         <span className="text-sm text-gray-500 font-normal ml-3">
                             {data.length || 0} Rewards
                         </span>
@@ -225,11 +244,11 @@ const VendorRewards = () => {
                             </button>
 
                             <button
-                            onClick={openModalForAdd}
-                            className="flex cursor-pointer items-center justify-between px-4 py-2 text-[10px] sm:text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 transition duration-150 "
+                                onClick={openModalForAdd}
+                                className="flex cursor-pointer items-center justify-between px-4 py-2 text-[10px] sm:text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 transition duration-150 "
                             >
-                            <Plus className="h-5 w-5 mr-2 -ml-1 hidden sm:inline" />
-                            Add New Reward
+                                <Plus className="h-5 w-5 mr-2 -ml-1 hidden sm:inline" />
+                                Create New Reward
                             </button>
                         </div>
                     </div>
@@ -271,9 +290,6 @@ const VendorRewards = () => {
                                                 Stock Status
                                             </th>
 
-                                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                                Vendor Name
-                                            </th>
 
                                             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                                 Created At
@@ -283,6 +299,9 @@ const VendorRewards = () => {
                                             </th>
                                             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                                 Action
+                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                                Delete
                                             </th>
                                         </tr>
                                     </thead>
@@ -319,19 +338,19 @@ const VendorRewards = () => {
                                                 </td>
 
                                                 {/* Image */}
-                                             
-                                            <td className="px-6 py-3">
-                                            <div
-                                                className="relative group"
-                                                // onClick={() => setPreviewImage(reward.rewardImage)}
-                                            >
-                                                <img
-                                                src={reward.rewardImage}
-                                                alt={reward.name}
-                                                className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl object-cover shadow-md border border-gray-200 group-hover:opacity-90 transition-all"
-                                                />
-                                            </div>
-                                            </td>
+
+                                                <td className="px-6 py-3">
+                                                    <div
+                                                        className="relative group"
+                                                    // onClick={() => setPreviewImage(reward.rewardImage)}
+                                                    >
+                                                        <img
+                                                            src={reward.rewardImage}
+                                                            alt={reward.name}
+                                                            className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl object-cover shadow-md border border-gray-200 group-hover:opacity-90 transition-all"
+                                                        />
+                                                    </div>
+                                                </td>
 
 
                                                 {/* Stock Status */}
@@ -346,10 +365,6 @@ const VendorRewards = () => {
                                                     </span>
                                                 </td>
 
-                                                {/* Vendor Name */}
-                                                <td className="px-6 py-3 text-sm text-gray-700">
-                                                    {reward.vendor?.name || "N/A"}
-                                                </td>
 
                                                 {/* Created At */}
                                                 <td className="px-6 py-3 text-sm text-gray-500">
@@ -381,6 +396,19 @@ const VendorRewards = () => {
 
 
 
+                                                </td>
+
+                                                <td className="px-6 py-3 text-sm font-medium">
+                                                    <button
+                                                        onClick={() => handleDeleteReward(reward._id)}
+                                                        disabled={isDeleting}
+                                                        className={`transition duration-150 ${isDeleting
+                                                            ? "text-gray-400 cursor-not-allowed"
+                                                            : "text-red-600 hover:text-red-900 cursor-pointer"
+                                                            }`}
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))}
@@ -462,10 +490,10 @@ const VendorRewards = () => {
                                 </svg>
 
                                 <h3 className="mt-2 text-lg font-medium text-gray-900">
-                                    No Vendor Reward found
+                                    No Reward found
                                 </h3>
                                 <p className="mt-1 text-sm text-gray-500">
-                                    There are currently no rewards submitted by vendors.
+                                    There are currently no rewards created.
                                 </p>
                             </div>
                         </div>
@@ -512,12 +540,6 @@ const VendorRewards = () => {
                             <div className="md:col-span-2">
                                 <p className="text-sm text-gray-500">Description</p>
                                 <p className="text-gray-700">{selectedReward.description}</p>
-                            </div>
-
-                            <div>
-                                <p className="text-sm text-gray-500">Vendor</p>
-                                <p className="font-medium">{selectedReward.vendor?.name}</p>
-                                <p className="text-sm text-gray-600">{selectedReward.vendor?.email}</p>
                             </div>
 
                             <div>
@@ -574,14 +596,14 @@ const VendorRewards = () => {
             )}
 
             <AddReward
-                    isOpen={isModalOpen}
-                    onClose={closeModal}
-                    // rewardId={currentReward?._id}
-                    // mode={currentReward?.mode}
-                    // onSave={handleSave}
-                    // page={currentPage}
-                    // limit={currentLimit}
-                  />
+                isOpen={isModalOpen}
+                onClose={closeModal}
+            // rewardId={currentReward?._id}
+            // mode={currentReward?.mode}
+            // onSave={handleSave}
+            // page={currentPage}
+            // limit={currentLimit}
+            />
 
 
         </div>

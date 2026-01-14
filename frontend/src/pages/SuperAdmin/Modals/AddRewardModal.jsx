@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useToast } from "../../../context/ToastContext";
 import { useDispatch, useSelector } from "react-redux";
-// import { getAllVendorRewards, updateRewardByVendor } from "../../../features/vendorRewards";
+import { createRewardBySuperAdmin, getVendorRewardsBySuperAdmin } from "../../../features/superadminVendors";
+import { getUniversities } from "../../../features/studentSlice";
 
 
 
@@ -12,8 +13,11 @@ const AddReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => 
   const { showToast } = useToast();
   const [rewardImage, setRewardImage] = useState(null);
   const [rewardImagePreview, setRewardImagePreview] = useState(null);
-  const { selectedReward } = useSelector((state) => state.vendorReward);
   const [selectedRewardImagePath, setSelectedRewardImagePath] = useState("");
+  const { isCreating, createSuccess, createError } = useSelector((state) => state.superadminVendors);
+  const selectedReward = useSelector((state) => state.vendorReward?.selectedReward);
+  const { universities } = useSelector((state) => state.auth);
+
 
 
   const handleImageChange = (e) => {
@@ -34,11 +38,17 @@ const AddReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => 
     }
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isOpen) {
+      dispatch(getUniversities());
+    }
+  }, [isOpen, dispatch]);
   const [formData, setFormData] = useState({
     name: "",
     stockStatus: "in_stock",
     rewardDescription: "",
     rewardImage: "",
+    university: "",
   });
   const [originalData, setOriginalData] = useState(null);
 
@@ -48,7 +58,7 @@ const AddReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => 
     ? "View Reward Details"
     : isEditMode
       ? "Edit Reward Details"
-      : "Add New Reward";
+      : "Create New Reward";
 
 
 
@@ -83,7 +93,6 @@ const AddReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => 
     setSelectedRewardImagePath("");
     setErrors({});
   };
-  if (!isOpen) return null;
 
   const inputClasses = (field) =>
     `mt-1 block w-full rounded-lg border shadow-sm sm:text-sm p-2 transition duration-150
@@ -103,6 +112,18 @@ const AddReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => 
     });
   };
 
+  useEffect(() => {
+    if (createSuccess) {
+      showToast("Reward created successfully!", "success");
+      resetForm();
+      onClose();
+      dispatch(getVendorRewardsBySuperAdmin({ page, limit }));
+    }
+    if (createError) {
+      showToast(createError, "error");
+    }
+  }, [createSuccess, createError, dispatch, page, limit, onClose]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -111,6 +132,7 @@ const AddReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => 
       "name",
       "rewardDescription",
       "stockStatus",
+      "university",
     ];
 
     requiredFields.forEach((key) => {
@@ -139,45 +161,44 @@ const AddReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => 
       updatedForm.append("name", formData.name);
       updatedForm.append("stockStatus", formData.stockStatus);
       updatedForm.append("description", formData.rewardDescription);
-   
+
 
       if (rewardImage) {
         updatedForm.append("rewardImage", rewardImage);
       }
 
-    //   dispatch(updateRewardByVendor({ id: rewardId, formData: updatedForm }))
-    //     .unwrap()
-    //     .then(() => {
-    //       showToast("Reward updated successfully!", "success");
-    //       dispatch(getAllVendorRewards({ page, limit }));
-    //       resetForm();
-    //       onClose();
-    //     })
-    //     .catch((err) => {
-    //       showToast(err || "Failed to update reward", "error");
-    //     });
+      //   dispatch(updateRewardByVendor({ id: rewardId, formData: updatedForm }))
+      //     .unwrap()
+      //     .then(() => {
+      //       showToast("Reward updated successfully!", "success");
+      //       dispatch(getAllVendorRewards({ page, limit }));
+      //       resetForm();
+      //       onClose();
+      //     })
+      //     .catch((err) => {
+      //       showToast(err || "Failed to update reward", "error");
+      //     });
 
       return;
     }
 
 
-    const saveData = {
-      name: formData.name,
-      stockStatus: formData.stockStatus,
-      rewardDescription: formData.rewardDescription,
-    };
+    // Create new reward
+    const formDataToSend = new FormData();
+    formDataToSend.append("name", formData.name);
+    formDataToSend.append("stockStatus", formData.stockStatus);
+    formDataToSend.append("description", formData.rewardDescription);
+    formDataToSend.append("university", formData.university);
 
     if (rewardImage) {
-      saveData.rewardImage = rewardImage;
-    } else if (selectedRewardImagePath) {
-      saveData.rewardImagePath = selectedRewardImagePath;
+      formDataToSend.append("rewardImage", rewardImage);
     }
 
+    dispatch(createRewardBySuperAdmin(formDataToSend));
 
-    onSave(saveData);
-    resetForm();
-    onClose();
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/30 overflow-y-auto h-full w-full z-50 flex items-center justify-center p-4">
@@ -187,10 +208,10 @@ const AddReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => 
           <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
           <button
             // onClick={onClose}
-             onClick={() => {
-                resetForm();
-                onClose();
-              }}
+            onClick={() => {
+              resetForm();
+              onClose();
+            }}
             className="text-gray-400 hover:text-gray-600 rounded-full p-1 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
@@ -199,7 +220,29 @@ const AddReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => 
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          
+
+          {/* University Dropdown (Superadmin only) */}
+          {universities && universities.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                University
+              </label>
+              <select
+                name="university"
+                value={formData.university}
+                onChange={handleChange}
+                className={inputClasses("university")}
+              >
+                <option value="">Select University</option>
+                {universities.map((uni) => (
+                  <option key={uni._id} value={uni._id}>
+                    {uni.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -218,29 +261,29 @@ const AddReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => 
           </div>
 
           <div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">
-    Stock Status
-  </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Stock Status
+            </label>
 
-  <select
-    name="stockStatus"
-    value={formData.stockStatus}
-    disabled={isViewMode}
-    onChange={handleChange}
-    className={`mt-1 block w-full rounded-lg border p-2 text-sm bg-white
+            <select
+              name="stockStatus"
+              value={formData.stockStatus}
+              disabled={isViewMode}
+              onChange={handleChange}
+              className={`mt-1 block w-full rounded-lg border p-2 text-sm bg-white
       ${formData.stockStatus === "in_stock"
-        ? "text-green-600 border-green-500"
-        : "text-red-600 border-red-500"
-      }`}
-  >
-    <option value="in_stock" className="text-green-600">
-      In Stock
-    </option>
-    <option value="out_of_stock" className="text-red-600">
-      Out of Stock
-    </option>
-  </select>
-</div>
+                  ? "text-green-600 border-green-500"
+                  : "text-red-600 border-red-500"
+                }`}
+            >
+              <option value="in_stock" className="text-green-600">
+                In Stock
+              </option>
+              <option value="out_of_stock" className="text-red-600">
+                Out of Stock
+              </option>
+            </select>
+          </div>
 
 
           <div>
@@ -323,9 +366,13 @@ const AddReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => 
             {!isViewMode && (
               <button
                 type="submit"
-                className="px-4 py-2 cursor-pointer text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 shadow-sm transition"
+                disabled={isCreating}
+                className={`px-4 py-2 cursor-pointer text-sm font-medium text-white border border-transparent rounded-lg shadow-sm transition ${isCreating
+                  ? "bg-indigo-400 cursor-not-allowed"
+                  : "bg-indigo-600 hover:bg-indigo-700"
+                  }`}
               >
-                {isEditMode ? "Save Changes" : "Add Reward"}
+                {isCreating ? "Creating..." : (isEditMode ? "Save Changes" : "Add Reward")}
               </button>
             )}
           </div>
