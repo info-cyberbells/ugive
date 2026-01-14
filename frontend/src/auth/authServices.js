@@ -496,6 +496,30 @@ export const getActiveRewardsService = async (universityId) => {
   return response.data;
 };
 
+//create reward by superadmin
+export const createRewardBySuperAdminService = async (formData) => {
+  const auth = getAuthHeader();
+  const response = await axios.post(
+    USER_ENDPOINTS.SUPERADMIN_CREATE_REWARD,
+    formData,
+    {
+      headers: {
+        ...auth.headers,
+        "Content-Type": "multipart/form-data"
+      },
+    }
+  );
+  return response.data;
+}
+ 
+// DELETE REWARD BY VENDOR
+export const deleterewardBySuperAdminService = async (id) => {
+  const response = await axios.delete(
+    `${USER_ENDPOINTS.SUPERADMIN_DELETE_REWARD}/${id}`,
+    getAuthHeader(),
+  );
+  return response.data;
+}
 
 
 
@@ -838,11 +862,62 @@ export const getActiveRewardsAdminService = async () => {
 }
 
 
+//CREATE VENDOR REWARD BY ADMIN
+export const createVendorRewardByAdminService = async (rewardData)=>{
+  const auth = getAuthHeader();
+  const response = await axios.post(
+    USER_ENDPOINTS.ADMIN_CREATE_VENDOR_REWARD, rewardData,{
+      headers: {
+        ...auth.headers,
+        "Content-Type": "multipart/form-data"
+      },
+    },
+  );
+  return response.data;
+}
 
+// GET ALL REWARD VENDOR BY ADMIN
+export const getAllVendorRewardByAdminService = async ({ limit = 10, page = 1 }) => {
+  const response = await axios.get(
+    `${USER_ENDPOINTS.ADMIN_GET_ALL_VENDOR_REWARD}?page=${page}&limit=${limit}`,
+    getAuthHeader(),
+  );
+  return response.data;
+}
 
+// VIEW REWARD VENDOR BY ADMIN
+export const viewSingleVendorRewardByAdminService = async (id) => {
+  const response = await axios.get(
+    `${USER_ENDPOINTS.ADMIN_GET_SINGLE_VENDOR_REWARD}/${id}`,
+    getAuthHeader(),
+  );
+  return response.data;
+}
 
+// UPDATE VENDOR REWARD BY ADMIN
+export const updateVendorRewardByAdminService = async ({ id, formData }) => {
+  const auth = getAuthHeader();
+  const response = await axios.put(
+    `${USER_ENDPOINTS.ADMIN_UPDATE_SINGLE_VENDOR_REWARD}/${id}`,
+    formData,
+    {
+      headers: {
+        ...auth.headers,
+        "Content-Type": "multipart/form-data"
+      },
+    },
+  );
+  return response.data;
+}
 
-
+// DELETE VENDOR REWARD BY ADMIN
+export const deleteVendorRewardByAdminService = async (id) => {
+  const response = await axios.delete(
+    `${USER_ENDPOINTS.ADMIN_DELETE_VENDOR_REWARD}/${id}`,
+    getAuthHeader(),
+  );
+  return response.data;
+}
 
 
 
