@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { sendCardService, checkCardEligibilityService, getCardListingService, getRemainingCardService, checkBanWordsService } from "../auth/authServices";
+import { sendCardService, checkCardEligibilityService, getCardListingService, getRemainingCardService, checkBanWordsService, getPushNotificationFromAdminService } from "../auth/authServices";
 
 
 // send card thunk
@@ -33,7 +33,7 @@ export const checkCardEligibility = createAsyncThunk(
 //  GET SENTS CARDS THUNK
 export const getSentCards = createAsyncThunk(
     'card/getSentCards',
-    async(_, thunkAPI) => {
+    async (_, thunkAPI) => {
         try {
             const response = await getCardListingService();
             return response.cards;
@@ -54,13 +54,13 @@ export const remainingCardProgress = createAsyncThunk(
         } catch (error) {
             return thunkAPI.rejectWithValue(error?.response?.data?.message || "Failed to fetch Card Progress");
         }
-    }    
+    }
 )
 
 // BAN WORD CHECK THUNK 
-export const checkBanWords = createAsyncThunk (
+export const checkBanWords = createAsyncThunk(
     'card/checkforbanWords',
-    async (message, {rejectWithValue}) => {
+    async (message, { rejectWithValue }) => {
         try {
             const response = await checkBanWordsService(message);
             return response;
@@ -69,6 +69,20 @@ export const checkBanWords = createAsyncThunk (
         }
     }
 );
+
+// GET PUSH NOTIFIATION FROM ADMIN THUNK
+export const getAdminPushNotification = createAsyncThunk(
+    'card/getAdminPushNotification',
+    async (_, thunkAPI) => {
+        try {
+            const response = await getPushNotificationFromAdminService();
+            return response;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to get Push Notification");
+        }
+    }
+)
+
 
 
 const studentCardSlice = createSlice({
@@ -80,6 +94,8 @@ const studentCardSlice = createSlice({
         cardsProgress: null,
         isLoading: false,
         isError: false,
+        adminPushNotification: [],
+        adminNotificationLoading: false,
         message: "",
         eligibility: null,
         banWordCheck: null,
@@ -124,25 +140,25 @@ const studentCardSlice = createSlice({
 
             // get sents cards
 
-            .addCase(getSentCards.pending, (state)=>{
+            .addCase(getSentCards.pending, (state) => {
                 state.isLoading = true;
                 state.isError = false;
             })
-            .addCase(getSentCards.fulfilled, (state, action)=>{
+            .addCase(getSentCards.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.sentCards = action.payload; 
+                state.sentCards = action.payload;
             })
-            .addCase(getSentCards.rejected, (state, action) =>{
+            .addCase(getSentCards.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.message = action.payload;
             })
             //Remaining Cards & progress 
-            .addCase(remainingCardProgress.pending, (state)=>{
+            .addCase(remainingCardProgress.pending, (state) => {
                 state.isLoading = true;
                 state.isError = false;
             })
-            .addCase(remainingCardProgress.fulfilled, (state, action)=>{
+            .addCase(remainingCardProgress.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.cardsProgress = action.payload;
             })
@@ -153,20 +169,35 @@ const studentCardSlice = createSlice({
             })
 
             // check for ban words
-            .addCase(checkBanWords.pending, (state)=>{
+            .addCase(checkBanWords.pending, (state) => {
                 state.isLoading = true;
                 state.isError = false;
                 state.banWordError = null;
             })
-            .addCase(checkBanWords.fulfilled, (state, action)=>{
+            .addCase(checkBanWords.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.banWordCheck = action.payload;
             })
-            .addCase(checkBanWords.rejected, (state, action)=>{
+            .addCase(checkBanWords.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isError = true;
                 state.banWordError = action.payload;
             })
+
+            .addCase(getAdminPushNotification.pending, (state) => {
+                state.adminNotificationLoading = true;
+                state.isError = false;
+            })
+            .addCase(getAdminPushNotification.fulfilled, (state, action) => {
+                state.adminNotificationLoading = false;
+                state.adminPushNotification = action.payload.data;
+            })
+            .addCase(getAdminPushNotification.rejected, (state, action) => {
+                state.adminNotificationLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+
     }
 });
 

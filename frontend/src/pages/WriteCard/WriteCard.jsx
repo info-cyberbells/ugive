@@ -10,6 +10,7 @@ import {
   sendStudentCard,
   checkCardEligibility,
   checkBanWords,
+  getAdminPushNotification,
 } from "../../features/studentCardSlice";
 import {
   getFriendsList,
@@ -522,6 +523,9 @@ const SuccessMessage = ({ onGoBack }) => {
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+  const { adminPushNotification, adminNotificationLoading } = useSelector((state) => state.studentCard);
+
+  const activeNotification = adminPushNotification?.find(n => n.isActive);
 
   const navigate = useNavigate();
 
@@ -555,8 +559,12 @@ const SuccessMessage = ({ onGoBack }) => {
           </h2>
 
           <p className="text-[#000000] font-semibold italic mb-8 max-w-sm mx-auto">
-            Note: Cards are delivered each Thursday with a Tuesday evening
-            cutoff to allow time for printing.
+            Note: {
+              adminNotificationLoading
+                ? "Loading notification..."
+                : activeNotification?.message ||
+                "Cards are delivered each Thursday with a Tuesday evening cutoff to allow time for printing."
+            }
           </p>
           <div className="flex justify-center">
             <img src={card} className="h-52" alt="" />
@@ -642,6 +650,10 @@ const WriteCard = () => {
       .catch(() => {
         setShowEligibilityModal(true);
       });
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getAdminPushNotification());
   }, [dispatch]);
 
   const handleSubmission = () => {

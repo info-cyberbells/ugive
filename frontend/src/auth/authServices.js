@@ -1322,3 +1322,14 @@ export const deleteNotificationService = async (id) => {
   );
   return response.data;
 };
+
+
+
+// STUDENT GET PUSH NOTIFICATION FROM ADMIN
+export const getPushNotificationFromAdminService = async () => {
+  const response = await axios.get(
+    USER_ENDPOINTS.STUDENT_PUSH_NOTIFICATION,
+    getAuthHeader(),
+  );
+  return response.data;
+}

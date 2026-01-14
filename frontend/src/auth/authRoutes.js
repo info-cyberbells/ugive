@@ -110,6 +110,8 @@ export const USER_ENDPOINTS = {
 
     GET_STUDENT_NOTIFICATIONS: `${API_BASE_URL}/student/get-my-notifications`,
 
+    STUDENT_PUSH_NOTIFICATION: `${API_BASE_URL}/student/get-student-notifications`,
+
 
     // ADMIN ROUTES
     ADMIN_GET_PROFILE: `${API_BASE_URL}/admin/profile`,
