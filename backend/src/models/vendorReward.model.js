@@ -31,12 +31,6 @@ const vendorRewardSchema = new mongoose.Schema(
         //     required: true
         // },
 
-        totalPoints: {
-            type: Number,
-            required: true,
-            min: 0,
-        },
-
         university: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "University",
