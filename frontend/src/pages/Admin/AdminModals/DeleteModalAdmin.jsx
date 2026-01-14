@@ -24,7 +24,7 @@ const ConfirmationModal = ({
     </>
 ) : (
     <>
-        Are you sure you want to delete this {entity} <strong>"{itemName}"</strong>? 
+        Are you sure you want to delete this {entity} {itemName && <> <strong>"{itemName}"</strong></>}? 
         This action cannot be undone.
     </>
 );
