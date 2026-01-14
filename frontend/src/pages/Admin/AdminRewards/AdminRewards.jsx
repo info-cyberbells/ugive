@@ -253,7 +253,7 @@ const AdminRewardsManage = () => {
                 {/* Header Section */}
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4 w-full">
                     <h1 className="text-xl lg:text-2xl font-semibold text-gray-900">
-                        Reward's List
+                        Student Rewards
                         <span className="text-sm text-gray-500 font-normal ml-3">
                             {totalRewards || 0} Reward's
                         </span>
