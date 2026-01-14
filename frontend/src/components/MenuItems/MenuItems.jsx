@@ -48,7 +48,8 @@ const ROLE_BASED_MENUS = {
     { id: "admin-students", title: "Students", icon: BookOpen },
     { id: "admin-colleges", title: "Colleges", icon: GraduationCap },
     { id: "admin-vendors", title: "Vendors", icon: Store },
-    { id: "admin-rewards", title: "Rewards", icon: Gift },
+    { id: "admin-manage-rewards", title: "Manage Rewards", icon: Store },
+    { id: "admin-rewards", title: "Student Rewards", icon: Gift },
     { id: "admin-cards", title: "Cards", icon: Ticket },
     { id: "push-notifications", title: "Push Notifications", icon: BellRing },
     {

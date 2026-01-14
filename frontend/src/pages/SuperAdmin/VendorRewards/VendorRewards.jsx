@@ -9,6 +9,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useToast } from "../../../context/ToastContext";
 import { getVendorRewardsBySuperAdmin, auditVendorRewardBySuperAdmin } from "../../../features/superadminVendors";
+import AddReward from "../Modals/AddRewardModal";
 
 
 
@@ -28,6 +29,7 @@ const VendorRewards = () => {
     const [selectedVendorIds, setSelectedVendorIds] = useState([]);
     const [isAuditModalOpen, setIsAuditModalOpen] = useState(false);
     const [selectedReward, setSelectedReward] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
 
     useEffect(() => {
@@ -71,6 +73,15 @@ const VendorRewards = () => {
             }
         });
     };
+
+    const openModalForAdd = () => {
+    // setCurrentReward(null);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  }
 
 
     const handleAudit = async (status) => {
@@ -211,6 +222,14 @@ const VendorRewards = () => {
                             >
                                 Export
                                 <Download className="h-4 w-4 ml-2 hidden sm:inline" />
+                            </button>
+
+                            <button
+                            onClick={openModalForAdd}
+                            className="flex cursor-pointer items-center justify-between px-4 py-2 text-[10px] sm:text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-lg hover:bg-indigo-700 transition duration-150 "
+                            >
+                            <Plus className="h-5 w-5 mr-2 -ml-1 hidden sm:inline" />
+                            Add New Reward
                             </button>
                         </div>
                     </div>
@@ -553,6 +572,16 @@ const VendorRewards = () => {
                     </div>
                 </div>
             )}
+
+            <AddReward
+                    isOpen={isModalOpen}
+                    onClose={closeModal}
+                    // rewardId={currentReward?._id}
+                    // mode={currentReward?.mode}
+                    // onSave={handleSave}
+                    // page={currentPage}
+                    // limit={currentLimit}
+                  />
 
 
         </div>
