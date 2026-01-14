@@ -163,6 +163,16 @@ const superadminVendorsSlice = createSlice({
       state.isError = false;
       state.isSuccess = false;
     },
+    resetCreateRewardState: (state) => {
+      state.isCreating = false;
+      state.createSuccess = false;
+      state.createError = null;
+    },
+    resetDeleteRewardState: (state) => {
+      state.isDeleting = false;
+      state.deleteSuccess = false;
+      state.deleteError = null;
+    },
   },
 
   extraReducers: (builder) => {
@@ -357,5 +367,5 @@ const superadminVendorsSlice = createSlice({
 
 })
 
-
+export const { resetCreateRewardState, resetDeleteRewardState, } = superadminVendorsSlice.actions;
 export default superadminVendorsSlice.reducer;
