@@ -511,11 +511,11 @@ export const createRewardBySuperAdminService = async (formData) => {
   );
   return response.data;
 }
- 
+
 // DELETE REWARD BY VENDOR
 export const deleterewardBySuperAdminService = async (id) => {
   const response = await axios.delete(
-    `${USER_ENDPOINTS.SUPERADMIN_DELETE_REWARD}/${id}`,
+    `${USER_ENDPOINTS.SUPERADMIN_DELETE_VENDOR_REWARD}/${id}`,
     getAuthHeader(),
   );
   return response.data;
@@ -863,15 +863,15 @@ export const getActiveRewardsAdminService = async () => {
 
 
 //CREATE VENDOR REWARD BY ADMIN
-export const createVendorRewardByAdminService = async (rewardData)=>{
+export const createVendorRewardByAdminService = async (rewardData) => {
   const auth = getAuthHeader();
   const response = await axios.post(
-    USER_ENDPOINTS.ADMIN_CREATE_VENDOR_REWARD, rewardData,{
-      headers: {
-        ...auth.headers,
-        "Content-Type": "multipart/form-data"
-      },
+    USER_ENDPOINTS.ADMIN_CREATE_VENDOR_REWARD, rewardData, {
+    headers: {
+      ...auth.headers,
+      "Content-Type": "multipart/form-data"
     },
+  },
   );
   return response.data;
 }

@@ -60,7 +60,7 @@ export const USER_ENDPOINTS = {
     SUPERADMIN_DELETE_VENDOR: `${API_BASE_URL}/super_admin/delete-vendor`,
 
     SUPERADMIN_CREATE_REWARD: `${API_BASE_URL}/super_admin/create-vendor-reward`,
-    SUPERADMIN_DELETE_REWARD: `${API_BASE_URL}/super_admin/delete-vendor-reward`,
+    SUPERADMIN_DELETE_VENDOR_REWARD: `${API_BASE_URL}/super_admin/delete-vendor-reward`,
 
     SHOW_VENDORS_REWARDS: `${API_BASE_URL}/super_admin/vendor-rewards`,
     AUDIT_VENDORS_REWARD: `${API_BASE_URL}/super_admin/vendor-rewards`,
