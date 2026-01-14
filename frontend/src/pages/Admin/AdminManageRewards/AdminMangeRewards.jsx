@@ -5,8 +5,6 @@ import { useToast } from "../../../context/ToastContext";
 import ConfirmationModal from "../AdminModals/DeleteModalAdmin"
 import CreateReward from '../AdminModals/CreateRewardModal';
 import { createVendorRewardByAdmin, deleteVendorRewardByAdmin, getAllVendorRewardByAdmin, viewVendorRewardByAdmin } from '../../../features/adminRewardSlice';
-// import AdminRewardModal from '../AdminModals/RewardsAdminModal';
-// import { createRewardByAdmin, getAllRewardsByAdmin, deleteRewardByAdmin, viewRewardByAdmin } from '../../../features/adminRewardSlice';
 
 
 const AdminManageRewards = () => {
@@ -96,7 +94,6 @@ const AdminManageRewards = () => {
         const rewardData = new FormData();
     
         rewardData.append("name", data.name);
-        rewardData.append("stockStatus", data.stockStatus);
         rewardData.append("description", data.rewardDescription);
     
         if (data.rewardImage) {
@@ -181,13 +178,11 @@ const AdminManageRewards = () => {
         const headers = [
             "Name",
             "Reward Desc.",
-            "Stock Status"
         ];
 
         const rows = selected.map(reward => [
             reward.name,
             reward.rewardDescription,
-            reward.stockStatus,
         ]);
 
         // Fix CSV — wrap values in quotes to prevent merging

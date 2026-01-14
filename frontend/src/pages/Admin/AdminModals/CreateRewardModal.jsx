@@ -44,7 +44,6 @@ const CreateReward = ({
 
   const [formData, setFormData] = useState({
     name: "",
-    stockStatus: "in_stock",
     rewardDescription: "",
     rewardImage: "",
   });
@@ -65,7 +64,6 @@ const CreateReward = ({
       setSelectedRewardImagePath("");
       setFormData({
         name: selectedReward.name || "",
-        stockStatus: selectedReward.stockStatus || "in_stock",
         rewardDescription: selectedReward.description || "",
       });
 
@@ -80,7 +78,6 @@ const CreateReward = ({
     setFormData({
       name: "",
       totalPoints: "",
-      stockStatus: "in_stock",
       rewardDescription: "",
       rewardImage: "",
     });
@@ -114,7 +111,7 @@ const CreateReward = ({
     e.preventDefault();
 
     const newErrors = {};
-    const requiredFields = ["name", "rewardDescription", "stockStatus"];
+    const requiredFields = ["name", "rewardDescription"];
 
     requiredFields.forEach((key) => {
       if (!formData[key] || String(formData[key]).trim() === "") {
@@ -138,7 +135,6 @@ const CreateReward = ({
       const updatedForm = new FormData();
 
       updatedForm.append("name", formData.name);
-      updatedForm.append("stockStatus", formData.stockStatus);
       updatedForm.append("description", formData.rewardDescription);
 
       if (rewardImage) {
@@ -165,7 +161,6 @@ const CreateReward = ({
 
     const saveData = {
       name: formData.name,
-      stockStatus: formData.stockStatus,
       rewardDescription: formData.rewardDescription,
     };
 
@@ -230,32 +225,6 @@ const CreateReward = ({
               autoComplete="off"
               className={inputClasses("rewardDescription")}
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Stock Status
-            </label>
-
-            <select
-              name="stockStatus"
-              value={formData.stockStatus}
-              disabled={isViewMode}
-              onChange={handleChange}
-              className={`mt-1 block w-full rounded-lg border p-2 text-sm bg-white
-      ${
-        formData.stockStatus === "in_stock"
-          ? "text-green-600 border-green-500"
-          : "text-red-600 border-red-500"
-      }`}
-            >
-              <option value="in_stock" className="text-green-600">
-                In Stock
-              </option>
-              <option value="out_of_stock" className="text-red-600">
-                Out of Stock
-              </option>
-            </select>
           </div>
 
           <div>

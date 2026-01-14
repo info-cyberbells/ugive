@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useToast } from "../../../context/ToastContext";
 import { useDispatch, useSelector } from "react-redux";
-import { createRewardBySuperAdmin, getVendorRewardsBySuperAdmin } from "../../../features/superadminVendors";
+import { createRewardBySuperAdmin, getVendorRewardsBySuperAdmin, resetCreateRewardState } from "../../../features/superadminVendors";
 import { getUniversities } from "../../../features/studentSlice";
 
 
@@ -45,7 +45,6 @@ const AddReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => 
   }, [isOpen, dispatch]);
   const [formData, setFormData] = useState({
     name: "",
-    stockStatus: "in_stock",
     rewardDescription: "",
     rewardImage: "",
     university: "",
@@ -69,7 +68,6 @@ const AddReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => 
       setSelectedRewardImagePath("");
       setFormData({
         name: selectedReward.name || "",
-        stockStatus: selectedReward.stockStatus || "in_stock",
         rewardDescription: selectedReward.description || "",
       });
 
@@ -84,7 +82,6 @@ const AddReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => 
   const resetForm = () => {
     setFormData({
       name: "",
-      stockStatus: "in_stock",
       rewardDescription: "",
       rewardImage: "",
     });
@@ -113,25 +110,31 @@ const AddReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => 
   };
 
   useEffect(() => {
+    if (!createSuccess && !createError) return;
+ 
     if (createSuccess) {
       showToast("Reward created successfully!", "success");
       resetForm();
       onClose();
       dispatch(getVendorRewardsBySuperAdmin({ page, limit }));
+      dispatch(resetCreateRewardState());
     }
+ 
     if (createError) {
       showToast(createError, "error");
+      dispatch(resetCreateRewardState());
     }
-  }, [createSuccess, createError, dispatch, page, limit, onClose]);
+  }, [createSuccess, createError]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (isCreating) return;
 
     const newErrors = {};
     const requiredFields = [
       "name",
       "rewardDescription",
-      "stockStatus",
       "university",
     ];
 
@@ -159,7 +162,6 @@ const AddReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => 
       const updatedForm = new FormData();
 
       updatedForm.append("name", formData.name);
-      updatedForm.append("stockStatus", formData.stockStatus);
       updatedForm.append("description", formData.rewardDescription);
 
 
@@ -186,7 +188,6 @@ const AddReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => 
     // Create new reward
     const formDataToSend = new FormData();
     formDataToSend.append("name", formData.name);
-    formDataToSend.append("stockStatus", formData.stockStatus);
     formDataToSend.append("description", formData.rewardDescription);
     formDataToSend.append("university", formData.university);
 
@@ -259,32 +260,6 @@ const AddReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => 
               className={inputClasses("name")}
             />
           </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Stock Status
-            </label>
-
-            <select
-              name="stockStatus"
-              value={formData.stockStatus}
-              disabled={isViewMode}
-              onChange={handleChange}
-              className={`mt-1 block w-full rounded-lg border p-2 text-sm bg-white
-      ${formData.stockStatus === "in_stock"
-                  ? "text-green-600 border-green-500"
-                  : "text-red-600 border-red-500"
-                }`}
-            >
-              <option value="in_stock" className="text-green-600">
-                In Stock
-              </option>
-              <option value="out_of_stock" className="text-red-600">
-                Out of Stock
-              </option>
-            </select>
-          </div>
-
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
