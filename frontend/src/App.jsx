@@ -40,6 +40,7 @@ import VendorRewards from "./pages/SuperAdmin/VendorRewards/VendorRewards";
 import ChildSafetyPolicy from "./pages/TermsAndConditions/child-safety-policy.jsx";
 import PushNotifications from "./pages/Admin/PushNotifications/PushNotifications.jsx";
 import AdminManageRewards from "./pages/Admin/AdminManageRewards/AdminMangeRewards.jsx";
+import ReferShare from "./pages/ReferShare/ReferShare.jsx"
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -186,6 +187,11 @@ function App() {
         <Route
           path="/profile"
           element={isAuthenticated ? <Profile /> : <Navigate to="/" replace />}
+        />
+
+        <Route
+          path="/refer-share"
+          element={isAuthenticated ? <ReferShare /> : <Navigate to="/" replace />}
         />
 
         <Route

@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { createVendorBySuperAdminService, deleteVendorBySuperAdminService, getAllVendorsSuperadminService, updateVendorsProfileBySuperAdminService, viewVendorProfileBySuperAdmin, getVendorRewardsBySuperAdminService, auditVendorRewardBySuperAdminService } from "../auth/authServices";
+import { createVendorBySuperAdminService, deleteVendorBySuperAdminService, getAllVendorsSuperadminService, updateVendorsProfileBySuperAdminService, viewVendorProfileBySuperAdmin, getVendorRewardsBySuperAdminService, auditVendorRewardBySuperAdminService, createRewardBySuperAdminService, deleterewardBySuperAdminService } from "../auth/authServices";
 
 
 // GET ALL VENDORS THUNK 
@@ -100,6 +100,35 @@ export const auditVendorRewardBySuperAdmin = createAsyncThunk(
   }
 );
 
+// Async Thunks
+export const createRewardBySuperAdmin = createAsyncThunk(
+  "superadminRewards/createReward",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await createRewardBySuperAdminService(formData);
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to create reward"
+      );
+    }
+  }
+);
+
+export const deleteRewardBySuperAdmin = createAsyncThunk(
+  "superadminRewards/deleteReward",
+  async (rewardId, { rejectWithValue }) => {
+    try {
+      const response = await deleterewardBySuperAdminService(rewardId);
+      return { rewardId, response };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to delete reward"
+      );
+    }
+  }
+);
+
 
 
 
@@ -114,11 +143,18 @@ const superadminVendorsSlice = createSlice({
     limit: 10,
     totalVendors: 0,
     totalPages: 1,
+    rewards: [],
     totalRewards: 0,
     isLoading: false,
     isError: false,
     isSuccess: false,
     message: "",
+    isCreating: false,
+    createSuccess: false,
+    createError: null,
+    isDeleting: false,
+    deleteSuccess: false,
+    deleteError: null,
   },
   reducers: {
     reset: (state) => {
@@ -277,6 +313,40 @@ const superadminVendorsSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
+      })
+
+      //superadmin creating reward
+      .addCase(createRewardBySuperAdmin.pending, (state) => {
+        state.isCreating = true;
+        state.createError = null;
+        state.createSuccess = false;
+      })
+      .addCase(createRewardBySuperAdmin.fulfilled, (state, action) => {
+        state.isCreating = false;
+        state.createSuccess = true;
+        state.createError = null;
+      })
+      .addCase(createRewardBySuperAdmin.rejected, (state, action) => {
+        state.isCreating = false;
+        state.createError = action.payload;
+        state.createSuccess = false;
+      })
+
+      // Delete Reward
+      .addCase(deleteRewardBySuperAdmin.pending, (state) => {
+        state.isDeleting = true;
+        state.deleteError = null;
+        state.deleteSuccess = false;
+      })
+      .addCase(deleteRewardBySuperAdmin.fulfilled, (state, action) => {
+        state.isDeleting = false;
+        state.deleteSuccess = true;
+        state.deleteError = null;
+      })
+      .addCase(deleteRewardBySuperAdmin.rejected, (state, action) => {
+        state.isDeleting = false;
+        state.deleteError = action.payload;
+        state.deleteSuccess = false;
       })
 
 

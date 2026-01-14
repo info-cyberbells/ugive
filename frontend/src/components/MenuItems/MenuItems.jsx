@@ -37,7 +37,7 @@ const ROLE_BASED_MENUS = {
     { id: "manage-admins", title: "Manage Admins", icon: UserCog },
     { id: "manage-students", title: "Manage Students", icon: BookOpen },
     { id: "manage-vendors", title: "Manage Vendors", icon: Store },
-    { id: "vendor-rewards", title: "Vendor Rewards", icon: Trophy },
+    { id: "vendor-rewards", title: "Create Rewards", icon: Trophy },
     { id: "manage-rewards", title: "Manage Rewards", icon: Gift },
     { id: "feedbacks", title: "Manage Feedback", icon: MessageSquare },
     { id: "social", title: "Social", icon: Share2 },
@@ -85,7 +85,7 @@ const ROLE_BASED_MENUS = {
         { id: "contactus", title: "Contact Us" },
       ],
     },
-    // { id: "social", title: "Social", icon: Share2 },
+    { id: "refer-share", title: "Refer & Share", icon: Share2 },
   ],
 };
 
