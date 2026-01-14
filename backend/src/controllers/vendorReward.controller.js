@@ -2,7 +2,7 @@ import VendorReward from "../models/vendorReward.model.js";
 
 export const createVendorReward = async (req, res) => {
     try {
-        const { name, description, stockStatus, university } = req.body;
+        const { name, description, stockStatus, university, totalPoints } = req.body;
 
         if (!name) {
             return res.status(400).json({
@@ -10,6 +10,20 @@ export const createVendorReward = async (req, res) => {
                 message: "Reward name is required"
             });
         }
+
+        if (totalPoints === undefined || totalPoints === null) {
+            return res.status(400).json({
+                success: false,
+                message: "Total points are required",
+            });
+        }
+        if (isNaN(totalPoints) || Number(totalPoints) < 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Total points must be a valid non-negative number",
+            });
+        }
+
 
         let universityId;
 
@@ -36,6 +50,7 @@ export const createVendorReward = async (req, res) => {
             description,
             stockStatus: stockStatus || "in_stock",
             rewardImage,
+            totalPoints: Number(totalPoints),
             university: universityId,
             createdBy: req.user.id
         });
@@ -167,6 +182,16 @@ export const updateVendorReward = async (req, res) => {
         if (updates.name) reward.name = updates.name;
         if (updates.description) reward.description = updates.description;
         if (updates.stockStatus) reward.stockStatus = updates.stockStatus;
+        if (updates.totalPoints !== undefined) {
+            if (isNaN(updates.totalPoints) || Number(updates.totalPoints) < 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Total points must be a valid non-negative number",
+                });
+            }
+            reward.totalPoints = Number(updates.totalPoints);
+        }
+
 
         if (req.file) {
             reward.rewardImage = `/uploads/profile-images/${req.file.filename}`;
