@@ -14,23 +14,6 @@ const pushNotificationSchema = new mongoose.Schema(
             trim: true,
         },
 
-        type: {
-            type: String,
-            enum: ["CARD_DROP"],
-            default: "CARD_DROP",
-        },
-
-        targetRole: {
-            type: String,
-            enum: ["student"],
-            default: "student",
-        },
-
-        scheduledAt: {
-            type: Date,
-            default: null,
-        },
-
         isActive: {
             type: Boolean,
             default: true,
@@ -41,7 +24,6 @@ const pushNotificationSchema = new mongoose.Schema(
             ref: "University",
             required: true,
         },
-
 
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,

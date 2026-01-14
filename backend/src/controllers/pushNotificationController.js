@@ -1,10 +1,9 @@
 import PushNotification from "../models/PushNotification.js";
 import User from "../models/user.model.js";
 
-
 export const createPushNotification = async (req, res) => {
     try {
-        const { title, message, scheduledAt } = req.body;
+        const { title, message } = req.body;
 
         if (!title || !message) {
             return res.status(400).json({
@@ -22,21 +21,30 @@ export const createPushNotification = async (req, res) => {
             });
         }
 
+        await PushNotification.updateMany(
+            {
+                universityId: user.university,
+                isActive: true,
+            },
+            { isActive: false }
+        );
+
         const notification = await PushNotification.create({
             title,
             message,
-            scheduledAt,
             universityId: user.university,
             createdBy: req.user.id,
+            isActive: true,
         });
-
 
         res.status(201).json({
             success: true,
             message: "Push notification created successfully",
             data: notification,
         });
+
     } catch (error) {
+        console.error(error);
         res.status(500).json({
             success: false,
             message: "Failed to create push notification",
@@ -47,9 +55,8 @@ export const createPushNotification = async (req, res) => {
 
 export const getAllPushNotifications = async (req, res) => {
     try {
-        const notifications = await PushNotification.find().sort({
-            createdAt: -1,
-        });
+        const notifications = await PushNotification.find()
+            .sort({ createdAt: -1 });
 
         res.status(200).json({
             success: true,
@@ -66,29 +73,30 @@ export const getAllPushNotifications = async (req, res) => {
 
 export const getStudentPushNotifications = async (req, res) => {
     try {
-        const now = new Date();
+        const student = await User.findById(req.user.id).select("university");
+
+        if (!student || !student.university) {
+            return res.status(400).json({
+                success: false,
+                message: "Student university not found",
+            });
+        }
 
         const notifications = await PushNotification.find({
+            universityId: student.university,
             isActive: true,
-            targetRole: "student",
-            $or: [
-                { scheduledAt: null },
-                { scheduledAt: { $lte: now } },
-            ],
         }).sort({ createdAt: -1 });
 
         if (notifications.length === 0) {
             return res.status(200).json({
                 success: true,
-                data: [
-                    {
-                        _id: "DEFAULT_NOTIFICATION",
-                        title: "Card Update",
-                        message:
-                            "Your card status updates will appear here once a drop is scheduled.",
-                        isDefault: true,
-                    },
-                ],
+                data: {
+                    _id: "DEFAULT_NOTIFICATION",
+                    title: "Card Update",
+                    message:
+                        "Your card status updates will appear here once a drop is scheduled.",
+                    isDefault: true,
+                },
             });
         }
 
@@ -96,14 +104,15 @@ export const getStudentPushNotifications = async (req, res) => {
             success: true,
             data: notifications,
         });
+
     } catch (error) {
+        console.error(error);
         res.status(500).json({
             success: false,
             message: "Failed to fetch notifications",
         });
     }
 };
-
 
 
 export const togglePushNotification = async (req, res) => {
@@ -119,7 +128,22 @@ export const togglePushNotification = async (req, res) => {
             });
         }
 
-        notification.isActive = !notification.isActive;
+        if (!notification.isActive) {
+            await PushNotification.updateMany(
+                {
+                    universityId: notification.universityId,
+                    _id: { $ne: notification._id },
+                    isActive: true,
+                },
+                { isActive: false }
+            );
+
+            notification.isActive = true;
+        }
+        else {
+            notification.isActive = false;
+        }
+
         await notification.save();
 
         res.status(200).json({
@@ -127,7 +151,9 @@ export const togglePushNotification = async (req, res) => {
             message: "Push notification status updated",
             data: notification,
         });
+
     } catch (error) {
+        console.error(error);
         res.status(500).json({
             success: false,
             message: "Failed to update notification",
@@ -135,11 +161,10 @@ export const togglePushNotification = async (req, res) => {
     }
 };
 
-
 export const updatePushNotification = async (req, res) => {
     try {
         const { id } = req.params;
-        const { title, message, scheduledAt, isActive } = req.body;
+        const { title, message } = req.body;
 
         const notification = await PushNotification.findById(id);
 
@@ -152,8 +177,6 @@ export const updatePushNotification = async (req, res) => {
 
         if (title !== undefined) notification.title = title;
         if (message !== undefined) notification.message = message;
-        if (scheduledAt !== undefined) notification.scheduledAt = scheduledAt;
-        if (isActive !== undefined) notification.isActive = isActive;
 
         await notification.save();
 
@@ -162,6 +185,7 @@ export const updatePushNotification = async (req, res) => {
             message: "Push notification updated successfully",
             data: notification,
         });
+
     } catch (error) {
         res.status(500).json({
             success: false,
@@ -191,6 +215,7 @@ export const deletePushNotification = async (req, res) => {
             success: true,
             message: "Push notification deleted successfully",
         });
+
     } catch (error) {
         res.status(500).json({
             success: false,
