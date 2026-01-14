@@ -2,19 +2,28 @@ import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useToast } from "../../../context/ToastContext";
 import { useDispatch, useSelector } from "react-redux";
-// import { getAllVendorRewards, updateRewardByVendor } from "../../../features/vendorRewards";
+import {
+  getAllVendorRewardByAdmin,
+  updateVendorRewardByAdmin,
+} from "../../../features/adminRewardSlice";
 
-
-
-const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) => {
-
+const CreateReward = ({
+  isOpen,
+  onClose,
+  rewardId,
+  onSave,
+  mode,
+  page,
+  limit,
+}) => {
   const dispatch = useDispatch();
   const { showToast } = useToast();
   const [rewardImage, setRewardImage] = useState(null);
   const [rewardImagePreview, setRewardImagePreview] = useState(null);
-  const { selectedReward } = useSelector((state) => state.vendorReward);
+  const { selectedVendorReward: selectedReward } = useSelector(
+    (state) => state.adminReward
+  );
   const [selectedRewardImagePath, setSelectedRewardImagePath] = useState("");
-
 
   const handleImageChange = (e) => {
     const file = e.target.files?.[0];
@@ -23,7 +32,6 @@ const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) 
     setRewardImage(file);
     setRewardImagePreview(URL.createObjectURL(file)); // preview
   };
-
 
   const isViewMode = mode === "view";
   const isEditMode = mode === "edit";
@@ -47,10 +55,8 @@ const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) 
   const title = isViewMode
     ? "View Reward Details"
     : isEditMode
-      ? "Edit Reward Details"
-      : "Add New Reward";
-
-
+    ? "Edit Reward Details"
+    : "Add New Reward";
 
   useEffect(() => {
     if (isOpen && (isEditMode || isViewMode) && selectedReward) {
@@ -70,10 +76,10 @@ const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) 
     }
   }, [isOpen, selectedReward, isEditMode, isViewMode]);
 
-
   const resetForm = () => {
     setFormData({
       name: "",
+      totalPoints: "",
       stockStatus: "in_stock",
       rewardDescription: "",
       rewardImage: "",
@@ -87,10 +93,11 @@ const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) 
 
   const inputClasses = (field) =>
     `mt-1 block w-full rounded-lg border shadow-sm sm:text-sm p-2 transition duration-150
-        ${errors[field]
-      ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-      : "border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
-    }`;
+        ${
+          errors[field]
+            ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+            : "border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+        }`;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -107,11 +114,7 @@ const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) 
     e.preventDefault();
 
     const newErrors = {};
-    const requiredFields = [
-      "name",
-      "rewardDescription",
-      "stockStatus",
-    ];
+    const requiredFields = ["name", "rewardDescription", "stockStatus"];
 
     requiredFields.forEach((key) => {
       if (!formData[key] || String(formData[key]).trim() === "") {
@@ -129,37 +132,36 @@ const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) 
       return;
     }
 
-
     const payload = { ...formData, id: rewardId };
 
     if (isEditMode) {
-
       const updatedForm = new FormData();
 
       updatedForm.append("name", formData.name);
       updatedForm.append("stockStatus", formData.stockStatus);
       updatedForm.append("description", formData.rewardDescription);
 
-
       if (rewardImage) {
         updatedForm.append("rewardImage", rewardImage);
       }
 
-      //   dispatch(updateRewardByVendor({ id: rewardId, formData: updatedForm }))
-      //     .unwrap()
-      //     .then(() => {
-      //       showToast("Reward updated successfully!", "success");
-      //       dispatch(getAllVendorRewards({ page, limit }));
-      //       resetForm();
-      //       onClose();
-      //     })
-      //     .catch((err) => {
-      //       showToast(err || "Failed to update reward", "error");
-      //     });
+      dispatch(
+        updateVendorRewardByAdmin({ id: rewardId, formData: updatedForm })
+      )
+        .unwrap()
+        .then(() => {
+          showToast("Reward updated successfully!", "success");
+          dispatch(getAllVendorRewardByAdmin({ page, limit }));
+          resetForm();
+          onClose();
+        })
+        .catch((err) => {
+          console.log(err);
+          showToast("Failed to update reward", "error");
+        });
 
       return;
     }
-
 
     const saveData = {
       name: formData.name,
@@ -172,7 +174,6 @@ const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) 
     } else if (selectedRewardImagePath) {
       saveData.rewardImagePath = selectedRewardImagePath;
     }
-
 
     onSave(saveData);
     resetForm();
@@ -199,8 +200,6 @@ const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) 
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-
-
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Reward Name
@@ -218,6 +217,22 @@ const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) 
           </div>
 
           <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Reward Description
+            </label>
+            <textarea
+              type="text"
+              name="rewardDescription"
+              value={formData.rewardDescription}
+              disabled={isViewMode}
+              onChange={handleChange}
+              placeholder="Get Free Coffee"
+              autoComplete="off"
+              className={inputClasses("rewardDescription")}
+            />
+          </div>
+
+          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Stock Status
             </label>
@@ -228,10 +243,11 @@ const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) 
               disabled={isViewMode}
               onChange={handleChange}
               className={`mt-1 block w-full rounded-lg border p-2 text-sm bg-white
-      ${formData.stockStatus === "in_stock"
-                  ? "text-green-600 border-green-500"
-                  : "text-red-600 border-red-500"
-                }`}
+      ${
+        formData.stockStatus === "in_stock"
+          ? "text-green-600 border-green-500"
+          : "text-red-600 border-red-500"
+      }`}
             >
               <option value="in_stock" className="text-green-600">
                 In Stock
@@ -241,24 +257,6 @@ const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) 
               </option>
             </select>
           </div>
-
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Reward Description
-            </label>
-            <textarea
-              type="text"
-              name="rewardDescription"
-              value={formData.rewardDescription}
-              disabled={isViewMode}
-              onChange={handleChange}
-              placeholder="Award for good performance"
-              autoComplete="off"
-              className={inputClasses("rewardDescription")}
-            />
-          </div>
-
 
           <div>
             <div>
@@ -273,7 +271,11 @@ const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) 
                   onChange={handleImageChange}
                   className={`block w-full text-sm text-gray-700 file:mr-3 file:py-2
                  file:px-4 file:rounded-md file:border-0
-                 ${errors.rewardImage ? "file:bg-red-100 file:text-red-600 " : "file:bg-indigo-50 file:text-indigo-600"}
+                 ${
+                   errors.rewardImage
+                     ? "file:bg-red-100 file:text-red-600 "
+                     : "file:bg-indigo-50 file:text-indigo-600"
+                 }
                  hover:file:bg-indigo-100 cursor-pointer`}
                 />
               )}
@@ -286,26 +288,25 @@ const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) 
                     className="h-16 w-16 rounded-lg object-cover"
                   />
 
-                  {!isViewMode && <button
-                    type="button"
-                    onClick={() => {
-                      setRewardImage(null);
-                      setRewardImagePreview(null);
-                      setFormData((prev) => ({ ...prev, rewardImage: "" }));
-                    }}
-                    className="absolute -top-2 -right-2 bg-red-100 text-black rounded-full
+                  {!isViewMode && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRewardImage(null);
+                        setRewardImagePreview(null);
+                        setFormData((prev) => ({ ...prev, rewardImage: "" }));
+                      }}
+                      className="absolute -top-2 -right-2 bg-red-100 text-black rounded-full
                    w-5 h-5 flex items-center justify-center text-sm shadow-md
                    hover:bg-red-300 cursor-pointer"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>}
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
                 </div>
               )}
             </div>
-
           </div>
-
-
 
           {/* Actions */}
           <div className="pt-4 flex justify-end space-x-3">
@@ -315,7 +316,6 @@ const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) 
                 resetForm();
                 onClose();
               }}
-
               className="px-4 py-2 text-sm font-medium text-gray-700 cursor-pointer bg-white border border-gray-300 rounded-lg hover:bg-gray-50 shadow-sm transition"
             >
               Cancel
@@ -331,7 +331,6 @@ const CreateReward = ({ isOpen, onClose, rewardId, onSave, mode, page, limit }) 
           </div>
         </form>
       </div>
-
     </div>
   );
 };

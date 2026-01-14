@@ -59,6 +59,9 @@ export const USER_ENDPOINTS = {
     SUPERADMIN_UPDATE_VENDOR: `${API_BASE_URL}/super_admin/update-vendor`,
     SUPERADMIN_DELETE_VENDOR: `${API_BASE_URL}/super_admin/delete-vendor`,
 
+    SUPERADMIN_CREATE_REWARD: `${API_BASE_URL}/super_admin/create-vendor-reward`,
+    SUPERADMIN_DELETE_REWARD: `${API_BASE_URL}/super_admin/delete-vendor-reward`,
+
     SHOW_VENDORS_REWARDS: `${API_BASE_URL}/super_admin/vendor-rewards`,
     AUDIT_VENDORS_REWARD: `${API_BASE_URL}/super_admin/vendor-rewards`,
     PUBLIC_ACTIVE_REWARDS: `${API_BASE_URL}/public/active-rewards`,
@@ -143,6 +146,13 @@ export const USER_ENDPOINTS = {
     ADMIN_GET_VENDOR: `${API_BASE_URL}/admin/vendors`,
     ADMIN_UPDATE_VENDOR: `${API_BASE_URL}/admin/update-vendor`,
     ADMIN_DELETE_VENDOR: `${API_BASE_URL}/admin/delete-vendor`,
+
+    // ADMIN CREATE VENDOR REWRAD
+    ADMIN_CREATE_VENDOR_REWARD: `${API_BASE_URL}/admin/create-vendor-reward`,
+    ADMIN_GET_ALL_VENDOR_REWARD: `${API_BASE_URL}/admin/added-rewards`,
+    ADMIN_GET_SINGLE_VENDOR_REWARD: `${API_BASE_URL}/admin/added-reward`,
+    ADMIN_UPDATE_SINGLE_VENDOR_REWARD: `${API_BASE_URL}/admin/update-vendor-reward`,
+    ADMIN_DELETE_VENDOR_REWARD: `${API_BASE_URL}/admin/delete-vendor-reward`,
 
     ADMIN_GET_ALL_REWARD: `${API_BASE_URL}/admin/rewards`,
     ADMIN_GET_ACTIVE_REWARD: `${API_BASE_URL}/admin/active-rewards`,

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useToast } from "../../../context/ToastContext";
 import ConfirmationModal from "../AdminModals/DeleteModalAdmin"
 import CreateReward from '../AdminModals/CreateRewardModal';
+import { createVendorRewardByAdmin, deleteVendorRewardByAdmin, getAllVendorRewardByAdmin, viewVendorRewardByAdmin } from '../../../features/adminRewardSlice';
 // import AdminRewardModal from '../AdminModals/RewardsAdminModal';
 // import { createRewardByAdmin, getAllRewardsByAdmin, deleteRewardByAdmin, viewRewardByAdmin } from '../../../features/adminRewardSlice';
 
@@ -11,9 +12,9 @@ import CreateReward from '../AdminModals/CreateRewardModal';
 const AdminManageRewards = () => {
     const dispatch = useDispatch();
     const { showToast } = useToast();
-    const { adminRewards, tableLoading, isLoading, isError, page, limit, totalPages, totalRewards } = useSelector((state) => state.adminReward);
+    const { adminVendorRewards, tableLoading, isLoading, isError, page, limit, totalPages, totalRewards } = useSelector((state) => state.adminReward);
 
-    const rewards = adminRewards || [];
+    const rewards = adminVendorRewards || [];
 
     const [selectedRewardIds, setSelectedRewardIds] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,19 +26,22 @@ const AdminManageRewards = () => {
     const isAnySelected = selectedRewardIds.length > 0;
     const [previewImage, setPreviewImage] = useState(null);
 
-    // useEffect(() => {
-    //     dispatch(getAllRewardsByAdmin(limit, page))
-    // }, [dispatch]);
+    const [currentPage, setCurrentPage] = useState(page);
+      const [currentLimit, setCurrentLimit] = useState(limit);
+
+    useEffect(() => {
+        dispatch(getAllVendorRewardByAdmin(limit, page))
+    }, [dispatch]);
 
 
 
     const handlePageChange = (newPage) => {
         if (newPage < 1 || newPage > totalPages) return;
-        dispatch(getAllRewardsByAdmin({ page: newPage, limit }));
+        dispatch(getAllVendorRewardByAdmin({ page: newPage, limit }));
     };
 
     const handleLimitChange = (newLimit) => {
-        dispatch(getAllRewardsByAdmin({ page: 1, limit: Number(newLimit) }));
+        dispatch(getAllVendorRewardByAdmin({ page: 1, limit: Number(newLimit) }));
     };
 
 
@@ -68,14 +72,14 @@ const AdminManageRewards = () => {
 
 
     const openModalForEdit = (reward) => {
-        dispatch(viewRewardByAdmin(reward._id)).then(() => {
+        dispatch(viewVendorRewardByAdmin(reward._id)).then(() => {
             setCurrentReward({ ...reward, mode: "edit" });
             setIsModalOpen(true);
         });
     };
 
     const openModalForView = (reward) => {
-        dispatch(viewRewardByAdmin(reward._id)).then(() => {
+        dispatch(viewVendorRewardByAdmin(reward._id)).then(() => {
             setCurrentReward({ ...reward, mode: "view" });
             setIsModalOpen(true);
         });
@@ -88,9 +92,30 @@ const AdminManageRewards = () => {
 
 
 
-    const handleSave = (data) => {
-        
-    };
+     const handleSave = (data) => {
+        const rewardData = new FormData();
+    
+        rewardData.append("name", data.name);
+        rewardData.append("stockStatus", data.stockStatus);
+        rewardData.append("description", data.rewardDescription);
+    
+        if (data.rewardImage) {
+          rewardData.append("rewardImage", data.rewardImage);
+        }
+        dispatch(createVendorRewardByAdmin(rewardData))
+          .unwrap()
+          .then(() => {
+            showToast("Reward created successfully!", "success");
+            dispatch(
+              getAllVendorRewardByAdmin({ page: currentPage, limit: currentLimit })
+            );
+            setIsModalOpen(false);
+          })
+          .catch((err) => {
+            console.log(err);
+            showToast("Failed to create reward", "error");
+          });
+      };
 
 
 
@@ -115,31 +140,31 @@ const AdminManageRewards = () => {
     };
 
     const confirmDelete = () => {
-        // if (isBulkDelete) {
-        //     Promise.all(selectedRewardIds.map(id => dispatch(deleteRewardByAdmin(id)).unwrap()))
-        //         .then(() => {
-        //             showToast(`Deleted ${selectedRewardIds.length} rewards successfully!`, "success");
-        //             setSelectedRewardIds([]);
-        //             dispatch(getAllRewardsByAdmin({ page, limit }));
-        //             closeDeleteModal();
-        //         })
-        //         .catch((err) => {
-        //             showToast(err?.message || "Failed to delete rewards!", "error");
-        //             closeDeleteModal();
-        //         });
-        // } else if (rewardToDelete) {
-        //     dispatch(deleteRewardByAdmin(rewardToDelete._id))
-        //         .unwrap()
-        //         .then(() => {
-        //             showToast("Reward deleted successfully!", "success");
-        //             dispatch(getAllRewardsByAdmin({ page, limit }));
-        //             closeDeleteModal();
-        //         })
-        //         .catch((err) => {
-        //             showToast(err?.message || "Failed to delete Reward!", "error");
-        //             closeDeleteModal();
-        //         });
-        // }
+        if (isBulkDelete) {
+            Promise.all(selectedRewardIds.map(id => dispatch(deleteVendorRewardByAdmin(id)).unwrap()))
+                .then(() => {
+                    showToast(`Deleted ${selectedRewardIds.length} rewards successfully!`, "success");
+                    setSelectedRewardIds([]);
+                    dispatch(getAllVendorRewardByAdmin({ page, limit }));
+                    closeDeleteModal();
+                })
+                .catch((err) => {
+                    showToast(err?.message || "Failed to delete rewards!", "error");
+                    closeDeleteModal();
+                });
+        } else if (rewardToDelete) {
+            dispatch(deleteVendorRewardByAdmin(rewardToDelete._id))
+                .unwrap()
+                .then(() => {
+                    showToast("Reward deleted successfully!", "success");
+                    dispatch(getAllVendorRewardByAdmin({ page, limit }));
+                    closeDeleteModal();
+                })
+                .catch((err) => {
+                    showToast(err?.message || "Failed to delete Reward!", "error");
+                    closeDeleteModal();
+                });
+        }
     };
 
 
@@ -155,18 +180,14 @@ const AdminManageRewards = () => {
 
         const headers = [
             "Name",
-            "Points",
             "Reward Desc.",
-            "Uni Name",
-            "College"
+            "Stock Status"
         ];
 
         const rows = selected.map(reward => [
             reward.name,
-            reward.totalPoints,
             reward.rewardDescription,
-            reward.university?.name,
-            reward.college?.name
+            reward.stockStatus,
         ]);
 
         // Fix CSV — wrap values in quotes to prevent merging
@@ -314,21 +335,15 @@ const AdminManageRewards = () => {
                                                 </div>
                                             </th>
 
-                                            {/* <th scope="col"
+                                            <th scope="col"
                                                 className="hidden md:table-cell sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
                                             >
                                                 <div className="flex items-center gap-1">
-                                                    University
+                                                    Description
                                                 </div>
                                             </th>
 
-                                            <th scope="col"
-                                                className="hidden lg:table-cell sm:px-6 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition duration-150"
-                                            >
-                                                <div className="flex items-center gap-1">
-                                                    College
-                                                </div>
-                                            </th> */}
+                                            
                                            
                                             <th scope="col"
                                                 className="sm:px-6 py-1 sm:py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -396,14 +411,11 @@ const AdminManageRewards = () => {
 
 
 
-                                                {/* <td className="hidden md:table-cell sm:px-6 sm:py-4 whitespace-nowrap text-sm text-gray-600">
-                                                    {reward.university?.name || 'N/A'}
+                                                <td className="hidden md:table-cell sm:px-6 sm:py-4 whitespace-nowrap text-sm text-gray-600">
+                                                    {reward.description || 'N/A'}
                                                 </td>
 
-                                                <td className="hidden lg:table-cell sm:px-6 sm:py-4 whitespace-nowrap text-sm text-gray-600">
-                                                    {reward.college?.name || 'N/A'}
-                                                </td> */}
-
+                                            
 
                                                
 
@@ -524,9 +536,11 @@ const AdminManageRewards = () => {
             <CreateReward
                 isOpen={isModalOpen}
                 onClose={closeModal}
-                // rewardId={currentReward?._id}
-                // mode={currentReward?.mode}
-                // onSave={handleSave}
+                rewardId={currentReward?._id}
+                mode={currentReward?.mode}
+                onSave={handleSave}
+                page={currentPage}
+                limit={currentLimit}
             />
 
             <ConfirmationModal

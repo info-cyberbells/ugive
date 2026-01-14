@@ -1,10 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { createRewardByAdminService, getAllRewardsByAdminService, viewSingleRewardByAdminService, updateRewardByAdminService, deleteRewardByAdminService, getActiveRewardsAdminService, } from "../auth/authServices";
+import { createRewardByAdminService, getAllRewardsByAdminService, viewSingleRewardByAdminService, updateRewardByAdminService, deleteRewardByAdminService, getActiveRewardsAdminService, getAllVendorRewardByAdminService, createVendorRewardByAdminService, viewSingleVendorRewardByAdminService, updateVendorRewardByAdminService, deleteVendorRewardByAdminService, } from "../auth/authServices";
 
 
 const initialState = {
     adminRewards: [],
     activeRewards: [],
+    adminVendorRewards: [],
+    selectedVendorReward: null,
+    singleLoading: false,
     page: 1,
     limit: 10,
     totalPages: 1,
@@ -42,7 +45,7 @@ export const createRewardByAdmin = createAsyncThunk(
 )
 
 export const viewRewardByAdmin = createAsyncThunk(
-    "reward/viewRewardByAdmin",
+    "adminreward/viewRewardByAdmin",
     async (id, thunkAPI) => {
         try {
             return await viewSingleRewardByAdminService(id);
@@ -57,7 +60,7 @@ export const viewRewardByAdmin = createAsyncThunk(
 
 
 export const updateRewardByAdmin = createAsyncThunk(
-    "reward/updateRewardByAdmin",
+    "adminreward/updateRewardByAdmin",
     async ({ id, formData }, thunkAPI) => { 
         try {
             return await updateRewardByAdminService({ id, formData }); 
@@ -70,7 +73,7 @@ export const updateRewardByAdmin = createAsyncThunk(
 );
 
 export const deleteRewardByAdmin = createAsyncThunk(
-    "reward/deleteRewardByAdmin",
+    "adminreward/deleteRewardByAdmin",
     async (id, thunkAPI) => {
         try {
             await deleteRewardByAdminService(id);
@@ -85,13 +88,82 @@ export const deleteRewardByAdmin = createAsyncThunk(
 
 // GET ADMIN ACTIVE REWARDS THUNK
 export const getActiveRewardsAdmin = createAsyncThunk(
-    'reward/getActiveRewardsAdmin',
+    'adminreward/getActiveRewardsAdmin',
     async(_, thunkAPI)=>{
         try {
             const response = await getActiveRewardsAdminService();
             return response;
         } catch (error) {
             return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to Active rewards admin");
+        }
+    }
+);
+
+// GET ALL  VENDOR REWARD THUNK
+export const getAllVendorRewardByAdmin = createAsyncThunk(
+    'adminreward/getAllVendorRewards',
+    async ({ page, limit }, thunkAPI) => {
+        try {
+            const response = await getAllVendorRewardByAdminService({ page, limit });
+            return response;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to get rewards");
+        }
+    }
+);
+
+// CREATE VENDOR REWARD BY AMDIN
+export const createVendorRewardByAdmin = createAsyncThunk(
+    'adminreward/createVendorReward',
+    async (rewardData, thunkAPI) => {
+        try {
+            const response = await createVendorRewardByAdminService(rewardData);
+            return response;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || "Failed to create admin");
+        }
+    }
+)
+
+// View Vendor reward by admin
+export const viewVendorRewardByAdmin = createAsyncThunk(
+    "adminreward/viewVendorRewardByAdmin",
+    async (id, thunkAPI) => {
+        try {
+            return await viewSingleVendorRewardByAdminService(id);
+        } catch (error) {
+            return thunkAPI.rejectWithValue(
+                error.response?.data?.message || "Failed to fetch reward"
+            );
+        }
+    }
+);
+
+
+
+export const updateVendorRewardByAdmin = createAsyncThunk(
+    "adminreward/updateVendorRewardByAdmin",
+    async ({ id, formData }, thunkAPI) => { 
+        try {
+            return await updateVendorRewardByAdminService({ id, formData }); 
+        } catch (error) {
+            return thunkAPI.rejectWithValue(
+                error.response?.data?.message || "Failed to update reward"
+            );
+        }
+    }
+);
+
+export const deleteVendorRewardByAdmin = createAsyncThunk(
+    "adminreward/deleteVendorRewardByAdmin",
+    async (id, thunkAPI) => {
+        try {
+            await deleteVendorRewardByAdminService(id);
+            return id;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(
+                error.response?.data?.message || "Failed to delete reward"
+            );
         }
     }
 );
@@ -236,7 +308,100 @@ const adminRewardSlice = createSlice({
                 state.message = action.payload;
             })
 
+            // get all vendor rewards
+            .addCase(getAllVendorRewardByAdmin.pending, (state) => {
+                state.isLoading = true;
+                state.isSuccess = false;
+                state.isError = false;
+            })
+            .addCase(getAllVendorRewardByAdmin.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isSuccess = true;
+                state.isError = false;
+                state.adminVendorRewards = action.payload.data;
+                state.limit = action.payload.limit;
+                state.totalPages = action.payload.totalPages;
+                state.page = action.payload.page;
+                state.totalRewards = action.payload.total;
+            })
+            .addCase(getAllVendorRewardByAdmin.rejected, (state) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.isSuccess = false;
+            })
 
+            // create vendor rewrads by admin
+            .addCase(createVendorRewardByAdmin.pending, (state) => {
+                state.isLoading = true;
+                state.isError = false;
+                state.isSuccess = false;
+            })
+            .addCase(createVendorRewardByAdmin.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.isError = false;
+                state.isSuccess = true;
+                state.totalRewards += 1;
+                if (action.payload?.data && action.payload.data._id) {
+                    state.totalRewards += 1;
+
+                    if (state.adminVendorRewards.length < state.limit) {
+                        state.adminVendorRewards.unshift(action.payload.data);
+                    }
+                }
+            })
+            .addCase(createVendorRewardByAdmin.rejected, (state) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.isSuccess = false;
+            })
+
+            // ================= VIEW REWARD =================
+            .addCase(viewVendorRewardByAdmin.pending, (state) => {
+                state.singleLoading = true;
+            })
+            .addCase(viewVendorRewardByAdmin.fulfilled, (state, action) => {
+                state.singleLoading = false;
+                state.selectedVendorReward = action.payload.data;
+            })
+            .addCase(viewVendorRewardByAdmin.rejected, (state, action) => {
+                state.singleLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+
+
+            // ================= UPDATE REWARD =================
+            .addCase(updateVendorRewardByAdmin.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(updateVendorRewardByAdmin.fulfilled, (state, action) => {
+                state.isLoading = false;
+            })
+            .addCase(updateVendorRewardByAdmin.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
+            // ================= DELETE REWARD =================
+            .addCase(deleteVendorRewardByAdmin.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(deleteVendorRewardByAdmin.fulfilled, (state, action) => {
+                state.isLoading = false;
+
+                const deletedId = action.payload;
+
+                state.adminVendorRewards = state.adminVendorRewards.filter(
+                    (r) => r._id !== deletedId
+                );
+
+                state.totalRewards -= 1;
+            })
+            .addCase(deleteVendorRewardByAdmin.rejected, (state, action) => {
+                state.isLoading = false;
+                state.isError = true;
+                state.message = action.payload;
+            })
     }
 })
 
