@@ -176,10 +176,10 @@ const CardForm = ({ onSubmit }) => {
           message: result.clean_text,
         }));
 
-        showToast(
-          "Inappropriate words detected. We cleaned the message for you.",
-          "info"
-        );
+        // showToast(
+        //   "Inappropriate words detected. We cleaned the message for you.",
+        //   "info"
+        // );
       }
     } catch (error) {
       showToast("Message validation failed. Please try again.", "error");
@@ -525,8 +525,9 @@ const SuccessMessage = ({ onGoBack }) => {
   const closeModal = () => setIsModalOpen(false);
   const { adminPushNotification, adminNotificationLoading } = useSelector((state) => state.studentCard);
 
-  const activeNotification = adminPushNotification?.find(n => n.isActive);
-
+  const activeNotification = Array.isArray(adminPushNotification)
+    ? adminPushNotification.find(n => n.isActive)
+    : null;
   const navigate = useNavigate();
 
   return (

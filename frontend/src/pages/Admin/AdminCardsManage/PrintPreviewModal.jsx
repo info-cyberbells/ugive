@@ -408,9 +408,7 @@ const PrintPreviewModal = ({ isOpen, onClose, card }) => {
             </div>
  
             <div class="content">
-              <div class="dear">Dear, ${card.recipient_name}</div>
               <div class="message">${card.message || 'No message provided'}</div>
-               <div class="from">From ${card.sender_name}</div>
                 ${card.reward?.name
         ? `<div class="reward"> <svg class="gift-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -492,9 +490,9 @@ const PrintPreviewModal = ({ isOpen, onClose, card }) => {
             </div>
 
             {/* Dear Recipient */}
-            <div className="dear-text mb-6">
+            {/* <div className="dear-text mb-6">
               Dear {card.recipient_name}
-            </div>
+            </div> */}
 
             {/* Message */}
             <div className="message-text mb-8">
@@ -502,9 +500,9 @@ const PrintPreviewModal = ({ isOpen, onClose, card }) => {
             </div>
 
             {/* From Sender */}
-            <div className="from-text mb-10">
+            {/* <div className="from-text mb-10">
               From {card.sender_name}
-            </div>
+            </div> */}
             {card.reward?.name && (
               <div className="reward-box flex items-center gap-2 mb-6 px-3 py-2 rounded-lg bg-yellow-50 border border-yellow-200">
                 <Gift className="w-4 h-4 text-yellow-600" />

@@ -190,7 +190,7 @@ const studentCardSlice = createSlice({
             })
             .addCase(getAdminPushNotification.fulfilled, (state, action) => {
                 state.adminNotificationLoading = false;
-                state.adminPushNotification = action.payload.data;
+                state.adminPushNotification = action.payload.data || [];
             })
             .addCase(getAdminPushNotification.rejected, (state, action) => {
                 state.adminNotificationLoading = false;
